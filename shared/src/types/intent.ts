@@ -122,4 +122,4 @@ export const INTENT_TYPE = {
     { name: 'resolverFeeAmount', type: 'uint256' },
     { name: 'expiryTime', type: 'uint256' },
   ],
-} as const;
+};

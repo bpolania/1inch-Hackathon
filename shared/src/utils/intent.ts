@@ -83,15 +83,18 @@ export function isIntentExecutable(intent: SwapIntent): boolean {
 }
 
 export function formatIntentForSigning(intent: SwapIntent): any {
-  // Format intent for EIP-712 signing
+  // Format intent for EIP-712 signing - convert 'native' to zero address for EIP-712
+  const formatTokenAddress = (address: string) => 
+    address === 'native' ? '0x0000000000000000000000000000000000000000' : address;
+
   return {
     intentId: intent.intentId,
     maker: intent.maker,
     sourceChain: intent.sourceChain,
-    sourceToken: intent.sourceToken.address,
+    sourceToken: formatTokenAddress(intent.sourceToken.address),
     sourceAmount: intent.sourceAmount,
     destinationChain: intent.destinationChain,
-    destinationToken: intent.destinationToken.address,
+    destinationToken: formatTokenAddress(intent.destinationToken.address),
     destinationAmount: intent.destinationAmount,
     destinationAddress: intent.destinationAddress,
     slippageBps: intent.slippageBps,

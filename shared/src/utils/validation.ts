@@ -163,12 +163,12 @@ export function getRequiredTimelock(sourceChain: ChainId, destinationChain: Chai
   const destType = CHAIN_INFO[destinationChain]?.type;
   
   if (!sourceType || !destType) {
-    return TIME_CONSTANTS.HTLC_TIMELOCK.ETHEREUM; // Default
+    return TIME_CONSTANTS.HTLC_TIMELOCK.EVM; // Default
   }
   
   // Get base timelock for each chain
-  const sourceTimelock = TIME_CONSTANTS.HTLC_TIMELOCK[sourceType] || TIME_CONSTANTS.HTLC_TIMELOCK.ETHEREUM;
-  const destTimelock = TIME_CONSTANTS.HTLC_TIMELOCK[destType] || TIME_CONSTANTS.HTLC_TIMELOCK.ETHEREUM;
+  const sourceTimelock = TIME_CONSTANTS.HTLC_TIMELOCK[sourceType] || TIME_CONSTANTS.HTLC_TIMELOCK.EVM;
+  const destTimelock = TIME_CONSTANTS.HTLC_TIMELOCK[destType] || TIME_CONSTANTS.HTLC_TIMELOCK.EVM;
   
   // Use the longer timelock plus buffer for cross-chain safety
   return Math.max(sourceTimelock, destTimelock) + TIME_CONSTANTS.CROSS_CHAIN_BUFFER;

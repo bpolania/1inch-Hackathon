@@ -122,7 +122,7 @@ export function createTestnetIntent(): SwapIntent {
       decimals: 8,
     },
     destinationAmount: '1250000000', // 12.5 APT
-    destinationAddress: '0xtest1234567890abcdef1234567890abcdef1234567890abcdef1234567890',
+    destinationAddress: '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
     slippageBps: 300, // 3% slippage (higher for testnet)
     resolverFeeAmount: '1000000000000000', // 0.001 ETH resolver fee
   });

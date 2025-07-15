@@ -6,11 +6,11 @@ export const TIME_CONSTANTS = {
   
   // HTLC timelock recommendations per chain
   HTLC_TIMELOCK: {
-    ETHEREUM: 3600, // 1 hour (for ~300 blocks)
+    EVM: 3600, // 1 hour (for ~300 blocks)
     APTOS: 1800, // 30 minutes
     BITCOIN: 7200, // 2 hours (for ~12 blocks)
     COSMOS: 3600, // 1 hour
-  },
+  } as Record<string, number>,
   
   // Safety buffer for cross-chain timing
   CROSS_CHAIN_BUFFER: 600, // 10 minutes
