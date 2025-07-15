@@ -4,16 +4,30 @@ A decentralized, intent-driven system enabling atomic cross-chain swaps between 
 
 ## Overview
 
-This system uses hashlock and timelock contracts coordinated through an intent-based, decentralized relayer network. Users express desired swaps as signed off-chain intents, which independent executors fulfill in return for resolver fees.
+This system **extends 1inch Fusion+** to support cross-chain atomic swaps with non-EVM chains (Aptos, Bitcoin, Cosmos). We build upon 1inch's existing HTLC-based architecture and resolver network, adding compatible escrow contracts and cross-chain coordination layers to enable swaps between Ethereum and non-EVM ecosystems.
+
+### 1inch Fusion+ Integration
+
+**Building on Proven Architecture:**
+- **Extends** existing 1inch Fusion+ cross-chain infrastructure
+- **Leverages** their Hash Time Locked Contract (HTLC) system
+- **Maintains compatibility** with their resolver network and economic incentives
+- **Preserves** security guarantees of atomic swaps
+
+**Core Components from 1inch:**
+- **EscrowSrc/EscrowDst**: Existing Ethereum contracts for token locking
+- **Resolver Network**: Professional market makers with safety deposits
+- **Secret-based Verification**: HTLC mechanism using hashlock/timelock
+- **Multi-stage Timelocks**: Precise timing controls for secure execution
 
 ## Architecture Components
 
-### 1. Ethereum Swap Contract (Solidity)
-- Adapts existing 1inch Fusion+ contract
-- Accepts ETH/ERC20 deposits with hashlock and timelock
-- Pays resolver fees to executors submitting valid preimages
-- Validates user intent signatures
-- Emits events for relayer monitoring
+### 1. Ethereum Integration (1inch Fusion+ Extension)
+- **Leverages existing** 1inch EscrowSrc/EscrowDst contracts
+- **Integrates with** 1inch Limit Order Protocol for order discovery
+- **Extends** their `Immutables` struct for cross-chain parameters
+- **Maintains compatibility** with existing resolver network
+- **Adds adapters** for non-EVM chain coordination
 
 ### 2. Aptos Swap Module (Move)
 - Custom Move module implementing hashlock/timelock logic
@@ -333,6 +347,43 @@ const isValid = validateSignedIntent(signedIntent, intent.maker);
 
 ### Documentation
 See [Intent Format Specification](docs/intent-format-specification.md) for complete documentation.
+
+## 1inch Fusion+ Technical Details
+
+### Core Data Structure (1inch Compatible)
+```solidity
+struct Immutables {
+    bytes32 orderHash;        // Hash of the original 1inch order
+    bytes32 hashlock;         // HTLC secret hash for atomic swaps
+    address maker;            // Order creator (user)
+    address taker;            // Order resolver (professional market maker)
+    address token;            // Token contract address
+    uint256 amount;           // Token amount to swap
+    uint256 safetyDeposit;    // Resolver's economic security deposit
+    uint256 timelocks;        // Packed multi-stage timelock windows
+}
+```
+
+### HTLC Workflow Integration
+1. **Order Creation**: User creates order via 1inch Limit Order Protocol
+2. **Resolver Matching**: Professional resolver accepts order with safety deposit
+3. **Escrow Deployment**: 
+   - `EscrowSrc` deployed on Ethereum (via 1inch)
+   - `EscrowDst` deployed on target chain (our extension)
+4. **Secret Coordination**: Shared hashlock enables atomic execution
+5. **Multi-stage Execution**: Time-controlled withdrawal and cancellation windows
+6. **Fee Distribution**: Resolvers earn fees, safety deposits ensure honest behavior
+
+### Extension Points for Non-EVM Chains
+- **Aptos**: Move-based escrow resources with equivalent timelock logic
+- **Bitcoin**: Script-based HTLCs with multi-signature escrow addresses  
+- **Cosmos**: IBC-enabled CosmWasm contracts for cross-chain coordination
+
+### Security Model
+- **Atomic Guarantees**: Either both sides complete or both can cancel/refund
+- **Economic Incentives**: Safety deposits ensure resolver honest participation
+- **Time-bounded Security**: Multi-stage timelocks prevent griefing attacks
+- **Secret Distribution**: Off-chain coordination with on-chain verification
 
 ## Contributing
 
