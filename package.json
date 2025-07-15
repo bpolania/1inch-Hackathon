@@ -1,0 +1,32 @@
+{
+  "name": "1inch-cross-chain",
+  "version": "0.1.0",
+  "description": "Cross-chain atomic swap system with AI-enhanced relayer network",
+  "private": true,
+  "scripts": {
+    "install:all": "npm install && cd relayer-services && npm install && cd ../ui && npm install && cd ../bitcoin-scripts && npm install && cd ../contracts/ethereum && npm install",
+    "dev:relayers": "cd relayer-services && npm run dev",
+    "dev:ui": "cd ui && npm run dev",
+    "build:all": "npm run build:contracts && npm run build:relayers && npm run build:ui",
+    "build:contracts": "cd contracts/ethereum && npm run compile",
+    "build:relayers": "cd relayer-services && npm run build",
+    "build:ui": "cd ui && npm run build",
+    "test:all": "npm run test:contracts && npm run test:relayers && npm run test:bitcoin",
+    "test:contracts": "cd contracts/ethereum && npm test",
+    "test:relayers": "cd relayer-services && npm test",
+    "test:bitcoin": "cd bitcoin-scripts && npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/1inch-cross-chain.git"
+  },
+  "keywords": [
+    "cross-chain",
+    "atomic-swaps",
+    "blockchain",
+    "defi",
+    "1inch"
+  ],
+  "author": "1inch Cross-Chain Team",
+  "license": "MIT"
+}

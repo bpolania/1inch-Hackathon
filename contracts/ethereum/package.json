@@ -1,0 +1,17 @@
+{
+  "name": "@1inch-cross-chain/ethereum-contracts",
+  "version": "0.1.0",
+  "description": "Ethereum smart contracts for cross-chain atomic swaps",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy": "hardhat run scripts/deploy.js"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.0.0"
+  },
+  "devDependencies": {
+    "hardhat": "^2.19.0",
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0"
+  }
+}

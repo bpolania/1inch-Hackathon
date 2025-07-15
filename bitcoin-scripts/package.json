@@ -1,0 +1,22 @@
+{
+  "name": "@1inch-cross-chain/bitcoin-scripts",
+  "version": "0.1.0",
+  "description": "Bitcoin HTLC scripts for cross-chain atomic swaps",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "dev": "ts-node-dev scripts/demo.ts"
+  },
+  "dependencies": {
+    "bitcoinjs-lib": "^6.1.0",
+    "bitcoin-core": "^4.2.0",
+    "tiny-secp256k1": "^2.2.0",
+    "ecpair": "^2.1.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@types/node": "^20.0.0",
+    "jest": "^29.0.0"
+  }
+}
