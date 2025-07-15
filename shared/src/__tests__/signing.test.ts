@@ -152,18 +152,44 @@ describe('Intent Signing', () => {
     
     const invalidSignedIntent = {
       intent,
-      signature: '0xinvalid',
+      signature: '0xinvalid', // Malformed signature
     };
     
+    // Should throw when trying to extract signer from malformed signature
     expect(() => {
       extractSignerFromIntent(invalidSignedIntent, ChainId.ETHEREUM_MAINNET);
-    }).toThrow();
+    }).toThrow(/Failed to extract signer/);
     
+    // Should return false for malformed signature without throwing
     const isValid = verifySignedIntent(
       invalidSignedIntent,
       testAddress,
       ChainId.ETHEREUM_MAINNET
     );
     expect(isValid).toBe(false);
+  });
+
+  test('handles various invalid signature formats', () => {
+    const intent = EXAMPLE_INTENTS.ethToBtc();
+    intent.maker = testAddress;
+    
+    const invalidSignatures = [
+      '0x', // Empty signature
+      '0xinvalid', // Too short
+      'not-a-signature', // Not hex
+      '0x' + '0'.repeat(130), // Wrong length
+    ];
+    
+    invalidSignatures.forEach(invalidSig => {
+      const invalidSignedIntent = { intent, signature: invalidSig };
+      
+      // Should return false for all invalid signatures
+      const isValid = verifySignedIntent(
+        invalidSignedIntent,
+        testAddress,
+        ChainId.ETHEREUM_MAINNET
+      );
+      expect(isValid).toBe(false);
+    });
   });
 });

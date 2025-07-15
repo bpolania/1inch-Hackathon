@@ -48,7 +48,7 @@ export class IntentSigner {
 
       return recoveredAddress.toLowerCase() === expectedSigner.toLowerCase();
     } catch (error) {
-      console.error('Error verifying intent signature:', error);
+      // Invalid signature format or verification failed
       return false;
     }
   }

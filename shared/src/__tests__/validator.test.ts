@@ -219,4 +219,29 @@ describe('Intent Validator', () => {
     expect(result.valid).toBe(false);
     expect(result.errors.some(e => e.includes('Invalid signature for expected signer'))).toBe(true);
   });
+
+  test('validates multiple error conditions at once', async () => {
+    const validator = createValidator(ChainId.ETHEREUM_MAINNET);
+    const intent = EXAMPLE_INTENTS.ethToBtc();
+    intent.maker = testAddress;
+    
+    // Create multiple validation issues
+    intent.sourceAmount = '0'; // Invalid amount
+    intent.slippageBps = 2000; // Too high slippage
+    intent.expiryTime = Math.floor(Date.now() / 1000) + 60; // Expires too soon
+    
+    const signedIntent = await signIntentWithPrivateKey(
+      intent,
+      testPrivateKey,
+      ChainId.ETHEREUM_MAINNET
+    );
+    
+    const result = validator.validateSignedIntent(signedIntent);
+    
+    expect(result.valid).toBe(false);
+    expect(result.errors.length).toBeGreaterThan(1); // Multiple errors
+    expect(result.errors.some(e => e.includes('amount'))).toBe(true);
+    expect(result.errors.some(e => e.includes('slippage') || e.includes('Slippage'))).toBe(true);
+    expect(result.errors.some(e => e.includes('expires too soon'))).toBe(true);
+  });
 });
