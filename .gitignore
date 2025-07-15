@@ -73,3 +73,6 @@ relayer-services/ai-module/data/models/
 .cache/
 tmp/
 temp/
+
+# Claude development instructions (not for public repo)
+CLAUDE.md

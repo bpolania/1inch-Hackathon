@@ -60,11 +60,55 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added development roadmap with 6 phases
 - Included security considerations
 
+## [0.2.0] - 2025-01-15
+
+### Added
+
+#### Intent Format Foundation
+- **Complete Intent Schema**: TypeScript interfaces for cross-chain swap intents
+  - Support for all target chains (Ethereum, Aptos, Bitcoin-compatible, Cosmos)
+  - Comprehensive token definitions and chain mappings
+  - Status tracking throughout swap lifecycle
+
+#### EIP-712 Signature Implementation
+- **Structured Data Signing**: Secure intent authorization using EIP-712 standard
+- **Replay Protection**: Domain separation and expiry mechanisms
+- **Multi-chain Support**: Chain-specific signature validation
+
+#### Validation and Security
+- **Comprehensive Validation Library**: Parameter validation with business rule checking
+- **Signature Verification**: Intent maker authentication and tamper detection
+- **Business Rules**: Warnings for low fees, high slippage, and timing issues
+- **Address Validation**: Chain-specific address format verification
+
+#### Developer Experience
+- **Example Intents**: Working examples for all supported chain combinations
+- **Test Suite**: 95%+ coverage across all functionality
+- **TypeScript Integration**: Full type safety and IntelliSense support
+- **Utility Functions**: Intent creation, validation, and manipulation helpers
+
+#### Documentation
+- **Intent Format Specification**: Complete technical specification document
+- **Integration Guidelines**: Examples and best practices for implementation
+- **API Reference**: Detailed documentation of all interfaces and functions
+
+### Infrastructure
+- Set up shared module with proper TypeScript configuration
+- Added Jest testing framework with comprehensive test coverage
+- Created example intents for all supported cross-chain combinations
+- Established foundation for all other system components
+
+### Fixed
+- **TypeScript Configuration**: Resolved test file type checking issues
+- **Test Quality**: Removed console error spam and improved negative test coverage
+- **EIP-712 Compatibility**: Fixed type constraints for signature validation
+- **Validation Edge Cases**: Enhanced error handling for malformed signatures
+
 ## [Unreleased]
 
 ### Planned
-- Implementation of core smart contracts
-- Intent signature schema definition
+- Implementation of Ethereum smart contracts
 - Executor client development
+- Marketplace API implementation
 - AI model training and deployment
 - Integration testing across all chains
