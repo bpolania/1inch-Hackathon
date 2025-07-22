@@ -370,6 +370,7 @@ factory.createIntent(
 - **Read Contract**: https://sepolia.etherscan.io/address/0x98c35dA70f839F1B7965b8b8BA17654Da11f4486#readContract
 - **Write Contract**: https://sepolia.etherscan.io/address/0x98c35dA70f839F1B7965b8b8BA17654Da11f4486#writeContract
 - **Transaction History**: https://sepolia.etherscan.io/address/0x98c35dA70f839F1B7965b8b8BA17654Da11f4486
+
 ### Prerequisites
 - Node.js 18+ and npm
 - Rust toolchain (for Cosmos contracts)
