@@ -42,6 +42,12 @@ contracts/cosmos/target/
 contracts/cosmos/Cargo.lock
 contracts/cosmos/schema/
 
+# NEAR
+contracts/near/target/
+contracts/near/Cargo.lock
+contracts/near/out/
+contracts/near/*.wasm
+
 # Bitcoin
 bitcoin-scripts/lib/
 

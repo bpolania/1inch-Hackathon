@@ -152,13 +152,59 @@ This NEAR contract is designed to work with the Ethereum CrossChainFactory contr
 
 ## Testing
 
-```bash
-# Run unit tests
-cargo test
+The contract includes comprehensive unit and integration tests using `near-workspaces`.
 
-# Run integration tests with NEAR CLI
-near call contract_account test_create_order --accountId test_account
+### Unit Tests (Fast)
+```bash
+# Run basic unit tests
+cargo test --lib
+
+# Run with output
+cargo test --lib -- --nocapture
 ```
+
+### Integration Tests (Full Contract Deployment)
+```bash
+# Run integration tests with near-workspaces
+cargo test --test integration_tests
+
+# Run specific integration test
+cargo test --test integration_tests test_full_cross_chain_swap_simulation
+
+# Run all tests (unit + integration)  
+npm run test:all
+```
+
+### Test Coverage
+
+**Unit Tests (8 tests):**
+- ✅ Contract initialization
+- ✅ Resolver management (add/remove)
+- ✅ Order creation validation
+- ✅ Order matching authorization
+- ✅ View functions
+
+**Integration Tests (10 tests):**
+- ✅ Contract deployment & initialization
+- ✅ Resolver management workflow
+- ✅ HTLC order creation
+- ✅ Order matching with safety deposits
+- ✅ Claim order with preimage verification
+- ✅ Cancel expired orders with refunds
+- ✅ Unauthorized resolver protection
+- ✅ **Full cross-chain swap simulation**
+- ✅ Event logging verification
+- ✅ Balance transfer verification
+
+### Advanced Testing Features
+
+**near-workspaces provides:**
+- 🏗️ **Real contract deployment** in sandbox environment
+- 💰 **Real token transfers** and balance verification
+- ⏰ **Block advancement** for timelock testing
+- 🔗 **Multi-account interactions** (users, resolvers, contracts)
+- 📝 **Event log inspection** for monitoring integration
+- 🔐 **Cryptographic hash verification** with real preimages
 
 ## Events
 
