@@ -6,6 +6,11 @@ A decentralized, intent-driven system enabling atomic cross-chain swaps between 
 
 This system **extends 1inch Fusion+** to support cross-chain atomic swaps with non-EVM chains (Aptos, Bitcoin, Cosmos). We build upon 1inch's existing HTLC-based architecture and resolver network, adding compatible escrow contracts and cross-chain coordination layers to enable swaps between Ethereum and non-EVM ecosystems.
 
+### 🎯 **Demo Status**: 
+- ✅ **Ethereum contracts deployed** to Sepolia testnet at [`0x98c35dA70f839F1B7965b8b8BA17654Da11f4486`](https://sepolia.etherscan.io/address/0x98c35dA70f839F1B7965b8b8BA17654Da11f4486)
+- ✅ **Full atomic swap demo** working locally with complete cross-chain flow
+- 🚧 **Non-EVM chains** integration in progress (Aptos, Bitcoin, Cosmos)
+
 ### 1inch Fusion+ Integration
 
 **Building on Proven Architecture:**
@@ -239,11 +244,39 @@ The project uses a hybrid monorepo approach to balance coordination benefits wit
 
 ## Getting Started
 
+### 🚀 Quick Demo
+
+**Try the working demo immediately:**
+
+```bash
+# Clone repository
+git clone https://github.com/your-org/1inch-cross-chain.git
+cd 1inch-cross-chain/contracts/ethereum
+
+# Install dependencies
+npm install
+
+# Run local atomic swap demo
+npm run demo
+```
+
+**Deployed Sepolia Testnet:**
+- **Factory Contract**: [`0x98c35dA70f839F1B7965b8b8BA17654Da11f4486`](https://sepolia.etherscan.io/address/0x98c35dA70f839F1B7965b8b8BA17654Da11f4486)
+- **Network**: Sepolia (Chain ID: 11155111)
+- **Status**: ✅ Deployed and verified
+
+**Test on Sepolia:**
+```bash
+# Deploy/demo on testnet (requires testnet ETH & tokens)
+npm run demo:sepolia
+```
+
 ### Prerequisites
 - Node.js 18+ and npm
 - Rust toolchain (for Cosmos contracts)
 - Python 3.9+ (for AI module)
 - Docker (for local blockchain testing)
+- Sepolia ETH (for testnet deployment)
 
 ### Installation
 
