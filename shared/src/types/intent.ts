@@ -1,5 +1,17 @@
 import { ChainId } from './chains';
 
+// 1inch Fusion+ compatible structure
+export interface OneInchImmutables {
+  orderHash: string;        // bytes32 - Hash of the original 1inch order
+  hashlock: string;         // bytes32 - HTLC secret hash for atomic swaps
+  maker: string;            // address - Order creator (user)
+  taker: string;            // address - Order resolver (professional market maker)
+  token: string;            // address - Token contract address
+  amount: string;           // uint256 - Token amount to swap
+  safetyDeposit: string;    // uint256 - Resolver's economic security deposit
+  timelocks: string;        // uint256 - Packed multi-stage timelock windows
+}
+
 export interface TokenInfo {
   chainId: ChainId;
   address: string; // Use 'native' for native tokens
@@ -61,6 +73,21 @@ export interface SwapIntent {
   destinationLockTxHash?: string;
   sourceClaimTxHash?: string;
   destinationClaimTxHash?: string;
+  
+  // 1inch Fusion+ integration
+  oneInchOrderHash?: string; // Original 1inch order hash when extending their system
+}
+
+// Extended intent that includes 1inch Fusion+ compatibility
+export interface FusionPlusIntent extends SwapIntent {
+  // 1inch Fusion+ specific fields
+  oneInchOrderHash: string;     // Hash of the original 1inch order
+  safetyDeposit: string;        // Resolver's safety deposit amount
+  timelocks: string;            // Packed timelock stages (1inch format)
+  
+  // Cross-chain extension fields
+  srcImmutables?: OneInchImmutables;  // Source chain (Ethereum) escrow params
+  dstImmutables?: OneInchImmutables;  // Destination chain escrow params
 }
 
 export interface SignedIntent {

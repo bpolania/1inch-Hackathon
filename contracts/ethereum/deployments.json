@@ -1,0 +1,12 @@
+{
+  "network": "hardhat",
+  "chainId": 1337,
+  "deployer": "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+  "blockNumber": 5,
+  "timestamp": "2025-07-22T18:51:38.634Z",
+  "contracts": {
+    "CrossChainFactory": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
+    "SampleCrossChainEscrow": "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9",
+    "TestToken": "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+  }
+}

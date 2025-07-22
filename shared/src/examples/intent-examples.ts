@@ -1,6 +1,12 @@
-import { SwapIntent, TokenInfo } from '../types/intent';
+import { SwapIntent, TokenInfo, FusionPlusIntent } from '../types/intent';
 import { ChainId } from '../types/chains';
 import { createIntent } from '../utils/intent';
+import { 
+  toFusionPlusIntent, 
+  generateOrderHash, 
+  calculateSafetyDeposit,
+  getDefaultTimelockStages 
+} from '../utils/fusion-plus';
 import { NATIVE_TOKEN_ADDRESS } from '../constants';
 
 // Example token definitions
@@ -187,10 +193,28 @@ export function createCustomIntent(params: {
   });
 }
 
+// Example 6: 1inch Fusion+ compatible ETH to APT swap
+export function createFusionPlusEthToAptIntent(): FusionPlusIntent {
+  const baseIntent = createEthToBtcIntent();
+  
+  // Change destination to Aptos for cross-chain demo
+  baseIntent.destinationChain = ChainId.APTOS_MAINNET;
+  baseIntent.destinationToken = EXAMPLE_TOKENS.APT_MAINNET;
+  baseIntent.destinationAmount = '12500000000'; // 125 APT
+  baseIntent.destinationAddress = '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef';
+  
+  const orderHash = generateOrderHash(baseIntent);
+  const safetyDeposit = calculateSafetyDeposit(baseIntent.sourceAmount);
+  const timelockStages = getDefaultTimelockStages();
+  
+  return toFusionPlusIntent(baseIntent, orderHash, safetyDeposit, timelockStages);
+}
+
 export const EXAMPLE_INTENTS = {
   ethToBtc: createEthToBtcIntent,
   usdcToApt: createUsdcToAptIntent,
   btcToAtom: createBtcToAtomIntent,
   aptToEth: createAptToEthIntent,
   testnet: createTestnetIntent,
+  fusionPlusEthToApt: createFusionPlusEthToAptIntent,
 };

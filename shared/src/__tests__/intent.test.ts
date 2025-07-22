@@ -144,6 +144,15 @@ describe('Example Intents Validation', () => {
     expect(validation.valid).toBe(true);
     expect(validation.errors).toHaveLength(0);
   });
+
+  test('FusionPlusIntent example is valid as SwapIntent', () => {
+    const fusionIntent = EXAMPLE_INTENTS.fusionPlusEthToApt();
+    // FusionPlusIntent extends SwapIntent, so it should validate
+    const validation = validateIntent(fusionIntent);
+    
+    expect(validation.valid).toBe(true);
+    expect(validation.errors).toHaveLength(0);
+  });
 });
 
 describe('Intent Edge Cases', () => {
