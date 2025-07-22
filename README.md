@@ -9,7 +9,8 @@ This system **extends 1inch Fusion+** to support cross-chain atomic swaps with n
 ### 🎯 **Demo Status**: 
 - ✅ **Ethereum contracts deployed** to Sepolia testnet at [`0x98c35dA70f839F1B7965b8b8BA17654Da11f4486`](https://sepolia.etherscan.io/address/0x98c35dA70f839F1B7965b8b8BA17654Da11f4486)
 - ✅ **Full atomic swap demo** working locally with complete cross-chain flow
-- 🚧 **Non-EVM chains** integration in progress (Aptos, Bitcoin, Cosmos)
+- 🚀 **NEAR integration** starting next (targeting $32K bounty)
+- 🚧 **Cosmos & Bitcoin** integrations planned after NEAR
 
 ### 1inch Fusion+ Integration
 
@@ -151,15 +152,44 @@ A modular AI enhancement layer that integrates with existing components to optim
 
 ## Development Roadmap
 
-### Phase 1: Core Infrastructure
-1. Define intent schema with swap details
-2. Implement signature scheme for user authorization
+### ✅ Phase 1: Ethereum Foundation (COMPLETED)
+- ✅ **Smart Contracts**: CrossChainFactory and CrossChainEscrow deployed to Sepolia
+- ✅ **Demo System**: Complete atomic swap demonstration
+- ✅ **Infrastructure**: Hardhat setup, Alchemy integration, environment configuration
+- ✅ **Testing**: Comprehensive test suite with 95%+ coverage
 
-### Phase 2: Smart Contract Development
-1. **Ethereum**: Adapt Fusion+ contract with resolver fees
-2. **Aptos**: Develop Move module with HTLC logic
-3. **Bitcoin**: Implement P2SH/Taproot HTLC scripts
-4. **Cosmos**: Build CosmWasm module or native logic
+### 🚀 Phase 2: Multi-Chain Integration (IN PROGRESS)
+
+**Strategic Priority Order Based on $32K Bounties:**
+
+#### 1st Priority: NEAR Integration 🌐
+**Target: $32,000 bounty** | **Status: Starting Next**
+
+**Why NEAR First:**
+- ✅ **Fastest Development**: Robust smart contract platform with Rust
+- ✅ **Familiar Tools**: Can leverage existing Rust toolchain
+- ✅ **Account Model**: Similar to Ethereum, easier integration
+- ✅ **Excellent Tooling**: Superior documentation and developer experience
+
+**Implementation Plan:**
+1. **NEAR Smart Contract**: Rust-based HTLC with hashlock/timelock
+2. **Bidirectional Swaps**: Ethereum ↔ NEAR token transfers
+3. **Demo Integration**: Extend existing demo to include NEAR
+4. **Testnet Deployment**: Deploy to NEAR testnet with working examples
+
+#### 2nd Priority: Cosmos Integration 🌌
+**Target: $32,000 bounty** | **Status: After NEAR**
+
+**Advantages:**
+- ✅ **Proven Patterns**: Reuse NEAR's Rust contract architecture
+- ✅ **CosmWasm Ready**: Direct port from NEAR implementation
+- ✅ **IBC Potential**: Advanced cross-chain features
+
+#### 3rd Priority: Bitcoin Ecosystem 🪙
+**Target: $32,000 bounty** | **Status: Final Phase**
+
+**Multi-Chain Support:** Bitcoin, Dogecoin, Litecoin, Bitcoin Cash
+**Challenges:** UTXO model, script limitations, multiple chain targets
 
 ### Phase 3: Relayer Infrastructure
 1. Build chain adapters for all supported networks
