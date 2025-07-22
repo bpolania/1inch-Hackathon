@@ -225,6 +225,102 @@ The project uses a hybrid monorepo approach to balance coordination benefits wit
 
 ## Getting Started
 
+### 🚀 Quick Demo
+
+**Try the working demo immediately:**
+
+```bash
+# Clone repository
+git clone https://github.com/your-org/1inch-cross-chain.git
+cd 1inch-cross-chain/contracts/ethereum
+
+# Install dependencies
+npm install
+
+# Run local atomic swap demo
+npm run demo
+```
+
+**Deployed Sepolia Testnet:**
+- **Factory Contract**: [`0x98c35dA70f839F1B7965b8b8BA17654Da11f4486`](https://sepolia.etherscan.io/address/0x98c35dA70f839F1B7965b8b8BA17654Da11f4486)
+- **Network**: Sepolia (Chain ID: 11155111)
+- **Status**: ✅ Deployed and verified
+
+**Test on Sepolia:**
+```bash
+# Deploy/demo on testnet (requires testnet ETH & tokens)
+npm run demo:sepolia
+
+# Test deployed contract
+npm run test:deployed
+```
+
+### 🧪 **Live Contract Testing**
+
+**Test the deployed contracts directly on Sepolia:**
+
+#### Prerequisites for Live Testing:
+1. **Sepolia ETH**: Get from [Sepolia Faucet](https://sepoliafaucet.com/)
+2. **Test Tokens**: Get USDC from [Circle Faucet](https://faucet.circle.com/)
+3. **Wallet Setup**: MetaMask connected to Sepolia network
+
+#### Available Test Functions:
+
+**1. Read Contract State (No gas required):**
+```solidity
+// Check resolver authorization
+factory.authorizedResolvers(address) → bool
+
+// Get intent information  
+factory.getIntentInfo(bytes32 orderHash) → IntentInfo
+
+// Check escrow addresses for an order
+factory.getEscrowAddresses(bytes32 orderHash) → (address, address)
+
+// Get resolver count
+factory.resolverCount() → uint256
+```
+
+**2. Write Operations (Requires ETH for gas):**
+```solidity
+// Create a cross-chain swap intent
+factory.createIntent(
+    orderHash,      // bytes32: Unique order identifier
+    sourceToken,    // address: Token to swap from
+    sourceAmount,   // uint256: Amount to swap
+    destinationChain, // uint256: Target chain ID
+    destinationToken, // address: Token to receive
+    destinationAmount, // uint256: Amount to receive
+    destinationAddress, // string: Receiving address
+    resolverFeeAmount, // uint256: Fee for resolver
+    expiryTime      // uint256: Intent expiry timestamp
+)
+```
+
+#### Test Scenarios You Can Try Now:
+
+**Scenario 1: Intent Creation**
+- Connect to factory contract on Etherscan
+- Call `createIntent` with test parameters
+- Verify intent is created by calling `getIntentInfo`
+
+**Scenario 2: Resolver Authorization (Owner only)**
+- Add new resolver address using `addResolver`
+- Verify with `authorizedResolvers` call
+
+**Scenario 3: Intent Matching**
+- Create an intent as above
+- Call `matchIntent` as authorized resolver
+- Check created escrow addresses with `getEscrowAddresses`
+
+**Scenario 4: Full Atomic Swap Test**
+- Run complete demo: `npm run demo:sepolia`
+- Monitor transactions on [Sepolia Etherscan](https://sepolia.etherscan.io/)
+
+#### Quick Test Links:
+- **Read Contract**: https://sepolia.etherscan.io/address/0x98c35dA70f839F1B7965b8b8BA17654Da11f4486#readContract
+- **Write Contract**: https://sepolia.etherscan.io/address/0x98c35dA70f839F1B7965b8b8BA17654Da11f4486#writeContract
+- **Transaction History**: https://sepolia.etherscan.io/address/0x98c35dA70f839F1B7965b8b8BA17654Da11f4486
 ### Prerequisites
 - Node.js 18+ and npm
 - Rust toolchain (for Cosmos contracts)
