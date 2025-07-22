@@ -5,6 +5,53 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2025-01-22
+
+### Added
+
+#### NEAR Protocol Integration
+- ✅ **NEAR Smart Contract**: Complete Rust-based HTLC implementation (`contracts/near/src/lib.rs`)
+  - Hash Time Locked Contract with SHA-256 hashlock verification
+  - Multi-stage timelock system with block height expiry
+  - Native NEAR token support with resolver fee mechanism
+  - Safety deposit requirements for authorized resolvers (10% of swap amount)
+  - Comprehensive event emission for cross-chain monitoring
+- ✅ **Bidirectional Swap Support**: Full Ethereum ↔ NEAR atomic swap capabilities
+  - Ethereum → NEAR: Lock USDC/ETH, claim NEAR with preimage revelation
+  - NEAR → Ethereum: Lock NEAR tokens, claim Ethereum tokens atomically
+  - Shared hashlock coordination between both chains
+- ✅ **Demo System**: Complete demonstration of both swap directions (`contracts/near/demo.js`)
+  - Interactive examples showing full cross-chain flow
+  - Real hashlock generation and verification simulation
+  - Integration with deployed Sepolia Ethereum contracts
+- ✅ **Deployment Infrastructure**: Production-ready deployment scripts
+  - Automated NEAR testnet deployment (`contracts/near/deploy.sh`)
+  - Contract initialization and resolver authorization
+  - Build system with optimized WASM compilation
+- ✅ **Documentation**: Comprehensive integration guides (`contracts/near/README.md`)
+  - API reference for all contract functions
+  - Usage examples and testing instructions
+  - Integration patterns with Ethereum contracts
+
+#### Cross-Chain Architecture Enhancements
+- 🔗 **Contract Compatibility**: NEAR contract designed for seamless integration with Ethereum factory
+- 🔐 **Shared Security Model**: Consistent hashlock/timelock mechanisms across chains
+- 📊 **Event Coordination**: Structured logging for cross-chain relayer monitoring
+- ⚡ **Gas Optimization**: Efficient NEAR contract with minimal storage costs
+
+### Technical Specifications
+- **NEAR Contract**: `cross_chain_htlc.wasm` targeting NEAR Protocol testnet
+- **Rust Dependencies**: near-sdk 4.1.1 with optimized release profile
+- **Integration Points**: 
+  - Ethereum Factory: `0x98c35dA70f839F1B7965b8b8BA17654Da11f4486`
+  - NEAR Testnet: Ready for deployment to `cross-chain-htlc.ACCOUNT.testnet`
+- **Security Features**: 10% safety deposits, atomic execution, timeout-based cancellation
+
+### Target Achievement
+- 🎯 **$32,000 NEAR Bounty**: Full implementation ready for submission
+- 🚀 **Next Target**: Cosmos integration for additional $32K bounty
+- 💰 **Total Progress**: $32K of $96K possible bounty rewards
+
 ## [0.2.0] - 2025-01-22
 
 ### Added
