@@ -5,6 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.1] - 2025-01-23
+
+### Fixed
+
+#### NEAR Testing Infrastructure
+- ✅ **Fixed WASM Compilation**: Resolved `CompilationError(PrepareError(Deserialization))` in integration tests
+  - Added `cargo near build` support with proper JsonSchema annotations
+  - Fixed near-sdk 5.1.0 compatibility with schemars 0.8
+  - Implemented proper WASM compilation pipeline for near-workspaces
+- ✅ **Fixed Integration Tests**: All 9 integration tests now passing
+  - Resolved JSON deserialization issues with U64/U128 types
+  - Fixed timelock parameter serialization (integers to strings)
+  - Updated near-workspaces from 0.12 to 0.11 for compatibility
+- ✅ **Improved Test Coverage**: Comprehensive testing with near-workspaces sandbox
+  - Real contract deployment and execution testing
+  - Multi-account interactions with proper balance verification
+  - Event logging and cryptographic preimage verification
+  - Full cross-chain swap flow simulation
+
+### Technical Details
+- Added JsonSchema derive with `#[schemars(with = "String")]` annotations for NEAR types
+- Implemented helper function to use pre-compiled WASM from `cargo near build`
+- Fixed dependencies: schemars 0.8, near-workspaces 0.11, near-sdk 5.1.0 with legacy features
+- Updated build.sh to support both cargo near build and fallback compilation
+
 ## [0.3.0] - 2025-01-22
 
 ### Added
