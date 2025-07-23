@@ -155,28 +155,30 @@ This NEAR contract is designed to work with the Ethereum CrossChainFactory contr
 
 ## Testing
 
-The contract includes comprehensive unit and integration tests using `near-workspaces`.
+### Sandbox Tests (Local) - Recommended
+Run the complete test suite using NEAR sandbox environment:
 
-### Unit Tests (Fast)
 ```bash
-# Run basic unit tests
-cargo test --lib
+# Run all sandbox tests (fast and reliable)
+cargo test
+
+# Run specific test categories
+cargo test --lib                    # Unit tests only
+cargo test --test fusion_integration_tests  # Fusion+ integration tests
 
 # Run with output
-cargo test --lib -- --nocapture
+cargo test -- --nocapture
 ```
 
-### Integration Tests (Full Contract Deployment)
+### Testnet Deployment Tests (Live)
+Test the live deployed contract on NEAR testnet:
+
 ```bash
-# Run integration tests with near-workspaces
-cargo test --test integration_tests
-
-# Run specific integration test
-cargo test --test integration_tests test_full_cross_chain_swap_simulation
-
-# Run all tests (unit + integration)  
-npm run test:all
+# Run testnet deployment verification
+cargo test --test testnet_deployment_tests -- --nocapture
 ```
+
+**Note**: Testnet tests use direct RPC calls to `rpc.testnet.near.org` with built-in rate limiting (15-second delays) to respect NEAR's 60 calls/minute limit.
 
 ### Test Coverage
 

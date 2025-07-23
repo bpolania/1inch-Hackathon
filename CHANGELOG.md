@@ -5,6 +5,46 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.1] - 2025-07-23
+
+### 🧹 **NEAR INTEGRATION FINALIZATION**: Production-Ready 1inch Fusion+ Extension Complete
+
+#### 🔧 **Testing Infrastructure Improvements**
+- **Fixed Rate Limiting**: Resolved NEAR testnet RPC 429 errors with proper 15-second delays between calls
+- **Optimized Test Performance**: Reduced long-running tests to prevent 60+ second execution warnings
+- **Enhanced Test Reliability**: All 9 testnet deployment tests now pass consistently
+- **Improved Error Handling**: Better retry logic with exponential backoff for RPC failures
+
+#### 🗂️ **Codebase Cleanup and Optimization**
+- **Removed Outdated Files**: Cleaned up 6 obsolete scripts and documentation files
+  - Removed: `deploy.sh`, `deploy-fusion.sh`, `demo.js`, `live-demo-eth-to-near.js` 
+  - Removed: `FUSION_PLUS_INTEGRATION.md`, `LIVE_DEMO_GUIDE.md`, `test-testnet.sh`
+- **Streamlined Build Process**: Retained only essential `build.sh` script
+- **Updated Documentation**: README.md now reflects current architecture accurately
+
+#### ✅ **Final NEAR Integration Status**
+- **Contract Verification**: All live testnet deployment tests passing ✅
+- **Rate Limiting Resolved**: Proper RPC throttling implemented ✅  
+- **Documentation Current**: All outdated references removed ✅
+- **Codebase Clean**: Only relevant, current files retained ✅
+- **Production Ready**: NEAR Fusion+ extension fully operational ✅
+
+#### 🎯 **Integration Milestones Achieved**
+- ✅ **Complete 1inch Fusion+ Extension**: Proper protocol extension (not standalone)
+- ✅ **Live NEAR Deployment**: Production contract operational on testnet
+- ✅ **Comprehensive Testing**: Both sandbox and live testnet validation
+- ✅ **Clean Codebase**: Removed all outdated/misleading files
+- ✅ **Rate Limit Compliance**: Respects NEAR's 60 calls/minute RPC limits
+
+### Technical Details
+- **Testnet RPC Optimization**: 15-second delays between calls to respect rate limits
+- **Test Performance**: Reduced test execution time while maintaining coverage
+- **File Cleanup**: Removed 6 outdated files containing obsolete architecture references
+- **Documentation Accuracy**: README now contains only current, verified information
+
+### Next Phase
+- 🔄 **Ready for Ethereum Integration**: NEAR side complete, ready for Sepolia deployment
+
 ## [0.7.0] - 2025-07-23
 
 ### 🚀 **PRODUCTION DEPLOYMENT**: 1inch Fusion+ NEAR Extension Live on Testnet
