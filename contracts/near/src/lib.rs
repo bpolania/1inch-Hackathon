@@ -1,4 +1,4 @@
-use near_sdk::borsh::{BorshDeserialize, BorshSerialize};
+use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::collections::UnorderedMap;
 use near_sdk::json_types::{U128, U64};
 use near_sdk::serde::{Deserialize, Serialize};
@@ -6,22 +6,31 @@ use near_sdk::{
     env, near_bindgen, AccountId, NearToken, Promise,
     PanicOnDefault,
 };
+use schemars::JsonSchema;
 
-#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize, Clone)]
+#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize, Clone, JsonSchema)]
 #[serde(crate = "near_sdk::serde")]
 pub struct HTLCOrder {
     pub id: String,
+    #[schemars(with = "String")]
     pub maker: AccountId,
+    #[schemars(with = "Option<String>")]
     pub resolver: Option<AccountId>,
+    #[schemars(with = "Option<String>")]
     pub token_contract: Option<AccountId>, // None for NEAR native token
+    #[schemars(with = "String")]
     pub amount: U128,
     pub hashlock: String, // 32-byte hex string
+    #[schemars(with = "String")]
     pub timelock: U64,    // Block height
     pub destination_chain: String,
     pub destination_token: String,
+    #[schemars(with = "String")]
     pub destination_amount: U128,
     pub destination_address: String,
+    #[schemars(with = "String")]
     pub resolver_fee: U128,
+    #[schemars(with = "String")]
     pub safety_deposit: U128,
     pub is_claimed: bool,
     pub is_refunded: bool,
@@ -309,7 +318,7 @@ mod tests {
     fn test_create_order() {
         let mut context = get_context(accounts(1));
         testing_env!(context
-            .attached_deposit(NearToken::from_near(1)) // 1 NEAR
+            .attached_deposit(NearToken::from_near(1))
             .block_height(100)
             .build());
         
@@ -340,7 +349,7 @@ mod tests {
     fn test_create_order_insufficient_deposit() {
         let mut context = get_context(accounts(1));
         testing_env!(context
-            .attached_deposit(NearToken::from_millinear(50)) // 0.05 NEAR
+            .attached_deposit(NearToken::from_millinear(50))
             .block_height(100)
             .build());
         
@@ -409,7 +418,7 @@ mod tests {
         // Switch to resolver account
         let mut context = get_context(accounts(2));
         testing_env!(context
-            .attached_deposit(NearToken::from_millinear(90)) // 0.09 NEAR safety deposit (10% of 0.9 NEAR)
+            .attached_deposit(NearToken::from_millinear(90))
             .block_height(150)
             .build());
         

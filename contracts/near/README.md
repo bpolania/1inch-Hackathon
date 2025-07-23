@@ -71,7 +71,10 @@ cancel_order(order_id: String) -> Promise
 # Install dependencies
 cargo build
 
-# Build WASM contract
+# Build WASM contract with cargo-near (recommended)
+cargo near build
+
+# Alternative: Use build script
 ./build.sh
 ```
 
@@ -184,7 +187,7 @@ npm run test:all
 - ✅ Order matching authorization
 - ✅ View functions
 
-**Integration Tests (10 tests):**
+**Integration Tests (9 tests):**
 - ✅ Contract deployment & initialization
 - ✅ Resolver management workflow
 - ✅ HTLC order creation

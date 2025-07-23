@@ -3,10 +3,28 @@ use near_workspaces::types::NearToken;
 use serde_json::json;
 use sha2::{Digest, Sha256};
 
+// Helper function to get the compiled WASM
+async fn get_wasm() -> Result<Vec<u8>> {
+    let wasm_path = std::path::Path::new("target/near/cross_chain_htlc.wasm");
+    if wasm_path.exists() {
+        Ok(std::fs::read(wasm_path)?)
+    } else {
+        Ok(near_workspaces::compile_project("./").await?)
+    }
+}
+
 #[tokio::test]
 async fn test_contract_deployment_and_initialization() -> Result<()> {
     let worker = near_workspaces::sandbox().await?;
-    let wasm = near_workspaces::compile_project("./").await?;
+    
+    // Use the pre-compiled WASM from cargo near build
+    let wasm_path = std::path::Path::new("target/near/cross_chain_htlc.wasm");
+    let wasm = if wasm_path.exists() {
+        std::fs::read(wasm_path)?
+    } else {
+        // Fallback to compile_project if pre-compiled WASM doesn't exist
+        near_workspaces::compile_project("./").await?
+    };
 
     let contract = worker.dev_deploy(&wasm).await?;
 
@@ -31,13 +49,14 @@ async fn test_contract_deployment_and_initialization() -> Result<()> {
 #[tokio::test]
 async fn test_resolver_management() -> Result<()> {
     let worker = near_workspaces::sandbox().await?;
-    let wasm = near_workspaces::compile_project("./").await?;
+    let wasm = &get_wasm().await?;
 
     let contract = worker.dev_deploy(&wasm).await?;
     let resolver_account = worker.dev_create_account().await?;
 
     // Initialize contract
-    contract.call("new").transact().await?;
+    let outcome = contract.call("new").transact().await?;
+    assert!(outcome.is_success(), "Contract initialization failed: {:?}", outcome.into_result());
 
     // Add resolver
     let outcome = contract
@@ -71,13 +90,14 @@ async fn test_resolver_management() -> Result<()> {
 #[tokio::test]
 async fn test_create_htlc_order() -> Result<()> {
     let worker = near_workspaces::sandbox().await?;
-    let wasm = near_workspaces::compile_project("./").await?;
+    let wasm = &get_wasm().await?;
 
     let contract = worker.dev_deploy(&wasm).await?;
     let user_account = worker.dev_create_account().await?;
 
     // Initialize contract
-    contract.call("new").transact().await?;
+    let outcome = contract.call("new").transact().await?;
+    assert!(outcome.is_success(), "Contract initialization failed: {:?}", outcome.into_result());
 
     // Create HTLC order
     let hashlock = "a".repeat(64); // 32-byte hex string
@@ -90,7 +110,7 @@ async fn test_create_htlc_order() -> Result<()> {
         .args_json(json!({
             "order_id": order_id,
             "hashlock": hashlock,
-            "timelock": worker.view_block().await?.height() + 1000,
+            "timelock": (worker.view_block().await?.height() + 1000).to_string(),
             "destination_chain": "ethereum",
             "destination_token": "USDC",
             "destination_amount": "100000000", // 100 USDC
@@ -127,23 +147,25 @@ async fn test_create_htlc_order() -> Result<()> {
 #[tokio::test]
 async fn test_match_order_workflow() -> Result<()> {
     let worker = near_workspaces::sandbox().await?;
-    let wasm = near_workspaces::compile_project("./").await?;
+    let wasm = &get_wasm().await?;
 
     let contract = worker.dev_deploy(&wasm).await?;
     let user_account = worker.dev_create_account().await?;
     let resolver_account = worker.dev_create_account().await?;
 
     // Initialize contract
-    contract.call("new").transact().await?;
+    let outcome = contract.call("new").transact().await?;
+    assert!(outcome.is_success(), "Contract initialization failed: {:?}", outcome.into_result());
 
     // Add resolver
-    contract
+    let outcome = contract
         .call("add_resolver")
         .args_json(json!({
             "resolver": resolver_account.id()
         }))
         .transact()
         .await?;
+    assert!(outcome.is_success(), "Add resolver failed: {:?}", outcome.into_result());
 
     // Create order
     let order_id = "test-order-002";
@@ -151,12 +173,12 @@ async fn test_match_order_workflow() -> Result<()> {
     let resolver_fee = NearToken::from_millinear(100);
     let deposit = NearToken::from_near(1);
 
-    user_account
+    let outcome = user_account
         .call(contract.id(), "create_order")
         .args_json(json!({
             "order_id": order_id,
             "hashlock": hashlock,
-            "timelock": worker.view_block().await?.height() + 1000,
+            "timelock": (worker.view_block().await?.height() + 1000).to_string(),
             "destination_chain": "ethereum",
             "destination_token": "USDC",
             "destination_amount": "100000000",
@@ -166,6 +188,7 @@ async fn test_match_order_workflow() -> Result<()> {
         .deposit(deposit)
         .transact()
         .await?;
+    assert!(outcome.is_success(), "Create order failed: {:?}", outcome.into_result());
 
     // Match order with resolver
     let safety_deposit = NearToken::from_millinear(90); // 10% of 0.9 NEAR locked amount
@@ -201,23 +224,25 @@ async fn test_match_order_workflow() -> Result<()> {
 #[tokio::test]
 async fn test_claim_order_with_preimage() -> Result<()> {
     let worker = near_workspaces::sandbox().await?;
-    let wasm = near_workspaces::compile_project("./").await?;
+    let wasm = &get_wasm().await?;
 
     let contract = worker.dev_deploy(&wasm).await?;
     let user_account = worker.dev_create_account().await?;
     let resolver_account = worker.dev_create_account().await?;
 
     // Initialize contract
-    contract.call("new").transact().await?;
+    let outcome = contract.call("new").transact().await?;
+    assert!(outcome.is_success(), "Contract initialization failed: {:?}", outcome.into_result());
 
     // Add resolver
-    contract
+    let outcome = contract
         .call("add_resolver")
         .args_json(json!({
             "resolver": resolver_account.id()
         }))
         .transact()
         .await?;
+    assert!(outcome.is_success(), "Add resolver failed: {:?}", outcome.into_result());
 
     // Generate real hashlock and preimage for testing
     let preimage = "1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef";
@@ -232,12 +257,12 @@ async fn test_claim_order_with_preimage() -> Result<()> {
     let deposit = NearToken::from_near(1);
 
     // Create order
-    user_account
+    let outcome = user_account
         .call(contract.id(), "create_order")
         .args_json(json!({
             "order_id": order_id,
             "hashlock": hashlock,
-            "timelock": worker.view_block().await?.height() + 1000,
+            "timelock": (worker.view_block().await?.height() + 1000).to_string(),
             "destination_chain": "ethereum",
             "destination_token": "USDC",
             "destination_amount": "100000000",
@@ -247,10 +272,11 @@ async fn test_claim_order_with_preimage() -> Result<()> {
         .deposit(deposit)
         .transact()
         .await?;
+    assert!(outcome.is_success(), "Create order failed: {:?}", outcome.into_result());
 
     // Match order
     let safety_deposit = NearToken::from_millinear(90);
-    resolver_account
+    let outcome = resolver_account
         .call(contract.id(), "match_order")
         .args_json(json!({
             "order_id": order_id
@@ -258,6 +284,7 @@ async fn test_claim_order_with_preimage() -> Result<()> {
         .deposit(safety_deposit)
         .transact()
         .await?;
+    assert!(outcome.is_success(), "Match order failed: {:?}", outcome.into_result());
 
     // Get resolver balance before claim
     let resolver_balance_before = resolver_account.view_account().await?.balance;
@@ -298,13 +325,14 @@ async fn test_claim_order_with_preimage() -> Result<()> {
 #[tokio::test]
 async fn test_cancel_expired_order() -> Result<()> {
     let worker = near_workspaces::sandbox().await?;
-    let wasm = near_workspaces::compile_project("./").await?;
+    let wasm = &get_wasm().await?;
 
     let contract = worker.dev_deploy(&wasm).await?;
     let user_account = worker.dev_create_account().await?;
 
     // Initialize contract
-    contract.call("new").transact().await?;
+    let outcome = contract.call("new").transact().await?;
+    assert!(outcome.is_success(), "Contract initialization failed: {:?}", outcome.into_result());
 
     let order_id = "test-order-004";
     let hashlock = "c".repeat(64);
@@ -315,12 +343,12 @@ async fn test_cancel_expired_order() -> Result<()> {
     let current_block = worker.view_block().await?.height();
     let short_timelock = current_block + 5; // Very short timelock for testing
 
-    user_account
+    let outcome = user_account
         .call(contract.id(), "create_order")
         .args_json(json!({
             "order_id": order_id,
             "hashlock": hashlock,
-            "timelock": short_timelock,
+            "timelock": short_timelock.to_string(),
             "destination_chain": "ethereum",
             "destination_token": "USDC",
             "destination_amount": "100000000",
@@ -330,6 +358,7 @@ async fn test_cancel_expired_order() -> Result<()> {
         .deposit(deposit)
         .transact()
         .await?;
+    assert!(outcome.is_success(), "Create order failed: {:?}", outcome.into_result());
 
     // Fast forward blockchain to expire the order
     worker.fast_forward(10).await?;
@@ -371,14 +400,15 @@ async fn test_cancel_expired_order() -> Result<()> {
 #[tokio::test]
 async fn test_unauthorized_resolver_fails() -> Result<()> {
     let worker = near_workspaces::sandbox().await?;
-    let wasm = near_workspaces::compile_project("./").await?;
+    let wasm = &get_wasm().await?;
 
     let contract = worker.dev_deploy(&wasm).await?;
     let user_account = worker.dev_create_account().await?;
     let unauthorized_account = worker.dev_create_account().await?;
 
     // Initialize contract
-    contract.call("new").transact().await?;
+    let outcome = contract.call("new").transact().await?;
+    assert!(outcome.is_success(), "Contract initialization failed: {:?}", outcome.into_result());
 
     // Create order
     let order_id = "test-order-005";
@@ -386,12 +416,12 @@ async fn test_unauthorized_resolver_fails() -> Result<()> {
     let resolver_fee = NearToken::from_millinear(100);
     let deposit = NearToken::from_near(1);
 
-    user_account
+    let outcome = user_account
         .call(contract.id(), "create_order")
         .args_json(json!({
             "order_id": order_id,
             "hashlock": hashlock,
-            "timelock": worker.view_block().await?.height() + 1000,
+            "timelock": (worker.view_block().await?.height() + 1000).to_string(),
             "destination_chain": "ethereum",
             "destination_token": "USDC",
             "destination_amount": "100000000",
@@ -401,6 +431,7 @@ async fn test_unauthorized_resolver_fails() -> Result<()> {
         .deposit(deposit)
         .transact()
         .await?;
+    assert!(outcome.is_success(), "Create order failed: {:?}", outcome.into_result());
 
     // Try to match order with unauthorized account
     let outcome = unauthorized_account
@@ -426,23 +457,25 @@ async fn test_unauthorized_resolver_fails() -> Result<()> {
 #[tokio::test]
 async fn test_full_cross_chain_swap_simulation() -> Result<()> {
     let worker = near_workspaces::sandbox().await?;
-    let wasm = near_workspaces::compile_project("./").await?;
+    let wasm = &get_wasm().await?;
 
     let contract = worker.dev_deploy(&wasm).await?;
     let user_account = worker.dev_create_account().await?;
     let resolver_account = worker.dev_create_account().await?;
 
     // Initialize contract
-    contract.call("new").transact().await?;
+    let outcome = contract.call("new").transact().await?;
+    assert!(outcome.is_success(), "Contract initialization failed: {:?}", outcome.into_result());
 
     // Add resolver
-    contract
+    let outcome = contract
         .call("add_resolver")
         .args_json(json!({
             "resolver": resolver_account.id()
         }))
         .transact()
         .await?;
+    assert!(outcome.is_success(), "Add resolver failed: {:?}", outcome.into_result());
 
     println!("🔄 Starting full cross-chain swap simulation...");
 
@@ -465,7 +498,7 @@ async fn test_full_cross_chain_swap_simulation() -> Result<()> {
         .args_json(json!({
             "order_id": order_id,
             "hashlock": hashlock,
-            "timelock": worker.view_block().await?.height() + 1000,
+            "timelock": (worker.view_block().await?.height() + 1000).to_string(),
             "destination_chain": "ethereum-sepolia",
             "destination_token": "USDC", 
             "destination_amount": "1000000000", // 1000 USDC (6 decimals)
@@ -537,13 +570,14 @@ async fn test_full_cross_chain_swap_simulation() -> Result<()> {
 #[tokio::test] 
 async fn test_contract_event_logs() -> Result<()> {
     let worker = near_workspaces::sandbox().await?;
-    let wasm = near_workspaces::compile_project("./").await?;
+    let wasm = &get_wasm().await?;
 
     let contract = worker.dev_deploy(&wasm).await?;
     let user_account = worker.dev_create_account().await?;
 
     // Initialize contract
-    contract.call("new").transact().await?;
+    let outcome = contract.call("new").transact().await?;
+    assert!(outcome.is_success(), "Contract initialization failed: {:?}", outcome.into_result());
 
     // Create order and check logs
     let order_id = "test-order-logs";
@@ -556,7 +590,7 @@ async fn test_contract_event_logs() -> Result<()> {
         .args_json(json!({
             "order_id": order_id,
             "hashlock": hashlock,
-            "timelock": worker.view_block().await?.height() + 1000,
+            "timelock": (worker.view_block().await?.height() + 1000).to_string(),
             "destination_chain": "ethereum",
             "destination_token": "USDC",
             "destination_amount": "100000000",
