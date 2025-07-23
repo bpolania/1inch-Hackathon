@@ -9,7 +9,13 @@
     "test:integration": "cargo test --test integration_tests",
     "test:all": "cargo test && cargo test --test integration_tests",
     "deploy:testnet": "near deploy --wasmFile out/cross_chain_htlc.wasm --accountId YOUR_TESTNET_ACCOUNT.testnet",
-    "create-account": "near create-account cross-chain-htlc.YOUR_ACCOUNT.testnet --masterAccount YOUR_ACCOUNT.testnet --initialBalance 10"
+    "create-account": "near create-account cross-chain-htlc.YOUR_ACCOUNT.testnet --masterAccount YOUR_ACCOUNT.testnet --initialBalance 10",
+    "demo:eth-to-near": "node live-demo-eth-to-near.js",
+    "demo:near-to-eth": "node live-demo-near-to-eth.js"
+  },
+  "dependencies": {
+    "ethers": "^6.8.0",
+    "near-api-js": "^2.1.4"
   },
   "devDependencies": {
     "near-cli": "^3.4.2"
