@@ -209,6 +209,48 @@ npm run test:all
 - 📝 **Event log inspection** for monitoring integration
 - 🔐 **Cryptographic hash verification** with real preimages
 
+## Live Deployment Summary
+
+### NEAR
+
+🎉 **Production-Ready Deployment on NEAR Testnet**
+
+- **Contract Address**: [`cross-chain-htlc.demo.cuteharbor3573.testnet`](https://testnet.nearblocks.io/address/cross-chain-htlc.demo.cuteharbor3573.testnet)
+- **Owner**: `demo.cuteharbor3573.testnet` ✅
+- **Authorized Resolvers**: 1 ✅  
+- **Resolver Status**: `demo.cuteharbor3573.testnet` is authorized ✅
+
+#### Explorer Links
+- **Contract Explorer**: https://testnet.nearblocks.io/address/cross-chain-htlc.demo.cuteharbor3573.testnet  
+- **Deployment Transaction**: https://testnet.nearblocks.io/txns/A5rfk2VpiA7BGziM1hVnR663ebomDkieLmkMiuY9XB7K
+- **Initialization Transaction**: https://testnet.nearblocks.io/txns/2mXanqzhGd6MUwRSuJhFSSDrWkRTm8jLLMGcp8X9xH67
+
+#### Cross-Chain Integration
+- **NEAR Testnet**: `cross-chain-htlc.demo.cuteharbor3573.testnet`
+- **Ethereum Sepolia**: [`0x98c35dA70f839F1B7965b8b8BA17654Da11f4486`](https://sepolia.etherscan.io/address/0x98c35dA70f839F1B7965b8b8BA17654Da11f4486)
+- **Status**: Ready for cross-chain atomic swaps! 🚀
+
+#### Live Demo Commands
+```bash
+# View contract state
+near state cross-chain-htlc.demo.cuteharbor3573.testnet
+
+# Check resolver count
+near call cross-chain-htlc.demo.cuteharbor3573.testnet get_resolver_count --accountId demo.cuteharbor3573.testnet
+
+# Test order creation (requires NEAR deposit)
+near call cross-chain-htlc.demo.cuteharbor3573.testnet create_order '{
+  "order_id": "live-demo-001",
+  "hashlock": "...",
+  "timelock": "...",
+  "destination_chain": "ethereum-sepolia",
+  "destination_token": "USDC",
+  "destination_amount": "1000000",
+  "destination_address": "0x...",
+  "resolver_fee": "100000000000000000000000"
+}' --accountId demo.cuteharbor3573.testnet --deposit 1
+```
+
 ## Events
 
 The contract emits structured events for monitoring:

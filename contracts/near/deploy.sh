@@ -7,7 +7,7 @@ echo "🚀 NEAR Cross-Chain HTLC Deployment"
 echo "==================================="
 
 # Configuration
-ACCOUNT_ID="YOUR_ACCOUNT.testnet"
+ACCOUNT_ID="demo.cuteharbor3573.testnet"
 CONTRACT_NAME="cross-chain-htlc"
 FULL_CONTRACT_ID="$CONTRACT_NAME.$ACCOUNT_ID"
 
@@ -45,9 +45,7 @@ if near state "$FULL_CONTRACT_ID" &> /dev/null; then
     fi
 else
     echo "📝 Creating contract account..."
-    near create-account "$FULL_CONTRACT_ID" \\
-        --masterAccount "$ACCOUNT_ID" \\
-        --initialBalance 10
+    near create-account "$FULL_CONTRACT_ID" --masterAccount "$ACCOUNT_ID" --initialBalance 1
 fi
 
 # Deploy the contract
