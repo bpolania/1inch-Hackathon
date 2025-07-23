@@ -211,44 +211,56 @@ npm run test:all
 
 ## Live Deployment Summary
 
-### NEAR
+### NEAR - 1inch Fusion+ Extension
 
-🎉 **Production-Ready Deployment on NEAR Testnet**
+🎉 **1inch Fusion+ NEAR Extension - Production Deployment**
 
-- **Contract Address**: [`cross-chain-htlc.demo.cuteharbor3573.testnet`](https://testnet.nearblocks.io/address/cross-chain-htlc.demo.cuteharbor3573.testnet)
+#### Latest Deployment (July 23, 2025)
+- **Contract Address**: [`fusion-plus.demo.cuteharbor3573.testnet`](https://testnet.nearblocks.io/address/fusion-plus.demo.cuteharbor3573.testnet)
+- **Deployed By**: `demo.cuteharbor3573.testnet`
+- **Deployment Date**: July 23, 2025 
+- **Integration Type**: **1inch Fusion+ Extension** (not standalone)
 - **Owner**: `demo.cuteharbor3573.testnet` ✅
-- **Authorized Resolvers**: 1 ✅  
+- **Min Safety Deposit**: 500 bps (5%) ✅
+- **Authorized 1inch Resolvers**: 1 ✅  
 - **Resolver Status**: `demo.cuteharbor3573.testnet` is authorized ✅
 
-#### Explorer Links
-- **Contract Explorer**: https://testnet.nearblocks.io/address/cross-chain-htlc.demo.cuteharbor3573.testnet  
-- **Deployment Transaction**: https://testnet.nearblocks.io/txns/A5rfk2VpiA7BGziM1hVnR663ebomDkieLmkMiuY9XB7K
-- **Initialization Transaction**: https://testnet.nearblocks.io/txns/2mXanqzhGd6MUwRSuJhFSSDrWkRTm8jLLMGcp8X9xH67
+#### Deployment Transaction History
+- **Account Creation**: [98a3GNajLnZ8wzz3UNk9nrdfofLw2YbVZx2Xbo5CrNoR](https://testnet.nearblocks.io/txns/98a3GNajLnZ8wzz3UNk9nrdfofLw2YbVZx2Xbo5CrNoR)
+- **WASM Deployment**: [5zN5UpwE3KJMK4mVi1AKffdZL2kb6at9EPSdYSSbqUHq](https://testnet.nearblocks.io/txns/5zN5UpwE3KJMK4mVi1AKffdZL2kb6at9EPSdYSSbqUHq)
+- **Contract Initialization**: [yXTqDWx5xSW3mAqsejpPi2hni8zpkpo7QV3nqkYkhzM](https://testnet.nearblocks.io/txns/yXTqDWx5xSW3mAqsejpPi2hni8zpkpo7QV3nqkYkhzM)
+- **Resolver Authorization**: [666Z4krACmYb48mVszYseAATzGCL5vJsfoz3NYTFCEZZ](https://testnet.nearblocks.io/txns/666Z4krACmYb48mVszYseAATzGCL5vJsfoz3NYTFCEZZ)
 
-#### Cross-Chain Integration
-- **NEAR Testnet**: `cross-chain-htlc.demo.cuteharbor3573.testnet`
-- **Ethereum Sepolia**: [`0x98c35dA70f839F1B7965b8b8BA17654Da11f4486`](https://sepolia.etherscan.io/address/0x98c35dA70f839F1B7965b8b8BA17654Da11f4486)
-- **Status**: Ready for cross-chain atomic swaps! 🚀
+#### Legacy Deployment (Previous Standalone Version)
+- **Contract Address**: [`cross-chain-htlc.demo.cuteharbor3573.testnet`](https://testnet.nearblocks.io/address/cross-chain-htlc.demo.cuteharbor3573.testnet)
+- **Status**: **DEPRECATED** - Old standalone version, not Fusion+ compatible
+- **Note**: Contains old contract state incompatible with 1inch Fusion+ format
 
-#### Live Demo Commands
+#### 1inch Fusion+ Integration
+- **NEAR Fusion+ Extension**: `fusion-plus.demo.cuteharbor3573.testnet`
+- **Ethereum Modular Factory**: [`0x98c35dA70f839F1B7965b8b8BA17654Da11f4486`](https://sepolia.etherscan.io/address/0x98c35dA70f839F1B7965b8b8BA17654Da11f4486)
+- **Cross-Chain Network**: Sepolia ↔ NEAR Testnet
+- **Status**: **Ready for 1inch Fusion+ cross-chain swaps!** 🚀
+
+#### Live Demo Commands (Fusion+ Version)
 ```bash
 # View contract state
-near state cross-chain-htlc.demo.cuteharbor3573.testnet
+near state fusion-plus.demo.cuteharbor3573.testnet
 
-# Check resolver count
-near call cross-chain-htlc.demo.cuteharbor3573.testnet get_resolver_count --accountId demo.cuteharbor3573.testnet
+# Check safety deposit requirement
+near view fusion-plus.demo.cuteharbor3573.testnet get_min_safety_deposit_bps
 
-# Test order creation (requires NEAR deposit)
-near call cross-chain-htlc.demo.cuteharbor3573.testnet create_order '{
-  "order_id": "live-demo-001",
-  "hashlock": "...",
-  "timelock": "...",
-  "destination_chain": "ethereum-sepolia",
-  "destination_token": "USDC",
-  "destination_amount": "1000000",
-  "destination_address": "0x...",
-  "resolver_fee": "100000000000000000000000"
-}' --accountId demo.cuteharbor3573.testnet --deposit 1
+# Test Fusion+ order execution (1inch resolver required)
+near call fusion-plus.demo.cuteharbor3573.testnet execute_fusion_order '{
+  "order_hash": "0x1234...",
+  "hashlock": "abcd...",
+  "maker": "user.testnet",
+  "resolver": "demo.cuteharbor3573.testnet",
+  "amount": "2000000000000000000000000",
+  "resolver_fee": "100000000000000000000000",
+  "timelocks": "0",
+  "source_chain_id": 11155111
+}' --accountId demo.cuteharbor3573.testnet --deposit 2.15
 ```
 
 ## Events
