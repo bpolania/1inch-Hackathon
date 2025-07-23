@@ -1,4 +1,5 @@
-import { SwapIntent, FusionPlusIntent, OneInchImmutables } from '../types/intent';
+import { SwapIntent, FusionPlusIntent, OneInchImmutables, NearExecutionParams } from '../types/intent';
+import { ChainId, ChainType, CHAIN_INFO } from '../types/chains';
 import { keccak256, toUtf8Bytes } from 'ethers';
 
 // Timelock stage constants (from 1inch codebase)
@@ -115,6 +116,9 @@ function formatTokenForChain(address: string, chainId: number): string {
     } else if (chainId >= 30001 && chainId <= 30002) {
       // Cosmos
       return 'uatom'; // or appropriate denom
+    } else if (chainId >= 40001 && chainId <= 40002) {
+      // NEAR Protocol
+      return 'near'; // Native NEAR token identifier
     }
   }
   
@@ -182,4 +186,77 @@ export function validateTimelockStages(stages: number[]): boolean {
   if (stages[TimelockStage.DstPublicWithdrawal] >= stages[TimelockStage.DstCancellation]) return false;
   
   return true;
+}
+
+// NEAR-specific utility functions
+
+// Create NEAR execution parameters for Fusion+ orders
+export function createNearExecutionParams(
+  contractId: string,
+  intent: FusionPlusIntent,
+  hashlock: string
+): NearExecutionParams {
+  return {
+    contractId,
+    methodName: 'execute_fusion_order',
+    args: {
+      order_hash: intent.oneInchOrderHash,
+      hashlock,
+      amount: intent.destinationAmount,
+      maker: intent.destinationAddress,
+      resolver_fee: intent.resolverFeeAmount,
+      timelocks: intent.timelocks
+    },
+    attachedDeposit: intent.destinationAmount,
+    gas: '100000000000000' // 100 TGas
+  };
+}
+
+// Check if destination chain is NEAR
+export function isNearDestination(chainId: ChainId): boolean {
+  return chainId === ChainId.NEAR_MAINNET || chainId === ChainId.NEAR_TESTNET;
+}
+
+// Get NEAR chain type from destination chain
+export function getNearChainInfo(chainId: ChainId) {
+  if (!isNearDestination(chainId)) {
+    throw new Error('Chain is not NEAR');
+  }
+  return CHAIN_INFO[chainId];
+}
+
+// Convert NEAR amount to yoctoNEAR (24 decimals)
+export function toYoctoNear(nearAmount: string): string {
+  const amount = BigInt(nearAmount);
+  return (amount * BigInt(10 ** 24)).toString();
+}
+
+// Convert yoctoNEAR to NEAR
+export function fromYoctoNear(yoctoAmount: string): string {
+  const amount = BigInt(yoctoAmount);
+  return (amount / BigInt(10 ** 24)).toString();
+}
+
+// Create Fusion+ intent with NEAR destination
+export function createFusionPlusNearIntent(
+  intent: SwapIntent,
+  contractId: string,
+  oneInchOrderHash: string,
+  safetyDeposit: string,
+  timelockStages: number[]
+): FusionPlusIntent {
+  if (!isNearDestination(intent.destinationChain)) {
+    throw new Error('Destination chain must be NEAR');
+  }
+
+  const fusionIntent = toFusionPlusIntent(intent, oneInchOrderHash, safetyDeposit, timelockStages);
+  
+  // Add NEAR-specific parameters
+  fusionIntent.nearParams = createNearExecutionParams(
+    contractId,
+    fusionIntent,
+    intent.hashlock || ''
+  );
+
+  return fusionIntent;
 }
