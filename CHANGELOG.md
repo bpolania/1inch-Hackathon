@@ -5,6 +5,46 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2025-01-23
+
+### Added
+
+#### Live Onchain Demo System
+- 🎬 **ETH→NEAR Live Demo Script**: Production-ready atomic swap demonstration (`contracts/near/live-demo-eth-to-near.js`)
+  - Real testnet integration with Ethereum Sepolia and NEAR testnet
+  - Actual token transfers: 10 USDC → 2 NEAR atomic swap execution
+  - Complete workflow: Intent creation → Order matching → Atomic completion
+  - Explorer integration with transaction links for verification
+  - Comprehensive error handling and logging
+- 🌐 **Live Testnet Deployment**: Production deployment on NEAR testnet
+  - Contract address: `cross-chain-htlc.demo.cuteharbor3573.testnet`
+  - Fully operational with authorized resolvers
+  - Integration with existing Ethereum Sepolia factory at `0x98c35dA70f839F1B7965b8b8BA17654Da11f4486`
+- 📋 **Demo Infrastructure**: Complete setup and execution framework
+  - Environment configuration templates (`.env.example`)
+  - npm scripts for automated demo execution
+  - Dependencies: ethers.js 6.8.0, near-api-js 2.1.4
+  - Both automated and manual execution modes
+- 📖 **Live Demo Guide**: Comprehensive documentation (`LIVE_DEMO_GUIDE.md`)
+  - Step-by-step setup instructions
+  - Prerequisites and account requirements  
+  - Architecture diagrams and security model
+  - Troubleshooting guide and debug procedures
+  - **Bounty compliance verification**: Satisfies critical onchain demo requirement
+
+#### Bounty Requirement Compliance
+- ✅ **Onchain Token Transfers**: Real testnet execution with actual token movements
+- ✅ **Bidirectional Support**: Both ETH→NEAR and NEAR→ETH swap capabilities
+- ✅ **Hashlock/Timelock Preservation**: SHA-256 cryptographic coordination maintained
+- ✅ **Live Demonstration**: Ready for final bounty submission demo
+
+### Technical Implementation
+- **Cross-Chain Coordination**: Shared hashlock between Ethereum Sepolia and NEAR testnet
+- **Atomic Guarantees**: Either both chains complete or both can be cancelled
+- **Safety Mechanisms**: 10% resolver deposits and timeout protection
+- **Real Token Support**: USDC on Sepolia, native NEAR tokens
+- **Explorer Integration**: All transactions verifiable on block explorers
+
 ## [0.3.1] - 2025-01-23
 
 ### Fixed
