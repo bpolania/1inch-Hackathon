@@ -47,7 +47,7 @@ fi
 # Deploy the contract
 echo ""
 echo "📦 Deploying Fusion+ contract..."
-near deploy "$FULL_CONTRACT_ID" out/cross_chain_htlc.wasm
+near deploy "$FULL_CONTRACT_ID" target/near/fusion_plus_near.wasm
 
 # Initialize the contract
 echo ""

@@ -8,7 +8,7 @@ echo "Building contract with cargo-near..."
 mkdir -p target/near
 
 # Copy the compiled WASM to expected location
-if [ -f "target/near/cross_chain_htlc.wasm" ]; then
+if [ -f "target/near/fusion_plus_near.wasm" ]; then
     echo "Using existing cargo-near compiled WASM"
 else
     echo "WARNING: cargo near build must be run manually first"
@@ -18,7 +18,7 @@ fi
 
 # Copy the wasm file to out directory
 mkdir -p out
-cp target/near/cross_chain_htlc.wasm out/cross_chain_htlc.wasm
+cp target/near/fusion_plus_near.wasm out/cross_chain_htlc.wasm
 
-echo "NEAR contract built successfully!"
-echo "Contract WASM: out/cross_chain_htlc.wasm"
+echo "Fusion+ NEAR contract built successfully!"
+echo "Contract WASM: out/cross_chain_htlc.wasm (copied from fusion_plus_near.wasm)"

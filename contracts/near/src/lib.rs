@@ -1,6 +1,6 @@
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::collections::UnorderedMap;
-use near_sdk::json_types::{U128, U64};
+use near_sdk::json_types::U128;
 use near_sdk::serde::{Deserialize, Serialize};
 use near_sdk::{
     env, near_bindgen, AccountId, NearToken, Promise,
@@ -43,7 +43,7 @@ pub struct FusionPlusOrder {
     pub source_chain_id: u32,
 }
 
-#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize, Clone, JsonSchema, PartialEq)]
+#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize, Clone, JsonSchema, PartialEq, Debug)]
 #[serde(crate = "near_sdk::serde")]
 pub enum OrderStatus {
     Pending,
@@ -183,7 +183,7 @@ impl FusionPlusNear {
 
     /// Claim Fusion+ order with preimage revelation
     /// Completes the atomic swap by revealing the secret
-    pub fn claim_fusion_order(&mut self, order_hash: String, preimage: String) -> Promise {
+    pub fn claim_fusion_order(&mut self, order_hash: String, preimage: String) {
         let mut order = self.orders.get(&order_hash).expect("Order not found");
         
         // Only resolver can claim
@@ -219,18 +219,47 @@ impl FusionPlusNear {
                 preimage: preimage.clone(),
             }).unwrap()
         ));
+    }
 
+    /// Transfer tokens to maker after successful claim
+    /// Separate function to avoid promise issues
+    pub fn transfer_to_maker(&self, order_hash: String) -> Promise {
+        let order = self.orders.get(&order_hash).expect("Order not found");
+        
+        // Only resolver can trigger transfer
+        assert_eq!(
+            env::predecessor_account_id(), 
+            order.resolver, 
+            "Only resolver can transfer"
+        );
+        
+        // Order must be claimed first
+        assert_eq!(order.status, OrderStatus::Claimed, "Order not claimed yet");
+        
         // Transfer to maker (user receives their tokens)
-        let maker_transfer = Promise::new(order.maker.clone())
-            .transfer(NearToken::from_yoctonear(order.amount.0));
+        Promise::new(order.maker.clone())
+            .transfer(NearToken::from_yoctonear(order.amount.0))
+    }
 
-        // Transfer resolver fee + return safety deposit to resolver
+    /// Claim resolver fee and safety deposit return
+    /// Called by resolver after successful claim
+    pub fn claim_resolver_payment(&mut self, order_hash: String) -> Promise {
+        let order = self.orders.get(&order_hash).expect("Order not found");
+        
+        // Only resolver can claim their payment
+        assert_eq!(
+            env::predecessor_account_id(), 
+            order.resolver, 
+            "Only resolver can claim payment"
+        );
+        
+        // Order must be claimed first
+        assert_eq!(order.status, OrderStatus::Claimed, "Order not claimed yet");
+        
+        // Transfer resolver fee + return safety deposit to resolver  
         let resolver_amount = order.resolver_fee.0 + order.safety_deposit.0;
-        let resolver_transfer = Promise::new(order.resolver.clone())
-            .transfer(NearToken::from_yoctonear(resolver_amount));
-
-        // Chain promises
-        maker_transfer.and(resolver_transfer)
+        Promise::new(order.resolver.clone())
+            .transfer(NearToken::from_yoctonear(resolver_amount))
     }
 
     /// Cancel expired Fusion+ order
@@ -329,7 +358,7 @@ mod tests {
 
     #[test]
     fn test_execute_fusion_order() {
-        let mut context = get_context(accounts(1));
+        let context = get_context(accounts(1));
         testing_env!(context.build());
         
         let mut contract = FusionPlusNear::new(500);
@@ -361,5 +390,216 @@ mod tests {
         assert_eq!(order.maker, accounts(3));
         assert_eq!(order.resolver, accounts(2));
         assert_eq!(order.status, OrderStatus::Matched);
+    }
+
+    #[test]
+    #[should_panic(expected = "Not a 1inch authorized resolver")]
+    fn test_execute_fusion_order_unauthorized() {
+        let context = get_context(accounts(1));
+        testing_env!(context.build());
+        
+        let mut contract = FusionPlusNear::new(500);
+        
+        // Don't add resolver - should fail
+        let mut context = get_context(accounts(2));
+        testing_env!(context
+            .attached_deposit(NearToken::from_near(2))
+            .build());
+        
+        contract.execute_fusion_order(
+            "0xunauthorized".to_string(),
+            "a".repeat(64),
+            accounts(3),
+            accounts(2),
+            U128(NearToken::from_near(1).as_yoctonear()),
+            U128(NearToken::from_millinear(100).as_yoctonear()),
+            U128(0),
+            11155111,
+        );
+    }
+
+    #[test]
+    #[should_panic(expected = "Order already exists")]
+    fn test_duplicate_order_fails() {
+        let context = get_context(accounts(1));
+        testing_env!(context.build());
+        
+        let mut contract = FusionPlusNear::new(500);
+        contract.add_resolver(accounts(2));
+        
+        let mut context = get_context(accounts(2));
+        let deposit = NearToken::from_near(2);
+        testing_env!(context
+            .attached_deposit(deposit)
+            .build());
+        
+        // First order succeeds
+        contract.execute_fusion_order(
+            "0xduplicate".to_string(),
+            "a".repeat(64),
+            accounts(3),
+            accounts(2),
+            U128(NearToken::from_near(1).as_yoctonear()),
+            U128(NearToken::from_millinear(100).as_yoctonear()),
+            U128(0),
+            11155111,
+        );
+        
+        // Second order with same hash should fail
+        contract.execute_fusion_order(
+            "0xduplicate".to_string(),
+            "b".repeat(64),
+            accounts(3),
+            accounts(2),
+            U128(NearToken::from_near(1).as_yoctonear()),
+            U128(NearToken::from_millinear(100).as_yoctonear()),
+            U128(0),
+            11155111,
+        );
+    }
+
+    #[test]
+    #[should_panic(expected = "Invalid hashlock format")]
+    fn test_invalid_hashlock_format() {
+        let context = get_context(accounts(1));
+        testing_env!(context.build());
+        
+        let mut contract = FusionPlusNear::new(500);
+        contract.add_resolver(accounts(2));
+        
+        let mut context = get_context(accounts(2));
+        testing_env!(context
+            .attached_deposit(NearToken::from_near(2))
+            .build());
+        
+        contract.execute_fusion_order(
+            "0xinvalidhash".to_string(),
+            "tooshort".to_string(), // Invalid hashlock
+            accounts(3),
+            accounts(2),
+            U128(NearToken::from_near(1).as_yoctonear()),
+            U128(NearToken::from_millinear(100).as_yoctonear()),
+            U128(0),
+            11155111,
+        );
+    }
+
+    #[test]
+    #[should_panic(expected = "Insufficient deposit")]
+    fn test_insufficient_deposit() {
+        let context = get_context(accounts(1));
+        testing_env!(context.build());
+        
+        let mut contract = FusionPlusNear::new(500);
+        contract.add_resolver(accounts(2));
+        
+        let mut context = get_context(accounts(2));
+        testing_env!(context
+            .attached_deposit(NearToken::from_millinear(500)) // Too small
+            .build());
+        
+        contract.execute_fusion_order(
+            "0xinsufficient".to_string(),
+            "a".repeat(64),
+            accounts(3),
+            accounts(2),
+            U128(NearToken::from_near(1).as_yoctonear()),
+            U128(NearToken::from_millinear(100).as_yoctonear()),
+            U128(0),
+            11155111,
+        );
+    }
+
+    #[test]
+    #[should_panic(expected = "Insufficient safety deposit")]
+    fn test_insufficient_safety_deposit() {
+        let context = get_context(accounts(1));
+        testing_env!(context.build());
+        
+        let mut contract = FusionPlusNear::new(500); // 5% safety deposit
+        contract.add_resolver(accounts(2));
+        
+        let mut context = get_context(accounts(2));
+        // Enough for amount + fee but not safety deposit
+        let deposit = NearToken::from_near(1).as_yoctonear() + 
+                     NearToken::from_millinear(100).as_yoctonear();
+        testing_env!(context
+            .attached_deposit(NearToken::from_yoctonear(deposit))
+            .build());
+        
+        contract.execute_fusion_order(
+            "0xnosafety".to_string(),
+            "a".repeat(64),
+            accounts(3),
+            accounts(2),
+            U128(NearToken::from_near(1).as_yoctonear()),
+            U128(NearToken::from_millinear(100).as_yoctonear()),
+            U128(0),
+            11155111,
+        );
+    }
+
+    #[test]
+    fn test_remove_resolver() {
+        let context = get_context(accounts(1));
+        testing_env!(context.build());
+        
+        let mut contract = FusionPlusNear::new(500);
+        
+        // Add then remove resolver
+        contract.add_resolver(accounts(2));
+        assert!(contract.is_authorized_resolver(accounts(2)));
+        
+        contract.remove_resolver(accounts(2));
+        assert!(!contract.is_authorized_resolver(accounts(2)));
+    }
+
+    #[test]
+    #[should_panic(expected = "Only owner")]
+    fn test_add_resolver_not_owner() {
+        let context = get_context(accounts(1));
+        testing_env!(context.build());
+        
+        let mut contract = FusionPlusNear::new(500);
+        
+        // Switch to non-owner
+        let context = get_context(accounts(2));
+        testing_env!(context.build());
+        
+        contract.add_resolver(accounts(3));
+    }
+
+    #[test]
+    fn test_get_order() {
+        let context = get_context(accounts(1));
+        testing_env!(context.build());
+        
+        let mut contract = FusionPlusNear::new(500);
+        contract.add_resolver(accounts(2));
+        
+        // Check non-existent order
+        assert!(contract.get_order("nonexistent".to_string()).is_none());
+        
+        // Create order
+        let mut context = get_context(accounts(2));
+        testing_env!(context
+            .attached_deposit(NearToken::from_near(2))
+            .build());
+        
+        contract.execute_fusion_order(
+            "0xgetorder".to_string(),
+            "a".repeat(64),
+            accounts(3),
+            accounts(2),
+            U128(NearToken::from_near(1).as_yoctonear()),
+            U128(NearToken::from_millinear(100).as_yoctonear()),
+            U128(0),
+            11155111,
+        );
+        
+        // Verify order exists
+        let order = contract.get_order("0xgetorder".to_string()).unwrap();
+        assert_eq!(order.order_hash, "0xgetorder");
+        assert_eq!(order.source_chain_id, 11155111);
     }
 }

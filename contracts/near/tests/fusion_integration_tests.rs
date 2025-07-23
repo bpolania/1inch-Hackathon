@@ -8,7 +8,7 @@ use sha2::{Digest, Sha256};
 
 // Helper function to get the compiled WASM
 async fn get_wasm() -> Result<Vec<u8>> {
-    let wasm_path = std::path::Path::new("target/near/cross_chain_htlc.wasm");
+    let wasm_path = std::path::Path::new("target/near/fusion_plus_near.wasm");
     if wasm_path.exists() {
         Ok(std::fs::read(wasm_path)?)
     } else {
@@ -32,7 +32,10 @@ async fn test_fusion_contract_deployment() -> Result<()> {
         .transact()
         .await?;
 
-    assert!(outcome.is_success());
+    if !outcome.is_success() {
+        println!("❌ Contract initialization failed: {:?}", outcome.into_result());
+        panic!("Contract initialization failed");
+    }
 
     // Verify initialization
     let owner: String = contract.view("get_owner").await?.json()?;
@@ -141,7 +144,10 @@ async fn test_execute_fusion_order() -> Result<()> {
         .transact()
         .await?;
 
-    assert!(outcome.is_success());
+    if !outcome.is_success() {
+        println!("❌ Execute fusion order failed: {:?}", outcome.into_result());
+        panic!("Execute fusion order failed");
+    }
 
     // Verify order was created
     let order: Option<serde_json::Value> = contract
@@ -237,7 +243,32 @@ async fn test_claim_fusion_order_with_preimage() -> Result<()> {
         .transact()
         .await?;
 
-    assert!(outcome.is_success());
+    if !outcome.is_success() {
+        println!("❌ Claim fusion order failed: {:?}", outcome.into_result());
+        panic!("Claim fusion order failed");
+    }
+
+    // Transfer to maker
+    let transfer_outcome = resolver_account
+        .call(contract.id(), "transfer_to_maker")
+        .args_json(json!({
+            "order_hash": order_hash
+        }))
+        .transact()
+        .await?;
+
+    assert!(transfer_outcome.is_success());
+
+    // Claim resolver payment
+    let payment_outcome = resolver_account
+        .call(contract.id(), "claim_resolver_payment")
+        .args_json(json!({
+            "order_hash": order_hash
+        }))
+        .transact()
+        .await?;
+
+    assert!(payment_outcome.is_success());
 
     // Verify order was claimed
     let order: serde_json::Value = contract
@@ -348,7 +379,7 @@ async fn test_full_fusion_plus_integration() -> Result<()> {
     let hash_result = hasher.finalize();
     let hashlock = hex::encode(hash_result);
 
-    let order_hash = "0xfusion" + &hex::encode(&hash_result[0..16]);
+    let order_hash = format!("0xfusion{}", hex::encode(&hash_result[0..16]));
     let swap_amount = NearToken::from_near(5);
     let resolver_fee = NearToken::from_millinear(250);
     let safety_deposit = NearToken::from_millinear(250); // 5%
@@ -386,6 +417,30 @@ async fn test_full_fusion_plus_integration() -> Result<()> {
         .await?;
 
     assert!(claim_outcome.is_success());
+
+    // Step 3: Transfer to maker
+    println!("💸 Transferring tokens to maker...");
+    let transfer_outcome = resolver_account
+        .call(contract.id(), "transfer_to_maker")
+        .args_json(json!({
+            "order_hash": order_hash
+        }))
+        .transact()
+        .await?;
+
+    assert!(transfer_outcome.is_success());
+
+    // Step 4: Resolver claims their payment
+    println!("💰 Resolver claiming payment...");
+    let payment_outcome = resolver_account
+        .call(contract.id(), "claim_resolver_payment")
+        .args_json(json!({
+            "order_hash": order_hash
+        }))
+        .transact()
+        .await?;
+
+    assert!(payment_outcome.is_success());
     
     // Verify final state
     let order: serde_json::Value = contract
