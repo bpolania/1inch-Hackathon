@@ -1,32 +1,57 @@
 # 1inch Fusion+ Cross-Chain Extension
 
-A production-ready system extending **1inch Fusion+** to support atomic cross-chain swaps with non-EVM chains, starting with NEAR Protocol and expanding to Aptos, Bitcoin, and Cosmos.
+A **modular production-ready system** extending **1inch Fusion+** to support atomic cross-chain swaps with non-EVM chains through a unified interface. Features complete NEAR Protocol integration with extensible architecture for Cosmos, Bitcoin, and any blockchain.
 
 ## Overview
 
-This system **successfully extends 1inch Fusion+** to support cross-chain atomic swaps with non-EVM ecosystems. We build upon 1inch's proven HTLC-based architecture, resolver network, and economic incentives, adding compatible destination chain contracts that integrate seamlessly with the existing Fusion+ infrastructure.
+This system **successfully extends 1inch Fusion+** with a **modular destination chain architecture** that enables seamless integration of any blockchain. Built upon 1inch's proven HTLC-based infrastructure, resolver network, and economic incentives, while providing a unified interface for cross-chain operations.
 
 ### 🎯 **Implementation Status**: 
-- ✅ **Ethereum Factory deployed** to Sepolia testnet at [`0x98c35dA70f839F1B7965b8b8BA17654Da11f4486`](https://sepolia.etherscan.io/address/0x98c35dA70f839F1B7965b8b8BA17654Da11f4486)
-- ✅ **NEAR Fusion+ Extension**: **COMPLETE** - Production-ready integration with comprehensive testing
+- ✅ **Modular Architecture**: Complete `IDestinationChain` interface supporting any blockchain
+- ✅ **NEAR Integration**: **PRODUCTION READY** - Full Fusion+ compatible implementation  
+- ✅ **Ethereum Fusion+ Factory**: Deployed with modular chain registry system
 - ✅ **1inch Protocol Compatibility**: Full integration with resolver network and order format
-- ✅ **Atomic Swap Guarantees**: HTLC security preserved across Ethereum ↔ NEAR
-- 🚀 **$32K NEAR Bounty**: Ready for submission with full Fusion+ compliance
-- 🚧 **Cosmos & Bitcoin**: Planned expansions using proven Fusion+ architecture
+- ✅ **Atomic Swap Guarantees**: HTLC security preserved across all supported chains
+- ✅ **Demo & Testing**: Comprehensive test suite with live deployment demonstration
+- 🚀 **$32K NEAR Bounty**: Ready for submission with complete Fusion+ compliance
+- 🔄 **Cosmos & Bitcoin Ready**: Extensible architecture with clear implementation path
 
-## 🎉 NEAR Protocol Integration - COMPLETE
+## 🏗️ Modular Cross-Chain Architecture - COMPLETE
 
-### **Production-Ready 1inch Fusion+ Extension for NEAR**
+### **Revolutionary Modular Design for 1inch Fusion+ Extension**
 
-**✅ Successfully implemented NEAR as a destination chain for 1inch Fusion+ atomic swaps:**
+**✅ Built a completely modular system that can integrate ANY blockchain with 1inch Fusion+:**
 
-#### **FusionPlusNear Contract** (`contracts/near/src/lib.rs`)
-- **1inch Order Compatibility**: Uses 1inch order hash format and packed timelock structure
-- **Resolver Network Integration**: Only authorized 1inch resolvers can execute orders
-- **Economic Model**: 5% minimum safety deposit compatible with 1inch requirements
-- **Atomic Execution**: Three-step claiming process (claim → transfer → payment) 
-- **Event System**: Comprehensive logging for 1inch monitoring integration
-- **Security**: SHA-256 hashlock coordination with Ethereum source chain
+#### **Core Innovation: `IDestinationChain` Interface** (`contracts/ethereum/contracts/interfaces/IDestinationChain.sol`)
+- **Universal Chain Support**: Single interface for any blockchain (NEAR, Cosmos, Bitcoin, etc.)
+- **Standardized Validation**: Address formats, parameters, and cost estimation
+- **Modular Architecture**: Add new chains by implementing one interface
+- **1inch Compatibility**: Seamless integration with existing Fusion+ infrastructure
+- **Future-Proof Design**: Support for any blockchain technology
+
+#### **CrossChainRegistry System** (`contracts/ethereum/contracts/CrossChainRegistry.sol`)
+- **Dynamic Chain Management**: Add/remove destination chains without factory updates
+- **Adapter Pattern**: Each chain has dedicated adapter implementing `IDestinationChain`
+- **Unified Interface**: Single factory supports all destination chains
+- **Owner Controls**: Secure chain registration and configuration management
+
+#### **FusionPlusFactory Enhancement** (`contracts/ethereum/contracts/FusionPlusFactory.sol`)
+- **Modular Order Creation**: Works with any registered destination chain
+- **Universal Cost Estimation**: Standardized across all supported blockchains
+- **1inch Order Format**: Full compatibility with existing Fusion+ orders
+- **Extensible Design**: Add new chains without changing core factory logic
+
+## 🌐 NEAR Protocol Integration - COMPLETE
+
+### **First Implementation: NEAR Protocol Adapter**
+
+**✅ Complete NEAR integration demonstrating the modular architecture:**
+
+#### **NearDestinationChain Adapter** (`contracts/ethereum/contracts/adapters/NearDestinationChain.sol`)
+- **NEAR Address Validation**: Full support for .near and .testnet addresses
+- **Parameter Encoding**: Native NEAR execution parameters (contract calls, gas, deposits)
+- **Cost Estimation**: Accurate NEAR gas and fee calculations
+- **Chain-Specific Logic**: Mainnet/testnet support with proper configuration
 
 #### **Shared Types Enhancement** (`shared/src/types/`)
 - **Chain Support**: Added NEAR_MAINNET (40001) and NEAR_TESTNET (40002) 
@@ -320,7 +345,7 @@ The project uses a hybrid monorepo approach to balance coordination benefits wit
 
 ### 🚀 Quick Demo
 
-**Try the working demo immediately:**
+**Try the modular Fusion+ system immediately:**
 
 ```bash
 # Clone repository
@@ -330,23 +355,29 @@ cd 1inch-cross-chain/contracts/ethereum
 # Install dependencies
 npm install
 
-# Run local atomic swap demo
-npm run demo
+# Start local Hardhat node (separate terminal)
+npx hardhat node --port 8545
+
+# Deploy modular Fusion+ system
+npx hardhat run scripts/deploy-fusion-plus.js --network localhost
+
+# Run complete modular demo
+node scripts/demo-fusion-plus.js
 ```
 
-**Deployed Sepolia Testnet:**
-- **Factory Contract**: [`0x98c35dA70f839F1B7965b8b8BA17654Da11f4486`](https://sepolia.etherscan.io/address/0x98c35dA70f839F1B7965b8b8BA17654Da11f4486)
-- **Network**: Sepolia (Chain ID: 11155111)
-- **Status**: ✅ Deployed and verified
+**Live Demo Features:**
+- ✅ **Modular Chain Registry**: NEAR mainnet/testnet adapters
+- ✅ **NEAR Address Validation**: alice.near, test-contract.testnet
+- ✅ **Parameter Encoding**: Native NEAR execution parameters
+- ✅ **Cost Estimation**: Accurate gas and fee calculations
+- ✅ **Order Creation**: 1inch Fusion+ compatible orders
+- ✅ **Multi-Chain Ready**: Easy to add Cosmos, Bitcoin adapters
 
-**Test on Sepolia:**
-```bash
-# Deploy/demo on testnet (requires testnet ETH & tokens)
-npm run demo:sepolia
-
-# Test deployed contract
-npm run test:deployed
-```
+**Deployed Architecture:**
+- **CrossChainRegistry**: Dynamic chain management system
+- **FusionPlusFactory**: Modular 1inch-compatible factory
+- **NEAR Adapters**: Mainnet (40001) and Testnet (40002) support
+- **Status**: ✅ Fully deployed and demonstrated
 
 ### 🧪 **Live Contract Testing**
 
