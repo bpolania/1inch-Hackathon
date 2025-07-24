@@ -593,6 +593,146 @@ struct Immutables {
 - **Time-bounded Security**: Multi-stage timelocks prevent griefing attacks
 - **Secret Distribution**: Off-chain coordination with on-chain verification
 
+## 🔍 TRUE 1inch Fusion+ Extension Architecture
+
+### ✅ What 1inch Fusion+ Actually Is
+
+Based on my research, here's the real architecture:
+
+#### Core Components:
+1. **Limit Order Protocol V4** - Base order system with extensible design
+2. **Settlement Contract** - Executes order fills with extensions  
+3. **Resolver System** - Third-party applications that fill orders
+4. **Extension Mechanism** - Uses order `salt` field for chain-specific data
+
+#### Order Structure:
+```solidity
+struct Order {
+    uint256 salt;           // 96 bits order salt + 160 bits extension hash
+    address maker;          // Order creator
+    address receiver;       // Asset receiver
+    address makerAsset;     // Source token
+    address takerAsset;     // Destination token  
+    uint256 makingAmount;   // Source amount
+    uint256 takingAmount;   // Destination amount
+    MakerTraits makerTraits; // Order flags/options
+}
+```
+
+#### Key Interfaces:
+```solidity
+interface ITakerInteraction {
+    function takerInteraction(
+        Order calldata order,
+        bytes calldata extension,
+        bytes32 orderHash,
+        address taker,
+        uint256 makingAmount,
+        uint256 takingAmount,
+        uint256 remainingMakingAmount,
+        bytes calldata extraData
+    ) external;
+}
+```
+
+### 🎯 How to Build a TRUE NEAR Extension
+
+#### 1. Extension Architecture Pattern:
+- **Don't replace** 1inch contracts - **extend** them
+- Use the **160-bit extension hash** in order `salt` for NEAR parameters
+- Implement **ITakerInteraction** for NEAR-specific resolver logic
+- Follow the **EscrowSrc/EscrowDst** pattern for cross-chain atomicity
+
+#### 2. NEAR-Specific Components Needed:
+```solidity
+// NEAR Extension Resolver
+contract NearFusionResolver is ITakerInteraction {
+    IOrderMixin private immutable FUSION_SETTLEMENT;
+    
+    struct NearExtension {
+        string nearAccountId;      // user.near
+        string nearChainId;        // "mainnet" or "testnet"  
+        string nearContract;       // token contract
+        uint256 lockupPeriod;      // Cross-chain timing
+        bytes32 bridgeParams;      // Rainbow Bridge data
+    }
+    
+    function takerInteraction(...) external override {
+        // Handle NEAR-specific order execution
+        NearExtension memory nearExt = decodeNearExtension(extension);
+        // Process NEAR cross-chain logic
+    }
+}
+```
+
+#### 3. Cross-Chain Escrow Pattern:
+```solidity
+// Source chain (Ethereum) escrow
+contract NearEscrowSrc {
+    function lockTokens(Order calldata order, NearExtension calldata nearExt) external;
+    function unlock(bytes32 nearTxProof) external; // With NEAR tx proof
+}
+
+// NEAR chain escrow  
+contract NearEscrowDst {
+    function lock_near_tokens(&mut self, order_hash: String, amount: U128);
+    fn unlock_with_ethereum_proof(&mut self, eth_tx_proof: String);
+}
+```
+
+### 🚨 Critical Issues with Our Current Implementation
+
+#### What We Built (Incorrect):
+- ❌ **Parallel System**: Built our own factory/registry instead of extending 1inch
+- ❌ **No Integration**: Doesn't use actual 1inch order format or settlement
+- ❌ **Custom Architecture**: Created new interfaces instead of implementing 1inch's
+
+#### What We SHOULD Build (Correct):
+- ✅ **Extension Only**: Add NEAR support to existing 1inch orders
+- ✅ **Use 1inch Contracts**: Import and extend their Settlement contract
+- ✅ **ITakerInteraction**: Implement their resolver interface
+- ✅ **Extension Hash**: Use their 160-bit extension mechanism for NEAR params
+
+### 📋 Action Plan to Fix This
+
+To make this a TRUE Fusion+ extension:
+
+#### 1. Install 1inch Contracts:
+```bash
+npm install @1inch/limit-order-protocol-contract
+```
+
+#### 2. Extend Their System:
+```solidity
+import "@1inch/limit-order-protocol-contract/contracts/interfaces/IOrderMixin.sol";
+
+contract NearFusionExtension is ITakerInteraction {
+    IOrderMixin private immutable LIMIT_ORDER_PROTOCOL;
+    // Add NEAR support to existing 1inch flow
+}
+```
+
+#### 3. Use Their Order Format:
+- Encode NEAR parameters in the 160-bit extension hash
+- Create orders using their order structure
+- Submit to their settlement contract
+
+#### 4. Build Proper Resolver:
+- Implement ITakerInteraction for NEAR handling
+- Use EscrowSrc/EscrowDst pattern
+- Integrate with Rainbow Bridge for proofs
+
+### 🤔 The Question:
+
+Our current implementation is sophisticated but architecturally incorrect for the bounty. We built a "Fusion+-inspired" system instead of a true "Fusion+ extension".
+
+**Should we:**
+1. **Refactor completely** to be a true 1inch extension (significant work)
+2. **Present current work** as-is (may not qualify for bounty)
+3. **Build a minimal true extension** as proof-of-concept
+
+What's your preference? The refactor would take significant time but would properly qualify for the bounty requirements.
+
 ## Contributing
 
 (Contribution guidelines to be added)

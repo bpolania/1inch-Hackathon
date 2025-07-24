@@ -5,6 +5,38 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.0] - 2025-07-24
+
+### 🔍 **ARCHITECTURAL REALIZATION**: Understanding True 1inch Fusion+ Extension Requirements
+
+#### 🎯 **Critical Discovery**
+- **Research Completed**: Deep analysis of actual 1inch Fusion+ architecture and contracts
+- **Extension Mechanism**: Discovered 160-bit extension hash in order `salt` field for chain-specific data
+- **ITakerInteraction Interface**: Identified key interface that resolvers must implement for custom logic
+- **Limit Order Protocol V4**: Found the base extensible order system that Fusion+ builds upon
+
+#### 📚 **Documentation of True Architecture**
+- **Added Comprehensive Section**: New "TRUE 1inch Fusion+ Extension Architecture" in README
+- **Order Structure Analysis**: Documented actual 1inch order format and key interfaces
+- **Extension Pattern**: Outlined proper way to extend Fusion+ without replacing core contracts
+- **NEAR Integration Blueprint**: Provided concrete code examples for proper NEAR extension
+
+#### 🚨 **Current Implementation Assessment**
+- **Architectural Gap Identified**: Current implementation is "Fusion+-inspired" not true extension
+- **Parallel System Issue**: Built separate factory/registry instead of extending 1inch contracts
+- **Integration Missing**: No use of actual 1inch order format or settlement contracts
+- **Decision Point**: Documented options for refactoring vs. presenting current work
+
+#### 🧹 **Housekeeping**
+- **Removed Outdated Docs**: Deleted SEPOLIA-DEPLOYMENT.md and LIVE_DEMO_GUIDE.md (based on incorrect architecture)
+- **Updated README**: Added comprehensive analysis of true Fusion+ requirements
+- **Test Coverage**: Maintained 100% pass rate (106/106 tests) for current implementation
+
+#### 🤔 **Next Steps Decision Required**
+- **Option 1**: Refactor completely to true 1inch extension (significant work, proper bounty qualification)
+- **Option 2**: Present current sophisticated work as-is (may not qualify for bounty)
+- **Option 3**: Build minimal true extension as proof-of-concept (quick validation)
+
 ## [0.7.1] - 2025-07-23
 
 ### 🧹 **NEAR INTEGRATION FINALIZATION**: Production-Ready 1inch Fusion+ Extension Complete

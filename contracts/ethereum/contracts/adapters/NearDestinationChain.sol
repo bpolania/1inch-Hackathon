@@ -61,7 +61,12 @@ contract NearDestinationChain is IDestinationChain {
             return false;
         }
         
-        // Basic character validation (simplified - real implementation would be more thorough)
+        // Check for invalid patterns: leading/trailing dots, consecutive dots
+        if (addressBytes[0] == 0x2E || addressBytes[addressBytes.length - 1] == 0x2E) {
+            return false; // No leading or trailing dots
+        }
+        
+        // Basic character validation and consecutive dot check
         for (uint256 i = 0; i < addressBytes.length; i++) {
             bytes1 char = addressBytes[i];
             if (!(
@@ -71,6 +76,11 @@ contract NearDestinationChain is IDestinationChain {
                 char == 0x2D || // -
                 char == 0x2E    // . (for subaccounts)
             )) {
+                return false;
+            }
+            
+            // Check for consecutive dots
+            if (char == 0x2E && i > 0 && addressBytes[i - 1] == 0x2E) {
                 return false;
             }
         }
