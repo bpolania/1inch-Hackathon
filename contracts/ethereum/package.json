@@ -8,14 +8,19 @@
     "deploy": "hardhat run scripts/deploy.js",
     "deploy:sepolia": "hardhat run scripts/deploy.js --network sepolia",
     "deploy:mainnet": "hardhat run scripts/deploy.js --network mainnet",
+    "deploy:fusion": "hardhat run scripts/deploy-fusion-plus.js",
+    "deploy:fusion:sepolia": "hardhat run scripts/deploy-fusion-plus.js --network sepolia",
     "demo": "hardhat run scripts/demo.js",
     "demo:sepolia": "hardhat run scripts/demo-sepolia.js --network sepolia",
+    "demo:fusion": "hardhat run scripts/demo-fusion-plus.js",
+    "demo:fusion:sepolia": "hardhat run scripts/demo-fusion-plus.js --network sepolia",
     "test:deployed": "hardhat run scripts/test-deployed.js --network sepolia",
     "verify": "hardhat verify"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^5.0.0",
-    "dotenv": "^17.2.0"
+    "dotenv": "^17.2.0",
+    "near-api-js": "^6.2.3"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^4.0.0",

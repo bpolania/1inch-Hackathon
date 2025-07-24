@@ -78,6 +78,15 @@ export interface SwapIntent {
   oneInchOrderHash?: string; // Original 1inch order hash when extending their system
 }
 
+// NEAR-specific execution parameters for Fusion+ orders
+export interface NearExecutionParams {
+  contractId: string;           // NEAR contract to call (e.g., "cross-chain-htlc.demo.cuteharbor3573.testnet")
+  methodName: string;           // Contract method to execute (e.g., "execute_fusion_order")
+  args: Record<string, any>;    // Method arguments
+  attachedDeposit?: string;     // Optional NEAR deposit (yoctoNEAR as string)
+  gas?: string;                 // Gas limit (default: 100 TGas)
+}
+
 // Extended intent that includes 1inch Fusion+ compatibility
 export interface FusionPlusIntent extends SwapIntent {
   // 1inch Fusion+ specific fields
@@ -88,6 +97,9 @@ export interface FusionPlusIntent extends SwapIntent {
   // Cross-chain extension fields
   srcImmutables?: OneInchImmutables;  // Source chain (Ethereum) escrow params
   dstImmutables?: OneInchImmutables;  // Destination chain escrow params
+  
+  // Chain-specific execution parameters
+  nearParams?: NearExecutionParams;   // NEAR-specific execution details
 }
 
 export interface SignedIntent {
