@@ -11,8 +11,11 @@ async function main() {
     // Chain IDs for destination chains
     const NEAR_MAINNET_ID = 40001;
     const NEAR_TESTNET_ID = 40002;
-    const COSMOS_MAINNET_ID = 40003;
-    const BITCOIN_MAINNET_ID = 40004;
+    
+    // Cosmos chain IDs (following bounty specification)
+    const NEUTRON_TESTNET_ID = 7001;
+    const JUNO_TESTNET_ID = 7002;
+    const COSMOS_HUB_MAINNET_ID = 30001;
 
     console.log("\n📦 Step 1: Deploying CrossChainRegistry...");
     const CrossChainRegistry = await ethers.getContractFactory("CrossChainRegistry");
@@ -33,6 +36,24 @@ async function main() {
     await nearTestnetAdapter.waitForDeployment();
     console.log("✅ NEAR Testnet Adapter deployed to:", await nearTestnetAdapter.getAddress());
 
+    console.log("\n📦 Step 2b: Deploying Cosmos Destination Chain Adapters...");
+    
+    // Deploy Neutron Testnet adapter
+    const CosmosDestinationChain = await ethers.getContractFactory("CosmosDestinationChain");
+    const neutronTestnetAdapter = await CosmosDestinationChain.deploy(NEUTRON_TESTNET_ID);
+    await neutronTestnetAdapter.waitForDeployment();
+    console.log("✅ Neutron Testnet Adapter deployed to:", await neutronTestnetAdapter.getAddress());
+
+    // Deploy Juno Testnet adapter
+    const junoTestnetAdapter = await CosmosDestinationChain.deploy(JUNO_TESTNET_ID);
+    await junoTestnetAdapter.waitForDeployment();
+    console.log("✅ Juno Testnet Adapter deployed to:", await junoTestnetAdapter.getAddress());
+
+    // Deploy Cosmos Hub Mainnet adapter  
+    const cosmosHubMainnetAdapter = await CosmosDestinationChain.deploy(COSMOS_HUB_MAINNET_ID);
+    await cosmosHubMainnetAdapter.waitForDeployment();
+    console.log("✅ Cosmos Hub Mainnet Adapter deployed to:", await cosmosHubMainnetAdapter.getAddress());
+
     console.log("\n📦 Step 3: Deploying FusionPlusFactory...");
     const FusionPlusFactory = await ethers.getContractFactory("FusionPlusFactory");
     const factory = await FusionPlusFactory.deploy(await registry.getAddress());
@@ -52,6 +73,22 @@ async function main() {
     await tx.wait();
     console.log("✅ NEAR Testnet adapter registered");
 
+    // Register Cosmos adapters
+    console.log("📝 Registering Neutron Testnet adapter...");
+    tx = await registry.registerChainAdapter(NEUTRON_TESTNET_ID, await neutronTestnetAdapter.getAddress());
+    await tx.wait();
+    console.log("✅ Neutron Testnet adapter registered");
+
+    console.log("📝 Registering Juno Testnet adapter...");
+    tx = await registry.registerChainAdapter(JUNO_TESTNET_ID, await junoTestnetAdapter.getAddress());
+    await tx.wait();
+    console.log("✅ Juno Testnet adapter registered");
+
+    console.log("📝 Registering Cosmos Hub Mainnet adapter...");
+    tx = await registry.registerChainAdapter(COSMOS_HUB_MAINNET_ID, await cosmosHubMainnetAdapter.getAddress());
+    await tx.wait();
+    console.log("✅ Cosmos Hub Mainnet adapter registered");
+
     console.log("\n👥 Step 5: Setting up Initial Resolver Authorization...");
     // Add deployer as initial authorized resolver for testing
     tx = await factory.authorizeResolver(deployer.address);
@@ -70,6 +107,14 @@ async function main() {
     console.log("🌐 NEAR Mainnet:", nearMainnetInfo.name, "- Active:", nearMainnetInfo.isActive);
     console.log("🌐 NEAR Testnet:", nearTestnetInfo.name, "- Active:", nearTestnetInfo.isActive);
     
+    // Verify Cosmos adapters
+    const neutronTestnetInfo = await registry.getChainInfo(NEUTRON_TESTNET_ID);
+    const junoTestnetInfo = await registry.getChainInfo(JUNO_TESTNET_ID);
+    const cosmosHubMainnetInfo = await registry.getChainInfo(COSMOS_HUB_MAINNET_ID);
+    console.log("🌌 Neutron Testnet:", neutronTestnetInfo.name, "- Active:", neutronTestnetInfo.isActive);
+    console.log("🌌 Juno Testnet:", junoTestnetInfo.name, "- Active:", junoTestnetInfo.isActive);
+    console.log("🌌 Cosmos Hub Mainnet:", cosmosHubMainnetInfo.name, "- Active:", cosmosHubMainnetInfo.isActive);
+    
     // Verify factory
     const resolverCount = await factory.resolverCount();
     console.log("👥 Authorized resolvers:", resolverCount.toString());
@@ -80,6 +125,9 @@ async function main() {
     console.log(`🏭 FusionPlusFactory: ${await factory.getAddress()}`);
     console.log(`🌐 NEAR Mainnet Adapter: ${await nearMainnetAdapter.getAddress()}`);
     console.log(`🌐 NEAR Testnet Adapter: ${await nearTestnetAdapter.getAddress()}`);
+    console.log(`🌌 Neutron Testnet Adapter: ${await neutronTestnetAdapter.getAddress()}`);
+    console.log(`🌌 Juno Testnet Adapter: ${await junoTestnetAdapter.getAddress()}`);
+    console.log(`🌌 Cosmos Hub Mainnet Adapter: ${await cosmosHubMainnetAdapter.getAddress()}`);
     console.log("");
     console.log("📊 Statistics:");
     console.log(`   - Supported Chains: ${supportedChains.length}`);
@@ -87,9 +135,9 @@ async function main() {
     console.log("");
     console.log("🔗 Next Steps:");
     console.log("   1. Deploy to testnet/mainnet");
-    console.log("   2. Add more destination chain adapters (Cosmos, Bitcoin)");
+    console.log("   2. Deploy CosmWasm contracts to Neutron/Juno testnets");
     console.log("   3. Authorize 1inch resolvers");
-    console.log("   4. Update live demo to use new contracts");
+    console.log("   4. Create end-to-end ETH ↔ Cosmos swap demo");
 
     // Save deployment addresses
     const deploymentInfo = {
@@ -102,12 +150,16 @@ async function main() {
             FusionPlusFactory: await factory.getAddress(),
             NearMainnetAdapter: await nearMainnetAdapter.getAddress(),
             NearTestnetAdapter: await nearTestnetAdapter.getAddress(),
+            NeutronTestnetAdapter: await neutronTestnetAdapter.getAddress(),
+            JunoTestnetAdapter: await junoTestnetAdapter.getAddress(),
+            CosmosHubMainnetAdapter: await cosmosHubMainnetAdapter.getAddress(),
         },
         chainIds: {
             NEAR_MAINNET: NEAR_MAINNET_ID,
             NEAR_TESTNET: NEAR_TESTNET_ID,
-            COSMOS_MAINNET: COSMOS_MAINNET_ID,
-            BITCOIN_MAINNET: BITCOIN_MAINNET_ID,
+            NEUTRON_TESTNET: NEUTRON_TESTNET_ID,
+            JUNO_TESTNET: JUNO_TESTNET_ID,
+            COSMOS_HUB_MAINNET: COSMOS_HUB_MAINNET_ID,
         },
         supportedChains: supportedChains.map(id => id.toString()),
         initialResolvers: [deployer.address]
