@@ -1,4 +1,4 @@
-import { SwapIntent, FusionPlusIntent, OneInchImmutables, NearExecutionParams } from '../types/intent';
+import { SwapIntent, FusionPlusIntent, OneInchImmutables, NearExecutionParams, CosmosExecutionParams } from '../types/intent';
 import { ChainId, ChainType, CHAIN_INFO } from '../types/chains';
 import { keccak256, toUtf8Bytes } from 'ethers';
 
@@ -113,9 +113,9 @@ function formatTokenForChain(address: string, chainId: number): string {
     } else if (chainId >= 20001 && chainId <= 20008) {
       // Bitcoin-like chains use 'native' or specific identifiers
       return 'native';
-    } else if (chainId >= 30001 && chainId <= 30002) {
-      // Cosmos
-      return 'uatom'; // or appropriate denom
+    } else if (isCosmosChain(chainId)) {
+      // Cosmos chains - return appropriate native denom
+      return getCosmosNativeDenom(chainId);
     } else if (chainId >= 40001 && chainId <= 40002) {
       // NEAR Protocol
       return 'near'; // Native NEAR token identifier
@@ -123,6 +123,37 @@ function formatTokenForChain(address: string, chainId: number): string {
   }
   
   return address;
+}
+
+// Check if a chain ID belongs to Cosmos ecosystem
+export function isCosmosChain(chainId: number): boolean {
+  return chainId === ChainId.NEUTRON_TESTNET || 
+         chainId === ChainId.JUNO_TESTNET ||
+         (chainId >= 30001 && chainId <= 30008);
+}
+
+// Get native denomination for Cosmos chains
+export function getCosmosNativeDenom(chainId: number): string {
+  switch (chainId) {
+    case ChainId.NEUTRON_TESTNET:
+      return 'untrn';
+    case ChainId.JUNO_TESTNET:
+      return 'ujuno';
+    case ChainId.COSMOS_HUB_MAINNET:
+    case ChainId.COSMOS_HUB_TESTNET:
+      return 'uatom';
+    case ChainId.OSMOSIS_MAINNET:
+    case ChainId.OSMOSIS_TESTNET:
+      return 'uosmo';
+    case ChainId.STARGAZE_MAINNET:
+    case ChainId.STARGAZE_TESTNET:
+      return 'ustars';
+    case ChainId.AKASH_MAINNET:
+    case ChainId.AKASH_TESTNET:
+      return 'uakt';
+    default:
+      return 'uatom'; // Default to ATOM
+  }
 }
 
 // Generate deterministic order hash for cross-chain intent
@@ -259,4 +290,131 @@ export function createFusionPlusNearIntent(
   );
 
   return fusionIntent;
+}
+
+// Cosmos-specific utility functions
+
+// Create Cosmos execution parameters for Fusion+ orders
+export function createCosmosExecutionParams(
+  contractAddress: string,
+  intent: FusionPlusIntent,
+  hashlock: string
+): CosmosExecutionParams {
+  const nativeDenom = getCosmosNativeDenom(intent.destinationChain);
+  
+  return {
+    contractAddress,
+    msg: {
+      execute_fusion_order: {
+        order_hash: intent.oneInchOrderHash,
+        hashlock,
+        amount: intent.destinationAmount,
+        maker: intent.destinationAddress,
+        resolver_fee: intent.resolverFeeAmount,
+        timelocks: intent.timelocks
+      }
+    },
+    funds: [
+      {
+        denom: nativeDenom,
+        amount: intent.destinationAmount
+      }
+    ],
+    gasLimit: 300000 // Default gas limit for Cosmos transactions
+  };
+}
+
+// Check if destination chain is Cosmos
+export function isCosmosDestination(chainId: ChainId): boolean {
+  return isCosmosChain(chainId);
+}
+
+// Get Cosmos chain info from destination chain
+export function getCosmosChainInfo(chainId: ChainId) {
+  if (!isCosmosDestination(chainId)) {
+    throw new Error('Chain is not Cosmos');
+  }
+  return CHAIN_INFO[chainId];
+}
+
+// Convert Cosmos amount to micro units (6 decimals for most Cosmos tokens)
+export function toMicroCosmos(amount: string, decimals: number = 6): string {
+  const amountBig = BigInt(amount);
+  return (amountBig * BigInt(10 ** decimals)).toString();
+}
+
+// Convert micro units to standard Cosmos amount
+export function fromMicroCosmos(microAmount: string, decimals: number = 6): string {
+  const amount = BigInt(microAmount);
+  return (amount / BigInt(10 ** decimals)).toString();
+}
+
+// Validate Cosmos bech32 address format
+export function validateCosmosAddress(address: string, expectedPrefix?: string): boolean {
+  // Basic bech32 validation
+  if (!/^[a-z0-9]+1[a-z0-9]{38,58}$/.test(address)) {
+    return false;
+  }
+  
+  // Check prefix if provided
+  if (expectedPrefix) {
+    return address.startsWith(expectedPrefix);
+  }
+  
+  // Accept common Cosmos prefixes
+  const validPrefixes = ['neutron', 'juno', 'cosmos', 'osmo', 'stars', 'akash'];
+  return validPrefixes.some(prefix => address.startsWith(prefix));
+}
+
+// Get expected address prefix for Cosmos chain
+export function getCosmosAddressPrefix(chainId: ChainId): string {
+  switch (chainId) {
+    case ChainId.NEUTRON_TESTNET:
+      return 'neutron';
+    case ChainId.JUNO_TESTNET:
+      return 'juno';
+    case ChainId.COSMOS_HUB_MAINNET:
+    case ChainId.COSMOS_HUB_TESTNET:
+      return 'cosmos';
+    case ChainId.OSMOSIS_MAINNET:
+    case ChainId.OSMOSIS_TESTNET:
+      return 'osmo';
+    case ChainId.STARGAZE_MAINNET:
+    case ChainId.STARGAZE_TESTNET:
+      return 'stars';
+    case ChainId.AKASH_MAINNET:
+    case ChainId.AKASH_TESTNET:
+      return 'akash';
+    default:
+      return 'cosmos';
+  }
+}
+
+// Create Fusion+ intent with Cosmos destination
+export function createFusionPlusCosmosIntent(
+  intent: SwapIntent,
+  contractAddress: string,
+  oneInchOrderHash: string,
+  safetyDeposit: string,
+  timelockStages: number[]
+): FusionPlusIntent {
+  if (!isCosmosDestination(intent.destinationChain)) {
+    throw new Error('Intent destination chain must be Cosmos');
+  }
+
+  const fusionIntent = toFusionPlusIntent(
+    intent,
+    oneInchOrderHash,
+    safetyDeposit,
+    timelockStages
+  );
+
+  // Add Cosmos-specific execution parameters
+  const hashlock = generateOrderHash(intent); // Placeholder - would use actual hashlock
+  const cosmosParams = createCosmosExecutionParams(contractAddress, fusionIntent, hashlock);
+
+  return {
+    ...fusionIntent,
+    cosmosParams // This field would need to be added to FusionPlusIntent interface
+  };
 }

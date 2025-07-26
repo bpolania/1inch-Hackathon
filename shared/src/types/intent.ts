@@ -87,6 +87,14 @@ export interface NearExecutionParams {
   gas?: string;                 // Gas limit (default: 100 TGas)
 }
 
+// Cosmos-specific execution parameters for Fusion+ orders
+export interface CosmosExecutionParams {
+  contractAddress: string;                              // CosmWasm contract address
+  msg: Record<string, any>;                            // Execute message object
+  funds: Array<{ denom: string; amount: string }>;    // Native tokens to send with message
+  gasLimit?: number;                                   // Gas limit for execution (default: 300000)
+}
+
 // Extended intent that includes 1inch Fusion+ compatibility
 export interface FusionPlusIntent extends SwapIntent {
   // 1inch Fusion+ specific fields
@@ -99,7 +107,8 @@ export interface FusionPlusIntent extends SwapIntent {
   dstImmutables?: OneInchImmutables;  // Destination chain escrow params
   
   // Chain-specific execution parameters
-  nearParams?: NearExecutionParams;   // NEAR-specific execution details
+  nearParams?: NearExecutionParams;     // NEAR-specific execution details
+  cosmosParams?: CosmosExecutionParams; // Cosmos-specific execution details
 }
 
 export interface SignedIntent {

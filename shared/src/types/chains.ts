@@ -19,8 +19,19 @@ export enum ChainId {
   BITCOIN_CASH_MAINNET = 20007,
   BITCOIN_CASH_TESTNET = 20008,
   
+  // Cosmos Ecosystem - Following bounty specification
+  NEUTRON_TESTNET = 7001,
+  JUNO_TESTNET = 7002,
+  
+  // Future Cosmos chains
   COSMOS_HUB_MAINNET = 30001,
   COSMOS_HUB_TESTNET = 30002,
+  OSMOSIS_MAINNET = 30003,
+  OSMOSIS_TESTNET = 30004,
+  STARGAZE_MAINNET = 30005,
+  STARGAZE_TESTNET = 30006,
+  AKASH_MAINNET = 30007,
+  AKASH_TESTNET = 30008,
   
   NEAR_MAINNET = 40001,
   NEAR_TESTNET = 40002,
@@ -129,11 +140,31 @@ export const CHAIN_INFO: Record<ChainId, ChainInfo> = {
     name: 'Bitcoin Cash Testnet',
     nativeCurrency: { name: 'Bitcoin Cash', symbol: 'tBCH', decimals: 8 },
   },
+  // Cosmos Ecosystem - Bounty specified chains
+  [ChainId.NEUTRON_TESTNET]: {
+    id: ChainId.NEUTRON_TESTNET,
+    type: ChainType.COSMOS,
+    name: 'Neutron Testnet',
+    nativeCurrency: { name: 'Neutron', symbol: 'NTRN', decimals: 6 },
+    rpcUrl: 'https://rpc-falcron.pion-1.ntrn.tech',
+    explorerUrl: 'https://neutron.celat.one/neutron-testnet',
+  },
+  [ChainId.JUNO_TESTNET]: {
+    id: ChainId.JUNO_TESTNET,
+    type: ChainType.COSMOS,
+    name: 'Juno Testnet',
+    nativeCurrency: { name: 'Juno', symbol: 'JUNO', decimals: 6 },
+    rpcUrl: 'https://rpc.uni.junonetwork.io',
+    explorerUrl: 'https://testnet.juno.explorers.guru',
+  },
+  
+  // Future Cosmos chains
   [ChainId.COSMOS_HUB_MAINNET]: {
     id: ChainId.COSMOS_HUB_MAINNET,
     type: ChainType.COSMOS,
     name: 'Cosmos Hub',
     nativeCurrency: { name: 'Atom', symbol: 'ATOM', decimals: 6 },
+    rpcUrl: 'https://cosmos-rpc.quickapi.com',
     explorerUrl: 'https://www.mintscan.io/cosmos',
   },
   [ChainId.COSMOS_HUB_TESTNET]: {
@@ -141,6 +172,49 @@ export const CHAIN_INFO: Record<ChainId, ChainInfo> = {
     type: ChainType.COSMOS,
     name: 'Cosmos Hub Testnet',
     nativeCurrency: { name: 'Atom', symbol: 'ATOM', decimals: 6 },
+    rpcUrl: 'https://rpc.sentry-02.theta-testnet.polypore.xyz',
+    explorerUrl: 'https://explorer.theta-testnet.polypore.xyz',
+  },
+  [ChainId.OSMOSIS_MAINNET]: {
+    id: ChainId.OSMOSIS_MAINNET,
+    type: ChainType.COSMOS,
+    name: 'Osmosis',
+    nativeCurrency: { name: 'Osmosis', symbol: 'OSMO', decimals: 6 },
+    rpcUrl: 'https://osmosis-rpc.quickapi.com',
+    explorerUrl: 'https://www.mintscan.io/osmosis',
+  },
+  [ChainId.OSMOSIS_TESTNET]: {
+    id: ChainId.OSMOSIS_TESTNET,
+    type: ChainType.COSMOS,
+    name: 'Osmosis Testnet',
+    nativeCurrency: { name: 'Osmosis', symbol: 'OSMO', decimals: 6 },
+    explorerUrl: 'https://testnet.mintscan.io/osmosis-testnet',
+  },
+  [ChainId.STARGAZE_MAINNET]: {
+    id: ChainId.STARGAZE_MAINNET,
+    type: ChainType.COSMOS,
+    name: 'Stargaze',
+    nativeCurrency: { name: 'Stargaze', symbol: 'STARS', decimals: 6 },
+    explorerUrl: 'https://www.mintscan.io/stargaze',
+  },
+  [ChainId.STARGAZE_TESTNET]: {
+    id: ChainId.STARGAZE_TESTNET,
+    type: ChainType.COSMOS,
+    name: 'Stargaze Testnet',
+    nativeCurrency: { name: 'Stargaze', symbol: 'STARS', decimals: 6 },
+  },
+  [ChainId.AKASH_MAINNET]: {
+    id: ChainId.AKASH_MAINNET,
+    type: ChainType.COSMOS,
+    name: 'Akash Network',
+    nativeCurrency: { name: 'Akash', symbol: 'AKT', decimals: 6 },
+    explorerUrl: 'https://www.mintscan.io/akash',
+  },
+  [ChainId.AKASH_TESTNET]: {
+    id: ChainId.AKASH_TESTNET,
+    type: ChainType.COSMOS,
+    name: 'Akash Network Testnet',
+    nativeCurrency: { name: 'Akash', symbol: 'AKT', decimals: 6 },
   },
   [ChainId.NEAR_MAINNET]: {
     id: ChainId.NEAR_MAINNET,
