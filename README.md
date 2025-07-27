@@ -262,6 +262,139 @@ This implementation satisfies the **$32K NEAR bounty** requirements:
 - **Time Boundaries**: Multi-stage timelocks prevent griefing attacks
 - **Parameter Validation**: Comprehensive validation of all cross-chain parameters
 
+## Production Deployment Considerations
+
+### Testnet vs Mainnet Economics
+
+#### Current Testnet Implementation
+The current Sepolia testnet deployment makes **simplified economic assumptions** for testing purposes:
+
+**Safety Deposit Calculation:**
+```solidity
+// Current testnet approach (simplified)
+function calculateMinSafetyDeposit(uint256 amount) external pure returns (uint256) {
+    return (amount * 500) / 10000;  // 5% of token amount
+}
+```
+
+**Testnet Assumption**: `1 Token = 1 ETH` (for calculation purposes)
+- 100 DT tokens → 5 ETH safety deposit
+- This creates artificially high deposits (5 ETH ≈ $10,000) 
+- Suitable for testing logic, not practical for real usage
+
+#### Mainnet Requirements
+
+**Production safety deposits must reflect real economic value:**
+
+**1. Oracle Integration Required**
+```solidity
+// Production approach with price oracles
+function calculateMinSafetyDeposit(
+    address token,
+    uint256 amount
+) external view returns (uint256) {
+    // Get real-time token/ETH exchange rate
+    uint256 tokenValueETH = getTokenValueInETH(token, amount);
+    
+    // Calculate 5% of actual token value
+    return (tokenValueETH * 500) / 10000;
+}
+
+function getTokenValueInETH(address token, uint256 amount) internal view returns (uint256) {
+    // Chainlink oracle integration
+    AggregatorV3Interface priceFeed = AggregatorV3Interface(priceFeeds[token]);
+    (, int256 tokenPriceUSD, , ,) = priceFeed.latestRoundData();
+    (, int256 ethPriceUSD, , ,) = ethPriceFeed.latestRoundData();
+    
+    // Convert: token amount → USD value → ETH equivalent
+    uint256 tokenValueUSD = (amount * uint256(tokenPriceUSD)) / (10 ** tokenDecimals);
+    return (tokenValueUSD * 1e18) / uint256(ethPriceUSD);
+}
+```
+
+**2. Code Modifications Required**
+
+**Location: `contracts/adapters/NearDestinationChain.sol`**
+```solidity
+// Current (line 151-153):
+function calculateMinSafetyDeposit(uint256 amount) external pure override returns (uint256) {
+    return (amount * MIN_SAFETY_DEPOSIT_BPS) / 10000;
+}
+
+// Mainnet replacement:
+function calculateMinSafetyDeposit(address token, uint256 amount) external view override returns (uint256) {
+    return getTokenValueInETH(token, amount) * MIN_SAFETY_DEPOSIT_BPS / 10000;
+}
+```
+
+**Location: `contracts/interfaces/IDestinationChain.sol`**
+```solidity
+// Update interface to include token address:
+function calculateMinSafetyDeposit(address token, uint256 amount) external view returns (uint256);
+```
+
+**3. Oracle Infrastructure**
+
+**Required Chainlink Price Feeds (Mainnet):**
+```solidity
+mapping(address => address) public priceFeeds;
+
+constructor() {
+    // Major token price feeds
+    priceFeeds[USDC] = 0x8fFfFfd4AfB6115b954Bd326cbe7B4BA576818f6;  // USDC/USD
+    priceFeeds[WETH] = 0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419;  // ETH/USD  
+    priceFeeds[UNI] = 0x553303d460EE0afB37EdFf9bE42922D8FF63220e;   // UNI/USD
+    priceFeeds[DAI] = 0xAed0c38402a5d19df6E4c03F4E2DceD6e29c1ee9;   // DAI/USD
+    // Add more as needed...
+}
+```
+
+**4. Realistic Mainnet Economics**
+
+**Example Production Calculations:**
+```
+100 USDC swap (USDC ≈ $1, ETH ≈ $2000):
+├── Token value: 100 USDC = $100 USD
+├── ETH equivalent: $100 ÷ $2000 = 0.05 ETH  
+├── Safety deposit: 0.05 ETH × 5% = 0.0025 ETH
+└── Result: $5 deposit instead of $10,000
+
+100 UNI swap (UNI ≈ $6, ETH ≈ $2000):
+├── Token value: 100 UNI = $600 USD
+├── ETH equivalent: $600 ÷ $2000 = 0.3 ETH
+├── Safety deposit: 0.3 ETH × 5% = 0.015 ETH  
+└── Result: $30 deposit (reasonable)
+```
+
+**5. Migration Strategy**
+
+**Phase 1: Use Real 1inch Contracts**
+- Deploy on mainnet with existing 1inch EscrowFactory
+- Inherit their production-grade safety deposit logic
+- Zero oracle integration needed
+
+**Phase 2: Custom Oracle Integration** (if needed)
+- Add Chainlink price feeds for supported tokens
+- Implement fallback mechanisms for unsupported tokens
+- Add staleness protection and circuit breakers
+
+**Phase 3: Advanced Risk Management**
+- Dynamic deposits based on token volatility
+- Governance-controlled token tiers
+- Machine learning risk models
+
+### Deployment Checklist
+
+**Mainnet Readiness:**
+- [ ] Oracle infrastructure deployed
+- [ ] Price feed addresses configured  
+- [ ] Safety deposit calculations tested
+- [ ] Emergency pause mechanisms verified
+- [ ] Governance controls implemented
+- [ ] Security audit completed
+
+**The current Sepolia deployment demonstrates complete technical functionality - mainnet deployment requires only economic parameter adjustments through oracle integration.**
+
 ## Future Extensions
 
 The modular architecture enables easy addition of new blockchains:
