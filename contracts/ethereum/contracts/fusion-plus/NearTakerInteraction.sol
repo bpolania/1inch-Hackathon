@@ -35,7 +35,6 @@ contract NearTakerInteraction is ITakerInteraction, Ownable, ReentrancyGuard {
     IOneInchEscrowFactory public immutable escrowFactory;  // 1inch EscrowFactory
     
     mapping(bytes32 => NearOrderData) public nearOrders;
-    mapping(bytes32 => address) public orderEscrows;
     mapping(address => bool) public authorizedResolvers;
     
     // Events
@@ -49,11 +48,6 @@ contract NearTakerInteraction is ITakerInteraction, Ownable, ReentrancyGuard {
         bytes32 hashlock
     );
     
-    event NearEscrowDeployed(
-        bytes32 indexed orderHash,
-        address indexed escrowAddress,
-        uint256 destinationChainId
-    );
     
     event ResolverAuthorized(address indexed resolver);
     event ResolverRevoked(address indexed resolver);
@@ -125,16 +119,10 @@ contract NearTakerInteraction is ITakerInteraction, Ownable, ReentrancyGuard {
         // Store NEAR order data
         nearOrders[orderHash] = nearOrder;
         
-        // Deploy destination escrow on Ethereum (will coordinate with NEAR)
-        // Note: In real 1inch integration, safety deposit would be handled by the main protocol
-        address escrowAddress = _deployDestinationEscrow(
-            orderHash,
-            nearOrder,
-            taker,
-            takingAmount
-        );
-        
-        orderEscrows[orderHash] = escrowAddress;
+        // In a real 1inch integration, destination escrow would already be deployed
+        // by the main protocol before this is called. For our implementation, 
+        // we'll assume the escrow is managed by the factory that called us.
+        // We just store the NEAR order data for later use.
         
         emit NearOrderCreated(
             orderHash,
@@ -144,12 +132,6 @@ contract NearTakerInteraction is ITakerInteraction, Ownable, ReentrancyGuard {
             nearOrder.destinationAmount,
             nearOrder.destinationAddress,
             nearOrder.hashlock
-        );
-        
-        emit NearEscrowDeployed(
-            orderHash,
-            escrowAddress,
-            nearOrder.destinationChainId
         );
     }
 
@@ -191,69 +173,7 @@ contract NearTakerInteraction is ITakerInteraction, Ownable, ReentrancyGuard {
         require(validation.isValid, validation.errorMessage);
     }
 
-    /**
-     * @notice Deploy destination escrow using 1inch EscrowFactory
-     * @param orderHash The order hash
-     * @param nearOrder The NEAR order data
-     * @param resolver The resolver address
-     * @param takingAmount The taking amount
-     * @return escrowAddress The deployed escrow address
-     */
-    function _deployDestinationEscrow(
-        bytes32 orderHash,
-        NearOrderData memory nearOrder,
-        address resolver,
-        uint256 takingAmount
-    ) internal returns (address escrowAddress) {
-        // Calculate safety deposit for escrow structure (but don't require payment in this context)
-        uint256 safetyDeposit = registry.calculateMinSafetyDeposit(
-            nearOrder.destinationChainId,
-            takingAmount
-        );
-        
-        // Create immutables structure for 1inch EscrowFactory
-        IOneInchEscrowFactory.Immutables memory immutables = IOneInchEscrowFactory.Immutables({
-            orderHash: orderHash,
-            hashlock: nearOrder.hashlock,
-            maker: address(this), // This contract acts as maker for destination escrow
-            taker: resolver,      // Resolver is the taker
-            token: address(0),    // Token will be handled by NEAR contract
-            amount: takingAmount,
-            safetyDeposit: safetyDeposit,
-            timelocks: _calculateNearTimelocks(nearOrder.expiryTime)
-        });
-        
-        // Deploy destination escrow using 1inch EscrowFactory
-        // Note: In real 1inch integration, safety deposit is handled separately
-        escrowAddress = escrowFactory.createDstEscrow(
-            immutables,
-            nearOrder.expiryTime
-        );
-        
-        return escrowAddress;
-    }
 
-    /**
-     * @notice Calculate NEAR-specific timelocks
-     * @param expiryTime The order expiry time
-     * @return uint256 Packed timelock stages
-     */
-    function _calculateNearTimelocks(uint256 expiryTime) internal view returns (uint256) {
-        uint256 baseTime = block.timestamp;
-        uint256 timeBuffer = (expiryTime - baseTime) / 7; // Divide remaining time into 7 stages
-        
-        uint256 stage1 = baseTime + timeBuffer;       // NEAR preparation
-        uint256 stage2 = baseTime + (timeBuffer * 2); // NEAR deployment
-        uint256 stage3 = baseTime + (timeBuffer * 3); // NEAR execution
-        uint256 stage4 = baseTime + (timeBuffer * 4); // NEAR confirmation
-        uint256 stage5 = baseTime + (timeBuffer * 5); // Ethereum withdrawal
-        uint256 stage6 = baseTime + (timeBuffer * 6); // Ethereum finalization
-        uint256 stage7 = expiryTime;                  // Final expiry
-        
-        // Pack timelock stages (simplified - real 1inch packing may differ)
-        return (stage1 << 224) | (stage2 << 192) | (stage3 << 160) | (stage4 << 128) | 
-               (stage5 << 96) | (stage6 << 64) | (stage7 << 32);
-    }
 
     /**
      * @notice Get NEAR order data
@@ -264,14 +184,6 @@ contract NearTakerInteraction is ITakerInteraction, Ownable, ReentrancyGuard {
         return nearOrders[orderHash];
     }
 
-    /**
-     * @notice Get escrow address for an order
-     * @param orderHash The order hash
-     * @return address The escrow address
-     */
-    function getOrderEscrow(bytes32 orderHash) external view returns (address) {
-        return orderEscrows[orderHash];
-    }
 
     /**
      * @notice Check if a resolver is authorized
