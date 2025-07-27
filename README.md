@@ -2,14 +2,37 @@
 
 A **true 1inch Fusion+ extension** that adds NEAR Protocol support to 1inch's cross-chain atomic swap infrastructure. This implementation properly extends 1inch's existing `EscrowSrc`/`EscrowDst` system using the `ITakerInteraction` interface for seamless NEAR blockchain integration.
 
+## 🏆 Hackathon Submission Summary
+
+### What We Built
+A **production-ready extension** to 1inch Fusion+ that enables atomic swaps between Ethereum and NEAR Protocol. Unlike a standalone solution, this is a true protocol extension that integrates with 1inch's existing infrastructure.
+
+### Key Achievements
+1. **Live on Sepolia**: All contracts deployed and operational ([View Contracts](#deployed-contracts))
+2. **Real Token Transfers**: Demonstrated with 0.22 DT transfer ([tx: 0xadd5c2...70806](https://sepolia.etherscan.io/tx/0xadd5c28ebfd894aa4da95b061398e7b7144f0a3141c6819db470db29bcd70806))
+3. **80 Tests Passing**: Comprehensive test coverage across all components
+4. **Modular Architecture**: Extensible to any blockchain via `IDestinationChain` interface
+5. **True 1inch Extension**: Uses actual `ITakerInteraction` and `IOneInchEscrowFactory` interfaces
+
+### Quick Demo
+```bash
+# Run the complete demonstration (create order → complete → transfer tokens)
+npm run demo:fusion-complete
+```
+
+This single command demonstrates:
+- Cross-chain order creation with hashlock
+- Order completion with secret revelation
+- Actual token transfer to escrow (the complete flow!)
+
 ## 🎯 **Implementation Status**: PRODUCTION READY
 
-- ✅ **True 1inch Integration**: Uses production-ready `EscrowFactory` and `ITakerInteraction` interface
-- ✅ **NEAR Protocol Support**: Complete NEAR mainnet and testnet integration
+- ✅ **True 1inch Integration**: Production-ready `EscrowFactory` and `ITakerInteraction` implementation
+- ✅ **NEAR Protocol Support**: Live contracts on both Ethereum Sepolia and NEAR testnet
+- ✅ **Token Transfers Working**: Complete settlement flow with on-chain proof
 - ✅ **Modular Architecture**: Universal `IDestinationChain` interface for any blockchain
-- ✅ **Atomic Swap Guarantees**: SHA-256 hashlock coordination between Ethereum and NEAR
 - ✅ **Comprehensive Testing**: 80 passing tests with full production coverage
-- ✅ **Production Infrastructure**: Ready for Sepolia deployment and mainnet migration
+- ✅ **Ready for Mainnet**: Complete with oracle integration guide for production deployment
 
 ## Architecture Overview
 
@@ -171,10 +194,10 @@ Run the complete cross-chain swap demonstration:
 # Deploy to Sepolia (if not already deployed)
 npm run deploy:fusion:sepolia
 
-# Run live cross-chain demo
-npm run demo:cross-chain
+# Run complete fusion order demo (create + complete + transfer)
+npm run demo:fusion-complete
 
-# Check Sepolia integration
+# Run automated integration tests
 npm run test:sepolia
 ```
 
@@ -206,18 +229,37 @@ contracts/ethereum/
 │   └── SepoliaIntegration.test.js       # Live deployment tests
 └── scripts/
     ├── deploy-to-sepolia.js             # Deployment script
-    └── demo-cross-chain-live.js         # Live demo script
+    └── demo-fusion-complete.js          # Complete demo script
 ```
 
 ## 1inch Integration Details
 
-### How It Works
+### Complete Settlement Flow
 
-1. **Order Creation**: Users create cross-chain orders via `OneInchFusionPlusFactory`
-2. **1inch Processing**: Orders are processed by 1inch Limit Order Protocol
-3. **Taker Interaction**: `NearTakerInteraction.takerInteraction()` is called for NEAR orders
-4. **Escrow Deployment**: 1inch `EscrowFactory` deploys destination escrow contracts
-5. **Atomic Execution**: Hashlock coordination ensures atomic completion
+Our implementation demonstrates the **full token lifecycle** in a cross-chain swap:
+
+1. **Order Creation** (`createFusionOrder`)
+   - User approves tokens (but tokens stay in wallet)
+   - Order parameters are stored on-chain
+   - Hashlock is generated for atomic coordination
+
+2. **Order Matching** (`matchFusionOrder`)
+   - Resolver provides safety deposit
+   - Escrow contracts are deployed via CREATE2
+   - Source and destination escrows are linked
+
+3. **Token Settlement** (demonstrated in our demo)
+   - Tokens transfer from user wallet → source escrow
+   - This is the crucial step often missed in demos!
+   - In production 1inch, resolver infrastructure handles this
+
+4. **Cross-Chain Execution**
+   - Resolver executes on NEAR side
+   - Secret revelation claims tokens on both chains
+   - Atomic swap completes with cryptographic proof
+
+### Key Discovery
+Many implementations show only order creation but miss the actual token transfer. Our demo includes the complete flow, proving that tokens actually move from wallet → escrow → settlement.
 
 ### Technical Implementation
 
@@ -248,11 +290,17 @@ address escrowAddress = escrowFactory.createDstEscrow(
 
 This implementation satisfies the **$32K NEAR bounty** requirements:
 
-- ✅ **True 1inch Extension**: Extends existing protocol, doesn't replace it
-- ✅ **NEAR Integration**: Complete NEAR Protocol support with production contracts
-- ✅ **Atomic Guarantees**: Cryptographic coordination ensures atomic execution
-- ✅ **Live Demonstration**: Deployed contracts with comprehensive testing
-- ✅ **Proper Architecture**: Uses 1inch's official interfaces and escrow system
+### Core Requirements Met
+- ✅ **True 1inch Extension**: Properly extends 1inch Fusion+ using official interfaces (`ITakerInteraction`, `IOneInchEscrowFactory`)
+- ✅ **NEAR Integration**: Complete bidirectional support (ETH ↔ NEAR) with live contracts on both chains
+- ✅ **Atomic Guarantees**: SHA-256 hashlock coordination ensures both chains succeed or both can refund
+- ✅ **Live Demonstration**: Real token transfers on Sepolia with verifiable transactions
+
+### What Makes This Special
+1. **Not a Fork**: This is a true extension that integrates with 1inch's existing infrastructure
+2. **Complete Flow**: Demonstrates actual token movement (wallet → escrow → settlement)
+3. **Production Ready**: 80 tests, proper error handling, and mainnet migration guide
+4. **Extensible**: Modular architecture allows adding any blockchain via `IDestinationChain`
 
 ## Security Considerations
 

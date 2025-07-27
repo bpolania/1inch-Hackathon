@@ -22,5 +22,13 @@
     "demoToken": "https://sepolia.etherscan.io/address/0xaa86ed59bcf10c838F2abDa08D1Ca8C6D1609d43",
     "transaction": "https://sepolia.etherscan.io/tx/0x81f2160831773ba02368fc1f13426ebe4bd34a46e9fd03993adce23ba77645b0",
     "factory": "https://sepolia.etherscan.io/address/0x2E053bA098E2DB09C7F61A2854063BB2161b7b0a"
+  },
+  "settlement": {
+    "timestamp": "2025-07-27T13:54:13.723Z",
+    "transferTx": "0xadd5c28ebfd894aa4da95b061398e7b7144f0a3141c6819db470db29bcd70806",
+    "amountTransferred": "0.22",
+    "finalUserBalance": "999.78",
+    "escrowBalance": "0.22",
+    "status": "tokens_in_escrow"
   }
 }

@@ -16,7 +16,7 @@
     "demo:fusion:sepolia": "hardhat run scripts/demo-fusion-plus.js --network sepolia",
     "test:deployed": "hardhat run scripts/test-deployed.js --network sepolia",
     "test:sepolia": "hardhat test test/SepoliaIntegration.test.js --network sepolia",
-    "demo:cross-chain": "hardhat run scripts/demo-cross-chain-live.js --network sepolia",
+    "demo:fusion-complete": "hardhat run scripts/demo-fusion-complete.js --network sepolia",
     "verify": "hardhat verify"
   },
   "dependencies": {

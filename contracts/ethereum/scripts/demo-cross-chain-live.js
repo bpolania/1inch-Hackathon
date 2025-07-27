@@ -99,8 +99,8 @@ async function main() {
     console.log("===============================================");
 
     // Approve tokens for the factory
-    const swapAmount = ethers.parseEther("100"); // 100 DT
-    const resolverFee = ethers.parseEther("1");   // 1 DT resolver fee
+    const swapAmount = ethers.parseEther("0.2"); // 0.2 DT (to meet 0.01 ETH minimum deposit)
+    const resolverFee = ethers.parseEther("0.02");   // 0.02 DT resolver fee
     
     console.log("Approving tokens for cross-chain swap...");
     const approveTx = await demoToken.approve(await factory.getAddress(), swapAmount + resolverFee);
@@ -130,7 +130,7 @@ async function main() {
         sourceAmount: swapAmount,
         destinationChainId: 40002, // NEAR Testnet
         destinationToken: ethers.toUtf8Bytes("native.near"),
-        destinationAmount: ethers.parseEther("2"), // 2 NEAR
+        destinationAmount: ethers.parseEther("0.004"), // 0.004 NEAR
         destinationAddress: ethers.toUtf8Bytes(nearAccount),
         resolverFeeAmount: resolverFee,
         expiryTime: Math.floor(Date.now() / 1000) + 3600, // 1 hour
@@ -145,6 +145,7 @@ async function main() {
     console.log(`   Recipient: ${nearAccount}`);
     console.log(`   Resolver Fee: ${ethers.formatEther(resolverFee)} DT`);
     console.log(`   Expires: ${new Date(orderParams.expiryTime * 1000).toISOString()}`);
+    console.log(`   💡 Safety deposit will be: ~${ethers.formatEther((swapAmount * 500n) / 10000n)} ETH (much more manageable!)`);
 
     const createTx = await factory.createFusionOrder(orderParams);
     const createReceipt = await createTx.wait();
@@ -201,13 +202,13 @@ async function main() {
     console.log("🔹 **Resolver Side (NEAR)**:");
     console.log("   1. Resolver monitors Ethereum for new orders");
     console.log("   2. Resolver calls execute_fusion_order() on NEAR contract");
-    console.log("   3. NEAR contract locks 2 NEAR tokens with the same hashlock");
+    console.log("   3. NEAR contract locks 0.004 NEAR tokens with the same hashlock");
     console.log("   4. NEAR emits event confirming execution");
     console.log("");
     console.log("🔹 **Atomic Completion**:");
     console.log("   5. Resolver reveals secret to claim tokens on both chains");
-    console.log("   6. User receives 2 NEAR tokens on NEAR testnet");
-    console.log("   7. Resolver receives 100 DT + 1 DT fee on Ethereum");
+    console.log("   6. User receives 0.004 NEAR tokens on NEAR testnet");
+    console.log("   7. Resolver receives 0.2 DT + 0.02 DT fee on Ethereum");
     console.log("");
     console.log("🔹 **Security Guarantees**:");
     console.log("   • HTLC ensures atomicity - either both succeed or both can refund");

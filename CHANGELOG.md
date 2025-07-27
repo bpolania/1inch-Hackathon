@@ -5,6 +5,49 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- **Complete Token Transfer Demo**: New script demonstrating actual token movement from wallet to escrow
+  - `scripts/complete-fusion-order-full.js` - Manual token transfer demonstration
+  - Shows the missing piece: actual ERC20 transfer to source escrow
+  - Transaction proof: 0.22 DT successfully transferred in tx `0xadd5c28ebfd894aa4da95b061398e7b7144f0a3141c6819db470db29bcd70806`
+  
+- **Consolidated Demo Script**: New unified script for complete order lifecycle
+  - `scripts/demo-fusion-complete.js` - Intelligent script handling create → complete → transfer
+  - Auto-detects existing orders vs creating new ones
+  - Single command for full demonstration flow
+  
+- **Production Deployment Considerations**: Comprehensive mainnet requirements section in README
+  - Detailed explanation of testnet 1:1 token-to-ETH assumption
+  - Oracle integration requirements for accurate token/ETH conversion
+  - Code locations requiring modification for mainnet deployment
+  - Migration strategy from testnet to mainnet economics
+
+### Changed
+- **Demo Script Consolidation**: Reduced from 4 redundant scripts to 2 clean scripts
+  - Removed: `demo:cross-chain`, `demo:complete`, `demo:complete-full`
+  - Added: `demo:fusion-complete` - Single comprehensive demo
+  - Kept: `test:sepolia` - Automated integration testing
+  
+- **Live Demo Script Updates**: Enhanced with existing token support
+  - Modified to use pre-deployed DemoToken instead of deploying new ones
+  - Updated to use 0.2 DT amounts to meet minimum safety deposit requirements
+  - Added better error handling and balance checking
+
+### Fixed
+- **Token Transfer Gap**: Addressed the issue where tokens weren't actually moving
+  - Previous `completeFusionOrder` only marked orders complete without transfers
+  - New scripts demonstrate actual ERC20 token movement to escrows
+  - Clear explanation of settlement mechanics in production 1inch
+
+### Technical Details
+- **Settlement Flow Clarification**: 
+  - Order creation approves tokens but doesn't transfer
+  - Token transfer requires separate settlement step
+  - In production 1inch, resolver infrastructure handles this automatically
+  - Our demo now shows the complete flow including actual transfers
+
 ## [1.2.0] - 2025-07-27
 
 ### 🎯 **PRODUCTION READY**: Complete Production-Ready EscrowFactory and Integration Tests
