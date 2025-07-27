@@ -1,5 +1,6 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
+const { time } = require("@nomicfoundation/hardhat-network-helpers");
 
 describe("NEAR Fusion+ Extension - TRUE 1inch Integration", function () {
     let limitOrderProtocol;
@@ -67,6 +68,7 @@ describe("NEAR Fusion+ Extension - TRUE 1inch Integration", function () {
     });
 
     it("Should create NEAR fusion order with proper 1inch format", async function () {
+        const currentTime = await time.latest();
         const orderParams = {
             makerAsset: await mockUSDC.getAddress(),
             makingAmount: ethers.parseUnits("100", 6), // 100 USDC
@@ -76,7 +78,7 @@ describe("NEAR Fusion+ Extension - TRUE 1inch Integration", function () {
             nearChainId: "testnet",
             nearTokenContract: "native.near",
             lockupPeriod: 3600,
-            expiry: Math.floor(Date.now() / 1000) + 3600
+            expiry: currentTime + 3600
         };
 
         // Create order through factory
@@ -98,6 +100,7 @@ describe("NEAR Fusion+ Extension - TRUE 1inch Integration", function () {
     });
 
     it("Should validate NEAR order parameters", async function () {
+        const currentTime = await time.latest();
         const validParams = {
             makerAsset: await mockUSDC.getAddress(),
             makingAmount: ethers.parseUnits("100", 6),
@@ -107,7 +110,7 @@ describe("NEAR Fusion+ Extension - TRUE 1inch Integration", function () {
             nearChainId: "testnet",
             nearTokenContract: "native.near",
             lockupPeriod: 3600,
-            expiry: Math.floor(Date.now() / 1000) + 3600
+            expiry: currentTime + 3600
         };
 
         const [isValid, errorMessage] = await nearFusionFactory.validateNearOrderParams(validParams);
