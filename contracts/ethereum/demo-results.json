@@ -1,0 +1,26 @@
+{
+  "timestamp": "2025-07-27T04:08:34.131Z",
+  "demoToken": "0xeB17922014545aeF282d1d13bf153e5c12C7F682",
+  "orderHash": "0xc3fba67c40bc06f1ee49f19860330288801a0d9d467ac9e3489004b84d06e096",
+  "hashlock": "0x2595efef2e47e28fdc375f36b467f4a9b7cc28f03c86f604d095a0c857ea4987",
+  "secret": "0x43732e51d07caeb256c5717532494f7307fd4c41b239150acea719fed401b49d",
+  "transactionHash": "0x64c1eeb8a438df2a526c5150772540d3e6db784d47d118fc5028915cfeb87e2c",
+  "gasUsed": "658554",
+  "orderDetails": {
+    "sourceAmount": "100.0",
+    "destinationAmount": "2.0",
+    "resolverFee": "1.0",
+    "expiryTime": 1753592875
+  },
+  "contracts": {
+    "CrossChainRegistry": "0x59CE43Ea20892EC3Eff00fc7506cbfA9813FE0ca",
+    "FusionPlusFactory": "0x065357440984Eb0BCC1b610A76b388B367D4e1f0",
+    "NearMainnetAdapter": "0xEb58DbeB1Bd71A0Dd3c07F005C929AcEb597Be01",
+    "NearTestnetAdapter": "0x3cF27b67e96CB3B21C98EF1C57E274A53f0ab014"
+  },
+  "etherscanLinks": {
+    "demoToken": "https://sepolia.etherscan.io/address/0xeB17922014545aeF282d1d13bf153e5c12C7F682",
+    "transaction": "https://sepolia.etherscan.io/tx/0x64c1eeb8a438df2a526c5150772540d3e6db784d47d118fc5028915cfeb87e2c",
+    "factory": "https://sepolia.etherscan.io/address/0x065357440984Eb0BCC1b610A76b388B367D4e1f0"
+  }
+}
