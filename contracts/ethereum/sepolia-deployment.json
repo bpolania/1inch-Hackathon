@@ -1,0 +1,31 @@
+{
+  "network": "sepolia",
+  "chainId": "11155111",
+  "deployer": "0x04e7B48DD6D9f33ffD1A7Be63fF91e6F318492ed",
+  "timestamp": "2025-07-27T03:33:28.103Z",
+  "contracts": {
+    "CrossChainRegistry": "0x59CE43Ea20892EC3Eff00fc7506cbfA9813FE0ca",
+    "FusionPlusFactory": "0x065357440984Eb0BCC1b610A76b388B367D4e1f0",
+    "NearMainnetAdapter": "0xEb58DbeB1Bd71A0Dd3c07F005C929AcEb597Be01",
+    "NearTestnetAdapter": "0x3cF27b67e96CB3B21C98EF1C57E274A53f0ab014"
+  },
+  "chainIds": {
+    "NEAR_MAINNET": 40001,
+    "NEAR_TESTNET": 40002,
+    "COSMOS_MAINNET": 40003,
+    "BITCOIN_MAINNET": 40004
+  },
+  "supportedChains": [
+    "40001",
+    "40002"
+  ],
+  "initialResolvers": [
+    "0x04e7B48DD6D9f33ffD1A7Be63fF91e6F318492ed"
+  ],
+  "etherscanLinks": {
+    "registry": "https://sepolia.etherscan.io/address/0x59CE43Ea20892EC3Eff00fc7506cbfA9813FE0ca",
+    "factory": "https://sepolia.etherscan.io/address/0x065357440984Eb0BCC1b610A76b388B367D4e1f0",
+    "nearMainnet": "https://sepolia.etherscan.io/address/0xEb58DbeB1Bd71A0Dd3c07F005C929AcEb597Be01",
+    "nearTestnet": "https://sepolia.etherscan.io/address/0x3cF27b67e96CB3B21C98EF1C57E274A53f0ab014"
+  }
+}
