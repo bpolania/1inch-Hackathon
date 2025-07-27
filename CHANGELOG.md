@@ -18,6 +18,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Auto-detects existing orders vs creating new ones
   - Single command for full demonstration flow
   
+- **NEAR Side Completion Framework**: Analysis and preparation for complete end-to-end atomic swap
+  - `scripts/complete-near-side.js` - NEAR execution simulation and command generation
+  - `NEXT-STEPS.md` - Comprehensive roadmap for completing NEAR side execution
+  - Analysis of resolver business model and cross-chain liquidity provision
+  
 - **Production Deployment Considerations**: Comprehensive mainnet requirements section in README
   - Detailed explanation of testnet 1:1 token-to-ETH assumption
   - Oracle integration requirements for accurate token/ETH conversion
@@ -41,12 +46,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - New scripts demonstrate actual ERC20 token movement to escrows
   - Clear explanation of settlement mechanics in production 1inch
 
-### Technical Details
+### Technical Discoveries
+- **Cross-Chain Token Flow Analysis**: 
+  - Confirmed NEAR contract handles native NEAR tokens, not DT tokens
+  - User swaps: 0.22 DT (Ethereum) → 0.004 NEAR (NEAR Protocol)
+  - Resolver provides: NEAR liquidity upfront, claims DT tokens + fees
+  - Proper cross-chain swap between different token types
+  
+- **Resolver Economics Understanding**:
+  - Resolvers act as cross-chain market makers providing liquidity
+  - Must maintain token inventory on multiple chains
+  - Profit from fees and potential arbitrage opportunities
+  - Current demo uses `demo.cuteharbor3573.testnet` as resolver
+  
 - **Settlement Flow Clarification**: 
   - Order creation approves tokens but doesn't transfer
   - Token transfer requires separate settlement step
   - In production 1inch, resolver infrastructure handles this automatically
   - Our demo now shows the complete flow including actual transfers
+
+### Documentation
+- **Next Steps Planning**: Complete roadmap for NEAR side execution
+  - Detailed technical requirements and account structure
+  - Exact NEAR CLI commands for live execution
+  - Success criteria and expected final state
+  - Context preservation for next development session
 
 ## [1.2.0] - 2025-07-27
 
