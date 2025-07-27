@@ -133,12 +133,31 @@ npm test test/CrossChainRegistry.test.js
 
 ### Deployed Contracts
 
+#### Core Infrastructure
 | Contract | Address | Etherscan |
 |----------|---------|-----------|
 | **CrossChainRegistry** | `0x59CE43Ea20892EC3Eff00fc7506cbfA9813FE0ca` | [View](https://sepolia.etherscan.io/address/0x59CE43Ea20892EC3Eff00fc7506cbfA9813FE0ca) |
-| **OneInchFusionPlusFactory** | `0x065357440984Eb0BCC1b610A76b388B367D4e1f0` | [View](https://sepolia.etherscan.io/address/0x065357440984Eb0BCC1b610A76b388B367D4e1f0) |
 | **NEAR Mainnet Adapter** | `0xEb58DbeB1Bd71A0Dd3c07F005C929AcEb597Be01` | [View](https://sepolia.etherscan.io/address/0xEb58DbeB1Bd71A0Dd3c07F005C929AcEb597Be01) |
 | **NEAR Testnet Adapter** | `0x3cF27b67e96CB3B21C98EF1C57E274A53f0ab014` | [View](https://sepolia.etherscan.io/address/0x3cF27b67e96CB3B21C98EF1C57E274A53f0ab014) |
+
+#### Production 1inch Integration (Latest)
+| Contract | Address | Etherscan |
+|----------|---------|-----------|
+| **ProductionOneInchEscrowFactory** | `0xf9dE921BbEAbC78F14a5F65aa22aF1697370caED` | [View](https://sepolia.etherscan.io/address/0xf9dE921BbEAbC78F14a5F65aa22aF1697370caED) |
+| **NearTakerInteraction** | `0xA438D7aB66013A13D99f5fDaAFC73e17a2706784` | [View](https://sepolia.etherscan.io/address/0xA438D7aB66013A13D99f5fDaAFC73e17a2706784) |
+| **OneInchFusionPlusFactory** | `0x2E053bA098E2DB09C7F61A2854063BB2161b7b0a` | [View](https://sepolia.etherscan.io/address/0x2E053bA098E2DB09C7F61A2854063BB2161b7b0a) |
+| **EscrowSrc Implementation** | `0x3bF4bef72C5d7f71a8fAAe5A0f98C52e41Bc7426` | [View](https://sepolia.etherscan.io/address/0x3bF4bef72C5d7f71a8fAAe5A0f98C52e41Bc7426) |
+| **EscrowDst Implementation** | `0x454fFCf3fd993c93d2C13DE36948d9eec0Ee6adE` | [View](https://sepolia.etherscan.io/address/0x454fFCf3fd993c93d2C13DE36948d9eec0Ee6adE) |
+
+#### Test Tokens
+| Contract | Address | Etherscan |
+|----------|---------|-----------|
+| **Demo Token (DT)** | `0xaa86ed59bcf10c838F2abDa08D1Ca8C6D1609d43` | [View](https://sepolia.etherscan.io/address/0xaa86ed59bcf10c838F2abDa08D1Ca8C6D1609d43) |
+
+#### Legacy Contracts (Original)
+| Contract | Address | Etherscan |
+|----------|---------|-----------|
+| **OneInchFusionPlusFactory (Legacy)** | `0x065357440984Eb0BCC1b610A76b388B367D4e1f0` | [View](https://sepolia.etherscan.io/address/0x065357440984Eb0BCC1b610A76b388B367D4e1f0) |
 
 ### NEAR Protocol Integration
 

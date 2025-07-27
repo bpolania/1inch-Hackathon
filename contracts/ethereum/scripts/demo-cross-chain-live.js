@@ -29,10 +29,17 @@ async function main() {
     const deploymentPath = path.join(__dirname, "..", "sepolia-deployment.json");
     const deploymentInfo = JSON.parse(fs.readFileSync(deploymentPath, "utf8"));
     
+    // Use production contracts if available
+    const factoryAddress = deploymentInfo.productionDeployment?.contracts?.OneInchFusionPlusFactory || deploymentInfo.contracts.FusionPlusFactory;
+    const factoryType = deploymentInfo.productionDeployment ? "OneInchFusionPlusFactory" : "FusionPlusFactory";
+    
     console.log("📋 Using deployed contracts:");
     console.log(`   Registry: ${deploymentInfo.contracts.CrossChainRegistry}`);
-    console.log(`   Factory: ${deploymentInfo.contracts.FusionPlusFactory}`);
+    console.log(`   Factory (${factoryType}): ${factoryAddress}`);
     console.log(`   NEAR Testnet Adapter: ${deploymentInfo.contracts.NearTestnetAdapter}`);
+    if (deploymentInfo.productionDeployment) {
+        console.log(`   Production EscrowFactory: ${deploymentInfo.productionDeployment.contracts.ProductionOneInchEscrowFactory}`);
+    }
     console.log("");
 
     // Connect to Ethereum
@@ -41,28 +48,38 @@ async function main() {
     console.log("💰 Balance:", ethers.formatEther(await ethers.provider.getBalance(signer.address)), "ETH");
 
     // Load contract instances
-    const factory = await ethers.getContractAt("FusionPlusFactory", deploymentInfo.contracts.FusionPlusFactory, signer);
+    const factory = await ethers.getContractAt(factoryType, factoryAddress, signer);
     const registry = await ethers.getContractAt("CrossChainRegistry", deploymentInfo.contracts.CrossChainRegistry, signer);
     const nearAdapter = await ethers.getContractAt("NearDestinationChain", deploymentInfo.contracts.NearTestnetAdapter, signer);
 
     console.log("");
-    console.log("🪙 Step 1: Deploy Test Token for Demo");
-    console.log("=====================================");
+    console.log("🪙 Step 1: Connect to Existing Demo Token");
+    console.log("=========================================");
 
-    // Deploy a test ERC20 token for the demo
-    console.log("Deploying DemoToken (DT) for cross-chain swap...");
-    const DemoToken = await ethers.getContractFactory("MockERC20", signer);
-    const demoToken = await DemoToken.deploy("Demo Token", "DT", 18);
-    await demoToken.waitForDeployment();
-    const tokenAddress = await demoToken.getAddress();
+    // Use existing DemoToken from deployment
+    const tokenAddress = deploymentInfo.productionDeployment?.contracts?.DemoToken;
+    if (!tokenAddress) {
+        throw new Error("DemoToken not found in deployment. Please deploy it first.");
+    }
     
-    console.log("✅ DemoToken deployed to:", tokenAddress);
+    console.log("🔗 Using existing DemoToken (DT):", tokenAddress);
     console.log("   View on Etherscan: https://sepolia.etherscan.io/address/" + tokenAddress);
 
-    // Mint tokens for demo
-    const mintAmount = ethers.parseEther("1000"); // 1000 DT
-    await demoToken.mint(signer.address, mintAmount);
-    console.log("💰 Minted 1000 DT to:", signer.address);
+    // Connect to existing token
+    const demoToken = await ethers.getContractAt("MockERC20", tokenAddress, signer);
+    
+    // Check current balance
+    const currentBalance = await demoToken.balanceOf(signer.address);
+    console.log("💰 Current DT balance:", ethers.formatEther(currentBalance), "DT");
+    
+    // Mint more tokens if needed
+    const requiredAmount = ethers.parseEther("200"); // 200 DT for multiple demos
+    if (currentBalance < requiredAmount) {
+        const mintAmount = requiredAmount - currentBalance;
+        console.log("🪙 Minting additional", ethers.formatEther(mintAmount), "DT...");
+        await demoToken.mint(signer.address, mintAmount);
+        console.log("✅ Minted additional tokens");
+    }
 
     console.log("");
     console.log("🔐 Step 2: Generate Atomic Swap Secrets");
@@ -117,6 +134,7 @@ async function main() {
         destinationAddress: ethers.toUtf8Bytes(nearAccount),
         resolverFeeAmount: resolverFee,
         expiryTime: Math.floor(Date.now() / 1000) + 3600, // 1 hour
+        hashlock: hashlock, // Required for production factory
         chainParams: chainParams
     };
 
@@ -218,16 +236,18 @@ async function main() {
                 swapAmount
             );
             
-            console.log("💰 Required safety deposit:", ethers.formatEther(safetyDeposit), "DT");
+            console.log("💰 Required safety deposit:", ethers.formatEther(safetyDeposit), "ETH");
             console.log("📊 Estimated NEAR cost:", ethers.formatEther(estimatedCost), "NEAR");
 
-            // For demo, we'll approve additional tokens for safety deposit
-            const additionalApprove = await demoToken.approve(await factory.getAddress(), safetyDeposit);
-            await additionalApprove.wait();
-            console.log("✅ Approved safety deposit");
+            // Check if we have enough ETH for safety deposit
+            const balance = await ethers.provider.getBalance(signer.address);
+            if (balance < safetyDeposit) {
+                throw new Error(`Insufficient ETH balance for safety deposit. Need: ${ethers.formatEther(safetyDeposit)} ETH`);
+            }
+            console.log("✅ Sufficient ETH balance for safety deposit");
 
-            // Match the order
-            const matchTx = await factory.matchFusionOrder(orderHash, hashlock);
+            // Match the order with ETH safety deposit
+            const matchTx = await factory.matchFusionOrder(orderHash, hashlock, { value: safetyDeposit });
             const matchReceipt = await matchTx.wait();
             
             console.log("✅ Order matched by resolver!");
@@ -301,7 +321,7 @@ async function main() {
         etherscanLinks: {
             demoToken: `https://sepolia.etherscan.io/address/${tokenAddress}`,
             transaction: `https://sepolia.etherscan.io/tx/${createReceipt.hash}`,
-            factory: `https://sepolia.etherscan.io/address/${deploymentInfo.contracts.FusionPlusFactory}`
+            factory: `https://sepolia.etherscan.io/address/${factoryAddress}`
         }
     };
 
