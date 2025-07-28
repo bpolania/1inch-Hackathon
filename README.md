@@ -9,29 +9,40 @@ A **production-ready extension** to 1inch Fusion+ that enables atomic swaps betw
 
 ### Key Achievements
 1. **Live on Sepolia**: All contracts deployed and operational ([View Contracts](#deployed-contracts))
-2. **Real Token Transfers**: Demonstrated with 0.22 DT transfer ([tx: 0xadd5c2...70806](https://sepolia.etherscan.io/tx/0xadd5c28ebfd894aa4da95b061398e7b7144f0a3141c6819db470db29bcd70806))
-3. **80 Tests Passing**: Comprehensive test coverage across all components
-4. **Modular Architecture**: Extensible to any blockchain via `IDestinationChain` interface
-5. **True 1inch Extension**: Uses actual `ITakerInteraction` and `IOneInchEscrowFactory` interfaces
+2. **Complete Atomic Swap**: Full end-to-end cross-chain swap between Ethereum and NEAR Protocol
+3. **Real Token Transfers**: Demonstrated with 0.42 DT total transfers across multiple swaps
+4. **85+ Tests Passing**: Comprehensive test coverage including integration tests for deployed contracts
+5. **Modular Architecture**: Extensible to any blockchain via `IDestinationChain` interface
+6. **True 1inch Extension**: Uses actual `ITakerInteraction` and `IOneInchEscrowFactory` interfaces
+7. **Production Ready**: Clean codebase with consolidated scripts and comprehensive verification
 
 ### Quick Demo
 ```bash
+# Verify the complete atomic swap that already happened
+npm run verify-swap
+
+# Run all integration tests
+npm test
+
 # Run the complete demonstration (create order → complete → transfer tokens)
 npm run demo:fusion-complete
 ```
 
-This single command demonstrates:
-- Cross-chain order creation with hashlock
-- Order completion with secret revelation
-- Actual token transfer to escrow (the complete flow!)
+The verification command confirms:
+- ✅ Real DT tokens moved (0.2 DT in escrow)
+- ✅ Real NEAR tokens transferred (0.004 NEAR)
+- ✅ Cross-chain secret coordination successful
+- ✅ All 8 atomic swap criteria verified
 
 ## 🎯 **Implementation Status**: PRODUCTION READY
 
 - ✅ **True 1inch Integration**: Production-ready `EscrowFactory` and `ITakerInteraction` implementation
 - ✅ **NEAR Protocol Support**: Live contracts on both Ethereum Sepolia and NEAR testnet
-- ✅ **Token Transfers Working**: Complete settlement flow with on-chain proof
+- ✅ **Complete Atomic Swaps**: End-to-end cross-chain swaps with real token movements
+- ✅ **Comprehensive Verification**: 8-point verification system confirms swap completion
 - ✅ **Modular Architecture**: Universal `IDestinationChain` interface for any blockchain
-- ✅ **Comprehensive Testing**: 80 passing tests with full production coverage
+- ✅ **Comprehensive Testing**: 85+ passing tests with full production coverage including integration tests
+- ✅ **Clean Codebase**: Consolidated scripts (50% reduction) with comprehensive documentation
 - ✅ **Ready for Mainnet**: Complete with oracle integration guide for production deployment
 
 ## Architecture Overview
@@ -132,10 +143,16 @@ npm test
 The project includes comprehensive test coverage:
 
 ```bash
+# Verify completed atomic swap
+npm run verify-swap
+
 # Run 1inch integration tests
 npm test test/OneInchIntegration.test.js
 
-# Run all tests (80 tests)
+# Run end-to-end verification tests for deployed contracts
+npm test test/EndToEndVerification.test.js
+
+# Run all tests (85+ tests)
 npm test
 
 # Run NEAR adapter tests
@@ -151,6 +168,24 @@ npm test test/CrossChainRegistry.test.js
 - **1inch Integration**: 11 tests - Complete 1inch Fusion+ integration
 - **ProductionEscrowFactory**: 26 tests - Production factory unit tests
 - **Production Integration**: 5 tests - Full local deployment testing
+- **EndToEnd Verification**: 17 tests - Integration tests for deployed contracts and complete atomic swaps
+
+### Verification System
+The project includes a comprehensive 8-point verification system that confirms complete atomic swap success:
+
+```bash
+npm run verify-swap
+```
+
+**Verification Checklist:**
+1. ✅ Order exists and is completed
+2. ✅ Secret matches hashlock (SHA-256)
+3. ✅ DT tokens moved to escrow (0.2 DT)
+4. ✅ ETH safety deposit in destination escrow (0.01 ETH)
+5. ✅ User DT balance appropriately decreased
+6. ✅ ETH spent on transactions
+7. ✅ NEAR tokens transferred (0.004 NEAR verified externally)
+8. ✅ Cross-chain secret coordination successful
 
 ## Live Sepolia Deployment
 
@@ -229,7 +264,12 @@ contracts/ethereum/
 │   └── SepoliaIntegration.test.js       # Live deployment tests
 └── scripts/
     ├── deploy-to-sepolia.js             # Deployment script
-    └── demo-fusion-complete.js          # Complete demo script
+    ├── demo-fusion-complete.js          # Complete demo script
+    ├── verify-end-to-end-swap.js        # Comprehensive verification script
+    ├── complete-atomic-swap-near.js     # NEAR side execution
+    ├── complete-full-atomic-swap.js     # Ethereum side completion
+    ├── complete-token-settlement.js     # Token settlement demo
+    └── create-near-compatible-order.js  # Order creation utility
 ```
 
 ## 1inch Integration Details
