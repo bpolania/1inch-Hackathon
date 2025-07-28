@@ -18,6 +18,7 @@
     "test:sepolia": "hardhat test test/SepoliaIntegration.test.js --network sepolia",
     "demo:fusion-complete": "hardhat run scripts/demo-fusion-complete.js --network sepolia",
     "demo:near-complete": "hardhat run scripts/complete-near-side.js --network sepolia",
+    "complete:atomic-swap": "node scripts/complete-atomic-swap-near.js",
     "verify": "hardhat verify"
   },
   "dependencies": {
