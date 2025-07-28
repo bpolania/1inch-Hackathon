@@ -36,8 +36,10 @@ describe("Sepolia Live Deployment Integration Tests", function () {
     const CrossChainRegistry = await ethers.getContractFactory("CrossChainRegistry");
     registry = CrossChainRegistry.attach(deploymentInfo.contracts.CrossChainRegistry);
 
-    const FusionPlusFactory = await ethers.getContractFactory("FusionPlusFactory");
-    factory = FusionPlusFactory.attach(deploymentInfo.contracts.FusionPlusFactory);
+    // Use production contracts if available, otherwise fallback to original
+    const factoryAddress = deploymentInfo.productionDeployment?.contracts?.OneInchFusionPlusFactory || deploymentInfo.contracts.FusionPlusFactory;
+    const OneInchFusionPlusFactory = await ethers.getContractFactory("OneInchFusionPlusFactory");
+    factory = OneInchFusionPlusFactory.attach(factoryAddress);
 
     const NearDestinationChain = await ethers.getContractFactory("NearDestinationChain");
     nearTestnetAdapter = NearDestinationChain.attach(deploymentInfo.contracts.NearTestnetAdapter);
@@ -61,9 +63,10 @@ describe("Sepolia Live Deployment Integration Tests", function () {
       expect(supportedChains).to.include(40002n); // NEAR Testnet
     });
 
-    it("Should verify FusionPlusFactory deployment", async function () {
+    it("Should verify OneInchFusionPlusFactory deployment", async function () {
       // Check contract exists
-      const code = await ethers.provider.getCode(deploymentInfo.contracts.FusionPlusFactory);
+      const factoryAddress = deploymentInfo.productionDeployment?.contracts?.OneInchFusionPlusFactory || deploymentInfo.contracts.FusionPlusFactory;
+      const code = await ethers.provider.getCode(factoryAddress);
       expect(code).to.not.equal("0x");
 
       // Verify registry connection
@@ -74,8 +77,11 @@ describe("Sepolia Live Deployment Integration Tests", function () {
       const isAuthorized = await factory.authorizedResolvers(deploymentInfo.deployer);
       expect(isAuthorized).to.be.true;
 
-      const resolverCount = await factory.resolverCount();
-      expect(resolverCount).to.be.gte(1);
+      // Verify production escrow factory connection
+      if (deploymentInfo.productionDeployment) {
+        const escrowFactoryAddress = await factory.getOneInchEscrowFactory();
+        expect(escrowFactoryAddress).to.equal(deploymentInfo.productionDeployment.contracts.ProductionOneInchEscrowFactory);
+      }
     });
 
     it("Should verify NEAR adapter deployments", async function () {
@@ -217,6 +223,7 @@ describe("Sepolia Live Deployment Integration Tests", function () {
         destinationAddress: ethers.toUtf8Bytes("alice.testnet"),
         resolverFeeAmount: ethers.parseEther("1"),
         expiryTime: Math.floor(Date.now() / 1000) + 3600,
+        hashlock: ethers.keccak256(ethers.toUtf8Bytes("test-secret")),
         chainParams: {
           destinationAddress: ethers.toUtf8Bytes("alice.testnet"),
           executionParams: ethers.toUtf8Bytes(""),
@@ -262,6 +269,7 @@ describe("Sepolia Live Deployment Integration Tests", function () {
         destinationAddress: ethers.toUtf8Bytes("fusion-plus.demo.cuteharbor3573.testnet"),
         resolverFeeAmount: ethers.parseUnits("1", 6), // 1 USDC
         expiryTime: Math.floor(Date.now() / 1000) + 7200, // 2 hours
+        hashlock: ethers.keccak256(ethers.toUtf8Bytes("simulation-secret")),
         chainParams: {
           destinationAddress: ethers.toUtf8Bytes("fusion-plus.demo.cuteharbor3573.testnet"),
           executionParams: ethers.toUtf8Bytes(""),

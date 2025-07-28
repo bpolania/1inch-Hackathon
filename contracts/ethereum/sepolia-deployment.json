@@ -27,5 +27,23 @@
     "factory": "https://sepolia.etherscan.io/address/0x065357440984Eb0BCC1b610A76b388B367D4e1f0",
     "nearMainnet": "https://sepolia.etherscan.io/address/0xEb58DbeB1Bd71A0Dd3c07F005C929AcEb597Be01",
     "nearTestnet": "https://sepolia.etherscan.io/address/0x3cF27b67e96CB3B21C98EF1C57E274A53f0ab014"
+  },
+  "productionDeployment": {
+    "deploymentDate": "2025-07-27T05:43:48.842Z",
+    "deployer": "0x04e7B48DD6D9f33ffD1A7Be63fF91e6F318492ed",
+    "contracts": {
+      "ProductionOneInchEscrowFactory": "0xf9dE921BbEAbC78F14a5F65aa22aF1697370caED",
+      "EscrowSrcImplementation": "0x3bF4bef72C5d7f71a8fAAe5A0f98C52e41Bc7426",
+      "EscrowDstImplementation": "0x454fFCf3fd993c93d2C13DE36948d9eec0Ee6adE",
+      "NearTakerInteraction": "0xA438D7aB66013A13D99f5fDaAFC73e17a2706784",
+      "OneInchFusionPlusFactory": "0x2E053bA098E2DB09C7F61A2854063BB2161b7b0a",
+      "DemoToken": "0xaa86ed59bcf10c838F2abDa08D1Ca8C6D1609d43"
+    },
+    "etherscanLinks": {
+      "escrowFactory": "https://sepolia.etherscan.io/address/0xf9dE921BbEAbC78F14a5F65aa22aF1697370caED",
+      "nearTakerInteraction": "https://sepolia.etherscan.io/address/0xA438D7aB66013A13D99f5fDaAFC73e17a2706784",
+      "oneInchFactory": "https://sepolia.etherscan.io/address/0x2E053bA098E2DB09C7F61A2854063BB2161b7b0a",
+      "demoToken": "https://sepolia.etherscan.io/address/0xaa86ed59bcf10c838F2abDa08D1Ca8C6D1609d43"
+    }
   }
 }

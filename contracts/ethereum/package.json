@@ -16,9 +16,13 @@
     "demo:fusion:sepolia": "hardhat run scripts/demo-fusion-plus.js --network sepolia",
     "test:deployed": "hardhat run scripts/test-deployed.js --network sepolia",
     "test:sepolia": "hardhat test test/SepoliaIntegration.test.js --network sepolia",
+    "demo:fusion-complete": "hardhat run scripts/demo-fusion-complete.js --network sepolia",
+    "demo:near-complete": "hardhat run scripts/complete-near-side.js --network sepolia",
+    "complete:atomic-swap": "node scripts/complete-atomic-swap-near.js",
     "verify": "hardhat verify"
   },
   "dependencies": {
+    "@1inch/cross-chain-sdk": "^0.2.1-rc.58",
     "@1inch/limit-order-protocol-contract": "^4.3.2",
     "@openzeppelin/contracts": "^5.0.0",
     "dotenv": "^17.2.0",
