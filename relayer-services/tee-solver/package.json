@@ -12,6 +12,8 @@
     "lint": "eslint src/**/*.ts"
   },
   "dependencies": {
+    "@1inch/cross-chain-sdk": "^0.2.1-rc.62",
+    "@1inch/fusion-sdk": "^2.3.5",
     "axios": "^1.6.0",
     "dotenv": "^16.3.0",
     "ethers": "^6.8.0",
