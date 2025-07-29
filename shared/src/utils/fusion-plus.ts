@@ -1,5 +1,6 @@
 import { SwapIntent, FusionPlusIntent, OneInchImmutables, NearExecutionParams, CosmosExecutionParams } from '../types/intent';
 import { ChainId, ChainType, CHAIN_INFO } from '../types/chains';
+import { generateHashlock } from './intent';
 import { keccak256, toUtf8Bytes } from 'ethers';
 
 // Re-export essential chain constants for easy access
@@ -441,10 +442,7 @@ export function createFusionPlusCosmosIntent(params: {
   };
 }
 
-// Generate SHA-256 hashlock from preimage
-export function generateHashlock(preimage: string): string {
-  return keccak256(toUtf8Bytes(preimage)).slice(2); // Remove 0x prefix for 64-char hex
-}
+// Note: generateHashlock is imported from './intent' to avoid duplication
 
 // Encode Cosmos execution parameters for Ethereum adapter
 export function encodeCosmosExecutionParams(params: {
