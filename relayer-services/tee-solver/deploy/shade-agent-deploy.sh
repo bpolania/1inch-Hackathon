@@ -19,6 +19,18 @@ SHADE_AGENT_CONTRACT=""
 NEAR_ACCOUNT=""
 DEPLOYMENT_ENV="${DEPLOYMENT_ENV:-testnet}"
 
+# Testnet-specific configuration
+if [[ "${DEPLOYMENT_ENV}" == "testnet" ]]; then
+    DOCKER_TAG="testnet-$(date +%Y%m%d)"
+    MPC_CONTRACT_ID="v1.signer-dev"
+    NEAR_NETWORK="testnet"
+    log_info "🧪 Configuring for TESTNET deployment"
+else
+    MPC_CONTRACT_ID="v1.signer"
+    NEAR_NETWORK="mainnet"
+    log_info "🚀 Configuring for MAINNET deployment"
+fi
+
 # Functions
 log_info() {
     echo -e "${BLUE}[INFO]${NC} $1"
@@ -155,14 +167,15 @@ create_deployment_config() {
         exit 1
     fi
     
-    # Create production docker-compose.yml
-    cat > docker-compose.production.yml << EOF
+    # Create deployment docker-compose.yml (testnet or production)
+    COMPOSE_FILE="docker-compose.${DEPLOYMENT_ENV}.yml"
+    cat > ${COMPOSE_FILE} << EOF
 version: '3.8'
 
 services:
   tee-solver:
     image: ${DOCKER_IMAGE}:${DOCKER_TAG}
-    container_name: shade-agent-tee-solver-prod
+    container_name: shade-agent-tee-solver-${DEPLOYMENT_ENV}
     platform: linux/amd64
     
     environment:
@@ -170,7 +183,7 @@ services:
       NEXT_PUBLIC_accountId: ${NEAR_ACCOUNT}
       NEXT_PUBLIC_secretKey: \${NEAR_SECRET_KEY}
       NEXT_PUBLIC_contractId: ${SHADE_AGENT_CONTRACT}
-      NEAR_NETWORK: ${DEPLOYMENT_ENV}
+      NEAR_NETWORK: ${NEAR_NETWORK}
       
       # TEE Configuration
       TEE_MODE: "enabled"
@@ -185,7 +198,7 @@ services:
       # Chain Signatures Fallback
       CHAIN_SIGNATURES_ENABLED: "true"
       CHAIN_SIGNATURES_FALLBACK: "true"
-      MPC_CONTRACT_ID: "v1.signer"
+      MPC_CONTRACT_ID: "${MPC_CONTRACT_ID}"
       
       # Security
       NODE_ENV: "production"
@@ -229,7 +242,7 @@ networks:
     driver: bridge
 EOF
     
-    log_success "Production deployment configuration created"
+    log_success "${DEPLOYMENT_ENV^} deployment configuration created: ${COMPOSE_FILE}"
 }
 
 create_phala_config() {
