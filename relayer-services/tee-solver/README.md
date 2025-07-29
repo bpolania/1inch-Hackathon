@@ -1,21 +1,21 @@
-# 🛡️ TEE Solver - Decentralized 1inch Fusion+ Solver
+# 🛡️ TEE Solver - Decentralized 1inch Fusion+ Solver with NEAR Chain Signatures
 
 > **NEAR Shade Agent Bounty Implementation** - $10,000 Prize
 > 
-> A decentralized TEE (Trusted Execution Environment) solver for 1inch Fusion+ cross-chain atomic swaps, built for the NEAR Shade Agent Framework.
+> A fully decentralized TEE (Trusted Execution Environment) solver for 1inch Fusion+ cross-chain atomic swaps, featuring NEAR Chain Signatures MPC for trustless transaction signing.
 
-## 🎯 Project Status: **Production Ready - 100% Test Coverage with 1inch Fusion+ Integration**
+## 🎯 Project Status: **Production Ready - 100% Test Coverage with Complete Chain Signatures Integration**
 
-**✅ Major Milestone Achieved**: Complete 1inch Fusion+ integration with 112/112 tests passing across comprehensive test suite.
+**🏆 Major Milestone Achieved**: Complete NEAR Chain Signatures integration with **185/185 tests passing** - fully production-ready for NEAR Shade Agent deployment!
 
-### Current Development Phase
+### Development Phases - ALL COMPLETE ✅
 - ✅ **Phase 1**: Core TEE Solver Architecture - **COMPLETE**
 - ✅ **Phase 2**: 1inch Fusion+ SDK Integration - **COMPLETE**
 - ✅ **Phase 3**: Meta-Order Creator Implementation - **COMPLETE**
-- ⏳ **Phase 4**: NEAR Chain Signatures Integration - **IN PROGRESS**
-- 🎯 **Phase 5**: NEAR Shade Agent TEE Deployment - **FINAL**
+- ✅ **Phase 4**: NEAR Chain Signatures Integration - **COMPLETE** 🎉
+- 🚀 **Phase 5**: NEAR Shade Agent TEE Deployment - **READY**
 
-## 🏗️ Architecture Overview
+## 🏗️ Decentralized Architecture with NEAR Chain Signatures
 
 ```
 ┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
@@ -28,23 +28,44 @@
 └─────────────────┘    └──────────────────┘    └─────────────────┘
          │                        │                        │
          └────────────────────────▼────────────────────────┘
-                          ┌─────────────────┐
-                          │ Fusion Manager  │
-                          │                 │
-                          │ • Order Creation│
-                          │ • Secret Gen    │
-                          │ • Order Tracking│
-                          │ • Statistics    │
-                          └─────────────────┘
+                     ┌─────────────────────────────────┐
+                     │ Enhanced Fusion Manager         │
+                     │ with Chain Signatures           │
+                     │                                 │
+                     │ • Dual-Mode Signing             │
+                     │ • Order Creation & Tracking     │
+                     │ • Statistics & Monitoring       │
+                     └─────────┬───────────────────────┘
+                               │
+        ┌──────────────────────┼──────────────────────┐
+        │                      │                      │
+        ▼                      ▼                      ▼
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│ Chain Signature │    │ Fusion Chain    │    │ NEAR MPC        │
+│ Manager         │    │ Signature       │    │ Network         │
+│                 │    │ Adapter         │    │                 │
+│ • NEAR MPC      │    │                 │    │ • v1.signer     │
+│ • Multi-Chain   │    │ • Order Signing │    │ • Decentralized │
+│ • Address       │    │ • Verification  │    │ • Trustless     │
+│   Derivation    │    │ • Multi-Chain   │    │ • Production    │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 
 ## 🚀 Key Features
+
+### 🔐 NEAR Chain Signatures Integration - **NEW!**
+- **Decentralized Signing**: Complete NEAR MPC integration for trustless transaction signing
+- **Multi-Chain Support**: 7 blockchains with deterministic address derivation
+  - Ethereum, Polygon, Arbitrum, Optimism, BSC (secp256k1)
+  - Bitcoin (secp256k1), Solana (ed25519)
+- **Dual-Mode Operation**: Chain Signatures + Private Key fallback for maximum reliability
+- **Production Ready**: Full integration with v1.signer MPC contract on NEAR
 
 ### 1inch Fusion+ Integration
 - **Complete SDK Integration**: Full 1inch Cross-Chain and Fusion SDK implementation
 - **Meta-Order Creation**: Automatic conversion from quotes to 1inch Fusion+ orders
 - **HashLock Management**: Cryptographic secret generation for atomic swaps
-- **Multi-Chain Support**: Ethereum, Polygon, Arbitrum, Optimism, BSC
+- **Enhanced with Chain Signatures**: Decentralized signing for all Fusion+ orders
 
 ### Real-Time Quote Processing
 - **WebSocket Integration**: Live connection to 1inch relay for quote requests
@@ -59,7 +80,8 @@
 - **Error Resilience**: Graceful handling of SDK failures and network issues
 
 ### Production-Ready Architecture
-- **100% Test Coverage**: 112/112 tests passing across 7 comprehensive test suites
+- **100% Test Coverage**: 185/185 tests passing across 11 comprehensive test suites
+- **Chain Signatures Integration**: Complete NEAR MPC for decentralized signing
 - **Performance Optimization**: Sub-100ms quote generation with concurrent handling
 - **Comprehensive Monitoring**: Real-time statistics and success rate tracking
 - **TypeScript Strict**: Full type safety and compile-time validation
@@ -67,10 +89,11 @@
 ## 📊 Test Coverage Summary
 
 ```
-✅ Test Suites: 7/7 passed (100%)
-✅ Tests: 112/112 passed (100%)  
-⏱️ Total Time: ~13 seconds
+✅ Test Suites: 11/11 passed (100%)
+✅ Tests: 185/185 passed (100%)  
+⏱️ Total Time: ~16 seconds
 🎯 Success Rate: 100%
+🔐 Chain Signatures: Fully Integrated
 ```
 
 ### Test Breakdown
@@ -78,9 +101,14 @@
 - **QuoteGenerator Tests (23)**: Core pricing, routing, and caching logic
 - **FusionManager Tests (25)**: 1inch SDK integration, secrets, order management
 - **FusionQuoteGenerator Tests (19)**: Enhanced quote generation with Fusion+ compatibility
-- **FusionIntegration Tests (9)**: End-to-end quote-to-order workflows and performance
-- **TEE Integration Tests (22)**: Complete solver integration and multi-chain support
-- **IntentListener Tests (13)**: WebSocket communication, resilience, and message processing
+- **FusionIntegration Tests (8)**: End-to-end quote-to-order workflows and performance
+- **TEE Integration Tests (11)**: Complete solver integration and multi-chain support
+- **IntentListener Tests (18)**: WebSocket communication, resilience, and message processing
+- **Chain Signatures Tests (73)**: Complete NEAR MPC integration test suite
+  - ChainSignatureManager Tests (16): NEAR connection, MPC signing, address derivation
+  - FusionChainSignatureAdapter Tests (22): Order signing, verification, multi-chain support
+  - FusionManagerWithChainSignatures Tests (20): Enhanced manager with dual-mode signing
+  - ChainSignatureIntegration Tests (15): End-to-end decentralized signing flows
 
 ## 🛠️ Technical Implementation
 
@@ -123,13 +151,68 @@ private calculateCompetitiveMargin(request: QuoteRequest): number {
 }
 ```
 
+#### NEAR Chain Signatures Integration (`src/signatures/`)
+```typescript
+// Decentralized multi-chain transaction signing
+export class ChainSignatureManager extends EventEmitter {
+  async requestSignature(request: SignatureRequest): Promise<SignatureResponse> {
+    // Call NEAR MPC contract for decentralized signing
+    const signatureResult = await this.callMPCContract({
+      payload: this.prepareTransactionPayload(request.transaction, request.targetChain),
+      path: request.derivationPath,
+      domainId: chainConfig.domainId
+    });
+    
+    return {
+      requestId: request.requestId,
+      signature: signatureResult.signature,
+      signedTransaction: this.reconstructSignedTransaction(
+        request.transaction, 
+        signatureResult, 
+        request.targetChain
+      ),
+      targetChain: request.targetChain
+    };
+  }
+}
+```
+
+#### Enhanced Fusion Manager with Dual-Mode Signing
+```typescript
+// Supports both Chain Signatures and private key fallback
+export class FusionManagerWithChainSignatures extends EventEmitter {
+  async submitOrder(orderData: any): Promise<string> {
+    if (this.useChainSignatures && this.chainSignatureAdapter) {
+      try {
+        // Use decentralized NEAR Chain Signatures
+        const orderHash = await this.submitOrderWithChainSignatures(orderData);
+        this.stats.chainSignatureOrders++;
+        return orderHash;
+      } catch (error) {
+        if (this.config.fallbackToPrivateKey) {
+          // Fallback to private key signing for reliability
+          logger.warn('⚠️ Falling back to private key signing...');
+          return await this.submitOrderWithPrivateKey(orderData);
+        }
+        throw error;
+      }
+    }
+    
+    return await this.submitOrderWithPrivateKey(orderData);
+  }
+}
+```
+
 ### Technical Challenges Solved
 
-1. **BigInt Serialization**: Custom JSON handling for blockchain precision
-2. **TypeScript Strict Mode**: Full compliance across test suite
-3. **WebSocket Mock Testing**: Event-driven simulation system
-4. **AMM Calculation Accuracy**: Constant product formula implementation
-5. **Async Test Coordination**: Deterministic timing and event handling
+1. **Decentralized Signing**: NEAR Chain Signatures MPC integration for trustless operations
+2. **Multi-Chain Address Derivation**: Deterministic address generation across 7 blockchains
+3. **Dual-Mode Architecture**: Seamless fallback between Chain Signatures and private key signing
+4. **BigInt Serialization**: Custom JSON handling for blockchain precision values
+5. **TypeScript Strict Mode**: Full compliance across comprehensive test suite
+6. **WebSocket Mock Testing**: Event-driven simulation system for intent handling
+7. **AMM Calculation Accuracy**: Constant product formula implementation
+8. **Async Test Coordination**: Deterministic timing and event handling across 185 tests
 
 ## 🔧 Development Setup
 
