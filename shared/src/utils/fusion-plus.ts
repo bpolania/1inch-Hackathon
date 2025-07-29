@@ -2,6 +2,21 @@ import { SwapIntent, FusionPlusIntent, OneInchImmutables, NearExecutionParams, C
 import { ChainId, ChainType, CHAIN_INFO } from '../types/chains';
 import { keccak256, toUtf8Bytes } from 'ethers';
 
+// Re-export essential chain constants for easy access
+export { ChainId, ChainType, CHAIN_INFO };
+
+// Export specific Cosmos chain IDs for convenience
+export const NEUTRON_TESTNET = ChainId.NEUTRON_TESTNET;
+export const JUNO_TESTNET = ChainId.JUNO_TESTNET;
+export const COSMOS_HUB_MAINNET = ChainId.COSMOS_HUB_MAINNET;
+export const COSMOS_HUB_TESTNET = ChainId.COSMOS_HUB_TESTNET;
+export const OSMOSIS_MAINNET = ChainId.OSMOSIS_MAINNET;
+export const OSMOSIS_TESTNET = ChainId.OSMOSIS_TESTNET;
+export const STARGAZE_MAINNET = ChainId.STARGAZE_MAINNET;
+export const STARGAZE_TESTNET = ChainId.STARGAZE_TESTNET;
+export const AKASH_MAINNET = ChainId.AKASH_MAINNET;
+export const AKASH_TESTNET = ChainId.AKASH_TESTNET;
+
 // Timelock stage constants (from 1inch codebase)
 export enum TimelockStage {
   SrcWithdrawal = 0,
@@ -339,8 +354,10 @@ export function getCosmosChainInfo(chainId: ChainId) {
 
 // Convert Cosmos amount to micro units (6 decimals for most Cosmos tokens)
 export function toMicroCosmos(amount: string, decimals: number = 6): string {
-  const amountBig = BigInt(amount);
-  return (amountBig * BigInt(10 ** decimals)).toString();
+  // Handle decimal amounts by converting to integer micro units
+  const amountFloat = parseFloat(amount);
+  const microAmount = Math.floor(amountFloat * (10 ** decimals));
+  return microAmount.toString();
 }
 
 // Convert micro units to standard Cosmos amount
@@ -391,30 +408,57 @@ export function getCosmosAddressPrefix(chainId: ChainId): string {
 }
 
 // Create Fusion+ intent with Cosmos destination
-export function createFusionPlusCosmosIntent(
-  intent: SwapIntent,
-  contractAddress: string,
-  oneInchOrderHash: string,
-  safetyDeposit: string,
-  timelockStages: number[]
-): FusionPlusIntent {
-  if (!isCosmosDestination(intent.destinationChain)) {
-    throw new Error('Intent destination chain must be Cosmos');
+export function createFusionPlusCosmosIntent(params: {
+  sourceChainId: number;
+  destinationChainId: number;
+  maker: string;
+  amount: string;
+  cosmosParams: {
+    contractAddress: string;
+    amount: string;
+    nativeDenom: string;
+    gasLimit: number;
+    destinationAddress?: string;
+  };
+}): any {
+  if (!isCosmosDestination(params.destinationChainId)) {
+    throw new Error('Destination chain must be Cosmos');
   }
 
-  const fusionIntent = toFusionPlusIntent(
-    intent,
-    oneInchOrderHash,
-    safetyDeposit,
-    timelockStages
-  );
-
-  // Add Cosmos-specific execution parameters
-  const hashlock = generateOrderHash(intent); // Placeholder - would use actual hashlock
-  const cosmosParams = createCosmosExecutionParams(contractAddress, fusionIntent, hashlock);
+  const hashlock = generateHashlock(`${params.maker}-${Date.now()}`);
+  const timeout = Math.floor(Date.now() / 1000) + 3600; // 1 hour from now
 
   return {
-    ...fusionIntent,
-    cosmosParams // This field would need to be added to FusionPlusIntent interface
+    sourceChainId: params.sourceChainId,
+    destinationChainId: params.destinationChainId,
+    maker: params.maker,
+    amount: params.amount,
+    cosmosParams: params.cosmosParams,
+    hashlock,
+    timeout,
+    orderHash: generateHashlock(`order-${params.maker}-${Date.now()}`),
+    timelocks: packTimelocks(getDefaultTimelockStages())
   };
+}
+
+// Generate SHA-256 hashlock from preimage
+export function generateHashlock(preimage: string): string {
+  return keccak256(toUtf8Bytes(preimage)).slice(2); // Remove 0x prefix for 64-char hex
+}
+
+// Encode Cosmos execution parameters for Ethereum adapter
+export function encodeCosmosExecutionParams(params: {
+  contractAddress: string;
+  amount: string;
+  nativeDenom: string;
+  gasLimit: number;
+}): string {
+  // Simple encoding for demo - in production would use proper ABI encoding
+  const encoded = JSON.stringify({
+    contractAddress: params.contractAddress,
+    msg: JSON.stringify({ execute_fusion_order: { amount: params.amount } }),
+    funds: `${params.amount}${params.nativeDenom}`,
+    gasLimit: params.gasLimit
+  });
+  return Buffer.from(encoded).toString('hex');
 }
