@@ -74,13 +74,19 @@ export function createEthToNeutronFusionOrder(): FusionPlusIntent {
   const timelockStages = getDefaultTimelockStages();
 
   // Step 5: Create Fusion+ intent with Cosmos support
-  const fusionIntent = createFusionPlusCosmosIntent(
-    baseIntent,
-    'neutron1abcdef1234567890abcdef1234567890abcdef1234567890abcdef', // CosmWasm contract
-    orderHash,
-    safetyDeposit,
-    timelockStages
-  );
+  const fusionIntent = createFusionPlusCosmosIntent({
+    sourceChainId: 11155111, // Ethereum Sepolia
+    destinationChainId: 7001, // Neutron Testnet
+    maker: baseIntent.maker,
+    amount: toMicroCosmos('25'), // 25 NTRN in micro units
+    cosmosParams: {
+      contractAddress: 'neutron1abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
+      amount: toMicroCosmos('25'),
+      nativeDenom: 'untrn',
+      gasLimit: 300000,
+      destinationAddress: baseIntent.destinationAddress
+    }
+  });
 
   return fusionIntent;
 }
@@ -125,13 +131,19 @@ export function createEthToJunoFusionOrder(): FusionPlusIntent {
   const safetyDeposit = calculateSafetyDeposit(baseIntent.sourceAmount);
   const timelockStages = getDefaultTimelockStages();
 
-  return createFusionPlusCosmosIntent(
-    baseIntent,
-    'juno1abcdef1234567890abcdef1234567890abcdef1234567890abcdef123456', // CosmWasm contract
-    orderHash,
-    safetyDeposit,
-    timelockStages
-  );
+  return createFusionPlusCosmosIntent({
+    sourceChainId: 11155111, // Ethereum Sepolia
+    destinationChainId: 7002, // Juno Testnet
+    maker: baseIntent.maker,
+    amount: toMicroCosmos('50'), // 50 JUNO in micro units
+    cosmosParams: {
+      contractAddress: 'juno1abcdef1234567890abcdef1234567890abcdef1234567890abcdef123456',
+      amount: toMicroCosmos('50'),
+      nativeDenom: 'ujunox',
+      gasLimit: 300000,
+      destinationAddress: baseIntent.destinationAddress
+    }
+  });
 }
 
 // Validation function for Cosmos Fusion+ orders
