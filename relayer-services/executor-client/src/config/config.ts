@@ -110,7 +110,9 @@ export async function loadConfig(): Promise<Config> {
             feeRate: parseInt(process.env.BITCOIN_FEE_RATE || '10'), // sat/byte
             htlcTimelock: parseInt(process.env.BITCOIN_HTLC_TIMELOCK || '144'), // blocks
             dustThreshold: parseInt(process.env.BITCOIN_DUST_THRESHOLD || '546'), // satoshis
-            minConfirmations: parseInt(process.env.BITCOIN_MIN_CONFIRMATIONS || '1')
+            minConfirmations: parseInt(process.env.BITCOIN_MIN_CONFIRMATIONS || '1'),
+            privateKey: process.env.BITCOIN_PRIVATE_KEY, // Optional: for real transaction execution
+            apiUrl: process.env.BITCOIN_API_URL // Optional: custom API endpoint
         },
 
         wallet: {

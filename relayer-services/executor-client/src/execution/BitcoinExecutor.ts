@@ -11,6 +11,7 @@ import { EventEmitter } from 'events';
 import { Config } from '../config/config';
 import { logger } from '../utils/logger';
 import { ExecutableOrder } from '../core/ExecutorEngine';
+import { EthereumEventMonitor } from '../monitoring/EthereumEventMonitor';
 
 // Import our Bitcoin HTLC implementation
 const BitcoinHTLCManager = require('../../../../../contracts/bitcoin/src/BitcoinHTLCManager');
@@ -40,10 +41,13 @@ export class BitcoinExecutor extends EventEmitter {
     private btcManager: any; // BitcoinHTLCManager instance
     private keyPair: any; // Bitcoin key pair for resolver
     private changeAddress: string;
+    private eventMonitor: EthereumEventMonitor;
+    private orderContexts: Map<string, any> = new Map(); // Store order execution contexts
 
     constructor(config: Config) {
         super();
         this.config = config;
+        this.eventMonitor = new EthereumEventMonitor(config);
     }
 
     async initialize(): Promise<void> {
@@ -72,6 +76,12 @@ export class BitcoinExecutor extends EventEmitter {
             });
             this.changeAddress = changePayment.address;
 
+            // Initialize Ethereum event monitoring
+            await this.eventMonitor.startMonitoring();
+            
+            // Listen for secret revelation events
+            this.eventMonitor.on('secretRevealed', this.handleSecretRevealed.bind(this));
+            
             logger.info('✅ Bitcoin Executor initialized successfully');
             logger.info(`📍 Network: ${this.config.bitcoin.network}`);
             logger.info(`⚡ Fee Rate: ${this.config.bitcoin.feeRate} sat/byte`);
@@ -128,7 +138,15 @@ export class BitcoinExecutor extends EventEmitter {
             logger.info(`💰 HTLC Funded: ${fundingTxId}`);
 
             // Step 3: Monitor for secret revelation on Ethereum
-            this.monitorSecretRevelation(order, htlcScript, htlcAddress);
+            this.eventMonitor.monitorOrder(order.orderHash);
+            
+            // Store order context for later claiming
+            this.storeOrderContext(order.orderHash, {
+                htlcScript,
+                htlcAddress,
+                fundingTxId,
+                order: order.order
+            });
 
             const executionTime = Date.now() - startTime;
 
@@ -156,7 +174,7 @@ export class BitcoinExecutor extends EventEmitter {
     }
 
     /**
-     * Fund Bitcoin HTLC address
+     * Fund Bitcoin HTLC address with real transaction
      */
     private async fundHTLC(
         htlcAddress: string,
@@ -166,32 +184,53 @@ export class BitcoinExecutor extends EventEmitter {
         logger.info(`💸 Funding HTLC ${htlcAddress} with ${amount} satoshis`);
 
         try {
-            // In production, resolver would:
-            // 1. Get UTXOs from their Bitcoin wallet
-            // 2. Create funding transaction
-            // 3. Sign and broadcast
-
-            // For demo purposes, we simulate the funding
-            // The actual implementation would use:
-            /*
+            // Check if we're in simulation mode or have real Bitcoin wallet
+            const simulationMode = !this.config.bitcoin.privateKey;
+            
+            if (simulationMode) {
+                // Simulation mode for testing
+                const mockTxId = `sim_funding_${htlcAddress.slice(-8)}_${Date.now()}`;
+                logger.info(`📝 Simulated Bitcoin funding transaction: ${mockTxId}`);
+                return mockTxId;
+            }
+            
+            // Real Bitcoin transaction execution
+            logger.info(`🔗 Creating real Bitcoin funding transaction...`);
+            
+            // 1. Get UTXOs from resolver's Bitcoin wallet
             const utxos = await this.btcManager.getUTXOs(this.changeAddress);
+            if (!utxos || utxos.length === 0) {
+                throw new Error(`No UTXOs available for address ${this.changeAddress}`);
+            }
+            
+            // 2. Calculate total available and required amounts
+            const totalAvailable = utxos.reduce((sum, utxo) => sum + utxo.value, 0);
+            const requiredAmount = Number(amount);
+            const estimatedFee = 250 * feeRate; // Rough estimate for P2SH transaction
+            
+            if (totalAvailable < requiredAmount + estimatedFee) {
+                throw new Error(`Insufficient funds: need ${requiredAmount + estimatedFee}, have ${totalAvailable}`);
+            }
+            
+            // 3. Create and sign funding transaction
             const fundingTx = await this.btcManager.createFundingTransaction(
                 utxos,
                 htlcAddress,
-                Number(amount),
+                requiredAmount,
                 this.keyPair.publicKey,
                 this.keyPair
             );
-            const txId = await this.btcManager.broadcastTransaction(fundingTx.txHex);
-            return txId;
-            */
-
-            // Simulate funding transaction ID
-            const mockTxId = `funding_${htlcAddress.slice(-8)}_${Date.now()}`;
-            logger.info(`📝 Simulated Bitcoin funding transaction: ${mockTxId}`);
             
-            return mockTxId;
-
+            logger.info(`✍️ Funding transaction created, size: ${fundingTx.txHex.length / 2} bytes`);
+            
+            // 4. Broadcast transaction to Bitcoin network
+            const txId = await this.btcManager.broadcastTransaction(fundingTx.txHex);
+            
+            logger.info(`🚀 Bitcoin funding transaction broadcast: ${txId}`);
+            logger.info(`🔗 View on explorer: https://blockstream.info/${this.config.bitcoin.network === 'testnet' ? 'testnet/' : ''}tx/${txId}`);
+            
+            return txId;
+            
         } catch (error) {
             logger.error('💥 Failed to fund Bitcoin HTLC:', error);
             throw new Error(`Bitcoin funding failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -199,50 +238,60 @@ export class BitcoinExecutor extends EventEmitter {
     }
 
     /**
-     * Monitor Ethereum for secret revelation and claim Bitcoin
+     * Store order context for later secret revelation processing
      */
-    private monitorSecretRevelation(
-        order: ExecutableOrder,
-        htlcScript: Buffer,
-        htlcAddress: string
-    ): void {
-        logger.info(`👀 Monitoring secret revelation for order ${order.orderHash}`);
+    private storeOrderContext(orderHash: string, context: any): void {
+        this.orderContexts.set(orderHash, context);
+        logger.info(`💾 Stored context for order ${orderHash}`);
+    }
 
-        // In production, this would:
-        // 1. Monitor Ethereum events for secret revelation
-        // 2. Extract the secret preimage
-        // 3. Use secret to claim Bitcoin from HTLC
-        // 4. Complete the atomic swap
+    /**
+     * Handle secret revelation from Ethereum monitoring
+     */
+    private async handleSecretRevealed(event: any): Promise<void> {
+        const { orderHash, secret, transactionHash } = event;
+        
+        logger.info(`🔐 Secret revealed for order ${orderHash}:`, {
+            secret: secret.slice(0, 10) + '...',
+            ethTxHash: transactionHash
+        });
 
-        // Simulate monitoring
-        setTimeout(async () => {
-            try {
-                logger.info(`🔐 Secret revealed for order ${order.orderHash}`);
-                
-                // Simulate claiming Bitcoin with revealed secret
-                const claimingTxId = await this.claimBitcoin(
-                    order.orderHash,
-                    htlcScript,
-                    htlcAddress,
-                    order.hashlock // In real scenario, this would be the revealed secret
-                );
-
-                logger.info(`🎯 Bitcoin claimed successfully: ${claimingTxId}`);
-                
-                this.emit('bitcoinClaimed', {
-                    orderHash: order.orderHash,
-                    claimingTxId,
-                    htlcAddress
-                });
-
-            } catch (error) {
-                logger.error(`💥 Failed to claim Bitcoin for order ${order.orderHash}:`, error);
-                this.emit('bitcoinClaimFailed', {
-                    orderHash: order.orderHash,
-                    error: error instanceof Error ? error.message : 'Unknown error'
-                });
+        try {
+            // Get stored context for this order
+            const context = this.orderContexts.get(orderHash);
+            if (!context) {
+                logger.error(`💥 No context found for order ${orderHash}`);
+                return;
             }
-        }, 30000); // 30 second delay for demo
+
+            // Claim Bitcoin using revealed secret
+            const claimingTxId = await this.claimBitcoin(
+                orderHash,
+                context.htlcScript,
+                context.htlcAddress,
+                secret,
+                context.fundingTxId
+            );
+
+            logger.info(`🎯 Bitcoin claimed successfully: ${claimingTxId}`);
+            
+            this.emit('bitcoinClaimed', {
+                orderHash,
+                claimingTxId,
+                htlcAddress: context.htlcAddress,
+                secret
+            });
+
+            // Clean up context
+            this.orderContexts.delete(orderHash);
+
+        } catch (error) {
+            logger.error(`💥 Failed to claim Bitcoin for order ${orderHash}:`, error);
+            this.emit('bitcoinClaimFailed', {
+                orderHash,
+                error: error instanceof Error ? error.message : 'Unknown error'
+            });
+        }
     }
 
     /**
@@ -252,31 +301,49 @@ export class BitcoinExecutor extends EventEmitter {
         orderHash: string,
         htlcScript: Buffer,
         htlcAddress: string,
-        secret: string
+        secret: string,
+        fundingTxId?: string
     ): Promise<string> {
         logger.info(`💎 Claiming Bitcoin from HTLC ${htlcAddress}`);
 
         try {
-            // In production, this would:
-            /*
+            // Check if we're in simulation mode
+            const simulationMode = !this.config.bitcoin.privateKey;
+            
+            if (simulationMode || !fundingTxId) {
+                // Simulation mode for testing
+                const mockTxId = `sim_claim_${orderHash.slice(2, 18)}_${Date.now()}`;
+                logger.info(`📝 Simulated Bitcoin claiming transaction: ${mockTxId}`);
+                return mockTxId;
+            }
+
+            // Real Bitcoin claiming transaction
+            logger.info(`🔗 Creating real Bitcoin claiming transaction...`);
+            
+            // Get HTLC output info
+            const htlcOutput = await this.btcManager.getUTXO(fundingTxId, 0);
+            if (!htlcOutput) {
+                throw new Error(`HTLC output not found: ${fundingTxId}:0`);
+            }
+            
             const claimingTx = await this.btcManager.createClaimingTransaction(
                 fundingTxId,
                 0, // HTLC output index
-                amount,
+                htlcOutput.value,
                 htlcScript,
                 secret,
                 this.changeAddress,
                 this.keyPair
             );
-            const txId = await this.btcManager.broadcastTransaction(claimingTx.txHex);
-            return txId;
-            */
-
-            // Simulate claiming transaction
-            const mockTxId = `claim_${orderHash.slice(2, 18)}_${Date.now()}`;
-            logger.info(`📝 Simulated Bitcoin claiming transaction: ${mockTxId}`);
             
-            return mockTxId;
+            logger.info(`✍️ Claiming transaction created, size: ${claimingTx.txHex.length / 2} bytes`);
+            
+            const txId = await this.btcManager.broadcastTransaction(claimingTx.txHex);
+            
+            logger.info(`🚀 Bitcoin claiming transaction broadcast: ${txId}`);
+            logger.info(`🔗 View on explorer: https://blockstream.info/${this.config.bitcoin.network === 'testnet' ? 'testnet/' : ''}tx/${txId}`);
+            
+            return txId;
 
         } catch (error) {
             logger.error('💥 Failed to claim Bitcoin:', error);
@@ -285,17 +352,25 @@ export class BitcoinExecutor extends EventEmitter {
     }
 
     /**
-     * Decode Bitcoin execution parameters
+     * Decode Bitcoin execution parameters from ABI-encoded data
      */
     private decodeExecutionParams(encodedParams: string): BitcoinExecutionParams {
+        const { decodeBitcoinParams, validateBitcoinParams } = require('../utils/bitcoin-params');
+        
         try {
-            // In production, this would decode the ABI-encoded parameters from the smart contract
-            // For now, we'll use default values that match our Bitcoin adapter
-            return {
-                btcAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx', // Default testnet address
-                htlcTimelock: 144, // 24 hours in blocks
-                feeRate: 10 // 10 sat/byte
-            };
+            // Decode ABI-encoded parameters from smart contract
+            const params = decodeBitcoinParams(encodedParams);
+            
+            // Validate parameters
+            const validation = validateBitcoinParams(params);
+            if (!validation.valid) {
+                logger.warn('⚠️ Invalid Bitcoin parameters:', validation.errors);
+                // Continue with decoded params, but log warnings
+            }
+            
+            logger.info('✅ Decoded Bitcoin execution parameters:', params);
+            return params;
+            
         } catch (error) {
             logger.warn('⚠️ Failed to decode execution parameters, using defaults:', error);
             return {
