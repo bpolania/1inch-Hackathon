@@ -71,15 +71,15 @@ npm test test/BitcoinIntegration.test.js
 - ✅ **8-Point Verification**: Complete verification system confirms swap completion
 - ✅ **Ready for Mainnet**: Complete with oracle integration guide for production deployment
 
-### Bitcoin Family (Ready for Demo 🚀)
-- ✅ **Multi-Chain Support**: Bitcoin, Dogecoin, Litecoin, Bitcoin Cash via single adapter architecture
+### Bitcoin Family (Live ✅)
+- ✅ **Multi-Chain Support**: Bitcoin, Dogecoin, Litecoin deployed and registered on Sepolia
 - ✅ **Real HTLC Scripts**: Proper Bitcoin script generation with CLTV/CSV timelock opcodes
 - ✅ **Address Validation**: Support for P2PKH, P2SH, and Bech32 address formats
 - ✅ **Comprehensive Testing**: 39 Bitcoin-specific tests + 12 integration tests covering all functionality
-- ✅ **Local Deployment Verified**: Full local testing with 131 tests passing
+- ✅ **Live Testnet Deployment**: All adapters operational on Sepolia with full verification
 - ✅ **Modular Integration**: Seamless integration with existing 1inch infrastructure
 - ✅ **Production Parameters**: Dust protection, fee validation, safety deposits
-- ✅ **Sepolia Ready**: Deployment scripts ready for live testnet demonstration
+- ✅ **Registry Integration**: All 3 Bitcoin chains registered and functional
 
 ### Universal Architecture
 - ✅ **Modular Design**: Universal `IDestinationChain` interface for any blockchain
@@ -167,8 +167,8 @@ npm test test/BitcoinIntegration.test.js
 - **Execution Parameters**: Native NEAR contract calls, gas, and deposits
 - **Cost Estimation**: Accurate NEAR transaction cost calculations
 
-#### Bitcoin Family (Ready 🚀)
-- **Multi-Chain Support**: Bitcoin (50001/50002), Dogecoin (50003/50004), Litecoin (50005/50006), Bitcoin Cash (50007/50008)
+#### Bitcoin Family (Live ✅)
+- **Multi-Chain Support**: Bitcoin Testnet (50002), Dogecoin (50003), Litecoin (50005) - all live on Sepolia
 - **Address Validation**: P2PKH, P2SH, and Bech32 format support across all chains
 - **HTLC Scripts**: Real Bitcoin script generation with OP_SHA256, OP_CHECKSIG, CLTV/CSV opcodes
 - **UTXO Model**: Proper dust threshold protection and fee estimation
@@ -265,6 +265,13 @@ npm run verify-swap
 | **CrossChainRegistry** | `0x59CE43Ea20892EC3Eff00fc7506cbfA9813FE0ca` | [View](https://sepolia.etherscan.io/address/0x59CE43Ea20892EC3Eff00fc7506cbfA9813FE0ca) |
 | **NEAR Mainnet Adapter** | `0xEb58DbeB1Bd71A0Dd3c07F005C929AcEb597Be01` | [View](https://sepolia.etherscan.io/address/0xEb58DbeB1Bd71A0Dd3c07F005C929AcEb597Be01) |
 | **NEAR Testnet Adapter** | `0x3cF27b67e96CB3B21C98EF1C57E274A53f0ab014` | [View](https://sepolia.etherscan.io/address/0x3cF27b67e96CB3B21C98EF1C57E274A53f0ab014) |
+
+#### Bitcoin Family Adapters (NEW 🚀)
+| Contract | Address | Etherscan |
+|----------|---------|-----------|
+| **Bitcoin Testnet Adapter** | `0xEe4EBcDF410D4b95631f395A3Be6b0d1bb93d912` | [View](https://sepolia.etherscan.io/address/0xEe4EBcDF410D4b95631f395A3Be6b0d1bb93d912) |
+| **Dogecoin Mainnet Adapter** | `0xFD5034B7181F7d22FF7152e59437f6d28aCE4882` | [View](https://sepolia.etherscan.io/address/0xFD5034B7181F7d22FF7152e59437f6d28aCE4882) |
+| **Litecoin Mainnet Adapter** | `0x7654E486068D112F51c09D83B9ce17E780AEee05` | [View](https://sepolia.etherscan.io/address/0x7654E486068D112F51c09D83B9ce17E780AEee05) |
 
 #### Production 1inch Integration (Latest)
 | Contract | Address | Etherscan |
@@ -406,14 +413,14 @@ This implementation satisfies **multiple ETHGlobal Unite bounty requirements** w
 - ✅ **Atomic Guarantees**: SHA-256 hashlock coordination ensures both chains succeed or both can refund
 - ✅ **Live Demonstration**: Real token transfers on Sepolia with verifiable transactions (0.42 DT transferred)
 
-### 🟡 Bitcoin Family Bounty ($32K) - READY FOR DEMO 🚀
+### 🟢 Bitcoin Family Bounty ($32K) - LIVE ON SEPOLIA ✅
 
 **Core Requirements Met:**
 - ✅ **Hashlock/Timelock Preservation**: Real Bitcoin HTLC scripts with SHA-256 hashlock and CLTV/CSV timelocks
 - ✅ **Bidirectional Swaps**: ETH ↔ Bitcoin with script-based atomic guarantees 
-- ✅ **Multi-Chain Support**: Bitcoin, Dogecoin, Litecoin, Bitcoin Cash (4 chains vs 1 required)
-- ✅ **Testnet Ready**: Complete deployment scripts for live Sepolia demonstration
-- ✅ **Production Quality**: 39 comprehensive tests covering all Bitcoin functionality
+- ✅ **Multi-Chain Support**: Bitcoin, Dogecoin, Litecoin (3 chains live on Sepolia)
+- ✅ **Live on Sepolia**: All adapters deployed and registered with CrossChainRegistry
+- ✅ **Production Quality**: 39 comprehensive tests + live testnet verification
 
 ### Universal Architecture Advantages
 1. **Not a Fork**: True extension that integrates with 1inch's existing infrastructure
@@ -587,16 +594,16 @@ The modular architecture enables easy addition of new blockchains. The proven pr
 - Real token transfers verified (0.42 DT)
 - Production-ready with comprehensive testing
 
-**🟡 Bitcoin Family Bounty ($32K)**: 🚀 **READY FOR DEMO**
+**🟢 Bitcoin Family Bounty ($32K)**: ✅ **LIVE ON SEPOLIA**
 - Complete HTLC script implementation with real Bitcoin opcodes
-- 39 comprehensive tests + 12 integration tests passing
-- Multi-chain support (4 blockchains: Bitcoin, Dogecoin, Litecoin, Bitcoin Cash)
-- Local deployment fully tested and verified
-- Sepolia deployment scripts ready for live demonstration
+- 39 comprehensive tests + 12 integration tests + live testnet verification
+- Multi-chain support (3 blockchains live: Bitcoin Testnet, Dogecoin, Litecoin)
+- All adapters deployed and registered on Sepolia testnet
+- Full functionality verified on live testnet
 
 ### 🎯 **Competitive Advantages**
 1. **Multiple Bounty Winner**: Only team targeting $64K across multiple bounties
-2. **Proven Architecture**: NEAR live, Bitcoin locally tested and ready, more chains coming
+2. **Proven Architecture**: NEAR live, Bitcoin live on Sepolia, more chains coming
 3. **Production Quality**: 131 tests, comprehensive documentation, full local deployment verification
 4. **True 1inch Extension**: Seamless integration with existing infrastructure
 5. **Extensible Design**: Clear path to support any blockchain ecosystem
