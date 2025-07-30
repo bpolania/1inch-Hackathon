@@ -31,6 +31,11 @@ export interface WalletConfig {
         privateKey: string;
         networkId: string;
     };
+    bitcoin: {
+        privateKey?: string;
+        network: string;
+        addressType: string;
+    };
 }
 
 export interface ExecutionConfig {
@@ -42,10 +47,19 @@ export interface ExecutionConfig {
     retryDelay: number; // milliseconds
 }
 
+export interface BitcoinConfig {
+    network: string;
+    feeRate: number;
+    htlcTimelock: number;
+    dustThreshold: number;
+    minConfirmations: number;
+}
+
 export interface Config {
     networks: string[];
     ethereum: NetworkConfig;
     near: NetworkConfig;
+    bitcoin: BitcoinConfig;
     wallet: WalletConfig;
     execution: ExecutionConfig;
     logging: {
@@ -69,7 +83,7 @@ export async function loadConfig(): Promise<Config> {
     }
 
     const config: Config = {
-        networks: ['ethereum', 'near'],
+        networks: ['ethereum', 'near', 'bitcoin'],
         
         ethereum: {
             name: 'Ethereum Sepolia',
@@ -91,6 +105,14 @@ export async function loadConfig(): Promise<Config> {
             }
         },
 
+        bitcoin: {
+            network: process.env.BITCOIN_NETWORK || 'testnet',
+            feeRate: parseInt(process.env.BITCOIN_FEE_RATE || '10'), // sat/byte
+            htlcTimelock: parseInt(process.env.BITCOIN_HTLC_TIMELOCK || '144'), // blocks
+            dustThreshold: parseInt(process.env.BITCOIN_DUST_THRESHOLD || '546'), // satoshis
+            minConfirmations: parseInt(process.env.BITCOIN_MIN_CONFIRMATIONS || '1')
+        },
+
         wallet: {
             ethereum: {
                 privateKey: process.env.ETHEREUM_PRIVATE_KEY!,
@@ -100,6 +122,11 @@ export async function loadConfig(): Promise<Config> {
                 accountId: process.env.NEAR_ACCOUNT_ID!,
                 privateKey: process.env.NEAR_PRIVATE_KEY!,
                 networkId: process.env.NEAR_NETWORK_ID || 'testnet'
+            },
+            bitcoin: {
+                privateKey: process.env.BITCOIN_PRIVATE_KEY, // Optional - can be generated
+                network: process.env.BITCOIN_NETWORK || 'testnet',
+                addressType: process.env.BITCOIN_ADDRESS_TYPE || 'p2pkh' // p2pkh, p2sh, p2wpkh
             }
         },
 

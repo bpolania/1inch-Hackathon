@@ -14,6 +14,7 @@ import { WalletManager } from '../wallet/WalletManager';
 import { Config } from '../config/config';
 import { logger } from '../utils/logger';
 import { ExecutableOrder } from '../core/ExecutorEngine';
+import { BitcoinExecutor, BitcoinExecutionResult } from './BitcoinExecutor';
 
 export interface ExecutionResult {
     success: boolean;
@@ -24,6 +25,7 @@ export interface ExecutionResult {
     transactions: {
         ethereum: string[];
         near: string[];
+        bitcoin?: string[];
     };
     error?: string;
 }
@@ -36,11 +38,13 @@ export class CrossChainExecutor extends EventEmitter {
     private factoryContract!: ethers.Contract;
     private registryContract!: ethers.Contract;
     private tokenContract!: ethers.Contract;
+    private bitcoinExecutor: BitcoinExecutor;
 
     constructor(config: Config, walletManager: WalletManager) {
         super();
         this.config = config;
         this.walletManager = walletManager;
+        this.bitcoinExecutor = new BitcoinExecutor(config);
     }
 
     async initialize(): Promise<void> {
@@ -52,6 +56,9 @@ export class CrossChainExecutor extends EventEmitter {
 
         // Initialize contract instances
         await this.initializeContracts();
+
+        // Initialize Bitcoin executor
+        await this.bitcoinExecutor.initialize();
 
         logger.info('✅ Cross-Chain Executor initialized');
     }
@@ -123,7 +130,8 @@ export class CrossChainExecutor extends EventEmitter {
             executionTime: 0,
             transactions: {
                 ethereum: [],
-                near: []
+                near: [],
+                bitcoin: []
             }
         };
 
@@ -136,15 +144,31 @@ export class CrossChainExecutor extends EventEmitter {
                 result.transactions.ethereum.push(...matchResult.transactions);
                 result.gasUsed += matchResult.gasUsed;
 
-                // Step 2: Execute NEAR side
-                const nearResult = await this.executeNearSide(orderHash, order);
-                if (!nearResult.success) {
-                    result.error = `Failed to execute NEAR side: ${nearResult.error}`;
+                // Step 2: Execute destination chain side (NEAR or Bitcoin)
+                let destinationResult;
+                if (order.destinationChainId === 40002) {
+                    // NEAR execution
+                    destinationResult = await this.executeNearSide(orderHash, order);
+                    if (destinationResult.success) {
+                        result.transactions.near.push(...destinationResult.transactions);
+                    }
+                } else if (order.destinationChainId === 40003 || order.destinationChainId === 40004) {
+                    // Bitcoin execution (mainnet or testnet)
+                    destinationResult = await this.executeBitcoinSide(executableOrder);
+                    if (destinationResult.success && destinationResult.transactions) {
+                        result.transactions.bitcoin!.push(...destinationResult.transactions);
+                    }
                 } else {
-                    result.transactions.near.push(...nearResult.transactions);
+                    destinationResult = { success: false, error: `Unsupported destination chain: ${order.destinationChainId}` };
+                }
+
+                if (!destinationResult.success) {
+                    result.error = `Failed to execute destination chain: ${destinationResult.error}`;
+                } else {
 
                     // Step 3: Complete Ethereum side with revealed secret
-                    const completeResult = await this.completeEthereumOrder(orderHash, nearResult.secret);
+                    const secret = destinationResult.secret || order.hashlock; // Use revealed secret or fallback
+                    const completeResult = await this.completeEthereumOrder(orderHash, secret);
                     if (!completeResult.success) {
                         result.error = `Failed to complete Ethereum order: ${completeResult.error}`;
                     } else {
@@ -276,6 +300,49 @@ export class CrossChainExecutor extends EventEmitter {
                 success: false,
                 transactions: [],
                 secret: '',
+                error: error instanceof Error ? error.message : String(error)
+            };
+        }
+    }
+
+    /**
+     * Execute Bitcoin side of atomic swap
+     */
+    private async executeBitcoinSide(executableOrder: ExecutableOrder): Promise<{
+        success: boolean;
+        transactions: string[];
+        secret?: string;
+        error?: string;
+    }> {
+        logger.info(`🌐 Executing Bitcoin side for order ${executableOrder.orderHash}`);
+
+        try {
+            // Execute Bitcoin HTLC using our BitcoinExecutor
+            const bitcoinResult = await this.bitcoinExecutor.executeOrder(executableOrder);
+            
+            if (!bitcoinResult.success) {
+                return {
+                    success: false,
+                    transactions: [],
+                    error: bitcoinResult.error
+                };
+            }
+
+            logger.info(`✅ Bitcoin side executed successfully`);
+            logger.info(`   HTLC Address: ${bitcoinResult.htlcAddress}`);
+            logger.info(`   Funding TX: ${bitcoinResult.fundingTxId}`);
+
+            return {
+                success: true,
+                transactions: bitcoinResult.transactions,
+                secret: executableOrder.order.hashlock // Secret will be revealed when Bitcoin is claimed
+            };
+
+        } catch (error) {
+            logger.error(`💥 Error executing Bitcoin side:`, error);
+            return {
+                success: false,
+                transactions: [],
                 error: error instanceof Error ? error.message : String(error)
             };
         }

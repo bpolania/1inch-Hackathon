@@ -15,8 +15,11 @@ async function main() {
     // Chain IDs for destination chains
     const NEAR_MAINNET_ID = 40001;
     const NEAR_TESTNET_ID = 40002;
-    const COSMOS_MAINNET_ID = 40003;
-    const BITCOIN_MAINNET_ID = 40004;
+    const BITCOIN_MAINNET_ID = 40003;
+    const BITCOIN_TESTNET_ID = 40004;
+    const DOGECOIN_MAINNET_ID = 40005;
+    const LITECOIN_MAINNET_ID = 40006;
+    const BITCOIN_CASH_MAINNET_ID = 40007;
 
     console.log("\n📦 Step 1: Deploying CrossChainRegistry...");
     const CrossChainRegistry = await ethers.getContractFactory("CrossChainRegistry");
@@ -43,15 +46,61 @@ async function main() {
     console.log("✅ NEAR Testnet Adapter deployed to:", nearTestnetAddress);
     console.log("   View on Etherscan: https://sepolia.etherscan.io/address/" + nearTestnetAddress);
 
-    console.log("\n📦 Step 3: Deploying FusionPlusFactory...");
-    const FusionPlusFactory = await ethers.getContractFactory("FusionPlusFactory");
-    const factory = await FusionPlusFactory.deploy(registryAddress);
+    console.log("\n📦 Step 3: Deploying Bitcoin Family Adapters...");
+    
+    // Deploy Bitcoin adapters for each chain
+    const BitcoinDestinationChain = await ethers.getContractFactory("BitcoinDestinationChain");
+    const bitcoinAdapters = {};
+    
+    const bitcoinChains = [
+        { id: BITCOIN_MAINNET_ID, name: "Bitcoin Mainnet" },
+        { id: BITCOIN_TESTNET_ID, name: "Bitcoin Testnet" },
+        { id: DOGECOIN_MAINNET_ID, name: "Dogecoin" },
+        { id: LITECOIN_MAINNET_ID, name: "Litecoin" },
+        { id: BITCOIN_CASH_MAINNET_ID, name: "Bitcoin Cash" }
+    ];
+    
+    for (const chain of bitcoinChains) {
+        const adapter = await BitcoinDestinationChain.deploy(chain.id);
+        await adapter.waitForDeployment();
+        bitcoinAdapters[chain.id] = adapter;
+        const adapterAddress = await adapter.getAddress();
+        console.log(`✅ ${chain.name} Adapter deployed to:`, adapterAddress);
+        console.log(`   View on Etherscan: https://sepolia.etherscan.io/address/${adapterAddress}`);
+    }
+
+    console.log("\n📦 Step 4: Deploying Production EscrowFactory...");
+    const ProductionOneInchEscrowFactory = await ethers.getContractFactory("ProductionOneInchEscrowFactory");
+    const escrowFactory = await ProductionOneInchEscrowFactory.deploy();
+    await escrowFactory.waitForDeployment();
+    const escrowFactoryAddress = await escrowFactory.getAddress();
+    console.log("✅ ProductionOneInchEscrowFactory deployed to:", escrowFactoryAddress);
+    console.log("   View on Etherscan: https://sepolia.etherscan.io/address/" + escrowFactoryAddress);
+
+    console.log("\n📦 Step 5: Deploying NearTakerInteraction...");
+    const NearTakerInteraction = await ethers.getContractFactory("NearTakerInteraction");
+    const nearTakerInteraction = await NearTakerInteraction.deploy(
+        registryAddress,
+        escrowFactoryAddress
+    );
+    await nearTakerInteraction.waitForDeployment();
+    const nearTakerInteractionAddress = await nearTakerInteraction.getAddress();
+    console.log("✅ NearTakerInteraction deployed to:", nearTakerInteractionAddress);
+    console.log("   View on Etherscan: https://sepolia.etherscan.io/address/" + nearTakerInteractionAddress);
+
+    console.log("\n📦 Step 6: Deploying OneInchFusionPlusFactory...");
+    const OneInchFusionPlusFactory = await ethers.getContractFactory("OneInchFusionPlusFactory");
+    const factory = await OneInchFusionPlusFactory.deploy(
+        registryAddress,
+        escrowFactoryAddress,
+        nearTakerInteractionAddress
+    );
     await factory.waitForDeployment();
     const factoryAddress = await factory.getAddress();
-    console.log("✅ FusionPlusFactory deployed to:", factoryAddress);
+    console.log("✅ OneInchFusionPlusFactory deployed to:", factoryAddress);
     console.log("   View on Etherscan: https://sepolia.etherscan.io/address/" + factoryAddress);
 
-    console.log("\n🔧 Step 4: Registering Destination Chain Adapters...");
+    console.log("\n🔧 Step 7: Registering Destination Chain Adapters...");
     
     // Register NEAR adapters
     console.log("📝 Registering NEAR Mainnet adapter...");
@@ -64,13 +113,27 @@ async function main() {
     await tx.wait();
     console.log("✅ NEAR Testnet adapter registered");
 
-    console.log("\n👥 Step 5: Setting up Initial Resolver Authorization...");
+    // Register Bitcoin adapters
+    console.log("📝 Registering Bitcoin family adapters...");
+    for (const chain of bitcoinChains) {
+        console.log(`📝 Registering ${chain.name} adapter...`);
+        tx = await registry.registerChainAdapter(chain.id, await bitcoinAdapters[chain.id].getAddress());
+        await tx.wait();
+        console.log(`✅ ${chain.name} adapter registered`);
+    }
+
+    console.log("\n👥 Step 8: Setting up Initial Resolver Authorization...");
     // Add deployer as initial authorized resolver for testing
     tx = await factory.authorizeResolver(deployer.address);
     await tx.wait();
     console.log("✅ Deployer authorized as resolver");
+    
+    // Authorize resolver in NearTakerInteraction
+    tx = await nearTakerInteraction.authorizeResolver(deployer.address);
+    await tx.wait();
+    console.log("✅ Deployer authorized as resolver in NearTakerInteraction");
 
-    console.log("\n🧪 Step 6: Verifying Deployment...");
+    console.log("\n🧪 Step 9: Verifying Deployment...");
     
     // Verify registry
     const supportedChains = await registry.getSupportedChainIds();
@@ -82,6 +145,12 @@ async function main() {
     console.log("🌐 NEAR Mainnet:", nearMainnetInfo.name, "- Active:", nearMainnetInfo.isActive);
     console.log("🌐 NEAR Testnet:", nearTestnetInfo.name, "- Active:", nearTestnetInfo.isActive);
     
+    // Verify Bitcoin adapters
+    for (const chain of bitcoinChains) {
+        const chainInfo = await registry.getChainInfo(chain.id);
+        console.log(`₿ ${chain.name}:`, chainInfo.name, "- Active:", chainInfo.isActive);
+    }
+    
     // Verify factory
     const resolverCount = await factory.resolverCount();
     const isResolverAuthorized = await factory.authorizedResolvers(deployer.address);
@@ -91,9 +160,14 @@ async function main() {
     console.log("\n🎉 Deployment Summary");
     console.log("====================");
     console.log(`📋 CrossChainRegistry: ${registryAddress}`);
-    console.log(`🏭 FusionPlusFactory: ${factoryAddress}`);
+    console.log(`🏭 OneInchFusionPlusFactory: ${factoryAddress}`);
+    console.log(`🏭 ProductionOneInchEscrowFactory: ${escrowFactoryAddress}`);
+    console.log(`🔄 NearTakerInteraction: ${nearTakerInteractionAddress}`);
     console.log(`🌐 NEAR Mainnet Adapter: ${nearMainnetAddress}`);
     console.log(`🌐 NEAR Testnet Adapter: ${nearTestnetAddress}`);
+    for (const chain of bitcoinChains) {
+        console.log(`₿ ${chain.name} Adapter: ${await bitcoinAdapters[chain.id].getAddress()}`);
+    }
     console.log("");
     console.log("📊 Statistics:");
     console.log(`   - Network: Sepolia`);
@@ -121,15 +195,25 @@ async function main() {
         timestamp: new Date().toISOString(),
         contracts: {
             CrossChainRegistry: registryAddress,
-            FusionPlusFactory: factoryAddress,
+            OneInchFusionPlusFactory: factoryAddress,
+            ProductionOneInchEscrowFactory: escrowFactoryAddress,
+            NearTakerInteraction: nearTakerInteractionAddress,
             NearMainnetAdapter: nearMainnetAddress,
             NearTestnetAdapter: nearTestnetAddress,
+            BitcoinMainnetAdapter: await bitcoinAdapters[BITCOIN_MAINNET_ID].getAddress(),
+            BitcoinTestnetAdapter: await bitcoinAdapters[BITCOIN_TESTNET_ID].getAddress(),
+            DogecoinAdapter: await bitcoinAdapters[DOGECOIN_MAINNET_ID].getAddress(),
+            LitecoinAdapter: await bitcoinAdapters[LITECOIN_MAINNET_ID].getAddress(),
+            BitcoinCashAdapter: await bitcoinAdapters[BITCOIN_CASH_MAINNET_ID].getAddress(),
         },
         chainIds: {
             NEAR_MAINNET: NEAR_MAINNET_ID,
             NEAR_TESTNET: NEAR_TESTNET_ID,
-            COSMOS_MAINNET: COSMOS_MAINNET_ID,
             BITCOIN_MAINNET: BITCOIN_MAINNET_ID,
+            BITCOIN_TESTNET: BITCOIN_TESTNET_ID,
+            DOGECOIN_MAINNET: DOGECOIN_MAINNET_ID,
+            LITECOIN_MAINNET: LITECOIN_MAINNET_ID,
+            BITCOIN_CASH_MAINNET: BITCOIN_CASH_MAINNET_ID,
         },
         supportedChains: supportedChains.map(id => id.toString()),
         initialResolvers: [deployer.address],
