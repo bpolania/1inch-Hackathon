@@ -29,8 +29,17 @@ A **production-ready multi-chain extension** to 1inch Fusion+ that enables atomi
 
 **NEAR Integration (Live on Sepolia)**:
 ```bash
-# Verify the complete atomic swap that already happened
+# Ethereum ↔ NEAR atomic swap verification
 npm run verify-swap
+
+# Bitcoin HTLC demonstration
+cd contracts/bitcoin && npm run demo
+
+# Bitcoin bounty compliance verification  
+cd contracts/bitcoin && node scripts/verify-bounty-compliance.js
+
+# Run all integration tests
+npm test
 
 # Run the complete demonstration (create order → complete → transfer tokens)
 npm run demo:fusion-complete
@@ -60,7 +69,7 @@ npm test test/BitcoinIntegration.test.js
 - ✅ Real NEAR tokens transferred (0.004 NEAR) - NEAR
 - ✅ Bitcoin HTLC scripts generated (CLTV/CSV) - Bitcoin
 - ✅ Cross-chain secret coordination successful
-- ✅ All 8 atomic swap criteria verified
+- ✅ All atomic swap criteria verified for both NEAR and Bitcoin
 
 ## 🎯 **Implementation Status**: PRODUCTION READY
 
@@ -123,12 +132,22 @@ npm test test/BitcoinIntegration.test.js
 - NEAR execution parameter encoding and validation
 - Gas estimation and safety deposit calculations
 
+<<<<<<< HEAD
 #### **BitcoinDestinationChain** (`contracts/adapters/BitcoinDestinationChain.sol`)
 - Bitcoin family implementation of `IDestinationChain` interface
 - Multi-chain support: Bitcoin, Dogecoin, Litecoin, Bitcoin Cash
 - Universal address validation (P2PKH, P2SH, Bech32 formats)
 - Real Bitcoin HTLC script generation with CLTV/CSV timelock opcodes
 - UTXO model parameter encoding and dust threshold protection
+=======
+#### **BitcoinHTLCManager** (`contracts/bitcoin/src/BitcoinHTLCManager.js`)
+- Complete Bitcoin-side atomic swap implementation
+- Real Bitcoin HTLC script generation using Bitcoin opcodes
+- P2SH address creation for HTLC deployment
+- Transaction creation, signing, and broadcasting
+- Cross-chain compatible SHA-256 hashlock format
+- Support for Bitcoin family blockchains (BTC, DOGE, LTC, BCH)
+>>>>>>> fb42dec (feat: integrate Bitcoin support with existing 1inch Fusion+ relayer service)
 
 ### 1inch Protocol Compliance
 
@@ -147,9 +166,16 @@ npm test test/BitcoinIntegration.test.js
 ## Key Features
 
 ### 🔗 **Atomic Cross-Chain Swaps**
+<<<<<<< HEAD
 - **Ethereum ↔ NEAR**: Bidirectional atomic swaps (Live on Sepolia)
 - **Ethereum ↔ Bitcoin**: Script-based HTLCs with proper Bitcoin opcodes
 - **SHA-256 Hashlock**: Universal cryptographic coordination between all chains
+=======
+- **Ethereum ↔ NEAR**: Bidirectional atomic swaps with live testnet deployment
+- **Ethereum ↔ Bitcoin**: Real Bitcoin HTLC scripts for atomic coordination
+- **Bitcoin Family Support**: Compatible with Bitcoin, Dogecoin, Litecoin, Bitcoin Cash
+- **SHA-256 Hashlock**: Cryptographic coordination between all supported chains
+>>>>>>> fb42dec (feat: integrate Bitcoin support with existing 1inch Fusion+ relayer service)
 - **Multi-stage Timelocks**: Secure execution windows with cancellation protection
 - **Economic Security**: 5% safety deposits ensure honest resolver behavior
 
@@ -314,37 +340,49 @@ npm run test:sepolia
 ## Project Structure
 
 ```
-contracts/ethereum/
-├── contracts/
-│   ├── CrossChainRegistry.sol           # Modular chain management
-│   ├── ProductionOneInchEscrowFactory.sol # Production-ready escrow factory
-│   ├── MockERC20.sol                    # Test token
-│   ├── adapters/
-│   │   └── NearDestinationChain.sol     # NEAR blockchain adapter
-│   ├── fusion-plus/
-│   │   ├── NearTakerInteraction.sol     # 1inch ITakerInteraction impl
-│   │   └── OneInchFusionPlusFactory.sol # 1inch integrated factory
-│   ├── interfaces/
-│   │   ├── IDestinationChain.sol        # Universal chain interface
-│   │   ├── IOneInchEscrow.sol           # 1inch escrow interface
-│   │   └── IOneInchEscrowFactory.sol    # 1inch factory interface
-│   └── mocks/
-│       └── MockOneInchEscrowFactory.sol # Testing mock
-├── test/
-│   ├── CrossChainRegistry.test.js       # Registry functionality
-│   ├── NearDestinationChain.test.js     # NEAR adapter tests
-│   ├── OneInchIntegration.test.js       # 1inch integration tests
-│   ├── ProductionEscrowFactory.test.js  # Production factory unit tests
-│   ├── ProductionIntegration.test.js    # Full local deployment tests
-│   └── SepoliaIntegration.test.js       # Live deployment tests
-└── scripts/
-    ├── deploy-to-sepolia.js             # Deployment script
-    ├── demo-fusion-complete.js          # Complete demo script
-    ├── verify-end-to-end-swap.js        # Comprehensive verification script
-    ├── complete-atomic-swap-near.js     # NEAR side execution
-    ├── complete-full-atomic-swap.js     # Ethereum side completion
-    ├── complete-token-settlement.js     # Token settlement demo
-    └── create-near-compatible-order.js  # Order creation utility
+contracts/
+├── ethereum/                           # Ethereum-side implementation
+│   ├── contracts/
+│   │   ├── CrossChainRegistry.sol           # Modular chain management
+│   │   ├── ProductionOneInchEscrowFactory.sol # Production-ready escrow factory
+│   │   ├── MockERC20.sol                    # Test token
+│   │   ├── adapters/
+│   │   │   └── NearDestinationChain.sol     # NEAR blockchain adapter
+│   │   ├── fusion-plus/
+│   │   │   ├── NearTakerInteraction.sol     # 1inch ITakerInteraction impl
+│   │   │   └── OneInchFusionPlusFactory.sol # 1inch integrated factory
+│   │   ├── interfaces/
+│   │   │   ├── IDestinationChain.sol        # Universal chain interface
+│   │   │   ├── IOneInchEscrow.sol           # 1inch escrow interface
+│   │   │   └── IOneInchEscrowFactory.sol    # 1inch factory interface
+│   │   └── mocks/
+│   │       └── MockOneInchEscrowFactory.sol # Testing mock
+│   ├── test/
+│   │   ├── CrossChainRegistry.test.js       # Registry functionality
+│   │   ├── NearDestinationChain.test.js     # NEAR adapter tests
+│   │   ├── OneInchIntegration.test.js       # 1inch integration tests
+│   │   ├── ProductionEscrowFactory.test.js  # Production factory unit tests
+│   │   ├── ProductionIntegration.test.js    # Full local deployment tests
+│   │   └── SepoliaIntegration.test.js       # Live deployment tests
+│   └── scripts/
+│       ├── deploy-to-sepolia.js             # Deployment script
+│       ├── demo-fusion-complete.js          # Complete demo script
+│       ├── verify-end-to-end-swap.js        # Comprehensive verification script
+│       ├── complete-atomic-swap-near.js     # NEAR side execution
+│       ├── complete-full-atomic-swap.js     # Ethereum side completion
+│       ├── complete-token-settlement.js     # Token settlement demo
+│       └── create-near-compatible-order.js  # Order creation utility
+└── bitcoin/                            # Bitcoin-side implementation
+    ├── src/
+    │   └── BitcoinHTLCManager.js        # Bitcoin HTLC functionality
+    ├── scripts/
+    │   ├── demo-bitcoin-htlc.js         # Basic Bitcoin HTLC demo
+    │   ├── demo-ethereum-bitcoin-swap.js # Bidirectional swap demo
+    │   └── verify-bounty-compliance.js  # ETHGlobal Unite bounty verification
+    ├── tests/
+    │   └── BitcoinHTLC.test.js          # Bitcoin HTLC comprehensive tests
+    ├── package.json                     # Bitcoin module dependencies
+    └── README.md                        # Bitcoin implementation documentation
 ```
 
 ## 1inch Integration Details
@@ -403,16 +441,23 @@ address escrowAddress = escrowFactory.createDstEscrow(
 
 ## Bounty Compliance
 
+<<<<<<< HEAD
 This implementation satisfies **multiple ETHGlobal Unite bounty requirements** with a total potential of **$64K**:
 
 ### 🟢 NEAR Protocol Bounty ($32K) - COMPLETE ✅
 
 **Core Requirements Met:**
+=======
+This implementation satisfies **multiple ETHGlobal Unite bounty requirements**:
+
+### $32K NEAR Bounty Requirements Met
+>>>>>>> fb42dec (feat: integrate Bitcoin support with existing 1inch Fusion+ relayer service)
 - ✅ **True 1inch Extension**: Properly extends 1inch Fusion+ using official interfaces (`ITakerInteraction`, `IOneInchEscrowFactory`)
 - ✅ **NEAR Integration**: Complete bidirectional support (ETH ↔ NEAR) with live contracts on both chains
 - ✅ **Atomic Guarantees**: SHA-256 hashlock coordination ensures both chains succeed or both can refund
 - ✅ **Live Demonstration**: Real token transfers on Sepolia with verifiable transactions (0.42 DT transferred)
 
+<<<<<<< HEAD
 ### 🟢 Bitcoin Family Bounty ($32K) - LIVE ON SEPOLIA ✅
 
 **Core Requirements Met:**
@@ -428,6 +473,20 @@ This implementation satisfies **multiple ETHGlobal Unite bounty requirements** w
 3. **Production Ready**: 119 tests total, proper error handling, and mainnet migration guide
 4. **Proven Extensible**: NEAR live, Bitcoin ready, architecture supports any blockchain
 5. **Multiple Bounty Qualification**: Positioned to win both NEAR and Bitcoin bounties ($64K total)
+=======
+### $32K Bitcoin Bounty Requirements Met
+- ✅ **Preserve Hashlock/Timelock**: Real Bitcoin HTLC scripts with SHA-256 hashlock and CHECKLOCKTIMEVERIFY timelock
+- ✅ **Bidirectional Swaps**: Complete support for both Ethereum → Bitcoin and Bitcoin → Ethereum atomic swaps
+- ✅ **Bitcoin Family Support**: Compatible architecture for Bitcoin, Dogecoin, Litecoin, Bitcoin Cash
+- ✅ **Onchain Execution**: Real Bitcoin testnet transaction creation and broadcasting capability
+
+### What Makes This Special
+1. **Not a Fork**: This is a true extension that integrates with 1inch's existing infrastructure
+2. **Complete Flow**: Demonstrates actual token movement (wallet → escrow → settlement)
+3. **Multi-Chain Ready**: Both NEAR and Bitcoin implementations in a single project
+4. **Production Ready**: 95+ tests, proper error handling, and mainnet migration guide
+5. **Extensible**: Modular architecture allows adding any blockchain via `IDestinationChain`
+>>>>>>> fb42dec (feat: integrate Bitcoin support with existing 1inch Fusion+ relayer service)
 
 ## Security Considerations
 
@@ -579,6 +638,7 @@ The modular architecture enables easy addition of new blockchains. The proven pr
 3. **Register with `CrossChainRegistry`** for immediate availability
 4. **Test integration** using existing test infrastructure
 
+<<<<<<< HEAD
 **Implementation Status:**
 - ✅ **NEAR Protocol**: Live on Sepolia with complete atomic swaps
 - ✅ **Bitcoin Family**: Production-ready (Bitcoin, Dogecoin, Litecoin, Bitcoin Cash)
@@ -610,6 +670,16 @@ The modular architecture enables easy addition of new blockchains. The proven pr
 6. **Comprehensive Testing**: Both unit tests and full integration deployment testing
 
 **🚀 Ready for ETHGlobal Unite demonstrations!**
+=======
+**Completed Extensions:**
+- ✅ NEAR Protocol (Live on testnet)
+- ✅ Bitcoin (HTLC implementation complete)
+
+**Planned Extensions:**
+- Cosmos (CosmWasm contracts)
+- Aptos (Move modules)
+- Additional Bitcoin family chains (Dogecoin, Litecoin, Bitcoin Cash)
+>>>>>>> fb42dec (feat: integrate Bitcoin support with existing 1inch Fusion+ relayer service)
 
 ## License
 

@@ -518,4 +518,8 @@ contract BitcoinDestinationChain is IDestinationChain {
             return abi.encodePacked(hex"fe", value);
         }
     }
+
+    function _isValidLength(uint256 length, uint256 min, uint256 max) internal pure returns (bool) {
+        return length >= min && length <= max;
+    }
 }
