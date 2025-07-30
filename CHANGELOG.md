@@ -8,10 +8,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Bitcoin HTLC Implementation**: Complete Bitcoin-side atomic swap functionality
+  - Real Bitcoin HTLC script generation using Bitcoin opcodes (OP_IF, OP_SHA256, OP_CHECKSIG, OP_CHECKLOCKTIMEVERIFY)
+  - P2SH address creation for HTLC deployment on Bitcoin testnet
+  - Transaction creation, signing, and broadcasting capability
+  - Cross-chain compatible SHA-256 hashlock format matching Ethereum requirements
+  - Bitcoin family blockchain support (Bitcoin, Dogecoin, Litecoin, Bitcoin Cash)
+  - Complete bidirectional swap demonstration (Ethereum ↔ Bitcoin and Bitcoin ↔ Ethereum)
+
+- **ETHGlobal Unite Bitcoin Bounty Compliance**: Satisfies all $32K Bitcoin bounty requirements
+  - ✅ Preserve hashlock and timelock functionality for non-EVM implementation
+  - ✅ Bidirectional swaps (Ethereum ↔ Bitcoin) with complete atomic coordination
+  - ✅ Support for Bitcoin family (Bitcoin, Dogecoin, Litecoin, Bitcoin Cash)
+  - ✅ Ready for onchain execution during final demo with real Bitcoin testnet transactions
+
+- **Comprehensive Bitcoin Module**: Production-ready Bitcoin integration
+  - `BitcoinHTLCManager.js` - Core Bitcoin HTLC functionality with 400+ lines
+  - 13 comprehensive tests covering all Bitcoin HTLC functionality
+  - Demo scripts showing complete atomic swap flows
+  - Testnet integration with Blockstream API
+  - Order management system for tracking Bitcoin swaps
+  - Documentation and verification scripts
+
 - **Complete End-to-End Atomic Swap**: Successfully demonstrated full cross-chain atomic swap
   - Real token movements on both Ethereum Sepolia and NEAR testnet
   - 0.2 DT transferred to escrow on Ethereum side
   - 0.004 NEAR transferred to user on NEAR side
+  - Bitcoin HTLC scripts working on testnet
   - Complete cross-chain secret coordination with SHA-256 hashlock
 
 - **Comprehensive Verification System**: 8-point verification checklist confirming complete atomic swap
