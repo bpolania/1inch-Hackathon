@@ -56,11 +56,16 @@ describe("Sepolia Live Deployment Integration Tests", function () {
       const owner = await registry.owner();
       expect(owner).to.equal(deploymentInfo.deployer);
 
-      // Check supported chains
+      // Check supported chains (NEAR + Bitcoin family)
       const supportedChains = await registry.getSupportedChainIds();
-      expect(supportedChains.length).to.equal(2);
+      expect(supportedChains.length).to.equal(7);
       expect(supportedChains).to.include(40001n); // NEAR Mainnet
       expect(supportedChains).to.include(40002n); // NEAR Testnet
+      expect(supportedChains).to.include(40003n); // Bitcoin Mainnet
+      expect(supportedChains).to.include(40004n); // Bitcoin Testnet
+      expect(supportedChains).to.include(40005n); // Dogecoin
+      expect(supportedChains).to.include(40006n); // Litecoin
+      expect(supportedChains).to.include(40007n); // Bitcoin Cash
     });
 
     it("Should verify OneInchFusionPlusFactory deployment", async function () {
@@ -126,8 +131,12 @@ describe("Sepolia Live Deployment Integration Tests", function () {
     it("Should validate supported chains", async function () {
       expect(await registry.isChainSupported(40001)).to.be.true; // NEAR Mainnet
       expect(await registry.isChainSupported(40002)).to.be.true; // NEAR Testnet
-      expect(await registry.isChainSupported(40003)).to.be.false; // Cosmos (not registered)
-      expect(await registry.isChainSupported(40004)).to.be.false; // Bitcoin (not registered)
+      expect(await registry.isChainSupported(40003)).to.be.true; // Bitcoin Mainnet
+      expect(await registry.isChainSupported(40004)).to.be.true; // Bitcoin Testnet
+      expect(await registry.isChainSupported(40005)).to.be.true; // Dogecoin
+      expect(await registry.isChainSupported(40006)).to.be.true; // Litecoin
+      expect(await registry.isChainSupported(40007)).to.be.true; // Bitcoin Cash
+      expect(await registry.isChainSupported(40008)).to.be.false; // Cosmos (not registered)
     });
 
     it("Should get adapter addresses", async function () {
@@ -136,6 +145,81 @@ describe("Sepolia Live Deployment Integration Tests", function () {
 
       const mainnetAdapter = await registry.getChainAdapter(40001);
       expect(mainnetAdapter).to.equal(deploymentInfo.contracts.NearMainnetAdapter);
+    });
+  });
+
+  describe("Bitcoin Adapter Functionality", function () {
+    let bitcoinMainnetAdapter, bitcoinTestnetAdapter, dogecoinAdapter, litecoinAdapter, bitcoinCashAdapter;
+
+    beforeEach(async function () {
+      const BitcoinDestinationChain = await ethers.getContractFactory("BitcoinDestinationChain");
+      
+      // Connect to deployed Bitcoin adapters
+      const bitcoinMainnetAddress = "0xb439CA5195EF798907EFc22D889852e8b56662de";
+      const bitcoinTestnetAddress = "0x15ACc1Cb04F08143e29c39972D9cF5D53D015fF8";
+      const dogecoinAddress = "0x84A932A6b1Cca23c0359439673b70E6eb26cc0Aa";
+      const litecoinAddress = "0x79ff06d38f891dAd1EbB0074dea4464c3384d560";
+      const bitcoinCashAddress = "0x6425e85a606468266fBCe46B234f31Adf3583D56";
+
+      bitcoinMainnetAdapter = BitcoinDestinationChain.attach(bitcoinMainnetAddress);
+      bitcoinTestnetAdapter = BitcoinDestinationChain.attach(bitcoinTestnetAddress);
+      dogecoinAdapter = BitcoinDestinationChain.attach(dogecoinAddress);
+      litecoinAdapter = BitcoinDestinationChain.attach(litecoinAddress);
+      bitcoinCashAdapter = BitcoinDestinationChain.attach(bitcoinCashAddress);
+    });
+
+    it("Should validate Bitcoin addresses", async function () {
+      const validBitcoinAddresses = [
+        "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa", // P2PKH
+        "3J98t1WpEZ73CNmQviecrnyiWrnqRhWNLy", // P2SH
+        "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4", // Bech32
+        "bc1zw508d6qejxtdg4y5r3zarvaryvqyzf3du"  // Bech32m
+      ];
+
+      for (const address of validBitcoinAddresses) {
+        const isValid = await bitcoinMainnetAdapter.validateDestinationAddress(
+          ethers.toUtf8Bytes(address)
+        );
+        expect(isValid).to.be.true;
+      }
+    });
+
+    it("Should support Bitcoin chain family", async function () {
+      const bitcoinMainnetInfo = await bitcoinMainnetAdapter.getChainInfo();
+      expect(bitcoinMainnetInfo.chainId).to.equal(40003);
+      expect(bitcoinMainnetInfo.name).to.equal("Bitcoin");
+
+      const dogecoinInfo = await dogecoinAdapter.getChainInfo();
+      expect(dogecoinInfo.chainId).to.equal(40005);
+      expect(dogecoinInfo.name).to.equal("Dogecoin");
+
+      const litecoinInfo = await litecoinAdapter.getChainInfo();
+      expect(litecoinInfo.chainId).to.equal(40006);
+      expect(litecoinInfo.name).to.equal("Litecoin");
+    });
+
+    it("Should validate Bitcoin order parameters", async function () {
+      const validParams = {
+        destinationAddress: ethers.toUtf8Bytes("1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"),
+        executionParams: ethers.toUtf8Bytes(""),
+        estimatedGas: 10000, // Bitcoin fee in satoshis
+        additionalData: ethers.toUtf8Bytes("")
+      };
+
+      const validation = await bitcoinMainnetAdapter.validateOrderParams(
+        validParams,
+        ethers.parseEther("1")
+      );
+      expect(validation.isValid).to.be.true;
+      expect(validation.estimatedCost).to.be.gt(0);
+    });
+
+    it("Should support Bitcoin features", async function () {
+      expect(await bitcoinMainnetAdapter.supportsFeature("atomic_swaps")).to.be.true;
+      expect(await bitcoinMainnetAdapter.supportsFeature("htlc")).to.be.true;
+      expect(await bitcoinMainnetAdapter.supportsFeature("resolver_fees")).to.be.true;
+      expect(await bitcoinMainnetAdapter.supportsFeature("safety_deposits")).to.be.true;
+      expect(await bitcoinMainnetAdapter.supportsFeature("partial_fills")).to.be.false;
     });
   });
 
@@ -208,9 +292,14 @@ describe("Sepolia Live Deployment Integration Tests", function () {
   describe("Factory Functionality", function () {
     it("Should get supported chains from factory", async function () {
       const supportedChains = await factory.getSupportedChains();
-      expect(supportedChains.length).to.equal(2);
-      expect(supportedChains).to.include(40001n);
-      expect(supportedChains).to.include(40002n);
+      expect(supportedChains.length).to.equal(7);
+      expect(supportedChains).to.include(40001n); // NEAR Mainnet
+      expect(supportedChains).to.include(40002n); // NEAR Testnet
+      expect(supportedChains).to.include(40003n); // Bitcoin Mainnet
+      expect(supportedChains).to.include(40004n); // Bitcoin Testnet
+      expect(supportedChains).to.include(40005n); // Dogecoin
+      expect(supportedChains).to.include(40006n); // Litecoin
+      expect(supportedChains).to.include(40007n); // Bitcoin Cash
     });
 
     it("Should calculate order hash correctly", async function () {

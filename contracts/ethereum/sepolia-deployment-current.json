@@ -1,0 +1,45 @@
+{
+  "network": "sepolia",
+  "chainId": "11155111",
+  "deployer": "0x04e7B48DD6D9f33ffD1A7Be63fF91e6F318492ed",
+  "timestamp": "2025-07-30T00:00:00.000Z",
+  "productionDeployment": {
+    "deploymentDate": "2025-07-30T00:00:00.000Z",
+    "deployer": "0x04e7B48DD6D9f33ffD1A7Be63fF91e6F318492ed",
+    "contracts": {
+      "CrossChainRegistry": "0x09Ab998Cb3448ad281C116c9fC9e4b01e4533beD",
+      "ProductionOneInchEscrowFactory": "0x91826Eb80e0251a15574b71a88D805d767b0e824",
+      "NearTakerInteraction": "0x0cE8E6D1ddF9D24a8be1617E5A5fdf478914Ae26",
+      "OneInchFusionPlusFactory": "0xbeEab741D2869404FcB747057f5AbdEffc3A138d",
+      "DemoToken": "0xaa86ed59bcf10c838F2abDa08D1Ca8C6D1609d43",
+      "NearMainnetAdapter": "0xb885Ff0090ABdF345a9679DE5D5eabcFCD41463D",
+      "NearTestnetAdapter": "0x7019aC48479e5527Cb3a5a99FbEFe5B42125C9A5",
+      "BitcoinMainnetAdapter": "0xb439CA5195EF798907EFc22D889852e8b56662de",
+      "BitcoinTestnetAdapter": "0x15ACc1Cb04F08143e29c39972D9cF5D53D015fF8",
+      "DogecoinAdapter": "0x84A932A6b1Cca23c0359439673b70E6eb26cc0Aa",
+      "LitecoinAdapter": "0x79ff06d38f891dAd1EbB0074dea4464c3384d560",
+      "BitcoinCashAdapter": "0x6425e85a606468266fBCe46B234f31Adf3583D56"
+    },
+    "supportedChains": [
+      "40001",
+      "40002", 
+      "40003",
+      "40004",
+      "40005",
+      "40006",
+      "40007"
+    ],
+    "etherscanLinks": {
+      "registry": "https://sepolia.etherscan.io/address/0x09Ab998Cb3448ad281C116c9fC9e4b01e4533beD",
+      "escrowFactory": "https://sepolia.etherscan.io/address/0x91826Eb80e0251a15574b71a88D805d767b0e824",
+      "nearTakerInteraction": "https://sepolia.etherscan.io/address/0x0cE8E6D1ddF9D24a8be1617E5A5fdf478914Ae26",
+      "oneInchFactory": "https://sepolia.etherscan.io/address/0xbeEab741D2869404FcB747057f5AbdEffc3A138d",
+      "demoToken": "https://sepolia.etherscan.io/address/0xaa86ed59bcf10c838F2abDa08D1Ca8C6D1609d43"
+    }
+  },
+  "contracts": {
+    "CrossChainRegistry": "0x09Ab998Cb3448ad281C116c9fC9e4b01e4533beD",
+    "NearMainnetAdapter": "0xb885Ff0090ABdF345a9679DE5D5eabcFCD41463D",
+    "NearTestnetAdapter": "0x7019aC48479e5527Cb3a5a99FbEFe5B42125C9A5"
+  }
+}
