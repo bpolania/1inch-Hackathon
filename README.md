@@ -18,11 +18,12 @@ A **production-ready multi-chain extension** to 1inch Fusion+ that enables atomi
 2. **Live on Sepolia**: NEAR contracts deployed and operational with real atomic swaps ([View Contracts](#deployed-contracts))
 3. **Bitcoin Integration**: Complete HTLC script generation for Bitcoin, Dogecoin, Litecoin, Bitcoin Cash
 4. **Real Token Transfers**: Demonstrated with 0.42 DT total transfers across multiple swaps on NEAR
-5. **119 Tests Passing**: Comprehensive test coverage including 39 Bitcoin-specific tests
+5. **131 Tests Passing**: Comprehensive test coverage including 39 Bitcoin-specific + 12 integration tests
 6. **Modular Architecture**: Universal `IDestinationChain` interface enabling any blockchain
 7. **True 1inch Extension**: Uses actual `ITakerInteraction` and `IOneInchEscrowFactory` interfaces
 8. **Production Ready**: Clean codebase with consolidated scripts and comprehensive verification
-9. **Multiple Bounty Qualification**: NEAR ($32K) complete, Bitcoin ($32K) ready for demo
+9. **Bitcoin Local Testing**: Full local deployment tested and verified (ready for Sepolia)
+10. **Multiple Bounty Qualification**: NEAR ($32K) complete, Bitcoin ($32K) ready for demo
 
 ### Quick Demo
 
@@ -47,8 +48,11 @@ node scripts/deploy-bitcoin-to-sepolia.js
 
 **All Tests**:
 ```bash
-# Run comprehensive test suite (119 tests)
+# Run comprehensive test suite (131 tests total)
 npm test
+
+# Run Bitcoin integration tests specifically
+npm test test/BitcoinIntegration.test.js
 ```
 
 **Verification Results**:
@@ -71,14 +75,17 @@ npm test
 - ✅ **Multi-Chain Support**: Bitcoin, Dogecoin, Litecoin, Bitcoin Cash via single adapter architecture
 - ✅ **Real HTLC Scripts**: Proper Bitcoin script generation with CLTV/CSV timelock opcodes
 - ✅ **Address Validation**: Support for P2PKH, P2SH, and Bech32 address formats
-- ✅ **Comprehensive Testing**: 39 Bitcoin-specific tests covering all functionality
+- ✅ **Comprehensive Testing**: 39 Bitcoin-specific tests + 12 integration tests covering all functionality
+- ✅ **Local Deployment Verified**: Full local testing with 131 tests passing
 - ✅ **Modular Integration**: Seamless integration with existing 1inch infrastructure
 - ✅ **Production Parameters**: Dust protection, fee validation, safety deposits
+- ✅ **Sepolia Ready**: Deployment scripts ready for live testnet demonstration
 
 ### Universal Architecture
 - ✅ **Modular Design**: Universal `IDestinationChain` interface for any blockchain
-- ✅ **Comprehensive Testing**: 119 total passing tests with full production coverage
+- ✅ **Comprehensive Testing**: 131 total passing tests with full production coverage
 - ✅ **Multiple Bounty Qualification**: $64K total bounty potential (NEAR + Bitcoin)
+- ✅ **Local Deployment Proven**: Both NEAR and Bitcoin integrations fully tested
 - ✅ **Clean Codebase**: Consolidated scripts with comprehensive documentation
 
 ## Architecture Overview
@@ -228,7 +235,8 @@ node scripts/demo-bitcoin-fusion.js
 - **ProductionEscrowFactory**: 26 tests - Production factory unit tests
 - **Production Integration**: 5 tests - Full local deployment testing
 - **EndToEnd Verification**: 17 tests - Integration tests for deployed contracts and complete atomic swaps
-- **Total**: 119 passing tests with comprehensive multi-chain coverage
+- **BitcoinIntegration**: 12 tests - Complete local deployment and registry integration (NEW 🚀)
+- **Total**: 131 passing tests with comprehensive multi-chain coverage
 
 ### Verification System
 The project includes a comprehensive 8-point verification system that confirms complete atomic swap success:
@@ -580,17 +588,19 @@ The modular architecture enables easy addition of new blockchains. The proven pr
 - Production-ready with comprehensive testing
 
 **🟡 Bitcoin Family Bounty ($32K)**: 🚀 **READY FOR DEMO**
-- Complete HTLC script implementation
-- 39 comprehensive tests passing
-- Multi-chain support (4 blockchains)
-- Sepolia deployment scripts ready
+- Complete HTLC script implementation with real Bitcoin opcodes
+- 39 comprehensive tests + 12 integration tests passing
+- Multi-chain support (4 blockchains: Bitcoin, Dogecoin, Litecoin, Bitcoin Cash)
+- Local deployment fully tested and verified
+- Sepolia deployment scripts ready for live demonstration
 
 ### 🎯 **Competitive Advantages**
 1. **Multiple Bounty Winner**: Only team targeting $64K across multiple bounties
-2. **Proven Architecture**: NEAR live, Bitcoin ready, more chains coming
-3. **Production Quality**: 119 tests, comprehensive documentation
+2. **Proven Architecture**: NEAR live, Bitcoin locally tested and ready, more chains coming
+3. **Production Quality**: 131 tests, comprehensive documentation, full local deployment verification
 4. **True 1inch Extension**: Seamless integration with existing infrastructure
 5. **Extensible Design**: Clear path to support any blockchain ecosystem
+6. **Comprehensive Testing**: Both unit tests and full integration deployment testing
 
 **🚀 Ready for ETHGlobal Unite demonstrations!**
 
