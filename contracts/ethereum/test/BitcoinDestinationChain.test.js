@@ -2,515 +2,422 @@ const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
 describe("BitcoinDestinationChain", function () {
-    let bitcoinAdapter;
+    let bitcoinDestinationChain;
     let owner;
     let addr1;
-    
-    // Bitcoin chain IDs
-    const BITCOIN_MAINNET_ID = 50001;
-    const BITCOIN_TESTNET_ID = 50002;
-    const DOGECOIN_MAINNET_ID = 50003;
-    const LITECOIN_MAINNET_ID = 50005;
-    
-    // Sample Bitcoin addresses for testing
-    const VALID_BTC_MAINNET_P2PKH = "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa";
-    const VALID_BTC_TESTNET_P2PKH = "mipcBbFg9gMiCh81Kj8tqqdgoZub1ZJRfn";
-    const VALID_BTC_P2SH = "3J98t1WpEZ73CNmQviecrnyiWrnqRhWNLy";
-    const VALID_BTC_BECH32 = "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4";
-    const VALID_LTC_ADDRESS = "LhK2BTQ1efhxVBJGigJ5VwgWzWNWWgZJhw";
-    const VALID_DOGE_ADDRESS = "DH5yaieqoZN36fDVciNyRueRGvGLR3mr7L";
-    
-    const INVALID_ADDRESS_EMPTY = "";
-    const INVALID_ADDRESS_SHORT = "1A";
-    const INVALID_ADDRESS_INVALID_CHARS = "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfN0"; // Contains 0
-    
+
     beforeEach(async function () {
         [owner, addr1] = await ethers.getSigners();
-        
+
         const BitcoinDestinationChain = await ethers.getContractFactory("BitcoinDestinationChain");
-        bitcoinAdapter = await BitcoinDestinationChain.deploy(BITCOIN_TESTNET_ID);
-        await bitcoinAdapter.waitForDeployment();
+        // Deploy for Bitcoin testnet (40004)
+        bitcoinDestinationChain = await BitcoinDestinationChain.deploy(40004);
+        await bitcoinDestinationChain.waitForDeployment();
     });
 
-    describe("Deployment and Configuration", function () {
-        it("Should deploy with correct Bitcoin testnet configuration", async function () {
-            const chainInfo = await bitcoinAdapter.getChainInfo();
-            
-            expect(chainInfo.chainId).to.equal(BITCOIN_TESTNET_ID);
-            expect(chainInfo.name).to.equal("Bitcoin Testnet");
-            expect(chainInfo.symbol).to.equal("BTC");
-            expect(chainInfo.isActive).to.be.true;
-            expect(chainInfo.minSafetyDepositBps).to.equal(500); // 5%
-            expect(chainInfo.defaultTimelock).to.equal(7200); // 2 hours
-        });
-
-        it("Should deploy with correct Bitcoin mainnet configuration", async function () {
-            const BitcoinDestinationChain = await ethers.getContractFactory("BitcoinDestinationChain");
-            const mainnetAdapter = await BitcoinDestinationChain.deploy(BITCOIN_MAINNET_ID);
-            await mainnetAdapter.waitForDeployment();
-            
-            const chainInfo = await mainnetAdapter.getChainInfo();
-            expect(chainInfo.name).to.equal("Bitcoin Mainnet");
-            expect(chainInfo.symbol).to.equal("BTC");
-        });
-
-        it("Should deploy with correct Dogecoin configuration", async function () {
-            const BitcoinDestinationChain = await ethers.getContractFactory("BitcoinDestinationChain");
-            const dogeAdapter = await BitcoinDestinationChain.deploy(DOGECOIN_MAINNET_ID);
-            await dogeAdapter.waitForDeployment();
-            
-            const chainInfo = await dogeAdapter.getChainInfo();
-            expect(chainInfo.name).to.equal("Dogecoin Mainnet");
-            expect(chainInfo.symbol).to.equal("DOGE");
-        });
-
-        it("Should deploy with correct Litecoin configuration", async function () {
-            const BitcoinDestinationChain = await ethers.getContractFactory("BitcoinDestinationChain");
-            const ltcAdapter = await BitcoinDestinationChain.deploy(LITECOIN_MAINNET_ID);
-            await ltcAdapter.waitForDeployment();
-            
-            const chainInfo = await ltcAdapter.getChainInfo();
-            expect(chainInfo.name).to.equal("Litecoin Mainnet");
-            expect(chainInfo.symbol).to.equal("LTC");
-        });
-
-        it("Should reject invalid chain IDs", async function () {
-            const BitcoinDestinationChain = await ethers.getContractFactory("BitcoinDestinationChain");
-            
-            await expect(
-                BitcoinDestinationChain.deploy(99999) // Invalid chain ID
-            ).to.be.revertedWith("Invalid Bitcoin-family chain ID");
+    describe("Chain ID Constants", function () {
+        it("should have correct Bitcoin family chain IDs", async function () {
+            expect(await bitcoinDestinationChain.BITCOIN_MAINNET()).to.equal(40003);
+            expect(await bitcoinDestinationChain.BITCOIN_TESTNET()).to.equal(40004);
+            expect(await bitcoinDestinationChain.DOGECOIN_MAINNET()).to.equal(40005);
+            expect(await bitcoinDestinationChain.LITECOIN_MAINNET()).to.equal(40006);
+            expect(await bitcoinDestinationChain.BITCOIN_CASH_MAINNET()).to.equal(40007);
         });
     });
 
     describe("Address Validation", function () {
-        it("Should validate Bitcoin mainnet P2PKH addresses", async function () {
-            const BitcoinDestinationChain = await ethers.getContractFactory("BitcoinDestinationChain");
-            const mainnetAdapter = await BitcoinDestinationChain.deploy(BITCOIN_MAINNET_ID);
-            await mainnetAdapter.waitForDeployment();
-            
-            const isValid = await mainnetAdapter.validateDestinationAddress(
-                ethers.toUtf8Bytes(VALID_BTC_MAINNET_P2PKH)
-            );
-            expect(isValid).to.be.true;
+        describe("Bitcoin P2PKH Addresses", function () {
+            it("should validate Bitcoin mainnet P2PKH addresses (starts with '1')", async function () {
+                const validAddresses = [
+                    "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa", // Genesis block address
+                    "1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2",
+                    "1dice8EMZmqKvrGE4Qc9bUFf9PX3xaYDp"
+                ];
+
+                for (const address of validAddresses) {
+                    expect(await bitcoinDestinationChain.validateDestinationAddress(ethers.toUtf8Bytes(address)))
+                        .to.be.true;
+                }
+            });
+
+            it("should validate Bitcoin testnet P2PKH addresses (starts with 'm' or 'n')", async function () {
+                const validAddresses = [
+                    "mipcBbFg9gMiCh81Kj8tqqdgoZub1ZJRfn",
+                    "n2eMqTT929pb1RDNuqEnxdaLau1rxy3efi",
+                    "mkHS9ne12qx9pS9VojpwU5xtRd4T7X7ZUt"
+                ];
+
+                for (const address of validAddresses) {
+                    expect(await bitcoinDestinationChain.validateDestinationAddress(ethers.toUtf8Bytes(address)))
+                        .to.be.true;
+                }
+            });
+
+            it("should validate Dogecoin addresses (starts with 'D')", async function () {
+                const validAddresses = [
+                    "DH5yaieqoZN36fDVciNyRueRGvGLR3mr7L",
+                    "D7Y55LkYUHGTv4A7V2MCGBBqZYTQY5d6jv"
+                ];
+
+                for (const address of validAddresses) {
+                    expect(await bitcoinDestinationChain.validateDestinationAddress(ethers.toUtf8Bytes(address)))
+                        .to.be.true;
+                }
+            });
+
+            it("should validate Litecoin addresses (starts with 'L' or 'M')", async function () {
+                const validAddresses = [
+                    "LYWKqJhtPeGyBAw7WC8R3F7ovxtzAiubdM",
+                    "MBuTCzgBhisMCFdLLhQ9SUnPk4j3Jhh8R5"
+                ];
+
+                for (const address of validAddresses) {
+                    expect(await bitcoinDestinationChain.validateDestinationAddress(ethers.toUtf8Bytes(address)))
+                        .to.be.true;
+                }
+            });
         });
 
-        it("Should validate Bitcoin testnet P2PKH addresses", async function () {
-            const isValid = await bitcoinAdapter.validateDestinationAddress(
-                ethers.toUtf8Bytes(VALID_BTC_TESTNET_P2PKH)
-            );
-            expect(isValid).to.be.true;
+        describe("Bitcoin P2SH Addresses", function () {
+            it("should validate Bitcoin mainnet P2SH addresses (starts with '3')", async function () {
+                const validAddresses = [
+                    "3J98t1WpEZ73CNmQviecrnyiWrnqRhWNLy",
+                    "3FTMEfzLFw9KhNvU6F6t7W84d8uq4Hf7rn"
+                ];
+
+                for (const address of validAddresses) {
+                    expect(await bitcoinDestinationChain.validateDestinationAddress(ethers.toUtf8Bytes(address)))
+                        .to.be.true;
+                }
+            });
+
+            it("should validate Bitcoin testnet P2SH addresses (starts with '2')", async function () {
+                const validAddresses = [
+                    "2MzQwSSnBHWHqSAqtTVQ6v47XtaisrJa1Vc",
+                    "2N2JD6wb56AfK4tfmM6PwdVmoYk2dCKf4Br"
+                ];
+
+                for (const address of validAddresses) {
+                    expect(await bitcoinDestinationChain.validateDestinationAddress(ethers.toUtf8Bytes(address)))
+                        .to.be.true;
+                }
+            });
         });
 
-        it("Should validate Bitcoin P2SH addresses", async function () {
-            const isValid = await bitcoinAdapter.validateDestinationAddress(
-                ethers.toUtf8Bytes(VALID_BTC_P2SH)
-            );
-            expect(isValid).to.be.true;
+        describe("Bitcoin Bech32 Addresses", function () {
+            it("should validate Bitcoin mainnet Bech32 addresses (starts with 'bc1')", async function () {
+                const validAddresses = [
+                    "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4",
+                    "bc1qrp33g5q5c5txsp9arysrx4k6zdkfs4nce4xj0gdcccefvpysxf3qccfmv3"
+                ];
+
+                for (const address of validAddresses) {
+                    expect(await bitcoinDestinationChain.validateDestinationAddress(ethers.toUtf8Bytes(address)))
+                        .to.be.true;
+                }
+            });
+
+            it("should validate Bitcoin testnet Bech32 addresses (starts with 'tb1')", async function () {
+                const validAddresses = [
+                    "tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx",
+                    "tb1qrp33g5q5c5txsp9arysrx4k6zdkfs4nce4xj0gdcccefvpysxf3q0sl5k7"
+                ];
+
+                for (const address of validAddresses) {
+                    expect(await bitcoinDestinationChain.validateDestinationAddress(ethers.toUtf8Bytes(address)))
+                        .to.be.true;
+                }
+            });
         });
 
-        it("Should validate Bitcoin Bech32 addresses", async function () {
-            const BitcoinDestinationChain = await ethers.getContractFactory("BitcoinDestinationChain");
-            const mainnetAdapter = await BitcoinDestinationChain.deploy(BITCOIN_MAINNET_ID);
-            await mainnetAdapter.waitForDeployment();
-            
-            const isValid = await mainnetAdapter.validateDestinationAddress(
-                ethers.toUtf8Bytes(VALID_BTC_BECH32)
-            );
-            expect(isValid).to.be.true;
+        describe("Bitcoin Cash Addresses", function () {
+            it("should validate Bitcoin Cash addresses with prefix", async function () {
+                const validAddresses = [
+                    "bitcoincash:qpm2qsznhks23z7629mms6s4cwef74vcwvy22gdx6a",
+                    "bitcoincash:qr95sy3j9xwd2ap32xkykttr4cvcu7as4y0qverfuy"
+                ];
+
+                for (const address of validAddresses) {
+                    expect(await bitcoinDestinationChain.validateDestinationAddress(ethers.toUtf8Bytes(address)))
+                        .to.be.true;
+                }
+            });
         });
 
-        it("Should validate Litecoin addresses", async function () {
-            const BitcoinDestinationChain = await ethers.getContractFactory("BitcoinDestinationChain");
-            const ltcAdapter = await BitcoinDestinationChain.deploy(LITECOIN_MAINNET_ID);
-            await ltcAdapter.waitForDeployment();
-            
-            const isValid = await ltcAdapter.validateDestinationAddress(
-                ethers.toUtf8Bytes(VALID_LTC_ADDRESS)
-            );
-            expect(isValid).to.be.true;
-        });
+        describe("Invalid Addresses", function () {
+            it("should reject empty addresses", async function () {
+                expect(await bitcoinDestinationChain.validateDestinationAddress(ethers.toUtf8Bytes("")))
+                    .to.be.false;
+            });
 
-        it("Should validate Dogecoin addresses", async function () {
-            const BitcoinDestinationChain = await ethers.getContractFactory("BitcoinDestinationChain");
-            const dogeAdapter = await BitcoinDestinationChain.deploy(DOGECOIN_MAINNET_ID);
-            await dogeAdapter.waitForDeployment();
-            
-            const isValid = await dogeAdapter.validateDestinationAddress(
-                ethers.toUtf8Bytes(VALID_DOGE_ADDRESS)
-            );
-            expect(isValid).to.be.true;
-        });
+            it("should reject invalid format addresses", async function () {
+                const invalidAddresses = [
+                    "0x742d35Cc6B44e9F7c4963A0e0f9d6d8A8B0f8B8E", // Ethereum address
+                    "invalid-address",
+                    "123456789",
+                    "bitcoin123",
+                    "ltc1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx", // Wrong prefix
+                    "4A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa" // Invalid starting character
+                ];
 
-        it("Should reject empty addresses", async function () {
-            const isValid = await bitcoinAdapter.validateDestinationAddress(
-                ethers.toUtf8Bytes(INVALID_ADDRESS_EMPTY)
-            );
-            expect(isValid).to.be.false;
-        });
+                for (const address of invalidAddresses) {
+                    expect(await bitcoinDestinationChain.validateDestinationAddress(ethers.toUtf8Bytes(address)))
+                        .to.be.false;
+                }
+            });
 
-        it("Should reject addresses that are too short", async function () {
-            const isValid = await bitcoinAdapter.validateDestinationAddress(
-                ethers.toUtf8Bytes(INVALID_ADDRESS_SHORT)
-            );
-            expect(isValid).to.be.false;
-        });
+            it("should reject addresses with invalid lengths", async function () {
+                const invalidAddresses = [
+                    "1A1", // Too short
+                    "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa123456789012345678901234567890", // Too long
+                    "bc1q", // Too short bech32
+                ];
 
-        it("Should reject addresses with invalid Base58 characters", async function () {
-            const isValid = await bitcoinAdapter.validateDestinationAddress(
-                ethers.toUtf8Bytes(INVALID_ADDRESS_INVALID_CHARS)
-            );
-            expect(isValid).to.be.false;
-        });
-    });
-
-    describe("Bitcoin Execution Parameters", function () {
-        let validParams;
-        
-        beforeEach(function () {
-            validParams = {
-                feeSatPerByte: 10,
-                timelock: 144, // ~24 hours in blocks
-                useRelativeTimelock: false,
-                refundPubKeyHash: ethers.keccak256(ethers.toUtf8Bytes("test")),
-                dustThreshold: 546,
-                confirmations: 1
-            };
-        });
-
-        it("Should encode and decode Bitcoin execution parameters", async function () {
-            const encoded = await bitcoinAdapter.encodeBitcoinExecutionParams(validParams);
-            const decoded = await bitcoinAdapter.decodeBitcoinExecutionParams(encoded);
-            
-            expect(decoded.feeSatPerByte).to.equal(validParams.feeSatPerByte);
-            expect(decoded.timelock).to.equal(validParams.timelock);
-            expect(decoded.useRelativeTimelock).to.equal(validParams.useRelativeTimelock);
-            expect(decoded.refundPubKeyHash).to.equal(validParams.refundPubKeyHash);
-            expect(decoded.dustThreshold).to.equal(validParams.dustThreshold);
-            expect(decoded.confirmations).to.equal(validParams.confirmations);
-        });
-
-        it("Should create default execution parameters", async function () {
-            const feeSatPerByte = 20;
-            const timelock = 288; // ~48 hours
-            const refundPubKeyHash = ethers.keccak256(ethers.toUtf8Bytes("refund"));
-            
-            const encoded = await bitcoinAdapter.createDefaultExecutionParams(
-                feeSatPerByte,
-                timelock,
-                refundPubKeyHash
-            );
-            
-            const decoded = await bitcoinAdapter.decodeBitcoinExecutionParams(encoded);
-            expect(decoded.feeSatPerByte).to.equal(feeSatPerByte);
-            expect(decoded.timelock).to.equal(timelock);
-            expect(decoded.useRelativeTimelock).to.be.false;
-            expect(decoded.refundPubKeyHash).to.equal(refundPubKeyHash);
-            expect(decoded.dustThreshold).to.equal(546);
-            expect(decoded.confirmations).to.equal(1);
-        });
-    });
-
-    describe("Order Parameter Validation", function () {
-        let validOrderParams;
-        
-        beforeEach(async function () {
-            const btcParams = {
-                feeSatPerByte: 10,
-                timelock: 144,
-                useRelativeTimelock: false,
-                refundPubKeyHash: ethers.keccak256(ethers.toUtf8Bytes("test")),
-                dustThreshold: 546,
-                confirmations: 1
-            };
-            
-            const encodedParams = await bitcoinAdapter.encodeBitcoinExecutionParams(btcParams);
-            
-            validOrderParams = {
-                destinationAddress: ethers.toUtf8Bytes(VALID_BTC_TESTNET_P2PKH),
-                executionParams: encodedParams,
-                estimatedGas: 250,
-                additionalData: "0x"
-            };
-        });
-
-        it("Should validate valid order parameters", async function () {
-            const amount = ethers.parseEther("0.1"); // 0.1 BTC worth
-            
-            const result = await bitcoinAdapter.validateOrderParams(validOrderParams, amount);
-            expect(result.isValid).to.be.true;
-            expect(result.errorMessage).to.equal("");
-            expect(result.estimatedCost).to.be.greaterThan(0);
-        });
-
-        it("Should reject invalid destination address", async function () {
-            const invalidParams = {
-                ...validOrderParams,
-                destinationAddress: ethers.toUtf8Bytes(INVALID_ADDRESS_INVALID_CHARS)
-            };
-            
-            const result = await bitcoinAdapter.validateOrderParams(invalidParams, ethers.parseEther("0.1"));
-            expect(result.isValid).to.be.false;
-            expect(result.errorMessage).to.equal("Invalid Bitcoin address format");
-        });
-
-        it("Should reject amounts below dust threshold", async function () {
-            const dustAmount = 500; // Below 546 satoshi threshold
-            
-            const result = await bitcoinAdapter.validateOrderParams(validOrderParams, dustAmount);
-            expect(result.isValid).to.be.false;
-            expect(result.errorMessage).to.equal("Amount below dust threshold");
-        });
-
-        it("Should reject invalid fee rates", async function () {
-            const btcParams = {
-                feeSatPerByte: 1001, // Above 1000 sat/byte limit
-                timelock: 144,
-                useRelativeTimelock: false,
-                refundPubKeyHash: ethers.keccak256(ethers.toUtf8Bytes("test")),
-                dustThreshold: 546,
-                confirmations: 1
-            };
-            
-            const encodedParams = await bitcoinAdapter.encodeBitcoinExecutionParams(btcParams);
-            const invalidParams = {
-                ...validOrderParams,
-                executionParams: encodedParams
-            };
-            
-            const result = await bitcoinAdapter.validateOrderParams(invalidParams, ethers.parseEther("0.1"));
-            expect(result.isValid).to.be.false;
-            expect(result.errorMessage).to.equal("Invalid fee rate (must be 1-1000 sat/byte)");
-        });
-
-        it("Should reject zero timelock", async function () {
-            const btcParams = {
-                feeSatPerByte: 10,
-                timelock: 0, // Invalid zero timelock
-                useRelativeTimelock: false,
-                refundPubKeyHash: ethers.keccak256(ethers.toUtf8Bytes("test")),
-                dustThreshold: 546,
-                confirmations: 1
-            };
-            
-            const encodedParams = await bitcoinAdapter.encodeBitcoinExecutionParams(btcParams);
-            const invalidParams = {
-                ...validOrderParams,
-                executionParams: encodedParams
-            };
-            
-            const result = await bitcoinAdapter.validateOrderParams(invalidParams, ethers.parseEther("0.1"));
-            expect(result.isValid).to.be.false;
-            expect(result.errorMessage).to.equal("Timelock cannot be zero");
-        });
-
-        it("Should handle malformed execution parameters", async function () {
-            const invalidParams = {
-                ...validOrderParams,
-                executionParams: "0xdeadbeef" // Invalid encoding
-            };
-            
-            const result = await bitcoinAdapter.validateOrderParams(invalidParams, ethers.parseEther("0.1"));
-            expect(result.isValid).to.be.false;
-            expect(result.errorMessage).to.equal("Invalid Bitcoin execution parameters encoding");
+                for (const address of invalidAddresses) {
+                    expect(await bitcoinDestinationChain.validateDestinationAddress(ethers.toUtf8Bytes(address)))
+                        .to.be.false;
+                }
+            });
         });
     });
 
     describe("Safety Deposit Calculation", function () {
-        it("Should calculate 5% safety deposit correctly", async function () {
-            const amount = ethers.parseEther("1.0"); // 1 BTC
-            const expectedDeposit = amount * BigInt(500) / BigInt(10000); // 5%
-            
-            const deposit = await bitcoinAdapter.calculateMinSafetyDeposit(amount);
-            expect(deposit).to.equal(expectedDeposit);
+        it("should calculate 5% safety deposit correctly", async function () {
+            const testAmounts = [
+                { amount: 1000, expected: 50 },      // 5% of 1000
+                { amount: 100000, expected: 5000 },  // 5% of 100000
+                { amount: 1, expected: 0 },          // 5% of 1 (rounds down)
+                { amount: 20, expected: 1 },         // 5% of 20
+            ];
+
+            for (const test of testAmounts) {
+                const result = await bitcoinDestinationChain.calculateMinSafetyDeposit(test.amount);
+                expect(result).to.equal(test.expected);
+            }
         });
 
-        it("Should handle small amounts correctly", async function () {
-            const amount = 1000; // 1000 satoshis
-            const expectedDeposit = 50; // 5% = 50 satoshis
-            
-            const deposit = await bitcoinAdapter.calculateMinSafetyDeposit(amount);
-            expect(deposit).to.equal(expectedDeposit);
+        it("should handle large amounts without overflow", async function () {
+            const largeAmount = ethers.parseEther("1000000"); // 1M ETH worth
+            const expectedDeposit = largeAmount * BigInt(500) / BigInt(10000); // 5%
+
+            const result = await bitcoinDestinationChain.calculateMinSafetyDeposit(largeAmount);
+            expect(result).to.equal(expectedDeposit);
         });
     });
 
-    describe("Token Format Support", function () {
-        it("Should support only native token format", async function () {
-            const formats = await bitcoinAdapter.getSupportedTokenFormats();
-            expect(formats).to.have.lengthOf(1);
-            expect(formats[0]).to.equal("native");
+    describe("Supported Features", function () {
+        it("should support required features", async function () {
+            expect(await bitcoinDestinationChain.supportsFeature("htlc")).to.be.true;
+            expect(await bitcoinDestinationChain.supportsFeature("sha256_hashlock")).to.be.true;
+            expect(await bitcoinDestinationChain.supportsFeature("timelock_refund")).to.be.true;
+            expect(await bitcoinDestinationChain.supportsFeature("atomic_swap")).to.be.true;
+            expect(await bitcoinDestinationChain.supportsFeature("unsupported_feature")).to.be.false;
         });
+    });
 
-        it("Should format native token identifiers correctly", async function () {
-            const tokenId = await bitcoinAdapter.formatTokenIdentifier(
-                ethers.ZeroAddress,
-                "BTC",
-                true
+    describe("Execution Parameters", function () {
+        it("should encode and decode execution parameters correctly", async function () {
+            const testParams = {
+                btcAddress: "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4",
+                htlcTimelock: 144,
+                feeRate: 10
+            };
+
+            // Encode parameters
+            const encoded = await bitcoinDestinationChain.encodeExecutionParams(
+                testParams.btcAddress,
+                testParams.htlcTimelock,
+                testParams.feeRate
             );
-            expect(ethers.toUtf8String(tokenId)).to.equal("native.BTC");
+
+            // Decode parameters
+            const [decodedAddress, decodedTimelock, decodedFeeRate] = 
+                await bitcoinDestinationChain.decodeExecutionParams(encoded);
+
+            expect(decodedAddress).to.equal(testParams.btcAddress);
+            expect(decodedTimelock).to.equal(testParams.htlcTimelock);
+            expect(decodedFeeRate).to.equal(testParams.feeRate);
         });
 
-        it("Should reject non-native tokens", async function () {
-            await expect(
-                bitcoinAdapter.formatTokenIdentifier(
-                    ethers.ZeroAddress,
-                    "USDT",
-                    false
-                )
-            ).to.be.revertedWith("Only native tokens supported for Bitcoin-family chains");
-        });
-    });
+        it("should handle various parameter combinations", async function () {
+            const testCases = [
+                {
+                    btcAddress: "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
+                    htlcTimelock: 24,
+                    feeRate: 1
+                },
+                {
+                    btcAddress: "tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx",
+                    htlcTimelock: 1000,
+                    feeRate: 100
+                },
+                {
+                    btcAddress: "3J98t1WpEZ73CNmQviecrnyiWrnqRhWNLy",
+                    htlcTimelock: 65535,
+                    feeRate: 1000
+                }
+            ];
 
-    describe("Feature Support", function () {
-        it("Should support atomic swaps feature", async function () {
-            const isSupported = await bitcoinAdapter.supportsFeature("atomic_swaps");
-            expect(isSupported).to.be.true;
-        });
+            for (const testCase of testCases) {
+                const encoded = await bitcoinDestinationChain.encodeExecutionParams(
+                    testCase.btcAddress,
+                    testCase.htlcTimelock,
+                    testCase.feeRate
+                );
 
-        it("Should support HTLC feature", async function () {
-            const isSupported = await bitcoinAdapter.supportsFeature("htlc");
-            expect(isSupported).to.be.true;
-        });
+                const [decodedAddress, decodedTimelock, decodedFeeRate] = 
+                    await bitcoinDestinationChain.decodeExecutionParams(encoded);
 
-        it("Should support script-based locks", async function () {
-            const isSupported = await bitcoinAdapter.supportsFeature("script_based_locks");
-            expect(isSupported).to.be.true;
-        });
-
-        it("Should support UTXO model", async function () {
-            const isSupported = await bitcoinAdapter.supportsFeature("utxo_model");
-            expect(isSupported).to.be.true;
-        });
-
-        it("Should support CSV timelocks", async function () {
-            const isSupported = await bitcoinAdapter.supportsFeature("timelock_csv");
-            expect(isSupported).to.be.true;
-        });
-
-        it("Should support CLTV timelocks", async function () {
-            const isSupported = await bitcoinAdapter.supportsFeature("timelock_cltv");
-            expect(isSupported).to.be.true;
-        });
-
-        it("Should not support unsupported features", async function () {
-            const isSupported = await bitcoinAdapter.supportsFeature("unsupported_feature");
-            expect(isSupported).to.be.false;
+                expect(decodedAddress).to.equal(testCase.btcAddress);
+                expect(decodedTimelock).to.equal(testCase.htlcTimelock);
+                expect(decodedFeeRate).to.equal(testCase.feeRate);
+            }
         });
     });
 
     describe("Execution Cost Estimation", function () {
-        it("Should estimate execution cost with default parameters", async function () {
-            const params = {
-                destinationAddress: ethers.toUtf8Bytes(VALID_BTC_TESTNET_P2PKH),
-                executionParams: "0x",
-                estimatedGas: 250,
-                additionalData: "0x"
-            };
-            
-            const cost = await bitcoinAdapter.estimateExecutionCost(params, ethers.parseEther("0.1"));
-            // Default: 250 bytes * 10 sat/byte * 1e10 (sat to wei conversion)
-            const expectedCost = BigInt(250 * 10 * 1e10);
-            expect(cost).to.equal(expectedCost);
+        it("should estimate Bitcoin transaction costs correctly", async function () {
+            const testCases = [
+                { feeRate: 1, expectedCost: 450n * 1n * 1000000000n },      // 1 sat/byte
+                { feeRate: 10, expectedCost: 450n * 10n * 1000000000n },    // 10 sat/byte
+                { feeRate: 100, expectedCost: 450n * 100n * 1000000000n },  // 100 sat/byte
+            ];
+
+            for (const testCase of testCases) {
+                const encodedParams = await bitcoinDestinationChain.encodeExecutionParams(
+                    "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4",
+                    144,
+                    testCase.feeRate
+                );
+
+                const chainSpecificParams = {
+                    destinationAddress: ethers.toUtf8Bytes("bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4"),
+                    executionParams: encodedParams,
+                    estimatedGas: 21000,
+                    additionalData: "0x"
+                };
+
+                const cost = await bitcoinDestinationChain.estimateExecutionCost(chainSpecificParams, 1000);
+                expect(cost).to.equal(testCase.expectedCost);
+            }
+        });
+    });
+
+    describe("Chain Support", function () {
+        it("should correctly identify supported chains", async function () {
+            const supportedChains = [40003, 40004, 40005, 40006, 40007];
+            const unsupportedChains = [1, 11155111, 40001, 40002, 99999];
+
+            for (const chainId of supportedChains) {
+                expect(await bitcoinDestinationChain.isChainSupported(chainId))
+                    .to.be.true;
+            }
+
+            for (const chainId of unsupportedChains) {
+                expect(await bitcoinDestinationChain.isChainSupported(chainId))
+                    .to.be.false;
+            }
         });
 
-        it("Should estimate execution cost with custom fee rate", async function () {
-            const btcParams = {
-                feeSatPerByte: 50, // Higher fee rate
-                timelock: 144,
-                useRelativeTimelock: false,
-                refundPubKeyHash: ethers.keccak256(ethers.toUtf8Bytes("test")),
-                dustThreshold: 546,
-                confirmations: 1
-            };
+        it("should return correct chain names", async function () {
+            const chainNames = [
+                { chainId: 40003, expectedName: "Bitcoin" },
+                { chainId: 40004, expectedName: "Bitcoin Testnet" },
+                { chainId: 40005, expectedName: "Dogecoin" },
+                { chainId: 40006, expectedName: "Litecoin" },
+                { chainId: 40007, expectedName: "Bitcoin Cash" },
+                { chainId: 99999, expectedName: "Unknown Bitcoin Chain" }
+            ];
+
+            for (const test of chainNames) {
+                const name = await bitcoinDestinationChain.getChainName(test.chainId);
+                expect(name).to.equal(test.expectedName);
+            }
+        });
+    });
+
+    describe("IDestinationChain Interface Compliance", function () {
+        it("should implement all required interface methods", async function () {
+            // Test that all IDestinationChain methods exist and are callable
             
-            const encodedParams = await bitcoinAdapter.encodeBitcoinExecutionParams(btcParams);
-            const params = {
-                destinationAddress: ethers.toUtf8Bytes(VALID_BTC_TESTNET_P2PKH),
+            // validateDestinationAddress
+            await expect(bitcoinDestinationChain.validateDestinationAddress(ethers.toUtf8Bytes("1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa")))
+                .to.not.be.reverted;
+
+            // getSupportedTokenFormats
+            await expect(bitcoinDestinationChain.getSupportedTokenFormats())
+                .to.not.be.reverted;
+
+            // calculateMinSafetyDeposit
+            await expect(bitcoinDestinationChain.calculateMinSafetyDeposit(1000))
+                .to.not.be.reverted;
+
+            // estimateExecutionCost with ChainSpecificParams
+            const encodedParams = await bitcoinDestinationChain.encodeExecutionParams("1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa", 144, 10);
+            const chainSpecificParams = {
+                destinationAddress: ethers.toUtf8Bytes("1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"),
                 executionParams: encodedParams,
-                estimatedGas: 250,
+                estimatedGas: 21000,
                 additionalData: "0x"
             };
-            
-            const cost = await bitcoinAdapter.estimateExecutionCost(params, ethers.parseEther("0.1"));
-            // 250 bytes * 50 sat/byte * 1e10
-            const expectedCost = BigInt(250 * 50 * 1e10);
-            expect(cost).to.equal(expectedCost);
+            await expect(bitcoinDestinationChain.estimateExecutionCost(chainSpecificParams, 1000))
+                .to.not.be.reverted;
         });
     });
 
-    describe("HTLC Script Generation", function () {
-        it("Should generate valid HTLC script with CLTV", async function () {
-            const hashlock = ethers.keccak256(ethers.toUtf8Bytes("secret"));
-            const timelock = 144;
-            const recipientPubKeyHash = ethers.randomBytes(20);
-            const refundPubKeyHash = ethers.randomBytes(20);
-            
-            const script = await bitcoinAdapter.generateHTLCScript(
-                hashlock,
-                timelock,
-                recipientPubKeyHash,
-                refundPubKeyHash,
-                false // Use CLTV
-            );
-            
-            expect(script).to.not.equal("0x");
-            expect(script.length).to.be.greaterThan(0);
-            
-            // Check for key opcodes
-            const scriptHex = script.slice(2); // Remove 0x prefix
-            expect(scriptHex).to.include("63"); // OP_IF
-            expect(scriptHex).to.include("67"); // OP_ELSE  
-            expect(scriptHex).to.include("68"); // OP_ENDIF
-            expect(scriptHex).to.include("a8"); // OP_SHA256
-            expect(scriptHex).to.include("b1"); // OP_CHECKLOCKTIMEVERIFY
+    describe("Edge Cases and Error Handling", function () {
+        it("should handle zero amounts in safety deposit calculation", async function () {
+            const result = await bitcoinDestinationChain.calculateMinSafetyDeposit(0);
+            expect(result).to.equal(0);
         });
 
-        it("Should generate valid HTLC script with CSV", async function () {
-            const hashlock = ethers.keccak256(ethers.toUtf8Bytes("secret"));
-            const timelock = 144;
-            const recipientPubKeyHash = ethers.randomBytes(20);
-            const refundPubKeyHash = ethers.randomBytes(20);
+        it("should handle large values without overflow", async function () {
+            const largeValue = ethers.parseEther("1000000"); // 1M ETH worth
             
-            const script = await bitcoinAdapter.generateHTLCScript(
-                hashlock,
-                timelock,
-                recipientPubKeyHash,
-                refundPubKeyHash,
-                true // Use CSV
-            );
-            
-            expect(script).to.not.equal("0x");
-            expect(script.length).to.be.greaterThan(0);
-            
-            // Check for CSV opcode instead of CLTV
-            const scriptHex = script.slice(2);
-            expect(scriptHex).to.include("b2"); // OP_CHECKSEQUENCEVERIFY
+            // Should not revert with large values
+            await expect(bitcoinDestinationChain.calculateMinSafetyDeposit(largeValue))
+                .to.not.be.reverted;
+        });
+
+        it("should handle very long addresses gracefully", async function () {
+            const veryLongAddress = "1".repeat(100);
+            const result = await bitcoinDestinationChain.validateDestinationAddress(ethers.toUtf8Bytes(veryLongAddress));
+            expect(result).to.be.false;
+        });
+
+        it("should handle special characters in addresses", async function () {
+            const specialCharAddresses = [
+                "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa@",
+                "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4#",
+                "3J98t1WpEZ73CNmQviecrnyiWrnqRhWNLy$"
+            ];
+
+            for (const address of specialCharAddresses) {
+                const result = await bitcoinDestinationChain.validateDestinationAddress(ethers.toUtf8Bytes(address));
+                expect(result).to.be.false;
+            }
         });
     });
 
-    describe("Order Metadata", function () {
-        it("Should generate proper order metadata", async function () {
-            const params = {
-                destinationAddress: ethers.toUtf8Bytes(VALID_BTC_TESTNET_P2PKH),
-                executionParams: "0x1234",
-                estimatedGas: 250,
-                additionalData: "0x"
-            };
+    describe("Gas Usage", function () {
+        it("should have reasonable gas costs for all operations", async function () {
+            // Test gas usage for various operations
+            const testAddress = "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4";
             
-            const metadata = await bitcoinAdapter.getOrderMetadata(params);
-            expect(metadata).to.not.equal("0x");
-            expect(metadata.length).to.be.greaterThan(0);
-            
-            // Verify it can be decoded
-            const decoded = ethers.AbiCoder.defaultAbiCoder().decode(
-                ["bytes", "bytes", "uint256", "uint256", "uint256"],
-                metadata
-            );
-            
-            expect(decoded[0]).to.equal(ethers.hexlify(params.destinationAddress));
-            expect(decoded[1]).to.equal(params.executionParams);
-            expect(decoded[2]).to.equal(params.estimatedGas);
-            expect(decoded[3]).to.equal(BITCOIN_TESTNET_ID); // chainId
+            // Address validation
+            const validateTx = await bitcoinDestinationChain.validateDestinationAddress.populateTransaction(ethers.toUtf8Bytes(testAddress));
+            const validateGasEstimate = await ethers.provider.estimateGas(validateTx);
+            expect(validateGasEstimate).to.be.lt(80000); // Should be less than 80k gas (includes character validation)
+
+            // Safety deposit calculation
+            const depositTx = await bitcoinDestinationChain.calculateMinSafetyDeposit.populateTransaction(1000);
+            const depositGasEstimate = await ethers.provider.estimateGas(depositTx);
+            expect(depositGasEstimate).to.be.lt(30000); // Should be less than 30k gas
+
+            // Parameter encoding
+            const encodeTx = await bitcoinDestinationChain.encodeExecutionParams.populateTransaction(testAddress, 144, 10);
+            const encodeGasEstimate = await ethers.provider.estimateGas(encodeTx);
+            expect(encodeGasEstimate).to.be.lt(50000); // Should be less than 50k gas
         });
     });
 });
