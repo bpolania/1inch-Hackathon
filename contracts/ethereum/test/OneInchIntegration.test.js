@@ -6,6 +6,7 @@ describe("1inch Fusion+ Integration Tests", function () {
     let oneInchFactory;
     let registry;
     let nearAdapter;
+    let bitcoinAdapter;
     let nearTakerInteraction;
     let mockEscrowFactory;
     let mockERC20;
@@ -15,6 +16,8 @@ describe("1inch Fusion+ Integration Tests", function () {
 
     const NEAR_MAINNET_CHAIN_ID = 40001;
     const NEAR_TESTNET_CHAIN_ID = 40002;
+    const BITCOIN_MAINNET_CHAIN_ID = 40003;
+    const BITCOIN_TESTNET_CHAIN_ID = 40004;
 
     // Helper function to create chain params
     function createChainParams(address, contractId = "fusion-plus.testnet", methodName = "execute_fusion_order", gas = 300000000000000n, deposit = "1000000000000000000000000") {
@@ -56,9 +59,23 @@ describe("1inch Fusion+ Integration Tests", function () {
         
         nearAdapter = nearTestnetAdapter; // Use testnet adapter for tests
 
+        // Deploy Bitcoin destination chain adapters
+        const BitcoinDestinationChain = await ethers.getContractFactory("BitcoinDestinationChain");
+        const bitcoinMainnetAdapter = await BitcoinDestinationChain.deploy(BITCOIN_MAINNET_CHAIN_ID);
+        await bitcoinMainnetAdapter.waitForDeployment();
+        
+        const bitcoinTestnetAdapter = await BitcoinDestinationChain.deploy(BITCOIN_TESTNET_CHAIN_ID);
+        await bitcoinTestnetAdapter.waitForDeployment();
+        
+        bitcoinAdapter = bitcoinTestnetAdapter; // Use testnet adapter for tests
+
         // Register NEAR chains
         await registry.registerChainAdapter(NEAR_MAINNET_CHAIN_ID, nearMainnetAdapter.target);
         await registry.registerChainAdapter(NEAR_TESTNET_CHAIN_ID, nearTestnetAdapter.target);
+        
+        // Register Bitcoin chains
+        await registry.registerChainAdapter(BITCOIN_MAINNET_CHAIN_ID, bitcoinMainnetAdapter.target);
+        await registry.registerChainAdapter(BITCOIN_TESTNET_CHAIN_ID, bitcoinTestnetAdapter.target);
 
         // Deploy mock 1inch EscrowFactory
         const MockOneInchEscrowFactory = await ethers.getContractFactory("MockOneInchEscrowFactory");
@@ -401,6 +418,165 @@ describe("1inch Fusion+ Integration Tests", function () {
             // Order should now be inactive
             const finalOrder = await oneInchFactory.getOrder(orderHash);
             expect(finalOrder.isActive).to.be.false;
+        });
+    });
+
+    describe("Bitcoin Integration", function () {
+        it("Should support Bitcoin chain registration", async function () {
+            // Check that Bitcoin chains are registered
+            const supportedChains = await registry.getSupportedChainIds();
+            expect(supportedChains).to.include(BigInt(BITCOIN_MAINNET_CHAIN_ID));
+            expect(supportedChains).to.include(BigInt(BITCOIN_TESTNET_CHAIN_ID));
+            
+            // Verify adapter addresses
+            const registeredBitcoinTestnetAdapter = await registry.chainAdapters(BITCOIN_TESTNET_CHAIN_ID);
+            expect(registeredBitcoinTestnetAdapter).to.equal(bitcoinAdapter.target);
+        });
+
+        it("Should validate Bitcoin addresses correctly", async function () {
+            const validAddresses = [
+                "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa", // P2PKH
+                "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4", // Bech32
+                "3J98t1WpEZ73CNmQviecrnyiWrnqRhWNLy", // P2SH
+                "tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx" // Testnet
+            ];
+
+            for (const address of validAddresses) {
+                const isValid = await registry.validateDestinationAddress(
+                    BITCOIN_TESTNET_CHAIN_ID,
+                    ethers.toUtf8Bytes(address)
+                );
+                expect(isValid).to.be.true;
+            }
+
+            // Test invalid addresses
+            const invalidAddresses = [
+                "0x742d35Cc6B44e9F7c4963A0e0f9d6d8A8B0f8B8E", // Ethereum address
+                "invalid-address",
+                ""
+            ];
+
+            for (const address of invalidAddresses) {
+                const isValid = await registry.validateDestinationAddress(
+                    BITCOIN_TESTNET_CHAIN_ID,
+                    ethers.toUtf8Bytes(address)
+                );
+                expect(isValid).to.be.false;
+            }
+        });
+
+        it("Should create orders with Bitcoin destination", async function () {
+            // Mint tokens to user
+            await mockERC20.mint(user.address, ethers.parseEther("1000"));
+            await mockERC20.connect(user).approve(oneInchFactory.target, ethers.parseEther("100"));
+
+            const orderParams = {
+                srcToken: mockERC20.target,
+                srcAmount: ethers.parseEther("100"),
+                dstChainId: BITCOIN_TESTNET_CHAIN_ID,
+                dstToken: ethers.ZeroAddress, // BTC native
+                dstAmount: ethers.parseUnits("0.01", 8), // 0.01 BTC
+                dstAddress: "tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx",
+                resolverFeeAmount: ethers.parseEther("1"),
+                expiryTime: Math.floor(Date.now() / 1000) + 3600,
+                immutables: {
+                    hashlock: "0x" + "a".repeat(64),
+                    chainParams: {
+                        destinationAddress: ethers.toUtf8Bytes("tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx"),
+                        executionParams: await bitcoinAdapter.encodeExecutionParams(
+                            "tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx",
+                            144, // timelock blocks
+                            10   // fee rate
+                        ),
+                        estimatedGas: 21000,
+                        additionalData: "0x"
+                    }
+                }
+            };
+
+            const tx = await oneInchFactory.connect(user).createFusionOrder({
+                sourceToken: orderParams.srcToken,
+                sourceAmount: orderParams.srcAmount,
+                destinationChainId: orderParams.dstChainId,
+                destinationToken: orderParams.dstToken,
+                destinationAmount: orderParams.dstAmount,
+                destinationAddress: ethers.toUtf8Bytes(orderParams.dstAddress),
+                resolverFeeAmount: orderParams.resolverFeeAmount,
+                expiryTime: orderParams.expiryTime,
+                chainParams: orderParams.immutables.chainParams,
+                hashlock: orderParams.immutables.hashlock
+            });
+
+            const receipt = await tx.wait();
+            const orderCreatedEvent = receipt.logs.find(log => {
+                try {
+                    const parsed = oneInchFactory.interface.parseLog(log);
+                    return parsed.name === "FusionOrderCreated";
+                } catch {
+                    return false;
+                }
+            });
+
+            expect(orderCreatedEvent).to.not.be.undefined;
+            const orderHash = orderCreatedEvent.args.orderHash;
+            
+            // Verify order details
+            const order = await oneInchFactory.getOrder(orderHash);
+            expect(order.destinationChainId).to.equal(BITCOIN_TESTNET_CHAIN_ID);
+            expect(order.isActive).to.be.true;
+        });
+
+        it("Should calculate correct safety deposits for Bitcoin orders", async function () {
+            const sourceAmount = ethers.parseEther("10");
+            const safetyDeposit = await registry.calculateMinSafetyDeposit(
+                BITCOIN_TESTNET_CHAIN_ID,
+                sourceAmount
+            );
+            
+            // Bitcoin uses 5% safety deposit
+            const expectedDeposit = sourceAmount * 500n / 10000n;
+            expect(safetyDeposit).to.equal(expectedDeposit);
+        });
+
+        it("Should encode and decode Bitcoin execution parameters", async function () {
+            const btcAddress = "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4";
+            const htlcTimelock = 144;
+            const feeRate = 25;
+
+            const encoded = await bitcoinAdapter.encodeExecutionParams(
+                btcAddress,
+                htlcTimelock,
+                feeRate
+            );
+
+            const [decodedAddress, decodedTimelock, decodedFeeRate] = 
+                await bitcoinAdapter.decodeExecutionParams(encoded);
+
+            expect(decodedAddress).to.equal(btcAddress);
+            expect(decodedTimelock).to.equal(htlcTimelock);
+            expect(decodedFeeRate).to.equal(feeRate);
+        });
+
+        it("Should estimate Bitcoin execution costs", async function () {
+            const chainParams = {
+                destinationAddress: ethers.toUtf8Bytes("bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4"),
+                executionParams: await bitcoinAdapter.encodeExecutionParams(
+                    "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4",
+                    144,
+                    10 // 10 sat/byte
+                ),
+                estimatedGas: 21000,
+                additionalData: "0x"
+            };
+
+            const cost = await bitcoinAdapter.estimateExecutionCost(
+                chainParams,
+                ethers.parseEther("1")
+            );
+
+            // Expected: 450 bytes * 10 sat/byte * 1e9 wei/satoshi
+            const expectedCost = 450n * 10n * 1000000000n;
+            expect(cost).to.equal(expectedCost);
         });
     });
 });
