@@ -1,0 +1,32 @@
+{
+  "network": "sepolia",
+  "chainId": "11155111",
+  "deployer": "0x04e7B48DD6D9f33ffD1A7Be63fF91e6F318492ed",
+  "timestamp": "2025-07-30T18:17:17.223Z",
+  "contracts": {
+    "bitcoinTestnet": {
+      "address": "0xEe4EBcDF410D4b95631f395A3Be6b0d1bb93d912",
+      "chainId": 50002,
+      "name": "Bitcoin Testnet",
+      "symbol": "BTC"
+    },
+    "dogecoin": {
+      "address": "0xFD5034B7181F7d22FF7152e59437f6d28aCE4882",
+      "chainId": 50003,
+      "name": "Dogecoin Mainnet",
+      "symbol": "DOGE"
+    },
+    "litecoin": {
+      "address": "0x7654E486068D112F51c09D83B9ce17E780AEee05",
+      "chainId": 50005,
+      "name": "Litecoin Mainnet",
+      "symbol": "LTC"
+    }
+  },
+  "registry": "0x59CE43Ea20892EC3Eff00fc7506cbfA9813FE0ca",
+  "testResults": {
+    "addressValidation": true,
+    "safetyDepositCalculation": "0.005",
+    "htlcSupport": true
+  }
+}
