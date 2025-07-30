@@ -1,66 +1,91 @@
 const { ethers } = require("hardhat");
 
 async function main() {
-    console.log("🔗 Registering Bitcoin Adapters with CrossChainRegistry...");
-    console.log("======================================================");
+    console.log("🔧 Registering Bitcoin Adapters with CrossChainRegistry...");
+    console.log("=========================================================");
 
-    // Contract addresses
-    const REGISTRY_ADDRESS = "0x59CE43Ea20892EC3Eff00fc7506cbfA9813FE0ca";
-    const BTC_ADAPTER = "0xEe4EBcDF410D4b95631f395A3Be6b0d1bb93d912";
-    const DOGE_ADAPTER = "0xFD5034B7181F7d22FF7152e59437f6d28aCE4882";
-    const LTC_ADAPTER = "0x7654E486068D112F51c09D83B9ce17E780AEee05";
+    const [deployer] = await ethers.getSigners();
+    console.log("📋 Registering with account:", deployer.address);
+    console.log("💰 Account balance:", ethers.formatEther(await ethers.provider.getBalance(deployer.address)), "ETH");
+
+    // Existing contract addresses from README
+    const REGISTRY_ADDRESS = "0x09Ab998Cb3448ad281C116c9fC9e4b01e4533beD";
+    
+    // Bitcoin adapter addresses from README
+    const BITCOIN_MAINNET_ADAPTER = "0xb439CA5195EF798907EFc22D889852e8b56662de";
+    const BITCOIN_TESTNET_ADAPTER = "0x15ACc1Cb04F08143e29c39972D9cF5D53D015fF8";
+    const DOGECOIN_ADAPTER = "0x84A932A6b1Cca23c0359439673b70E6eb26cc0Aa";
+    const LITECOIN_ADAPTER = "0x79ff06d38f891dAd1EbB0074dea4464c3384d560";
+    const BITCOIN_CASH_ADAPTER = "0x6425e85a606468266fBCe46B234f31Adf3583D56";
 
     // Chain IDs
-    const BITCOIN_TESTNET_ID = 50002;
-    const DOGECOIN_MAINNET_ID = 50003;
-    const LITECOIN_MAINNET_ID = 50005;
+    const BITCOIN_MAINNET_ID = 40003;
+    const BITCOIN_TESTNET_ID = 40004;
+    const DOGECOIN_MAINNET_ID = 40005;
+    const LITECOIN_MAINNET_ID = 40006;
+    const BITCOIN_CASH_MAINNET_ID = 40007;
 
-    const [signer] = await ethers.getSigners();
-    console.log("📍 Signer:", signer.address);
+    console.log("\n📋 Contract Addresses:");
+    console.log("Registry:", REGISTRY_ADDRESS);
 
-    // Get registry contract
+    // Connect to registry
     const registry = await ethers.getContractAt("CrossChainRegistry", REGISTRY_ADDRESS);
-    
-    try {
-        // Register Bitcoin Testnet
-        console.log("\n🔄 Registering Bitcoin Testnet...");
-        const tx1 = await registry.registerChainAdapter(BITCOIN_TESTNET_ID, BTC_ADAPTER);
-        await tx1.wait();
-        console.log("✅ Bitcoin Testnet registered");
 
-        // Register Dogecoin
-        console.log("🔄 Registering Dogecoin...");
-        const tx2 = await registry.registerChainAdapter(DOGECOIN_MAINNET_ID, DOGE_ADAPTER);
-        await tx2.wait();
-        console.log("✅ Dogecoin registered");
+    const bitcoinChains = [
+        { id: BITCOIN_MAINNET_ID, name: "Bitcoin Mainnet", adapter: BITCOIN_MAINNET_ADAPTER },
+        { id: BITCOIN_TESTNET_ID, name: "Bitcoin Testnet", adapter: BITCOIN_TESTNET_ADAPTER },
+        { id: DOGECOIN_MAINNET_ID, name: "Dogecoin", adapter: DOGECOIN_ADAPTER },
+        { id: LITECOIN_MAINNET_ID, name: "Litecoin", adapter: LITECOIN_ADAPTER },
+        { id: BITCOIN_CASH_MAINNET_ID, name: "Bitcoin Cash", adapter: BITCOIN_CASH_ADAPTER }
+    ];
 
-        // Register Litecoin
-        console.log("🔄 Registering Litecoin...");
-        const tx3 = await registry.registerChainAdapter(LITECOIN_MAINNET_ID, LTC_ADAPTER);
-        await tx3.wait();
-        console.log("✅ Litecoin registered");
-
-        // Verify registration
-        console.log("\n📊 Verifying registration...");
-        const supportedChains = await registry.getSupportedChainIds();
-        console.log("Supported chains:", supportedChains.map(id => id.toString()));
-
-        for (const chainId of [BITCOIN_TESTNET_ID, DOGECOIN_MAINNET_ID, LITECOIN_MAINNET_ID]) {
-            const isSupported = await registry.isChainSupported(chainId);
-            const chainInfo = isSupported ? await registry.getChainInfo(chainId) : null;
-            console.log(`Chain ${chainId}: ${isSupported ? '✅' : '❌'} ${chainInfo?.name || 'Not found'}`);
+    console.log("\n🔧 Registering Bitcoin family adapters...");
+    for (const chain of bitcoinChains) {
+        try {
+            // Check if already registered
+            const existingInfo = await registry.getChainInfo(chain.id);
+            if (existingInfo.adapter !== ethers.ZeroAddress) {
+                console.log(`⚠️  ${chain.name} already registered at ${existingInfo.adapter}`);
+                continue;
+            }
+        } catch (error) {
+            // Chain not registered yet, which is expected
         }
 
-        console.log("\n🎉 All Bitcoin adapters successfully registered!");
-
-    } catch (error) {
-        console.error("❌ Registration failed:", error.message);
+        console.log(`📝 Registering ${chain.name} adapter at ${chain.adapter}...`);
+        const tx = await registry.registerChainAdapter(chain.id, chain.adapter);
+        await tx.wait();
+        console.log(`✅ ${chain.name} adapter registered (tx: ${tx.hash})`);
     }
+
+    console.log("\n🧪 Verifying Registration...");
+    const supportedChains = await registry.getSupportedChainIds();
+    console.log("📊 Total supported chains:", supportedChains.length);
+    console.log("📊 Supported chain IDs:", supportedChains.map(id => id.toString()));
+
+    // Verify each Bitcoin adapter
+    for (const chain of bitcoinChains) {
+        try {
+            const chainInfo = await registry.getChainInfo(chain.id);
+            console.log(`₿ ${chain.name}: ${chainInfo.name} - Active: ${chainInfo.isActive} - Adapter: ${chainInfo.adapter}`);
+        } catch (error) {
+            console.log(`❌ Failed to get info for ${chain.name}:`, error.message);
+        }
+    }
+
+    console.log("\n🎉 Bitcoin Adapter Registration Complete!");
+    console.log("=========================================");
+    console.log("All Bitcoin family adapters are now registered and ready for use.");
 }
 
-main()
-    .then(() => process.exit(0))
-    .catch((error) => {
-        console.error(error);
-        process.exit(1);
-    });
+// Handle script execution
+if (require.main === module) {
+    main()
+        .then(() => process.exit(0))
+        .catch((error) => {
+            console.error("❌ Registration failed:", error);
+            process.exit(1);
+        });
+}
+
+module.exports = { main };
