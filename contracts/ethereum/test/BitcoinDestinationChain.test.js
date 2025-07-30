@@ -404,20 +404,24 @@ describe("BitcoinDestinationChain", function () {
             // Test gas usage for various operations
             const testAddress = "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4";
             
+            // Check if we're running under coverage (which adds instrumentation overhead)
+            const isCoverage = process.env.SOLIDITY_COVERAGE === 'true';
+            const gasMultiplier = isCoverage ? 2 : 1; // Allow 2x gas usage under coverage
+            
             // Address validation
             const validateTx = await bitcoinDestinationChain.validateDestinationAddress.populateTransaction(ethers.toUtf8Bytes(testAddress));
             const validateGasEstimate = await ethers.provider.estimateGas(validateTx);
-            expect(validateGasEstimate).to.be.lt(80000); // Should be less than 80k gas (includes character validation)
+            expect(validateGasEstimate).to.be.lt(80000 * gasMultiplier); // Should be less than 80k gas (160k under coverage)
 
             // Safety deposit calculation
             const depositTx = await bitcoinDestinationChain.calculateMinSafetyDeposit.populateTransaction(1000);
             const depositGasEstimate = await ethers.provider.estimateGas(depositTx);
-            expect(depositGasEstimate).to.be.lt(30000); // Should be less than 30k gas
+            expect(depositGasEstimate).to.be.lt(30000 * gasMultiplier); // Should be less than 30k gas (60k under coverage)
 
             // Parameter encoding
             const encodeTx = await bitcoinDestinationChain.encodeExecutionParams.populateTransaction(testAddress, 144, 10);
             const encodeGasEstimate = await ethers.provider.estimateGas(encodeTx);
-            expect(encodeGasEstimate).to.be.lt(50000); // Should be less than 50k gas
+            expect(encodeGasEstimate).to.be.lt(50000 * gasMultiplier); // Should be less than 50k gas (100k under coverage)
         });
     });
 });
