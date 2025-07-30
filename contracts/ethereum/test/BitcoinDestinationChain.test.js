@@ -405,8 +405,11 @@ describe("BitcoinDestinationChain", function () {
             const testAddress = "bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4";
             
             // Check if we're running under coverage (which adds instrumentation overhead)
-            const isCoverage = process.env.SOLIDITY_COVERAGE === 'true';
-            const gasMultiplier = isCoverage ? 2 : 1; // Allow 2x gas usage under coverage
+            const isCoverage = process.env.SOLIDITY_COVERAGE === 'true' || 
+                              process.env.npm_lifecycle_event === 'coverage' ||
+                              process.argv.includes('coverage') ||
+                              process.env.NODE_ENV === 'coverage';
+            const gasMultiplier = isCoverage ? 2.5 : 1; // Allow 2.5x gas usage under coverage
             
             // Address validation
             const validateTx = await bitcoinDestinationChain.validateDestinationAddress.populateTransaction(ethers.toUtf8Bytes(testAddress));
