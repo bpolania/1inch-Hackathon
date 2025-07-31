@@ -1,7 +1,7 @@
 {
   "name": "@1inch-cross-chain/tee-solver",
   "version": "0.1.0",
-  "description": "Decentralized TEE solver for 1inch Fusion+ using NEAR Shade Agent Framework",
+  "description": "NEAR Shade Agent for autonomous Bitcoin + NEAR atomic swaps via 1inch Fusion+ TEE solver",
   "main": "dist/index.js",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
@@ -9,15 +9,20 @@
     "build": "tsc",
     "test": "jest",
     "clean": "rm -rf dist",
-    "lint": "eslint src/**/*.ts"
+    "lint": "eslint src/**/*.ts",
+    "deploy": "near deploy --contractName shade-agent-solver.testnet",
+    "setup-testnet": "source .env && near create-account shade-agent-solver.testnet --masterAccount $NEAR_ACCOUNT"
   },
   "dependencies": {
     "@1inch/cross-chain-sdk": "^0.2.1-rc.62",
     "@1inch/fusion-sdk": "^2.3.5",
     "axios": "^1.6.0",
+    "bitcoinjs-lib": "^6.1.7",
     "dotenv": "^16.3.0",
+    "ecpair": "^3.0.0",
     "ethers": "^6.8.0",
     "near-api-js": "^4.0.0",
+    "tiny-secp256k1": "^2.2.4",
     "winston": "^3.11.0",
     "ws": "^8.14.0"
   },
@@ -45,6 +50,8 @@
     "tee-solver",
     "near",
     "shade-agent",
+    "bitcoin",
+    "autonomous-ai",
     "decentralized"
   ]
 }

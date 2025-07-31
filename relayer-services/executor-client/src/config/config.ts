@@ -8,7 +8,7 @@ import * as dotenv from 'dotenv';
 import * as path from 'path';
 
 // Load environment variables
-dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
 export interface NetworkConfig {
     name: string;
@@ -53,6 +53,8 @@ export interface BitcoinConfig {
     htlcTimelock: number;
     dustThreshold: number;
     minConfirmations: number;
+    privateKey?: string;
+    apiUrl?: string;
 }
 
 export interface Config {
@@ -66,6 +68,7 @@ export interface Config {
         level: string;
         format: string;
     };
+    dataDir?: string;
 }
 
 export async function loadConfig(): Promise<Config> {
@@ -75,6 +78,11 @@ export async function loadConfig(): Promise<Config> {
         'NEAR_ACCOUNT_ID',
         'NEAR_PRIVATE_KEY'
     ];
+
+    // Add Bitcoin private key requirement if Bitcoin automation is enabled
+    if (process.env.ENABLE_BITCOIN_AUTOMATION === 'true') {
+        requiredEnvVars.push('BITCOIN_PRIVATE_KEY');
+    }
 
     for (const envVar of requiredEnvVars) {
         if (!process.env[envVar]) {
@@ -110,7 +118,9 @@ export async function loadConfig(): Promise<Config> {
             feeRate: parseInt(process.env.BITCOIN_FEE_RATE || '10'), // sat/byte
             htlcTimelock: parseInt(process.env.BITCOIN_HTLC_TIMELOCK || '144'), // blocks
             dustThreshold: parseInt(process.env.BITCOIN_DUST_THRESHOLD || '546'), // satoshis
-            minConfirmations: parseInt(process.env.BITCOIN_MIN_CONFIRMATIONS || '1')
+            minConfirmations: parseInt(process.env.BITCOIN_MIN_CONFIRMATIONS || '1'),
+            privateKey: process.env.BITCOIN_PRIVATE_KEY, // Optional: for real transaction execution
+            apiUrl: process.env.BITCOIN_API_URL // Optional: custom API endpoint
         },
 
         wallet: {
@@ -142,7 +152,9 @@ export async function loadConfig(): Promise<Config> {
         logging: {
             level: process.env.LOG_LEVEL || 'info',
             format: process.env.LOG_FORMAT || 'json'
-        }
+        },
+
+        dataDir: process.env.DATA_DIR || './data'
     };
 
     // Derive Ethereum address from private key
