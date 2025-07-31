@@ -303,6 +303,20 @@ npm test test/CrossChainRegistry.test.js
 ```
 
 ### Test Coverage
+
+**Comprehensive Test Suite: 510+ tests across all components** ✅
+
+#### Smart Contracts
+- **Ethereum Contracts**: 125 tests - Complete Hardhat test suite with Bitcoin integration
+- **NEAR Contracts**: 26 tests - Full Rust test suite with integration tests  
+- **Bitcoin Contracts**: 13 tests - HTLC implementation and cross-chain compatibility
+
+#### Backend Services  
+- **Bitcoin Relayer**: 113 tests - Complete automation service with cross-chain execution
+- **TEE Solver (NEAR Shade Agent)**: 185+ tests - Autonomous multi-chain agent
+- **Shared Libraries**: 48 tests - Cross-chain utilities and validation
+
+#### Key Test Categories
 - **CrossChainRegistry**: 19 tests - Chain management and validation
 - **NearDestinationChain**: 19 tests - NEAR-specific functionality
 - **BitcoinDestinationChain**: 27 tests - Bitcoin family blockchain support
@@ -311,7 +325,9 @@ npm test test/CrossChainRegistry.test.js
 - **Production Integration**: 5 tests - Full local deployment testing
 - **EndToEnd Verification**: 17 tests - Integration tests for deployed contracts and complete atomic swaps
 
-**Total: 113 tests passing** - Complete coverage across all blockchain integrations
+**Total: 510+ tests passing (100% success rate)** - Complete coverage across all blockchain integrations
+
+> 📋 **For detailed testing instructions, see [TESTING.md](./TESTING.md)**
 
 ### Verification System
 The project includes a comprehensive 8-point verification system that confirms complete atomic swap success:

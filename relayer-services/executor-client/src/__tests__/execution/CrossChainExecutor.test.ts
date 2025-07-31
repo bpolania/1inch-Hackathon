@@ -33,7 +33,10 @@ describe('CrossChainExecutor', () => {
       completeFusionOrder: jest.fn(),
       sourceEscrows: jest.fn(),
       destinationEscrows: jest.fn(),
-      registry: jest.fn().mockResolvedValue('0x59CE43Ea20892EC3Eff00fc7506cbfA9813FE0ca')
+      registry: jest.fn().mockResolvedValue('0x59CE43Ea20892EC3Eff00fc7506cbfA9813FE0ca'),
+      on: jest.fn(), // For event monitoring
+      off: jest.fn(),
+      removeAllListeners: jest.fn()
     };
 
     mockRegistryContract = {
@@ -47,11 +50,27 @@ describe('CrossChainExecutor', () => {
       approve: jest.fn()
     };
 
-    // Mock contract creation
+    // Mock event monitor factory contract (separate from main factory contract)
+    const mockEventMonitorContract = {
+      on: jest.fn(),
+      off: jest.fn(),
+      removeAllListeners: jest.fn()
+    };
+
+    // Mock contract creation - use mockImplementation (not Once) to handle multiple calls
     jest.spyOn(require('ethers'), 'Contract')
-      .mockImplementationOnce(() => mockFactoryContract)  // Factory
-      .mockImplementationOnce(() => mockRegistryContract) // Registry
-      .mockImplementationOnce(() => mockTokenContract);   // Token
+      .mockImplementation((address, abi, provider) => {
+        // Return different mocks based on the context/address
+        if (address === config.ethereum.contracts.factory) {
+          return mockFactoryContract;  // Main factory
+        } else if (address === '0x59CE43Ea20892EC3Eff00fc7506cbfA9813FE0ca') {
+          return mockRegistryContract; // Registry
+        } else if (address === config.ethereum.contracts.token) {
+          return mockTokenContract;    // Token
+        } else {
+          return mockEventMonitorContract; // Event monitor factory or other contracts
+        }
+      });
 
     mockExecutableOrder = {
       orderHash: '0x2a4f18bfbf216fb4454bae8361e24a8daefa37b540dd72ba993d5f37f8c000f4',
@@ -164,7 +183,7 @@ describe('CrossChainExecutor', () => {
       const result = await executor.executeAtomicSwap(mockExecutableOrder);
 
       expect(result.success).toBe(false);
-      expect(result.error).toContain('Failed to execute NEAR side');
+      expect(result.error).toContain('Failed to execute destination chain');
     });
 
     it('should fail if Ethereum completion fails', async () => {

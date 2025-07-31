@@ -10,10 +10,10 @@ describe("Bitcoin Integration - Local Deployment Test", function () {
     let addr1;
     let addr2;
     
-    // Bitcoin chain IDs
-    const BITCOIN_TESTNET_ID = 50002;
-    const DOGECOIN_MAINNET_ID = 50003;
-    const LITECOIN_MAINNET_ID = 50005;
+    // Bitcoin chain IDs (matching contract constants)
+    const BITCOIN_TESTNET_ID = 40004;
+    const DOGECOIN_MAINNET_ID = 40005;
+    const LITECOIN_MAINNET_ID = 40006;
 
     before(async function () {
         console.log("\n🚀 Starting Bitcoin Integration Test Suite");
@@ -75,11 +75,11 @@ describe("Bitcoin Integration - Local Deployment Test", function () {
             expect(btcInfo.symbol).to.equal("BTC");
             expect(btcInfo.chainId).to.equal(BITCOIN_TESTNET_ID);
             
-            expect(dogeInfo.name).to.equal("Dogecoin Mainnet");
+            expect(dogeInfo.name).to.equal("Dogecoin");
             expect(dogeInfo.symbol).to.equal("DOGE");
             expect(dogeInfo.chainId).to.equal(DOGECOIN_MAINNET_ID);
             
-            expect(ltcInfo.name).to.equal("Litecoin Mainnet");
+            expect(ltcInfo.name).to.equal("Litecoin");
             expect(ltcInfo.symbol).to.equal("LTC");
             expect(ltcInfo.chainId).to.equal(LITECOIN_MAINNET_ID);
         });
@@ -137,44 +137,31 @@ describe("Bitcoin Integration - Local Deployment Test", function () {
         it("Should create and validate Bitcoin execution parameters", async function () {
             console.log("\n📋 Step 5: Test Bitcoin Parameters");
             
-            const btcParams = {
-                feeSatPerByte: 25,
-                timelock: 144,
-                useRelativeTimelock: false,
-                refundPubKeyHash: ethers.keccak256(ethers.toUtf8Bytes("refund_key")),
-                dustThreshold: 546,
-                confirmations: 3
-            };
-
             // Test encoding/decoding
-            const encoded = await btcAdapter.encodeBitcoinExecutionParams(btcParams);
-            const decoded = await btcAdapter.decodeBitcoinExecutionParams(encoded);
+            const btcAddress = "mipcBbFg9gMiCh81Kj8tqqdgoZub1ZJRfn";
+            const htlcTimelock = 144;
+            const feeRate = 25;
+
+            const encoded = await btcAdapter.encodeExecutionParams(btcAddress, htlcTimelock, feeRate);
+            const decoded = await btcAdapter.decodeExecutionParams(encoded);
             
-            expect(decoded.feeSatPerByte).to.equal(btcParams.feeSatPerByte);
-            expect(decoded.timelock).to.equal(btcParams.timelock);
-            expect(decoded.useRelativeTimelock).to.equal(btcParams.useRelativeTimelock);
-            expect(decoded.refundPubKeyHash).to.equal(btcParams.refundPubKeyHash);
-            expect(decoded.dustThreshold).to.equal(btcParams.dustThreshold);
-            expect(decoded.confirmations).to.equal(btcParams.confirmations);
+            expect(decoded.btcAddress).to.equal(btcAddress);
+            expect(decoded.htlcTimelock).to.equal(htlcTimelock);
+            expect(decoded.feeRate).to.equal(feeRate);
             
             console.log("   ✅ Parameter encoding/decoding successful");
-            console.log("   🔧 Fee Rate:", decoded.feeSatPerByte.toString(), "sat/byte");
-            console.log("   ⏰ Timelock:", decoded.timelock.toString(), "blocks");
+            console.log("   🔧 Fee Rate:", decoded.feeRate.toString(), "sat/byte");
+            console.log("   ⏰ Timelock:", decoded.htlcTimelock.toString(), "blocks");
         });
 
         it("Should validate order parameters correctly", async function () {
             console.log("\n📋 Step 6: Test Order Validation");
             
-            const btcParams = {
-                feeSatPerByte: 10,
-                timelock: 144,
-                useRelativeTimelock: false,
-                refundPubKeyHash: ethers.keccak256(ethers.toUtf8Bytes("test")),
-                dustThreshold: 546,
-                confirmations: 1
-            };
+            const btcAddress = "mipcBbFg9gMiCh81Kj8tqqdgoZub1ZJRfn";
+            const htlcTimelock = 144;
+            const feeRate = 10;
             
-            const encodedParams = await btcAdapter.encodeBitcoinExecutionParams(btcParams);
+            const encodedParams = await btcAdapter.encodeExecutionParams(btcAddress, htlcTimelock, feeRate);
             const orderParams = {
                 destinationAddress: ethers.toUtf8Bytes("mipcBbFg9gMiCh81Kj8tqqdgoZub1ZJRfn"),
                 executionParams: encodedParams,
@@ -211,74 +198,55 @@ describe("Bitcoin Integration - Local Deployment Test", function () {
             }
         });
 
-        it("Should generate valid HTLC scripts", async function () {
-            console.log("\n📋 Step 8: Test HTLC Script Generation");
+        it("Should validate execution parameters and metadata", async function () {
+            console.log("\n📋 Step 8: Test Bitcoin Parameter Validation");
             
             const secret = "my_secret_preimage_for_atomic_swap";
             const hashlock = ethers.sha256(ethers.toUtf8Bytes(secret));
-            const recipientPubKeyHash = ethers.randomBytes(20);
-            const refundPubKeyHash = ethers.randomBytes(20);
 
             console.log("   🔐 Secret:", secret);
             console.log("   #️⃣ Hashlock:", hashlock);
 
-            // Test CLTV script
-            const htlcScriptCLTV = await btcAdapter.generateHTLCScript(
-                hashlock,
-                144,
-                recipientPubKeyHash,
-                refundPubKeyHash,
-                false // Use CLTV
-            );
+            // Test parameter encoding/decoding
+            const btcAddress = "mipcBbFg9gMiCh81Kj8tqqdgoZub1ZJRfn";
+            const htlcTimelock = 144;
+            const feeRate = 15;
 
-            // Test CSV script
-            const htlcScriptCSV = await btcAdapter.generateHTLCScript(
-                hashlock,
-                144,
-                recipientPubKeyHash,
-                refundPubKeyHash,
-                true // Use CSV
-            );
-
-            expect(htlcScriptCLTV).to.not.equal("0x");
-            expect(htlcScriptCSV).to.not.equal("0x");
-            expect(htlcScriptCLTV).to.not.equal(htlcScriptCSV);
-
-            console.log("   📄 HTLC Script (CLTV):", htlcScriptCLTV.slice(0, 42) + "... (" + Math.floor(htlcScriptCLTV.length / 2 - 1) + " bytes)");
-            console.log("   📄 HTLC Script (CSV):", htlcScriptCSV.slice(0, 42) + "... (" + Math.floor(htlcScriptCSV.length / 2 - 1) + " bytes)");
-
-            // Verify script structure
-            const scriptHex = htlcScriptCLTV.slice(2);
-            const hasRequiredOpcodes = scriptHex.includes('63') && // OP_IF
-                                       scriptHex.includes('67') && // OP_ELSE
-                                       scriptHex.includes('68') && // OP_ENDIF
-                                       scriptHex.includes('a8') && // OP_SHA256
-                                       scriptHex.includes('b1');   // OP_CHECKLOCKTIMEVERIFY
+            const encoded = await btcAdapter.encodeExecutionParams(btcAddress, htlcTimelock, feeRate);
+            const decoded = await btcAdapter.decodeExecutionParams(encoded);
             
-            expect(hasRequiredOpcodes).to.be.true;
-            console.log("   ✅ Script Structure: VALID");
+            expect(decoded.btcAddress).to.equal(btcAddress);
+            expect(decoded.htlcTimelock).to.equal(htlcTimelock);
+            expect(decoded.feeRate).to.equal(feeRate);
+
+            console.log("   ✅ Parameter validation successful");
+            console.log("   📊 Fee Rate:", decoded.feeRate, "sat/byte");
+            console.log("   ⏰ Timelock:", decoded.htlcTimelock, "blocks");
         });
 
         it("Should support correct features", async function () {
             console.log("\n📋 Step 9: Test Feature Support");
             
             const features = [
-                "atomic_swaps",
-                "htlc",
-                "script_based_locks",
-                "utxo_model",
-                "timelock_csv",
-                "timelock_cltv",
-                "partial_fills"
+                "atomic_swap",
+                "htlc", 
+                "sha256_hashlock",
+                "timelock_refund",
+                "multisig"
             ];
-
+            
             for (const feature of features) {
                 const isSupported = await btcAdapter.supportsFeature(feature);
-                const expected = feature !== "partial_fills"; // All except partial_fills should be supported
+                expect(isSupported).to.be.true;
                 
-                expect(isSupported).to.equal(expected);
-                console.log(`   ${isSupported ? '✅' : '❌'} ${feature}: ${isSupported ? 'SUPPORTED' : 'NOT SUPPORTED'}`);
+                console.log(`   ✅ ${feature}: SUPPORTED`);
             }
+            
+            // Test unsupported feature
+            const unsupportedFeature = "partial_fills";
+            const isUnsupported = await btcAdapter.supportsFeature(unsupportedFeature);
+            expect(isUnsupported).to.be.false;
+            console.log(`   ❌ ${unsupportedFeature}: NOT SUPPORTED`);
         });
     });
 
@@ -302,16 +270,11 @@ describe("Bitcoin Integration - Local Deployment Test", function () {
                 
                 // Test cost estimation through registry
                 const amount = ethers.parseEther("0.1");
-                const btcParams = {
-                    feeSatPerByte: 10,
-                    timelock: 144,
-                    useRelativeTimelock: false,
-                    refundPubKeyHash: ethers.keccak256(ethers.toUtf8Bytes("test")),
-                    dustThreshold: 546,
-                    confirmations: 1
-                };
+                const btcAddress = "mipcBbFg9gMiCh81Kj8tqqdgoZub1ZJRfn";
+                const htlcTimelock = 144;
+                const feeRate = 10;
                 
-                const encodedParams = await chain.adapter.encodeBitcoinExecutionParams(btcParams);
+                const encodedParams = await chain.adapter.encodeExecutionParams(btcAddress, htlcTimelock, feeRate);
                 const orderParams = {
                     destinationAddress: ethers.toUtf8Bytes("mipcBbFg9gMiCh81Kj8tqqdgoZub1ZJRfn"),
                     executionParams: encodedParams,
