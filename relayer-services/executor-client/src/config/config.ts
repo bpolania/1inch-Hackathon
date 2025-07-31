@@ -68,6 +68,7 @@ export interface Config {
         level: string;
         format: string;
     };
+    dataDir?: string;
 }
 
 export async function loadConfig(): Promise<Config> {
@@ -77,6 +78,11 @@ export async function loadConfig(): Promise<Config> {
         'NEAR_ACCOUNT_ID',
         'NEAR_PRIVATE_KEY'
     ];
+
+    // Add Bitcoin private key requirement if Bitcoin automation is enabled
+    if (process.env.ENABLE_BITCOIN_AUTOMATION === 'true') {
+        requiredEnvVars.push('BITCOIN_PRIVATE_KEY');
+    }
 
     for (const envVar of requiredEnvVars) {
         if (!process.env[envVar]) {
@@ -146,7 +152,9 @@ export async function loadConfig(): Promise<Config> {
         logging: {
             level: process.env.LOG_LEVEL || 'info',
             format: process.env.LOG_FORMAT || 'json'
-        }
+        },
+
+        dataDir: process.env.DATA_DIR || './data'
     };
 
     // Derive Ethereum address from private key
