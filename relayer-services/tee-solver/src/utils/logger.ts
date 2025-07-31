@@ -7,7 +7,7 @@ import winston from 'winston';
 const logLevel = process.env.LOG_LEVEL || 'info';
 const logFormat = process.env.LOG_FORMAT || 'json';
 
-export const logger = winston.createLogger({
+const baseLogger = winston.createLogger({
     level: logLevel,
     format: logFormat === 'json' 
         ? winston.format.combine(
@@ -28,6 +28,13 @@ export const logger = winston.createLogger({
             )
         })
     ]
+});
+
+// Extend logger with custom quote method
+export const logger = Object.assign(baseLogger, {
+    quote: (message: string, meta?: any) => {
+        baseLogger.info(`💰 QUOTE: ${message}`, meta);
+    }
 });
 
 export default logger;
