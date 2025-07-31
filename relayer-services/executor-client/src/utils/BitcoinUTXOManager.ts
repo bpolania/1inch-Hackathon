@@ -256,21 +256,104 @@ export class BitcoinUTXOManager {
     }
 
     /**
-     * Estimate optimal fee rate based on network conditions
+     * Estimate optimal fee rate based on network conditions with multiple fallbacks
      */
     async estimateOptimalFeeRate(): Promise<number> {
+        const feeApis = [
+            {
+                name: 'mempool.space',
+                url: this.apiUrl.includes('testnet') 
+                    ? 'https://mempool.space/testnet/api/v1/fees/recommended'
+                    : 'https://mempool.space/api/v1/fees/recommended',
+                parseResponse: (data: any) => data.economyFee || data.halfHourFee || 10
+            },
+            {
+                name: 'blockstream.info',
+                url: `${this.apiUrl}/fee-estimates`,
+                parseResponse: (data: any) => {
+                    // Blockstream returns fee estimates for different confirmation targets
+                    // Use 6 block target (economy fee) or fallback to available targets
+                    return data['6'] || data['10'] || data['25'] || Object.values(data)[0] || 10;
+                }
+            },
+            {
+                name: 'blockchair.com',
+                url: this.apiUrl.includes('testnet')
+                    ? 'https://api.blockchair.com/bitcoin/testnet/stats'
+                    : 'https://api.blockchair.com/bitcoin/stats',
+                parseResponse: (data: any) => {
+                    // Blockchair provides suggested fee rates
+                    return data.data?.suggested_transaction_fee_per_byte_sat || 10;
+                }
+            }
+        ];
+
+        for (const api of feeApis) {
+            try {
+                logger.debug(`Trying fee estimation from ${api.name}...`);
+                
+                const response = await axios.get(api.url, {
+                    timeout: 5000, // 5 second timeout per API
+                    headers: {
+                        'User-Agent': '1inch-Fusion-Bitcoin-Relayer/1.0'
+                    }
+                });
+                
+                const feeRate = api.parseResponse(response.data);
+                
+                if (feeRate && feeRate > 0 && feeRate < 1000) { // Sanity check
+                    logger.info(`✅ Fee rate from ${api.name}: ${feeRate} sat/vB`);
+                    return Math.max(feeRate, 1); // Minimum 1 sat/vB
+                }
+                
+                logger.warn(`Invalid fee rate from ${api.name}: ${feeRate}`);
+                
+            } catch (error: any) {
+                logger.warn(`Failed to get fee rate from ${api.name}: ${error.message}`);
+                continue;
+            }
+        }
+        
+        // All APIs failed, use intelligent default based on network
+        const defaultFee = this.apiUrl.includes('testnet') ? 5 : 15;
+        logger.warn(`All fee APIs failed, using network default: ${defaultFee} sat/vB`);
+        return defaultFee;
+    }
+
+    /**
+     * Get cached fee rate with periodic refresh
+     */
+    private cachedFeeRate: number | null = null;
+    private lastFeeUpdate: number = 0;
+    private readonly FEE_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
+    async getCachedFeeRate(): Promise<number> {
+        const now = Date.now();
+        
+        // Return cached rate if still valid
+        if (this.cachedFeeRate && (now - this.lastFeeUpdate) < this.FEE_CACHE_DURATION) {
+            logger.debug(`Using cached fee rate: ${this.cachedFeeRate} sat/vB`);
+            return this.cachedFeeRate;
+        }
+        
+        // Refresh fee rate
         try {
-            // Use mempool.space API for fee estimates
-            const response = await axios.get('https://mempool.space/testnet/api/v1/fees/recommended');
-            const fees = response.data;
-            
-            // Use economy fee for atomic swaps (they have built-in timelocks)
-            const feeRate = fees.economyFee || 10;
-            logger.info(`Estimated optimal fee rate: ${feeRate} sat/vB`);
-            return feeRate;
+            const newFeeRate = await this.estimateOptimalFeeRate();
+            this.cachedFeeRate = newFeeRate;
+            this.lastFeeUpdate = now;
+            return newFeeRate;
         } catch (error: any) {
-            logger.warn(`Failed to estimate fee rate, using default: ${error.message}`);
-            return 10; // Default fallback
+            logger.error(`Failed to refresh fee rate: ${error.message}`);
+            
+            // Return last known rate or fallback
+            if (this.cachedFeeRate) {
+                logger.warn(`Using stale cached fee rate: ${this.cachedFeeRate} sat/vB`);
+                return this.cachedFeeRate;
+            }
+            
+            const fallback = this.apiUrl.includes('testnet') ? 5 : 15;
+            logger.warn(`Using emergency fallback fee rate: ${fallback} sat/vB`);
+            return fallback;
         }
     }
 

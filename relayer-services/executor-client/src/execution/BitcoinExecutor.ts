@@ -340,7 +340,7 @@ export class BitcoinExecutor extends EventEmitter {
         try {
             // Get optimal fee rate if not specified
             if (!feeRate || feeRate < 1) {
-                feeRate = await this.utxoManager.estimateOptimalFeeRate();
+                feeRate = await this.utxoManager.getCachedFeeRate();
             }
 
             // Select UTXOs for funding
@@ -649,7 +649,7 @@ export class BitcoinExecutor extends EventEmitter {
         try {
             const blockHeight = await this.btcManager.getCurrentBlockHeight();
             const balance = await this.utxoManager.getAvailableBalance(this.changeAddress);
-            const feeRate = await this.utxoManager.estimateOptimalFeeRate();
+            const feeRate = await this.utxoManager.getCachedFeeRate();
             
             return {
                 network: this.config.bitcoin.network,

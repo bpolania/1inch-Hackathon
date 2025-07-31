@@ -180,8 +180,8 @@ class BitcoinAutomationTest {
             
             logger.info(`💼 Resolver balance: ${balance} satoshis`);
             
-            // Test fee estimation
-            const feeRate = await utxoManager.estimateOptimalFeeRate();
+            // Test fee estimation with new cached method
+            const feeRate = await utxoManager.getCachedFeeRate();
             
             if (feeRate <= 0) {
                 throw new Error('Invalid fee rate estimation');
