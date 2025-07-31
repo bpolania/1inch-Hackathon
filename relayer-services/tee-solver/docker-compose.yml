@@ -1,0 +1,85 @@
+# NEAR Shade Agent Docker Compose Configuration
+# For Phala Cloud TEE deployment
+
+version: '3.8'
+
+services:
+  tee-solver:
+    image: bpolania/tee-fusion-solver:latest
+    container_name: shade-agent-tee-solver
+    platform: linux/amd64  # Required for Phala Cloud TEE
+    
+    # Environment variables for TEE deployment
+    environment:
+      # NEAR Configuration
+      NEXT_PUBLIC_accountId: ${NEXT_PUBLIC_accountId}
+      NEXT_PUBLIC_secretKey: ${NEXT_PUBLIC_secretKey}
+      NEXT_PUBLIC_contractId: ${NEXT_PUBLIC_contractId}
+      NEAR_NETWORK: ${NEAR_NETWORK:-testnet}
+      
+      # TEE-specific configuration
+      TEE_MODE: "enabled"
+      TEE_ATTESTATION_ENDPOINT: ${TEE_ATTESTATION_ENDPOINT}
+      SHADE_AGENT_CONTRACT: ${SHADE_AGENT_CONTRACT}
+      
+      # 1inch Integration
+      ONEINCH_API_URL: "https://api.1inch.dev"
+      ONEINCH_AUTH_KEY: ${ONEINCH_AUTH_KEY}
+      
+      # Chain Signatures (fallback)
+      CHAIN_SIGNATURES_ENABLED: "true"
+      CHAIN_SIGNATURES_FALLBACK: "true"
+      
+      # Security
+      NODE_ENV: "production"
+      LOG_LEVEL: "info"
+      
+      # Performance
+      MAX_CONCURRENT_ORDERS: "50"
+      QUOTE_CACHE_TTL: "30"
+    
+    ports:
+      - "3000:3000"
+    
+    # Resource limits for TEE environment
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
+    
+    # Health check configuration
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
+    # Restart policy for TEE reliability
+    restart: unless-stopped
+    
+    # Logging configuration
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+# Named volumes for TEE data persistence
+volumes:
+  tee_logs:
+    driver: local
+  tee_cache:
+    driver: local
+
+# Network configuration for TEE isolation
+networks:
+  default:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
