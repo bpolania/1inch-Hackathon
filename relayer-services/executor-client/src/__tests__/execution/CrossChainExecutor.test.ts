@@ -164,7 +164,7 @@ describe('CrossChainExecutor', () => {
       const result = await executor.executeAtomicSwap(mockExecutableOrder);
 
       expect(result.success).toBe(false);
-      expect(result.error).toContain('Failed to execute NEAR side');
+      expect(result.error).toContain('Failed to execute destination chain');
     });
 
     it('should fail if Ethereum completion fails', async () => {
