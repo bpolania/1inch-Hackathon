@@ -5,9 +5,14 @@
   "main": "src/index.js",
   "scripts": {
     "test": "jest",
-    "demo": "node scripts/demo-bitcoin-htlc.js",
-    "deploy": "node scripts/deploy-bitcoin-testnet.js",
-    "verify": "node scripts/verify-bitcoin-swap.js"
+    "setup": "node scripts/setup-bitcoin-testnet.js",
+    "create-order": "node scripts/create-bitcoin-order.js",
+    "generate-htlc": "node scripts/generate-bitcoin-htlc.js",
+    "execute-swap": "node scripts/execute-atomic-swap.js",
+    "demo-htlc": "node scripts/demo-bitcoin-htlc.js",
+    "demo-swap": "node scripts/demo-ethereum-bitcoin-swap.js",
+    "validate": "node scripts/validate-addresses.js",
+    "verify": "node scripts/verify-bounty-compliance.js"
   },
   "dependencies": {
     "axios": "^1.11.0",

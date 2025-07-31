@@ -7,6 +7,116 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### 🧹 **CODEBASE CLEANUP**: Production-Ready Script Organization
+
+#### 📋 **SCRIPT CONSOLIDATION COMPLETED**
+- **Scripts Reduced**: 22 → 8 scripts (64% reduction) for better maintainability
+- **Production Focus**: Removed development/debug scripts, kept only user-facing functionality
+- **Improved UX**: Clear script names and consolidated functionality for easier usage
+
+#### ✅ **BITCOIN CONTRACT SCRIPTS CLEANUP**
+
+##### **Consolidated Scripts (2 new production scripts)**
+- **`create-bitcoin-order.js`**: Merged 3 duplicate order creation scripts (`create-clean-10k-order.js`, `final-bitcoin-order.js`, `corrected-bitcoin-order.js`)
+  - Single script with CLI parameters for flexible order creation
+  - Support for custom amounts, timeouts, and chain selection
+  - Automatic token approval and gas estimation
+- **`generate-bitcoin-htlc.js`**: Merged 2 HTLC generation scripts (`generate-10k-htlc.js`, `execute-bitcoin-htlc.js`)
+  - Universal HTLC generation with configurable parameters
+  - Support for existing or generated secrets/hashlocks
+  - Multiple Bitcoin address format support
+
+##### **Renamed Scripts (1 renamed for clarity)**
+- **`setup-bitcoin-testnet.js`**: Renamed from `setup-live-testnet.js` for clearer purpose
+
+##### **Removed Debug/Development Scripts (11 removed)**
+- `analyze-working-transaction.js` - Development debugging only
+- `debug-bitcoin-order.js` - Step-by-step gas estimation debugging
+- `debug-order-creation.js` - Comprehensive order creation debugging  
+- `quick-debug.js` - Temporary gas estimation debugging
+- `test-near-order.js` - Comparative testing during development
+- `check-bitcoin-registration.js` - Internal registry verification
+- `check-factory-registries.js` - Factory comparison during development
+- `automated-funding.js` - Replaced by manual funding approach
+- `fund-htlc.js` - Specific to old workflow
+- `manual-funding-info.js` - Information integrated into main scripts
+- Plus 1 additional redundant script
+
+##### **Kept Production Scripts (5 unchanged)**
+- `demo-bitcoin-htlc.js` - Core HTLC demonstration
+- `demo-ethereum-bitcoin-swap.js` - Complete bidirectional swap demo
+- `execute-atomic-swap.js` - Production atomic swap execution
+- `validate-addresses.js` - Bitcoin address validation utility
+- `verify-bounty-compliance.js` - ETHGlobal bounty verification
+
+#### 🔧 **RELAYER SERVICE CLEANUP**
+
+##### **Consolidated Test Script (1 new comprehensive script)**
+- **`test-relayer-system.js`**: Merged 3 separate test scripts into comprehensive test suite
+  - Combined functionality from `test-bitcoin-swap.js`, `test-config.js`, `test-live-contracts.js`
+  - 4-phase testing: Configuration, Network Connectivity, Contract Connectivity, Bitcoin Order Creation
+  - Single comprehensive test command with detailed reporting
+
+##### **Removed Redundant Scripts (3 removed)**
+- `test-bitcoin-swap.js` - End-to-end Bitcoin swap test (merged)
+- `test-config.js` - Configuration validation test (merged)
+- `test-live-contracts.js` - Live contract connectivity test (merged)
+
+#### 📦 **UPDATED PACKAGE.JSON SCRIPTS**
+
+##### **Bitcoin Contract Scripts**
+```json
+{
+  "setup": "node scripts/setup-bitcoin-testnet.js",
+  "create-order": "node scripts/create-bitcoin-order.js",
+  "generate-htlc": "node scripts/generate-bitcoin-htlc.js", 
+  "execute-swap": "node scripts/execute-atomic-swap.js",
+  "demo-htlc": "node scripts/demo-bitcoin-htlc.js",
+  "demo-swap": "node scripts/demo-ethereum-bitcoin-swap.js",
+  "validate": "node scripts/validate-addresses.js",
+  "verify": "node scripts/verify-bounty-compliance.js"
+}
+```
+
+##### **Relayer Service Scripts**
+```json
+{
+  "test:system": "node test-relayer-system.js"
+}
+```
+
+#### 🎯 **FINAL SCRIPT STRUCTURE**
+
+##### **Bitcoin Contract Scripts (8 total)**
+**Setup & Creation (4)**
+1. `setup-bitcoin-testnet.js` - Bitcoin testnet wallet setup
+2. `create-bitcoin-order.js` - Flexible Bitcoin order creation  
+3. `generate-bitcoin-htlc.js` - Universal HTLC generation
+4. `execute-atomic-swap.js` - Production atomic swap execution
+
+**Demo & Validation (4)**
+5. `demo-bitcoin-htlc.js` - HTLC demonstration
+6. `demo-ethereum-bitcoin-swap.js` - Complete swap demo
+7. `validate-addresses.js` - Address validation utility
+8. `verify-bounty-compliance.js` - Bounty verification
+
+##### **Relayer Service Scripts (1 total)**
+1. `test-relayer-system.js` - Comprehensive system test suite
+
+#### 🏆 **CLEANUP BENEFITS**
+- **Reduced Complexity**: 64% fewer scripts for easier navigation
+- **Better UX**: Clear, purpose-driven script names
+- **Consolidated Functionality**: Related features merged into single scripts
+- **Production Ready**: Removed all development debris
+- **Maintainable**: Clean structure for future development
+- **User Friendly**: Easy-to-understand npm script commands
+
+### Technical Implementation
+- **Script Consolidation**: Merged duplicate functionality while preserving all capabilities
+- **CLI Parameter Support**: Added flexible command-line options to consolidated scripts
+- **Error Handling**: Improved error handling and user feedback in consolidated scripts
+- **Documentation**: Clear usage examples and parameter documentation
+
 ## [2.1.0] - 2025-07-31
 
 ### 🎉 **HISTORIC MILESTONE**: World's First Bitcoin Atomic Swap with 1inch Fusion+ COMPLETED

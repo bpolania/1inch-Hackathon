@@ -8,6 +8,7 @@
     "start": "node dist/index.js",
     "build": "tsc",
     "test": "jest",
+    "test:system": "node test-relayer-system.js",
     "clean": "rm -rf dist",
     "lint": "eslint src/**/*.ts",
     "status": "ts-node src/cli/status.ts"
