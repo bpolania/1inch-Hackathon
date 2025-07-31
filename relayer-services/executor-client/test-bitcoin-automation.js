@@ -273,18 +273,57 @@ class BitcoinAutomationTest {
         try {
             const refundManager = this.executor.refundManager;
             
-            // Create a mock expired order context for testing
-            const mockContext = {
+            // Create a REAL HTLC script for testing using the BitcoinHTLCManager
+            const BitcoinHTLCManager = require('../../contracts/bitcoin/src/BitcoinHTLCManager');
+            const bitcoin = require('bitcoinjs-lib');
+            const ECPairFactory = require('ecpair').default;
+            const tinysecp = require('tiny-secp256k1');
+                                     
+            // Initialize
+            bitcoin.initEccLib(tinysecp);
+            const ECPair = ECPairFactory(tinysecp);
+            const network = bitcoin.networks.testnet;
+            
+            // Create a real BitcoinHTLCManager instance
+            const btcManager = new BitcoinHTLCManager({
+                network,
+                feeRate: 10,
+                htlcTimelock: 144
+            });
+            
+            // Generate real test keys and HTLC
+            const testSecret = Buffer.from('test-secret-12345678901234567890', 'utf8');
+            const testHashlock = bitcoin.crypto.sha256(testSecret).toString('hex');
+            const recipientKey = ECPair.makeRandom({ network });
+            const refundKey = ECPair.makeRandom({ network });
+            const currentBlock = 4500000; // Test block height
+            const timelockHeight = currentBlock + 144;
+            
+            // Generate REAL HTLC script
+            const realHTLCScript = btcManager.generateHTLCScript(
+                testHashlock,
+                Buffer.from(recipientKey.publicKey),
+                Buffer.from(refundKey.publicKey),
+                timelockHeight
+            );
+            
+            logger.info(`📜 Generated real HTLC script for testing: ${realHTLCScript.length} bytes`);
+            
+            // Create test context with REAL HTLC script
+            const testContext = {
                 orderHash: '0x' + 'c'.repeat(64),
                 status: 'htlc_funded',
                 bitcoin: {
-                    htlcScript: '76a914' + 'a'.repeat(40) + '88ac', // Mock script
-                    fundingTxId: 'a'.repeat(64)
+                    htlcScript: realHTLCScript.toString('hex'),
+                    fundingTxId: 'a'.repeat(64), // This can stay as test data
+                    htlcAddress: btcManager.createHTLCAddress(realHTLCScript)
                 }
             };
             
-            // Test canRefund method (should handle gracefully even with mock data)
-            const canRefund = await refundManager.canRefund(mockContext);
+            logger.info(`🔍 Testing refund logic with real HTLC (timelock: ${timelockHeight})`);
+            
+            // Test canRefund method with REAL HTLC script
+            const canRefund = await refundManager.canRefund(testContext);
             
             // Test fee estimation
             const estimatedFee = await refundManager.estimateRefundFee(10);
@@ -297,11 +336,13 @@ class BitcoinAutomationTest {
                 passed: true,
                 details: {
                     canRefundResult: canRefund,
-                    estimatedFee
+                    estimatedFee,
+                    htlcScriptLength: realHTLCScript.length,
+                    timelockHeight: timelockHeight
                 }
             });
             
-            logger.info('✅ Refund manager verified');
+            logger.info('✅ Refund manager verified with real HTLC script');
             
         } catch (error) {
             this.testResults.push({
