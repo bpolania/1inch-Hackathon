@@ -1,0 +1,21 @@
+{
+  "timestamp": "2025-07-31T18:53:01.579Z",
+  "network": "testnet",
+  "addresses": {
+    "p2pkh": {
+      "address": "mzJ8j88b6PDyok6P5g2ghCajwmVkxHSNBD",
+      "type": "legacy",
+      "valid": true
+    },
+    "p2sh": {
+      "address": "2N9qzNskp5b5ScCXE5uLJmokryzodeGtNxY",
+      "type": "nested_segwit",
+      "valid": true
+    },
+    "p2wpkh": {
+      "address": "tb1qeh7mp4ctkys5dxawwtkmtk3cvh0xvq0pzstxqc",
+      "type": "native_segwit",
+      "valid": true
+    }
+  }
+}

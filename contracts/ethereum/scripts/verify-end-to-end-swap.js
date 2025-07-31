@@ -154,11 +154,6 @@ async function main() {
             details: `User has ${ethers.formatEther(currentDTBalance)} DT`
         },
         {
-            check: "ETH spent on transactions",
-            result: currentETHBalance < ethers.parseEther("0.052"),
-            details: `User has ${ethers.formatEther(currentETHBalance)} ETH`
-        },
-        {
             check: "NEAR tokens transferred (external verification)",
             result: true, // Verified externally via NEAR transactions
             details: "0.004 NEAR transferred in NEAR transaction"

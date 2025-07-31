@@ -14,7 +14,7 @@ import { ExecutableOrder } from '../core/ExecutorEngine';
 import { EthereumEventMonitor } from '../monitoring/EthereumEventMonitor';
 
 // Import our Bitcoin HTLC implementation
-const BitcoinHTLCManager = require('../../../../../contracts/bitcoin/src/BitcoinHTLCManager');
+const BitcoinHTLCManager = require('../../../../contracts/bitcoin/src/BitcoinHTLCManager');
 const bitcoin = require('bitcoinjs-lib');
 
 export interface BitcoinExecutionResult {

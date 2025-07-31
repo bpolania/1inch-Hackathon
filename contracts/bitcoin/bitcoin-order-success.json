@@ -1,0 +1,17 @@
+{
+  "success": true,
+  "orderHash": "unknown",
+  "secret": "8019c9831eb25bca2dd2b0fdbd9d8f01d37ddbdaf0849db56f344e220a4e9381",
+  "hashlock": "0x61dfe27c0aee368a7547b9b5675fcfbb563bc12e1c427f873cc45aca6b02fa4a",
+  "btcAddress": "tb1qeh7mp4ctkys5dxawwtkmtk3cvh0xvq0pzstxqc",
+  "sourceAmount": "100000000000000000",
+  "destinationAmount": 100000,
+  "resolverFee": "10000000000000000",
+  "expiryTime": 1753996926,
+  "transactionHash": "0x5b7887b6263911b59d0d36000cb5b412e77dec83a9e363f916ef5789c5f3dcef",
+  "blockNumber": 8884418,
+  "gasUsed": "666564",
+  "created": "2025-07-31T19:22:15.334Z",
+  "factory": "0xbeEab741D2869404FcB747057f5AbdEffc3A138d",
+  "chainId": 40004
+}

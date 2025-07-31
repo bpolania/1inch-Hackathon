@@ -8,7 +8,7 @@ import * as dotenv from 'dotenv';
 import * as path from 'path';
 
 // Load environment variables
-dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
 export interface NetworkConfig {
     name: string;
@@ -53,6 +53,8 @@ export interface BitcoinConfig {
     htlcTimelock: number;
     dustThreshold: number;
     minConfirmations: number;
+    privateKey?: string;
+    apiUrl?: string;
 }
 
 export interface Config {

@@ -1,0 +1,13 @@
+{
+  "timestamp": "2025-07-31T19:10:25.707Z",
+  "secret": "b0d7d941221a3bf3a8c1c6ace42c4f5ea71af7f22e43c7aacd9b714848e2330d",
+  "hashlock": "f56729b93270881fc8f6e7a09777080e3fc308095d58928376168dbb4e038075",
+  "htlcAddress": "2MxW5ZyPV8YcF7XhpZ8Cc25kudX2oeEVsci",
+  "htlcScript": "63a820f56729b93270881fc8f6e7a09777080e3fc308095d58928376168dbb4e0380758821039caf5d68a37e2f607f7b3ab73849aed21a34182aa5dcbdf6d83df6ca4dc00e12ac67029000b175210201268288c1b1e84f5899435be2aadf26334b060e3dca68a7dd25bc4461a45062ac68",
+  "recipientPubKey": "039caf5d68a37e2f607f7b3ab73849aed21a34182aa5dcbdf6d83df6ca4dc00e12",
+  "refundPubKey": "0201268288c1b1e84f5899435be2aadf26334b060e3dca68a7dd25bc4461a45062",
+  "payeeAddress": "tb1qeh7mp4ctkys5dxawwtkmtk3cvh0xvq0pzstxqc",
+  "timelock": 144,
+  "network": "testnet",
+  "status": "created"
+}

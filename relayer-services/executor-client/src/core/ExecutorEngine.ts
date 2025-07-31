@@ -16,6 +16,7 @@ import { Config } from '../config/config';
 export interface ExecutableOrder {
     orderHash: string;
     order: any;
+    executionParams?: any; // Bitcoin execution parameters (if destination is Bitcoin)
     profitability: {
         estimatedProfit: bigint;
         gasEstimate: bigint;

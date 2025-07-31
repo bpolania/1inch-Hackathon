@@ -1,0 +1,13 @@
+{
+  "fromAddress": "tb1qeh7mp4ctkys5dxawwtkmtk3cvh0xvq0pzstxqc",
+  "toAddress": "2MyeQNiTnrDWMcc8xE1JP9v2w6AYUhGiUpy",
+  "amount": 10000,
+  "amountBTC": 0.0001,
+  "privateKey": "cRzr3EUzArpAHxRuc9RxuQUTQiCFacwcHZFDUriNhcQ7ikMA7GaN",
+  "network": "testnet",
+  "instructions": "Send exact amount from wallet to HTLC address",
+  "explorerLinks": {
+    "wallet": "https://blockstream.info/testnet/address/tb1qeh7mp4ctkys5dxawwtkmtk3cvh0xvq0pzstxqc",
+    "htlc": "https://blockstream.info/testnet/address/2MyeQNiTnrDWMcc8xE1JP9v2w6AYUhGiUpy"
+  }
+}

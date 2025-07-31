@@ -1,0 +1,28 @@
+{
+  "orderType": "clean-10k-satoshi-htlc",
+  "timestamp": "2025-07-31T19:32:50.111Z",
+  "ethereumOrderHash": "unknown",
+  "ethereumTxHash": "0x63f7b796a6dae46a456c72339093d2febd2785a626db0afe2ed3d695625eaaab",
+  "ethereumBlockNumber": 8884462,
+  "secret": "d471ef423dc30202c70cb93ab2efa024edca8a9ebf55babce6aec54647b743f2",
+  "hashlock": "0xab4dddaaff0c05e862238164dbffec23dddb0b76ed1bcf56a6c698ea9e815feb",
+  "htlcAddress": "2MyeQNiTnrDWMcc8xE1JP9v2w6AYUhGiUpy",
+  "htlcScript": "63a820ab4dddaaff0c05e862238164dbffec23dddb0b76ed1bcf56a6c698ea9e815feb8821023eb49e6a3e6c068577f00b22379df726325abc265fe1fe377fefb1af63dd0928ac67029000b1752102a81571efb5bf7429697a604f48437ab39f8c02212e9c8bfa4b8f20e34405d30eac68",
+  "htlcTimelock": 144,
+  "recipientPubKey": "023eb49e6a3e6c068577f00b22379df726325abc265fe1fe377fefb1af63dd0928",
+  "refundPubKey": "02a81571efb5bf7429697a604f48437ab39f8c02212e9c8bfa4b8f20e34405d30e",
+  "sourceAmount": "10000000000000000",
+  "destinationAmount": 10000,
+  "bitcoinWallet": "tb1qeh7mp4ctkys5dxawwtkmtk3cvh0xvq0pzstxqc",
+  "network": "testnet",
+  "status": "htlc-funded",
+  "nextSteps": [
+    "Wait for Bitcoin transaction confirmation (1-6 blocks)",
+    "Execute atomic swap by revealing secret on Ethereum",
+    "Claim Bitcoin using revealed secret"
+  ],
+  "fundingTxId": "76b4b593aca78c47d83d8a78d949bbc49324b063f1682ddededa4bc7c17d928c",
+  "fundingAmount": 10000,
+  "fundedAt": "2025-07-31T19:37:18.167Z",
+  "fundingTxHex": "02000000000102631914400ff90effbc94e483e3a523b1ab728fe396b30ba17a28efefdfc739680000000000ffffffff704a914c8fbf815db6f2aee2f2b983ef24c7afab3e38fb3aeb505f2196ed90330000000000ffffffff02102700000000000017a9144632fe040d1464f918ee4e324db18ee94d7ab24f87dc05000000000000160014cdfdb0d70bb121469bae72edb5da3865de6601e102483045022100cc19680b7b0fd33bb134e6924da150b78f63981e84e19156008e6d01d98b046202202e184a82381da8cf8c7edb24400cf1f0ea6263299e9b7e87988810224ee63cde012103798f6933f857e9c3479386f97746e8eae71235fcb84c5e08f207b530dd469c0e02483045022100dc802eedca77da1ad685a83585d213e72dad05338a7a6a42e127885a1d15b7d202207aa55a1110c8d0c21bf4bf5d24ee06bebd3adaf725a185c236450b744ab15126012103798f6933f857e9c3479386f97746e8eae71235fcb84c5e08f207b530dd469c0e00000000"
+}

@@ -12,7 +12,7 @@ describe('Configuration', () => {
       const config = await loadConfig();
 
       expect(config).toBeDefined();
-      expect(config.networks).toEqual(['ethereum', 'near']);
+      expect(config.networks).toEqual(['ethereum', 'near', 'bitcoin']);
       expect(config.ethereum.chainId).toBe(11155111);
       expect(config.near.chainId).toBe(40002);
       expect(config.wallet.ethereum.address).toMatch(/^0x[a-fA-F0-9]{40}$/);
