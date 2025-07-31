@@ -11,13 +11,14 @@ A **production-ready extension** to 1inch Fusion+ that enables atomic swaps betw
 1. **Bitcoin Integration Complete**: Full Bitcoin family blockchain support deployed on Sepolia ([View Contracts](#deployed-contracts))
 2. **Complete Atomic Swaps**: Full end-to-end cross-chain swaps between Ethereum, NEAR Protocol, and Bitcoin
 3. **Live Bitcoin Atomic Swap**: **WORLD'S FIRST** Bitcoin atomic swap integrated with 1inch Fusion+ completed on testnets
-4. **Real Token Transfers**: Demonstrated with 0.43 DT total transfers across multiple swaps including live Bitcoin swap
-5. **Bitcoin HTLC Implementation**: Complete Bitcoin-side atomic swap functionality with real Bitcoin scripts
-6. **113 Tests Passing**: Comprehensive test coverage including Bitcoin integration tests for deployed contracts
-7. **Multi-Chain Architecture**: Bitcoin, Dogecoin, Litecoin, Bitcoin Cash support via universal `IDestinationChain` interface
-8. **True 1inch Extension**: Uses actual `ITakerInteraction` and `IOneInchEscrowFactory` interfaces
-9. **Production Ready**: Clean codebase with full Bitcoin integration and comprehensive verification
-10. **Live Testnet Proof**: Real transactions on Ethereum Sepolia and Bitcoin testnet with atomic coordination
+4. **TEE Shade Agent Complete**: **Autonomous multi-chain agent** ready for NEAR TEE deployment with 100% test success
+5. **Real Token Transfers**: Demonstrated with 0.43 DT total transfers across multiple swaps including live Bitcoin swap
+6. **Bitcoin HTLC Implementation**: Complete Bitcoin-side atomic swap functionality with real Bitcoin scripts
+7. **113 Tests Passing**: Comprehensive test coverage including Bitcoin integration tests for deployed contracts
+8. **Multi-Chain Architecture**: Bitcoin, Dogecoin, Litecoin, Bitcoin Cash support via universal `IDestinationChain` interface
+9. **True 1inch Extension**: Uses actual `ITakerInteraction` and `IOneInchEscrowFactory` interfaces  
+10. **Production Ready**: Clean codebase with full Bitcoin integration and autonomous agent architecture
+11. **Live Testnet Proof**: Real transactions on Ethereum Sepolia and Bitcoin testnet with atomic coordination
 
 ### Quick Demo
 ```bash
@@ -35,6 +36,12 @@ npm test
 
 # Run the complete demonstration (create order → complete → transfer tokens)
 npm run demo:fusion-complete
+
+# Test NEAR Shade Agent (TEE-compatible autonomous agent)
+cd relayer-services/tee-solver && node test-shade-agent.js
+
+# Start autonomous Shade Agent service
+cd relayer-services/tee-solver && node dist/index.js
 ```
 
 The verification commands confirm:
@@ -58,6 +65,8 @@ The verification commands confirm:
 - ✅ **Production Ready**: Complete Bitcoin address validation with Base58/Bech32 security
 - ✅ **100% COMPLETE**: All Bitcoin integration contracts deployed and configured on Sepolia
 - ✅ **LIVE ATOMIC SWAP**: First-ever Bitcoin atomic swap with 1inch Fusion+ completed on testnets
+- ✅ **TEE SHADE AGENT**: Complete autonomous multi-chain agent with 100% test success rate
+- ✅ **BOUNTY READY**: Both 1inch Fusion+ Extension and NEAR Shade Agent Framework bounties complete
 
 ## 🚀 **LIVE BITCOIN ATOMIC SWAP COMPLETED** 
 
@@ -197,6 +206,53 @@ This is the **first successful integration** of Bitcoin atomic swaps with the 1i
 - **Address Validation**: Native support for .near and .testnet addresses
 - **Execution Parameters**: Native NEAR contract calls, gas, and deposits
 - **Cost Estimation**: Accurate NEAR transaction cost calculations
+
+### 🤖 **NEAR Shade Agent - Autonomous Multi-Chain Swaps**
+
+**TEE-Compatible Autonomous Agent** (`/relayer-services/tee-solver/`)
+
+Complete implementation of NEAR's Shade Agent Framework for autonomous cross-chain atomic swaps:
+
+#### Core Features:
+- **🧠 Autonomous Decision Making**: Real-time market analysis with profitability calculations
+- **⚡ Multi-Chain Support**: Bitcoin + NEAR + Ethereum with extensible architecture  
+- **🔗 Chain Signatures**: NEAR Chain Signatures for multi-chain transaction signing
+- **📊 Risk Assessment**: Sophisticated risk scoring (0.1-0.6) based on swap parameters
+- **🔄 Real-Time Processing**: Continuous monitoring of 1inch Fusion+ orders and NEAR intents
+
+#### Architecture:
+- **BitcoinNEARShadeAgent**: Main autonomous agent with decision-making capabilities
+- **NEARIntentAdapter**: Processes NEAR intents and converts to executable swaps
+- **FusionOrderProcessor**: Monitors 1inch Fusion+ Bitcoin-bound orders
+- **Integration Layer**: Leverages existing Bitcoin automation components
+
+#### Test Results:
+```
+🤖 NEAR Shade Agent Test Report
+=====================================
+Total Tests: 6
+Passed: 6
+Failed: 0
+Success Rate: 100.0%
+
+✅ Shade Agent Initialization
+✅ NEAR Integration (7.91 NEAR balance verified)
+✅ Bitcoin Integration (testnet verified)
+✅ Intent Processing (decision analysis working)
+✅ Autonomous Decision Making (3 scenarios tested)
+✅ Multi-Chain Swap Simulation (all directions analyzed)
+```
+
+#### Quick Start:
+```bash
+# Test the autonomous agent
+cd relayer-services/tee-solver
+npm install && npm run build
+node test-shade-agent.js
+
+# Start autonomous operation
+node dist/index.js
+```
 
 ## Getting Started
 
