@@ -288,6 +288,8 @@ export class BitcoinUTXOManager {
             }
         ];
 
+        const failedApis: string[] = [];
+        
         for (const api of feeApis) {
             try {
                 logger.debug(`Trying fee estimation from ${api.name}...`);
@@ -302,21 +304,27 @@ export class BitcoinUTXOManager {
                 const feeRate = api.parseResponse(response.data);
                 
                 if (feeRate && feeRate > 0 && feeRate < 1000) { // Sanity check
+                    // Success! Log any previous failures only at debug level if we got a result
+                    if (failedApis.length > 0) {
+                        logger.debug(`Previous API failures: ${failedApis.join(', ')} - but got fee rate from ${api.name}`);
+                    }
                     logger.info(`✅ Fee rate from ${api.name}: ${feeRate} sat/vB`);
                     return Math.max(feeRate, 1); // Minimum 1 sat/vB
                 }
                 
-                logger.warn(`Invalid fee rate from ${api.name}: ${feeRate}`);
+                logger.debug(`Invalid fee rate from ${api.name}: ${feeRate}`);
+                failedApis.push(`${api.name} (invalid rate)`);
                 
             } catch (error: any) {
-                logger.warn(`Failed to get fee rate from ${api.name}: ${error.message}`);
+                logger.debug(`${api.name} unavailable: ${error.message}`);
+                failedApis.push(`${api.name} (${error.response?.status || 'error'})`);
                 continue;
             }
         }
         
         // All APIs failed, use intelligent default based on network
         const defaultFee = this.apiUrl.includes('testnet') ? 5 : 15;
-        logger.warn(`All fee APIs failed, using network default: ${defaultFee} sat/vB`);
+        logger.warn(`All fee APIs failed (${failedApis.join(', ')}), using network default: ${defaultFee} sat/vB`);
         return defaultFee;
     }
 
