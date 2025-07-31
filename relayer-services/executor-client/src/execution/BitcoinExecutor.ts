@@ -55,12 +55,13 @@ export class BitcoinExecutor extends EventEmitter {
     private changeAddress: string;
     private eventMonitor: EthereumEventMonitor;
     private initialized: boolean = false;
+    private monitoringInterval: NodeJS.Timeout | null = null;
 
     constructor(config: Config) {
         super();
         this.config = config;
         this.eventMonitor = new EthereumEventMonitor(config);
-        this.utxoManager = new BitcoinUTXOManager(config.bitcoin.network);
+        this.utxoManager = new BitcoinUTXOManager(config.bitcoin.network as 'mainnet' | 'testnet');
         this.orderStore = new OrderContextStore(config.dataDir || './data');
         this.refundManager = new RefundManager({
             network: config.bitcoin.network as 'mainnet' | 'testnet',
@@ -102,8 +103,8 @@ export class BitcoinExecutor extends EventEmitter {
             this.keyPair = ECPair.fromWIF(this.config.bitcoin.privateKey, network);
             
             // Create change address for resolver
-            const changePayment = bitcoin.payments.p2wpkh({
-                pubkey: this.keyPair.publicKey,
+            const changePayment = bitcoin.payments.p2pkh({
+                pubkey: Buffer.from(this.keyPair.publicKey),
                 network
             });
             this.changeAddress = changePayment.address!;
@@ -224,8 +225,8 @@ export class BitcoinExecutor extends EventEmitter {
 
             const htlcScript = this.btcManager.generateHTLCScript(
                 order.order.hashlock,     // Shared hashlock from Ethereum
-                recipientKeyPair.publicKey, // Recipient can claim with secret
-                this.keyPair.publicKey,     // Resolver can refund after timelock
+                Buffer.from(recipientKeyPair.publicKey), // Recipient can claim with secret
+                Buffer.from(this.keyPair.publicKey),     // Resolver can refund after timelock
                 timelockHeight
             );
 
@@ -369,7 +370,7 @@ export class BitcoinExecutor extends EventEmitter {
             this.utxoManager.markUTXOsAsSpent(utxos);
 
             // Broadcast transaction to Bitcoin network with retry
-            const txId = await this.retryOperation(
+            const txId = await this.retryOperation<string>(
                 () => this.btcManager.broadcastTransaction(fundingTx.txHex),
                 'Bitcoin transaction broadcast',
                 this.config.execution.retryAttempts,
@@ -390,8 +391,8 @@ export class BitcoinExecutor extends EventEmitter {
             logger.error('💥 Failed to fund Bitcoin HTLC:', error);
             
             // Clear spent UTXOs if transaction failed
-            if (utxos) {
-                utxos.forEach(utxo => this.utxoManager.clearSpent(utxo.txid, utxo.vout));
+            if (utxos && utxos.length > 0) {
+                utxos.forEach((utxo: any) => this.utxoManager.clearSpent(utxo.txid, utxo.vout));
                 logger.info('🔄 Cleared spent status for UTXOs due to transaction failure');
             }
             
@@ -518,7 +519,7 @@ export class BitcoinExecutor extends EventEmitter {
             logger.info(`✍️ Claiming transaction created, size: ${claimingTx.txHex.length / 2} bytes`);
             
             // Broadcast claiming transaction with retry
-            const txId = await this.retryOperation(
+            const txId = await this.retryOperation<string>(
                 () => this.btcManager.broadcastTransaction(claimingTx.txHex),
                 'Bitcoin claiming transaction broadcast',
                 this.config.execution.retryAttempts,
@@ -583,7 +584,7 @@ export class BitcoinExecutor extends EventEmitter {
      */
     private startPeriodicMonitoring(): void {
         // Check for expired orders every 5 minutes
-        setInterval(async () => {
+        this.monitoringInterval = setInterval(async () => {
             try {
                 const pendingOrders = this.orderStore.getPending();
                 const now = Math.floor(Date.now() / 1000);
@@ -694,6 +695,12 @@ export class BitcoinExecutor extends EventEmitter {
         
         // Save any pending order contexts
         await this.orderStore.flush();
+        
+        // Stop periodic monitoring
+        if (this.monitoringInterval) {
+            clearInterval(this.monitoringInterval);
+            this.monitoringInterval = null;
+        }
         
         // Stop event monitoring
         if (this.eventMonitor) {
