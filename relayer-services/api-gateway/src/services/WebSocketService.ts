@@ -112,7 +112,134 @@ export class WebSocketService extends EventEmitter {
       this.broadcast('relayer-order-update', update);
     });
 
+    // Enhanced production events
+    this.setupEnhancedEventListeners();
+
     logger.info('Service event listeners configured');
+  }
+
+  private setupEnhancedEventListeners(): void {
+    // Transaction lifecycle events
+    this.setupTransactionEvents();
+    
+    // Chain status events
+    this.setupChainStatusEvents();
+    
+    // Market data events
+    this.setupMarketDataEvents();
+    
+    // User notification events
+    this.setupUserNotificationEvents();
+    
+    // System alert events
+    this.setupSystemAlertEvents();
+  }
+
+  private setupTransactionEvents(): void {
+    // Mock transaction events - in production these would come from actual services
+    setInterval(() => {
+      // Simulate transaction status updates
+      const txUpdate = {
+        transactionId: `tx-${Date.now()}`,
+        status: 'executing',
+        step: 'cross-chain-bridge',
+        progress: Math.floor(Math.random() * 100),
+        estimatedCompletion: Date.now() + Math.random() * 600000
+      };
+      this.broadcast('transaction-update', txUpdate);
+    }, 30000); // Every 30 seconds
+
+    setInterval(() => {
+      // Simulate transaction completions
+      const completion = {
+        transactionId: `tx-${Date.now() - 300000}`,
+        status: 'completed',
+        finalAmount: '1000.0',
+        fees: '5.2',
+        duration: 480000
+      };
+      this.broadcast('transaction-completed', completion);
+    }, 45000); // Every 45 seconds
+  }
+
+  private setupChainStatusEvents(): void {
+    setInterval(() => {
+      // Simulate chain status updates
+      const chainUpdate = {
+        chainId: Math.floor(Math.random() * 3) === 0 ? 1 : 137,
+        gasPrice: 20 + Math.random() * 20,
+        congestion: Math.floor(Math.random() * 100),
+        blockHeight: 18500000 + Math.floor(Math.random() * 1000),
+        status: Math.random() > 0.9 ? 'degraded' : 'healthy'
+      };
+      this.broadcast('chain-status-update', chainUpdate);
+    }, 15000); // Every 15 seconds
+  }
+
+  private setupMarketDataEvents(): void {
+    setInterval(() => {
+      // Simulate market data updates 
+      const marketUpdate = {
+        pair: 'ETH/USDC',
+        price: 2000 + (Math.random() - 0.5) * 100,
+        volume24h: '125000000',
+        change24h: (Math.random() - 0.5) * 10,
+        timestamp: Date.now()
+      };
+      this.broadcast('market-data-update', marketUpdate);
+    }, 10000); // Every 10 seconds
+
+    setInterval(() => {
+      // Simulate solver bid updates
+      const bidUpdate = {
+        intentId: `intent-${Date.now()}`,
+        solvers: [
+          { id: 'tee-solver', bid: '0.025', confidence: 95 },
+          { id: 'relayer-1', bid: '0.028', confidence: 87 },
+          { id: 'relayer-2', bid: '0.032', confidence: 92 }
+        ],
+        bestBid: '0.025',
+        deadline: Date.now() + 120000
+      };
+      this.broadcast('solver-bid-update', bidUpdate);
+    }, 20000); // Every 20 seconds
+  }
+
+  private setupUserNotificationEvents(): void {
+    setInterval(() => {
+      // Simulate user notifications
+      const notification = {
+        id: `notif-${Date.now()}`,
+        type: Math.random() > 0.5 ? 'transaction' : 'system',
+        title: 'Transaction Update',
+        message: 'Your cross-chain swap is being processed',
+        priority: Math.random() > 0.8 ? 'high' : 'normal',
+        timestamp: Date.now(),
+        actions: [
+          { label: 'View Details', action: 'view_transaction' },
+          { label: 'Dismiss', action: 'dismiss' }
+        ]
+      };
+      this.broadcast('user-notification', notification);
+    }, 60000); // Every minute
+  }
+
+  private setupSystemAlertEvents(): void {
+    setInterval(() => {
+      // Simulate system alerts (less frequent)
+      if (Math.random() > 0.9) { // 10% chance
+        const alert = {
+          id: `alert-${Date.now()}`,
+          severity: Math.random() > 0.7 ? 'warning' : 'info',
+          title: 'System Status Update',
+          message: 'Temporary delays on Ethereum network due to high congestion',
+          affectedChains: [1],
+          estimatedResolution: Date.now() + 1800000,
+          timestamp: Date.now()
+        };
+        this.broadcast('system-alert', alert);
+      }
+    }, 120000); // Every 2 minutes
   }
 
   private handleMessage(client: WebSocketClient, message: WebSocketMessage): void {

@@ -18,6 +18,9 @@ import { teeRoutes } from './routes/tee';
 import { relayerRoutes } from './routes/relayer';
 import { healthRoutes } from './routes/health';
 import { oneInchRoutes } from './routes/oneinch';
+import { transactionRoutes } from './routes/transactions';
+import { userRoutes } from './routes/users';
+import { chainRoutes } from './routes/chains';
 
 // Import services
 import { TEESolverService } from './services/TEESolverService';
@@ -137,6 +140,9 @@ function configureRoutes() {
   app.use('/api/tee', teeRoutes);
   app.use('/api/relayer', relayerRoutes);
   app.use('/api/1inch', oneInchRoutes);
+  app.use('/api/transactions', transactionRoutes);
+  app.use('/api/users', userRoutes);
+  app.use('/api/chains', chainRoutes);
 
   // Root endpoint
   app.get('/', (req, res) => {
@@ -153,6 +159,9 @@ function configureRoutes() {
         tee: '/api/tee',
         relayer: '/api/relayer',
         oneInch: '/api/1inch',
+        transactions: '/api/transactions',
+        users: '/api/users',
+        chains: '/api/chains',
         websocket: '/ws'
       }
     });
@@ -163,7 +172,7 @@ function configureRoutes() {
     res.status(404).json({
       error: 'Endpoint not found',
       path: req.originalUrl,
-      available: ['/api/health', '/api/tee', '/api/relayer', '/api/1inch']
+      available: ['/api/health', '/api/tee', '/api/relayer', '/api/1inch', '/api/transactions', '/api/users', '/api/chains']
     });
   });
 

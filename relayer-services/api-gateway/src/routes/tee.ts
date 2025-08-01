@@ -57,7 +57,7 @@ router.post('/analyze', [
   body('toToken').isObject().withMessage('To token is required'),
   body('fromAmount').isString().notEmpty().withMessage('From amount is required'),
   body('user').isString().notEmpty().withMessage('User address is required')
-], validateRequest, async (req, res) => {
+], validateRequest, async (req: any, res: any) => {
   try {
     const intent = req.body;
     
@@ -93,7 +93,7 @@ router.post('/submit', [
   body('user').isString().notEmpty().withMessage('User address is required'),
   body('maxSlippage').isNumeric().optional(),
   body('deadline').isNumeric().optional()
-], validateRequest, async (req, res) => {
+], validateRequest, async (req: any, res: any) => {
   try {
     const intent = req.body;
     
@@ -122,7 +122,7 @@ router.post('/submit', [
  */
 router.get('/execution/:requestId', [
   param('requestId').isString().notEmpty().withMessage('Request ID is required')
-], validateRequest, (req, res) => {
+], validateRequest, (req: any, res: any) => {
   try {
     const { requestId } = req.params;
     
@@ -179,7 +179,7 @@ router.get('/routes', (req, res) => {
  */
 router.delete('/execution/:requestId', [
   param('requestId').isString().notEmpty().withMessage('Request ID is required')
-], validateRequest, async (req, res) => {
+], validateRequest, async (req: any, res: any) => {
   try {
     const { requestId } = req.params;
     
