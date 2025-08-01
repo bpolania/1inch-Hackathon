@@ -21,6 +21,7 @@ import { oneInchRoutes } from './routes/oneinch';
 import { transactionRoutes } from './routes/transactions';
 import { userRoutes } from './routes/users';
 import { chainRoutes } from './routes/chains';
+import { proofRoutes } from './routes/proofs';
 
 // Import services
 import { TEESolverService } from './services/TEESolverService';
@@ -143,6 +144,7 @@ function configureRoutes() {
   app.use('/api/transactions', transactionRoutes);
   app.use('/api/users', userRoutes);
   app.use('/api/chains', chainRoutes);
+  app.use('/api/proofs', proofRoutes);
 
   // Root endpoint
   app.get('/', (req, res) => {
@@ -162,6 +164,7 @@ function configureRoutes() {
         transactions: '/api/transactions',
         users: '/api/users',
         chains: '/api/chains',
+        proofs: '/api/proofs',
         websocket: '/ws'
       }
     });
@@ -172,7 +175,7 @@ function configureRoutes() {
     res.status(404).json({
       error: 'Endpoint not found',
       path: req.originalUrl,
-      available: ['/api/health', '/api/tee', '/api/relayer', '/api/1inch', '/api/transactions', '/api/users', '/api/chains']
+      available: ['/api/health', '/api/tee', '/api/relayer', '/api/1inch', '/api/transactions', '/api/users', '/api/chains', '/api/proofs']
     });
   });
 

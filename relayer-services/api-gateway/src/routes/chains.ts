@@ -217,7 +217,7 @@ router.get(
     param('chainId').isInt({ min: 1 }).withMessage('Valid chain ID is required'),
     validateRequest
   ],
-  async (req: any, res) => {
+  async (req: any, res: any) => {
     try {
       const { chainId } = req.params;
       
@@ -443,7 +443,7 @@ router.get(
     query('amount').optional().isString().withMessage('Amount must be string'),
     validateRequest
   ],
-  async (req: any, res) => {
+  async (req: any, res: any) => {
     try {
       const { from, to, amount } = req.query;
       

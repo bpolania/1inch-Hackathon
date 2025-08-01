@@ -35,7 +35,7 @@ router.post(
     body('address').isEthereumAddress().withMessage('Valid Ethereum address is required'),
     validateRequest
   ],
-  async (req: any, res) => {
+  async (req: any, res: any) => {
     try {
       const { address } = req.body;
       
@@ -75,7 +75,7 @@ router.post(
     body('nonce').notEmpty().withMessage('Nonce is required'),
     validateRequest
   ],
-  async (req: any, res) => {
+  async (req: any, res: any) => {
     try {
       const { address, signature, nonce } = req.body;
       
@@ -190,7 +190,7 @@ router.put(
     body('preferences.gasPreference').optional().isIn(['slow', 'standard', 'fast']).withMessage('Invalid gas preference'),
     validateRequest
   ],
-  async (req: any, res) => {
+  async (req: any, res: any) => {
     try {
       const { preferences } = req.body;
       const userAddress = req.headers.authorization?.split('_')[2] || '0x1234567890123456789012345678901234567890';
@@ -296,7 +296,7 @@ router.post(
     body('signature').notEmpty().withMessage('Signature is required for verification'),
     validateRequest
   ],
-  async (req: any, res) => {
+  async (req: any, res: any) => {
     try {
       const { address, type, chainId, signature, label } = req.body;
       
@@ -339,7 +339,7 @@ router.delete(
     param('address').notEmpty().withMessage('Wallet address is required'),
     validateRequest
   ],
-  async (req: any, res) => {
+  async (req: any, res: any) => {
     try {
       const { address } = req.params;
       
@@ -376,7 +376,7 @@ router.get(
     query('includeTokens').optional().isBoolean().withMessage('Include tokens must be boolean'),
     validateRequest
   ],
-  async (req: any, res) => {
+  async (req: any, res: any) => {
     try {
       const { chains, includeTokens = true } = req.query;
       const userAddress = req.headers.authorization?.split('_')[2] || '0x1234567890123456789012345678901234567890';
@@ -510,7 +510,7 @@ router.post(
     body('amount').optional().isString().withMessage('Amount must be string'),
     validateRequest
   ],
-  async (req: any, res) => {
+  async (req: any, res: any) => {
     try {
       const { chainId, tokenAddress, spenderAddress, amount } = req.body;
       
