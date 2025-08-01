@@ -1,12 +1,15 @@
 /**
  * Relayer Integration Service
  * Connects the UI with the automated executor-client relayer service
+ * 
+ * Updated to use real backend API Gateway with production relayer integration
  */
 
 import { IntentRequest } from '@/types/intent';
 
-// Relayer service configuration
-const RELAYER_BASE_URL = process.env.NEXT_PUBLIC_RELAYER_URL || 'http://localhost:3001';
+// API Gateway configuration - now connects to real backend
+const API_GATEWAY_BASE_URL = process.env.NEXT_PUBLIC_API_GATEWAY_URL || 'http://localhost:3001';
+const RELAYER_API_BASE_URL = `${API_GATEWAY_BASE_URL}/api/relayer`;
 
 export interface RelayerStatus {
   isRunning: boolean;
@@ -88,14 +91,11 @@ export class RelayerIntegrationService {
    */
   async submitIntent(intent: IntentRequest): Promise<OrderSubmission> {
     try {
-      const response = await fetch(`${this.baseUrl}/api/orders/submit`, {
+      // Submit intent to real relayer service via API Gateway
+      const response = await fetch(`${RELAYER_API_BASE_URL}/submit`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          intent,
-          timestamp: Date.now(),
-          source: 'ui'
-        })
+        body: JSON.stringify(intent)
       });
 
       if (!response.ok) {

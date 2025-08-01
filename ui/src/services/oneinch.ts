@@ -5,8 +5,10 @@
 
 import { useState } from 'react';
 
-// 1inch API Configuration
-const ONEINCH_BASE_URL = 'https://api.1inch.dev';
+// API Gateway configuration - routes through our backend for enhanced caching and error handling
+const API_GATEWAY_BASE_URL = process.env.NEXT_PUBLIC_API_GATEWAY_URL || 'http://localhost:3001';
+const ONEINCH_API_BASE = `${API_GATEWAY_BASE_URL}/api/1inch`;
+const FALLBACK_ONEINCH_BASE_URL = 'https://api.1inch.dev';
 const ONEINCH_API_VERSION = 'v6.0';
 
 // Supported chain IDs for 1inch

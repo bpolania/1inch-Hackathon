@@ -1,12 +1,15 @@
 /**
  * TEE Solver Integration Service
  * Connects the UI with the autonomous TEE solver for intent processing
+ * 
+ * Updated to use real backend API Gateway with production TEE integration
  */
 
 import { IntentRequest } from '@/types/intent';
 
-// TEE Solver service configuration
-const TEE_SOLVER_BASE_URL = process.env.NEXT_PUBLIC_TEE_SOLVER_URL || 'http://localhost:3002';
+// API Gateway configuration - now connects to real backend
+const API_GATEWAY_BASE_URL = process.env.NEXT_PUBLIC_API_GATEWAY_URL || 'http://localhost:3001';
+const TEE_API_BASE_URL = `${API_GATEWAY_BASE_URL}/api/tee`;
 
 export interface SwapIntent {
   fromChain: 'bitcoin' | 'near' | 'ethereum';
@@ -129,17 +132,11 @@ export class TEESolverIntegrationService {
     execution?: SwapExecution;
   }> {
     try {
-      const swapIntent = this.convertIntentToSwapIntent(intent);
-      
-      const response = await fetch(`${this.baseUrl}/api/intents/submit`, {
+      // Submit intent to real TEE service via API Gateway
+      const response = await fetch(`${TEE_API_BASE_URL}/submit`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          intentId: intent.id,
-          swapIntent,
-          timestamp: Date.now(),
-          source: 'ui'
-        })
+        body: JSON.stringify(intent)
       });
 
       if (!response.ok) {
