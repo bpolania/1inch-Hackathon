@@ -1,12 +1,12 @@
 #[cfg(test)]
 mod tests {
     use crate::{
-        execute, instantiate, query, ContractError, ExecuteMsg, FusionPlusOrder, InstantiateMsg,
-        OrderStatus, QueryMsg, ConfigResponse, OrderResponse, ListOrdersResponse, ResolverResponse,
+        execute, instantiate, query, ContractError, ExecuteMsg, InstantiateMsg,
+        OrderStatus, QueryMsg, ConfigResponse, OrderResponse, ListOrdersResponse, ResolverResponse, ListResolversResponse,
     };
     use cosmwasm_std::{
         testing::{mock_dependencies, mock_env, mock_info},
-        coins, from_binary, Addr, Uint128, Timestamp,
+        coins, from_binary, Addr, Uint128,
     };
     use sha2::{Sha256, Digest};
 
@@ -15,7 +15,7 @@ mod tests {
     const MAKER: &str = "maker";
     const NATIVE_DENOM: &str = "untrn";
 
-    fn proper_instantiate() -> (cosmwasm_std::testing::MockDeps, Addr) {
+    fn proper_instantiate() -> (cosmwasm_std::OwnedDeps<cosmwasm_std::MemoryStorage, cosmwasm_std::testing::MockApi, cosmwasm_std::testing::MockQuerier>, Addr) {
         let mut deps = mock_dependencies();
         let admin_addr = Addr::unchecked(ADMIN);
 

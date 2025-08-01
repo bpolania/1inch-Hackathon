@@ -1,6 +1,6 @@
 use cosmwasm_std::{
     entry_point, to_binary, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult, 
-    Uint128, Addr, StdError, BankMsg, Coin, WasmMsg, Event, Attribute, Timestamp, CosmosMsg
+    Uint128, Addr, StdError, BankMsg, Coin, Event, Timestamp, CosmosMsg
 };
 use cw2::set_contract_version;
 use cw_storage_plus::{Item, Map};
@@ -17,6 +17,9 @@ const CONTRACT_VERSION: &str = env!("CARGO_PKG_VERSION");
 pub enum ContractError {
     #[error("{0}")]
     Std(#[from] StdError),
+
+    #[error("Overflow error")]
+    Overflow {},
 
     #[error("Unauthorized")]
     Unauthorized {},
@@ -254,7 +257,7 @@ pub fn instantiate(
     CONFIG.save(deps.storage, &config)?;
 
     // Add instantiator as initial authorized resolver
-    AUTHORIZED_RESOLVERS.save(deps.storage, &info.sender, &true)?;
+    AUTHORIZED_RESOLVERS.save(deps.storage, info.sender.clone(), &true)?;
 
     Ok(Response::new()
         .add_attribute("method", "instantiate")
@@ -342,7 +345,7 @@ pub fn execute_fusion_order(
 ) -> Result<Response, ContractError> {
     // Check if resolver is authorized
     let is_authorized = AUTHORIZED_RESOLVERS
-        .may_load(deps.storage, &info.sender)?
+        .may_load(deps.storage, info.sender.clone())?
         .unwrap_or(false);
     
     if !is_authorized {
@@ -350,7 +353,7 @@ pub fn execute_fusion_order(
     }
 
     // Check if order already exists
-    if ORDERS.has(deps.storage, &order_hash) {
+    if ORDERS.has(deps.storage, order_hash.clone()) {
         return Err(ContractError::OrderAlreadyExists { order_hash });
     }
 
@@ -364,13 +367,13 @@ pub fn execute_fusion_order(
 
     // Calculate required safety deposit
     let required_safety_deposit = amount
-        .checked_mul(Uint128::from(config.min_safety_deposit_bps))?
-        .checked_div(Uint128::from(10000u128))?;
+        .checked_mul(Uint128::from(config.min_safety_deposit_bps)).map_err(|_| ContractError::Overflow {})?
+        .checked_div(Uint128::from(10000u128)).map_err(|_| ContractError::Overflow {})?;
 
     // Validate funds sent (amount + resolver fee + safety deposit)
     let expected_total = amount
-        .checked_add(resolver_fee)?
-        .checked_add(required_safety_deposit)?;
+        .checked_add(resolver_fee).map_err(|_| ContractError::Overflow {})?
+        .checked_add(required_safety_deposit).map_err(|_| ContractError::Overflow {})?;
 
     let sent_funds = info
         .funds
@@ -406,7 +409,7 @@ pub fn execute_fusion_order(
         timeout,
     };
 
-    ORDERS.save(deps.storage, &order_hash, &order)?;
+    ORDERS.save(deps.storage, order_hash.clone(), &order)?;
 
     // Create event
     let event = Event::new("fusion_order_created")
@@ -429,7 +432,7 @@ pub fn claim_fusion_order(
     order_hash: String,
     preimage: String,
 ) -> Result<Response, ContractError> {
-    let mut order = ORDERS.load(deps.storage, &order_hash)?;
+    let mut order = ORDERS.load(deps.storage, order_hash.clone())?;
 
     // Only resolver can claim
     if info.sender != order.resolver {
@@ -456,7 +459,7 @@ pub fn claim_fusion_order(
     // Update order status
     order.status = OrderStatus::Claimed;
     order.preimage = Some(preimage.clone());
-    ORDERS.save(deps.storage, &order_hash, &order)?;
+    ORDERS.save(deps.storage, order_hash.clone(), &order)?;
 
     let config = CONFIG.load(deps.storage)?;
 
@@ -516,7 +519,7 @@ pub fn refund_order(
     info: MessageInfo,
     order_hash: String,
 ) -> Result<Response, ContractError> {
-    let mut order = ORDERS.load(deps.storage, &order_hash)?;
+    let mut order = ORDERS.load(deps.storage, order_hash.clone())?;
 
     // Check timelock has expired
     if env.block.time < order.timeout {
@@ -539,14 +542,14 @@ pub fn refund_order(
 
     // Update order status
     order.status = OrderStatus::Refunded;
-    ORDERS.save(deps.storage, &order_hash, &order)?;
+    ORDERS.save(deps.storage, order_hash.clone(), &order)?;
 
     let config = CONFIG.load(deps.storage)?;
 
     // Refund the locked amount and safety deposit to resolver
     let refund_amount = order.amount
-        .checked_add(order.resolver_fee)?
-        .checked_add(order.safety_deposit)?;
+        .checked_add(order.resolver_fee).map_err(|_| ContractError::Overflow {})?
+        .checked_add(order.safety_deposit).map_err(|_| ContractError::Overflow {})?;
 
     let refund_msg = CosmosMsg::Bank(BankMsg::Send {
         to_address: order.resolver.to_string(),
@@ -583,7 +586,7 @@ pub fn add_resolver(
     }
 
     let resolver_addr = deps.api.addr_validate(&resolver)?;
-    AUTHORIZED_RESOLVERS.save(deps.storage, &resolver_addr, &true)?;
+    AUTHORIZED_RESOLVERS.save(deps.storage, resolver_addr, &true)?;
 
     Ok(Response::new()
         .add_attribute("method", "add_resolver")
@@ -603,7 +606,7 @@ pub fn remove_resolver(
     }
 
     let resolver_addr = deps.api.addr_validate(&resolver)?;
-    AUTHORIZED_RESOLVERS.remove(deps.storage, &resolver_addr);
+    AUTHORIZED_RESOLVERS.remove(deps.storage, resolver_addr);
 
     Ok(Response::new()
         .add_attribute("method", "remove_resolver")
@@ -657,7 +660,7 @@ fn query_config(deps: Deps) -> StdResult<ConfigResponse> {
 }
 
 fn query_order(deps: Deps, order_hash: String) -> StdResult<OrderResponse> {
-    let order = ORDERS.load(deps.storage, &order_hash)?;
+    let order = ORDERS.load(deps.storage, order_hash)?;
     Ok(OrderResponse { order })
 }
 
@@ -694,7 +697,7 @@ fn query_list_orders(
 fn query_is_authorized_resolver(deps: Deps, address: String) -> StdResult<ResolverResponse> {
     let addr = deps.api.addr_validate(&address)?;
     let is_authorized = AUTHORIZED_RESOLVERS
-        .may_load(deps.storage, &addr)?
+        .may_load(deps.storage, addr)?
         .unwrap_or(false);
     
     Ok(ResolverResponse { is_authorized })
@@ -711,7 +714,7 @@ fn query_list_resolvers(
     let resolvers: Vec<Addr> = AUTHORIZED_RESOLVERS
         .range(
             deps.storage,
-            start.as_ref().map(Bound::exclusive),
+            start.as_ref().map(|s| Bound::exclusive(s.clone())),
             None,
             cosmwasm_std::Order::Ascending,
         )
@@ -733,13 +736,16 @@ fn validate_preimage(preimage: &str, hashlock: &str) -> bool {
 }
 
 // Import needed for query range
-use cosmwasm_std::Bound;
+use cw_storage_plus::Bound;
+
+#[cfg(test)]
+mod integration_tests;
 
 #[cfg(test)]
 mod tests {
     use super::*;
     use cosmwasm_std::testing::{mock_dependencies, mock_env, mock_info};
-    use cosmwasm_std::{coins, from_binary};
+    use cosmwasm_std::{coins, from_json};
 
     #[test]
     fn proper_initialization() {
@@ -757,7 +763,7 @@ mod tests {
 
         // Check config
         let res = query(deps.as_ref(), mock_env(), QueryMsg::Config {}).unwrap();
-        let config: ConfigResponse = from_binary(&res).unwrap();
+        let config: ConfigResponse = from_json(&res).unwrap();
         assert_eq!("creator", config.admin.as_str());
         assert_eq!(500, config.min_safety_deposit_bps);
         assert_eq!("untrn", config.native_denom);
@@ -777,7 +783,7 @@ mod tests {
     #[test]
     fn test_preimage_validation() {
         let preimage = "hello";
-        let expected_hash = "2cf24dba4f21d4288094c0e73e3f15fb4c92edbf3b4b9f2d4b14d5b89b7b2da7";
+        let expected_hash = "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824";
         
         assert!(validate_preimage(preimage, expected_hash));
         assert!(!validate_preimage("wrong", expected_hash));

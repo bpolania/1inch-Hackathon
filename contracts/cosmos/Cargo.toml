@@ -24,15 +24,15 @@ overflow-checks = true
 
 [features]
 # for more explicit tests, cargo test --features=backtraces
-backtraces = ["cosmwasm-std/backtraces"]
+backtraces = []
 # use library feature to disable all instantiate/execute/query exports
 library = []
 
 [dependencies]
-cosmwasm-std = "1.5"
-cosmwasm-schema = "1.5"
-cw-storage-plus = "1.2"
-cw2 = "1.1"
+cosmwasm-std = "1.0"
+cosmwasm-schema = "1.0"
+cw-storage-plus = "0.13"
+cw2 = "0.13"
 schemars = "0.8"
 serde = { version = "1.0", features = ["derive"] }
 thiserror = "1.0"
@@ -40,5 +40,5 @@ sha2 = "0.10"
 hex = "0.4"
 
 [dev-dependencies]
-cw-multi-test = "0.16"
-cosmwasm-schema = "1.5"
+cw-multi-test = "0.13"
+cosmwasm-schema = "1.0"
