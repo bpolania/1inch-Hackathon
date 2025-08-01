@@ -1,0 +1,125 @@
+name: Test Suite
+
+on:
+  push:
+    branches: [ main, feature/*, fix/* ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        cache-dependency-path: ui/package-lock.json
+        
+    - name: Install dependencies
+      working-directory: ./ui
+      run: npm ci
+      
+    - name: Run TypeScript type checking
+      working-directory: ./ui
+      run: npm run typecheck
+      
+    - name: Run linting
+      working-directory: ./ui
+      run: npm run lint
+      
+    - name: Run unit tests
+      working-directory: ./ui
+      run: npm run test:unit -- --coverage
+      
+    - name: Run integration tests
+      working-directory: ./ui
+      run: npm run test:integration
+      
+    - name: Run end-to-end scenario tests
+      working-directory: ./ui
+      run: npm run test:e2e
+      
+    - name: Upload coverage reports
+      uses: codecov/codecov-action@v3
+      with:
+        directory: ./ui/coverage
+        flags: ui-tests
+        name: ui-coverage
+        
+    - name: Build application
+      working-directory: ./ui
+      run: npm run build
+      
+    - name: Check build artifacts
+      working-directory: ./ui
+      run: |
+        if [ ! -d ".next" ]; then
+          echo "Build failed - .next directory not found"
+          exit 1
+        fi
+        echo "Build successful"
+
+  performance:
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+        cache-dependency-path: ui/package-lock.json
+        
+    - name: Install dependencies
+      working-directory: ./ui
+      run: npm ci
+      
+    - name: Run performance tests
+      working-directory: ./ui
+      run: |
+        # Add performance testing script here
+        echo "Performance tests would run here"
+        # npm run test:performance
+
+  security:
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+        cache-dependency-path: ui/package-lock.json
+        
+    - name: Install dependencies
+      working-directory: ./ui
+      run: npm ci
+      
+    - name: Run security audit
+      working-directory: ./ui
+      run: npm audit --audit-level=moderate
+      
+    - name: Check for known vulnerabilities
+      working-directory: ./ui
+      run: |
+        # Run additional security checks
+        npx audit-ci --moderate
