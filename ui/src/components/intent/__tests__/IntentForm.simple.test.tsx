@@ -2,8 +2,8 @@ import React from 'react'
 import { render, screen } from '@testing-library/react'
 import { IntentForm } from '../IntentForm'
 
-// Mock the store
-const mockStore = {
+// Mock the intent store
+const mockIntentStore = {
   currentIntent: null,
   intents: [],
   createIntent: jest.fn(),
@@ -17,8 +17,27 @@ const mockStore = {
   getIntentsByStatus: jest.fn(),
 }
 
+// Mock the wallet store to return connected state for submit button test
+const mockWalletStore = {
+  isConnected: true,
+  accountId: 'test-user.near',
+  balanceFormatted: '10.0',
+  networkId: 'testnet',
+  wallet: null,
+  isConnecting: false,
+  error: null,
+  connectWallet: jest.fn(),
+  disconnectWallet: jest.fn(),
+  refreshBalance: jest.fn(),
+  signAndSendTransaction: jest.fn()
+}
+
 jest.mock('@/stores/intentStore', () => ({
-  useIntentStore: () => mockStore,
+  useIntentStore: () => mockIntentStore,
+}))
+
+jest.mock('@/stores/walletStore', () => ({
+  useWalletStore: () => mockWalletStore,
 }))
 
 describe('IntentForm', () => {

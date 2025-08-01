@@ -2,9 +2,17 @@ import React from 'react'
 import { render, screen, waitFor, act } from '../../../../tests/utils/test-utils'
 import { IntentForm } from '../IntentForm'
 import { useIntentStore } from '@/stores/intentStore'
+import { useWalletStore } from '@/stores/walletStore'
 import userEvent from '@testing-library/user-event'
 
 const user = userEvent.setup()
+
+// Mock the wallet store to simulate connected state
+jest.mock('@/stores/walletStore', () => ({
+  useWalletStore: jest.fn()
+}))
+
+const mockUseWalletStore = useWalletStore as jest.MockedFunction<typeof useWalletStore>
 
 // Use the real store instead of mocking it
 describe('IntentForm Integration Tests', () => {
@@ -12,6 +20,22 @@ describe('IntentForm Integration Tests', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
+    
+    // Mock wallet store to return connected state
+    mockUseWalletStore.mockReturnValue({
+      isConnected: true,
+      accountId: 'demo-user.near',
+      balanceFormatted: '10.0',
+      networkId: 'testnet',
+      // Add other required properties
+      wallet: null,
+      isConnecting: false,
+      error: null,
+      connectWallet: jest.fn(),
+      disconnectWallet: jest.fn(),
+      refreshBalance: jest.fn(),
+      signAndSendTransaction: jest.fn()
+    })
     
     // Reset the actual store state
     const store = useIntentStore.getState()
@@ -26,7 +50,7 @@ describe('IntentForm Integration Tests', () => {
       // Check that a current intent was created by examining store state
       const store = useIntentStore.getState()
       expect(store.currentIntent).toBeTruthy()
-      expect(store.currentIntent?.user).toBe('demo-user')
+      expect(store.currentIntent?.user).toBe('demo-user.near')
       expect(store.currentIntent?.prioritize).toBe('speed')
     })
 

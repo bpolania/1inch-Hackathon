@@ -158,12 +158,12 @@ export function TokenSelector({
                 </div>
               </div>
             </div>
-            <button
+            <div
               onClick={handleClear}
-              className="ml-auto p-1 hover:bg-destructive/10 hover:text-destructive rounded"
+              className="ml-auto p-1 hover:bg-destructive/10 hover:text-destructive rounded cursor-pointer"
             >
               <X className="h-3 w-3" />
-            </button>
+            </div>
           </div>
         ) : (
           <span>{label || 'Select token'}</span>
