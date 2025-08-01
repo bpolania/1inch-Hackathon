@@ -725,7 +725,7 @@ constructor() {
 **Phase 3: Advanced Risk Management**
 - Dynamic deposits based on token volatility
 - Governance-controlled token tiers
-- Machine learning risk models
+- Statistical risk models
 
 ### Deployment Checklist
 
