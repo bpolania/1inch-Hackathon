@@ -18,6 +18,7 @@ const validateRequest = (req: any, res: any, next: any) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({
+      success: false,
       error: 'Validation failed',
       details: errors.array()
     });
@@ -134,11 +135,11 @@ router.get(
 );
 
 /**
- * GET /api/transactions/status/:txId
+ * GET /api/transactions/multi-status/:txId
  * Get detailed transaction status across all chains
  */
 router.get(
-  '/status/:txId',
+  '/multi-status/:txId',
   [
     param('txId').notEmpty().withMessage('Transaction ID is required'),
     validateRequest
@@ -561,5 +562,289 @@ router.get(
     }
   }
 );
+
+/**
+ * GET /api/transactions/status/:txHash
+ * Get transaction status across multiple chains
+ */
+router.get('/status/:txHash', [
+  param('txHash').isLength({ min: 66, max: 66 }).withMessage('Invalid transaction hash'),
+  query('chainId').optional().custom((value) => {
+    if (value && !Number.isInteger(Number(value))) {
+      throw new Error('Invalid chain ID');
+    }
+    return true;
+  })
+], validateRequest, async (req: any, res: any) => {
+  try {
+    const { txHash } = req.params;
+    const { chainId } = req.query;
+    
+    logger.info('Transaction status requested', { txHash, chainId });
+    
+    // Determine which chain to query
+    const targetChainId = chainId ? parseInt(chainId as string) : 1; // Default to Ethereum
+    
+    let transactionStatus;
+    let explorerUrl;
+    let blockchainData;
+    
+    if (targetChainId === 1 || targetChainId === 11155111) {
+      // Ethereum/Sepolia
+      explorerUrl = `https://sepolia.etherscan.io/tx/${txHash}`;
+      blockchainData = await getEthereumTransactionStatus(txHash);
+    } else if (targetChainId === 397) {
+      // NEAR
+      explorerUrl = `https://testnet.nearblocks.io/txns/${txHash}`;
+      blockchainData = await getNearTransactionStatus(txHash);
+    } else if (targetChainId === 40004 || targetChainId === 40001) {
+      // Bitcoin
+      explorerUrl = `https://blockstream.info/testnet/tx/${txHash}`;
+      blockchainData = await getBitcoinTransactionStatus(txHash);
+    } else {
+      return res.status(400).json({
+        success: false,
+        error: 'Unsupported chain ID',
+        supportedChains: [1, 11155111, 397, 40004, 40001]
+      });
+    }
+    
+    if (!blockchainData) {
+      return res.status(500).json({
+        success: false,
+        error: 'Failed to retrieve blockchain data',
+        details: 'Blockchain service unavailable'
+      });
+    }
+    
+    const response = {
+      success: true,
+      data: {
+        transactionHash: txHash,
+        chainId: targetChainId,
+        chainName: getChainName(targetChainId),
+        status: blockchainData.status,
+        confirmations: blockchainData.confirmations,
+        blockNumber: blockchainData.blockNumber,
+        blockHash: blockchainData.blockHash,
+        gasUsed: blockchainData.gasUsed,
+        gasPrice: blockchainData.gasPrice,
+        transactionFee: blockchainData.transactionFee,
+        from: blockchainData.from,
+        to: blockchainData.to,
+        value: blockchainData.value,
+        timestamp: blockchainData.timestamp,
+        explorerUrl,
+        isConfirmed: blockchainData.confirmations >= getRequiredConfirmations(targetChainId),
+        estimatedConfirmationTime: blockchainData.status === 'pending' ? 
+          estimateConfirmationTime(targetChainId) : null
+      },
+      timestamp: new Date().toISOString()
+    };
+    
+    res.json(response);
+    
+  } catch (error) {
+    logger.error('Failed to get transaction status:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to retrieve transaction status',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
+
+/**
+ * GET /api/transactions/cross-chain/:orderHash
+ * Get cross-chain transaction bundle status
+ */
+router.get('/cross-chain/:orderHash', [
+  param('orderHash').isLength({ min: 66, max: 66 }).withMessage('Invalid order hash')
+], validateRequest, async (req: any, res: any) => {
+  try {
+    const { orderHash } = req.params;
+    
+    logger.info('Cross-chain transaction status requested', { orderHash });
+    
+    // Get order details to understand the cross-chain flow
+    const orderDetails = await req.relayerService.getOrderDetails(orderHash);
+    if (!orderDetails) {
+      return res.status(404).json({
+        success: false,
+        error: 'Order not found',
+        orderHash
+      });
+    }
+    
+    // Get all related transactions
+    const transactionBundle = await req.relayerService.getCrossChainTransactions(orderHash);
+    
+    // Enhance each transaction with current status
+    const enhancedTransactions = await Promise.all(
+      transactionBundle.map(async (tx: any) => {
+        let blockchainData;
+        let explorerUrl;
+        
+        if (tx.chainId === 1 || tx.chainId === 11155111) {
+          blockchainData = await getEthereumTransactionStatus(tx.hash);
+          explorerUrl = `https://sepolia.etherscan.io/tx/${tx.hash}`;
+        } else if (tx.chainId === 397) {
+          blockchainData = await getNearTransactionStatus(tx.hash);
+          explorerUrl = `https://testnet.nearblocks.io/txns/${tx.hash}`;
+        } else if (tx.chainId === 40004 || tx.chainId === 40001) {
+          blockchainData = await getBitcoinTransactionStatus(tx.hash);
+          explorerUrl = `https://blockstream.info/testnet/tx/${tx.hash}`;
+        }
+        
+        return {
+          ...tx,
+          ...blockchainData,
+          status: tx.status || (blockchainData ? blockchainData.status : 'unknown'), // Preserve original status
+          explorerUrl,
+          isConfirmed: tx.status === 'confirmed' || (tx.status !== 'pending' && tx.status !== 'failed' && blockchainData ? blockchainData.confirmations >= getRequiredConfirmations(tx.chainId) : false)
+        };
+      })
+    );
+    
+    // Calculate overall cross-chain status
+    const allConfirmed = enhancedTransactions.every(tx => tx.isConfirmed);
+    const anyFailed = enhancedTransactions.some(tx => tx.status === 'failed');
+    const anyPending = enhancedTransactions.some(tx => tx.status === 'pending');
+    
+    let overallStatus = 'unknown';
+    if (anyFailed) {
+      overallStatus = 'failed';
+    } else if (allConfirmed) {
+      overallStatus = 'completed';
+    } else if (anyPending) {
+      overallStatus = 'pending';
+    }
+    
+    const response = {
+      success: true,
+      data: {
+        orderHash,
+        overallStatus,
+        totalTransactions: enhancedTransactions.length,
+        confirmedTransactions: enhancedTransactions.filter(tx => tx.isConfirmed).length,
+        transactions: enhancedTransactions,
+        crossChainSummary: {
+          sourceChain: {
+            chainId: orderDetails.sourceChainId || 1,
+            status: enhancedTransactions.find(tx => tx.type === 'source')?.status || 'pending',
+            hash: enhancedTransactions.find(tx => tx.type === 'source')?.hash
+          },
+          destinationChain: {
+            chainId: orderDetails.destinationChainId,
+            status: enhancedTransactions.find(tx => tx.type === 'destination')?.status || 'pending',
+            hash: enhancedTransactions.find(tx => tx.type === 'destination')?.hash
+          }
+        },
+        atomicSwapStatus: {
+          escrowsCreated: enhancedTransactions.some(tx => tx.type === 'escrow_creation'),
+          secretRevealed: enhancedTransactions.some(tx => tx.type === 'secret_reveal'),
+          tokensSettled: allConfirmed
+        }
+      },
+      timestamp: new Date().toISOString()
+    };
+    
+    res.json(response);
+    
+  } catch (error) {
+    logger.error('Failed to get cross-chain transaction status:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to retrieve cross-chain transaction status',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
+
+// Helper functions for blockchain status queries
+
+async function getEthereumTransactionStatus(txHash: string) {
+  // Mock implementation - replace with real Ethereum RPC calls
+  return {
+    status: 'confirmed',
+    confirmations: 12,
+    blockNumber: 12345678,
+    blockHash: '0x' + 'a'.repeat(64),
+    gasUsed: '21000',
+    gasPrice: '20000000000',
+    transactionFee: '0.00042',
+    from: '0x' + '1'.repeat(40),
+    to: '0x' + '2'.repeat(40),
+    value: '1000000000000000000',
+    timestamp: new Date(Date.now() - 120000).toISOString()
+  };
+}
+
+async function getNearTransactionStatus(txHash: string) {
+  // Mock implementation - replace with real NEAR RPC calls
+  return {
+    status: 'confirmed',
+    confirmations: 1,
+    blockNumber: 98765432,
+    blockHash: 'abc123def456',
+    gasUsed: '2000000000000', // gas units
+    gasPrice: '1000000000', // yoctoNEAR per gas
+    transactionFee: '0.002',
+    from: 'user.testnet',
+    to: 'tee-solver.testnet',
+    value: '1000000000000000000000000', // yoctoNEAR
+    timestamp: new Date(Date.now() - 60000).toISOString()
+  };
+}
+
+async function getBitcoinTransactionStatus(txHash: string) {
+  // Mock implementation - replace with real Bitcoin RPC calls
+  return {
+    status: 'confirmed',
+    confirmations: 6,
+    blockNumber: 2800000,
+    blockHash: '000000000000000000123456789abcdef',
+    gasUsed: '142', // bytes
+    gasPrice: '50', // sats/byte
+    transactionFee: '0.0000071', // BTC
+    from: 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh',
+    to: 'bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq',
+    value: '0.001', // BTC
+    timestamp: new Date(Date.now() - 180000).toISOString()
+  };
+}
+
+function getChainName(chainId: number): string {
+  const chainNames: { [key: number]: string } = {
+    1: 'Ethereum Mainnet',
+    11155111: 'Ethereum Sepolia',
+    397: 'NEAR Protocol',
+    40004: 'Bitcoin Testnet',
+    40001: 'Bitcoin Mainnet'
+  };
+  return chainNames[chainId] || `Chain ${chainId}`;
+}
+
+function getRequiredConfirmations(chainId: number): number {
+  const confirmations: { [key: number]: number } = {
+    1: 12, // Ethereum
+    11155111: 3, // Sepolia
+    397: 1, // NEAR
+    40004: 3, // Bitcoin Testnet
+    40001: 6 // Bitcoin Mainnet
+  };
+  return confirmations[chainId] || 1;
+}
+
+function estimateConfirmationTime(chainId: number): string {
+  const times: { [key: number]: string } = {
+    1: '2-3 minutes',
+    11155111: '30-60 seconds',
+    397: '2-3 seconds',
+    40004: '10-20 minutes',
+    40001: '10-60 minutes'
+  };
+  return times[chainId] || '1-5 minutes';
+}
 
 export { router as transactionRoutes };

@@ -18,6 +18,7 @@ const validateRequest = (req: any, res: any, next: any) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({
+      success: false,
       error: 'Validation failed',
       details: errors.array()
     });
@@ -405,6 +406,404 @@ router.get('/protocols/:chainId', [
     res.status(500).json({
       success: false,
       error: 'Failed to get protocols',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
+
+/**
+ * GET /api/1inch/orders/:orderHash/status
+ * Get detailed order status and execution progress
+ */
+router.get('/orders/:orderHash/status', [
+  param('orderHash').isLength({ min: 66, max: 66 }).withMessage('Invalid order hash format')
+], validateRequest, async (req: any, res: any) => {
+  try {
+    const { orderHash } = req.params;
+    
+    logger.info('Order status requested', { orderHash });
+    
+    // Get comprehensive status from all services
+    const [orderDetails, teeStatus, relayerStatus, escrowAddresses] = await Promise.all([
+      req.relayerService.getOrderDetails(orderHash),
+      req.teeService.getExecutionStatus(orderHash),
+      req.relayerService.getExecutionStatus(orderHash),
+      req.relayerService.getEscrowAddresses(orderHash)
+    ]);
+    
+    if (!orderDetails) {
+      return res.status(404).json({
+        success: false,
+        error: 'Order not found',
+        orderHash
+      });
+    }
+    
+    // Calculate detailed status
+    const now = Date.now();
+    const expiryTime = orderDetails.expiryTime * 1000;
+    const isExpired = now >= expiryTime;
+    
+    let overallStatus = 'unknown';
+    let progress = 0;
+    let nextAction = '';
+    let estimatedCompletion = null;
+    
+    if (!orderDetails.isActive) {
+      overallStatus = 'cancelled';
+      progress = 0;
+      nextAction = 'Order was cancelled by user or expired';
+    } else if (isExpired) {
+      overallStatus = 'expired';
+      progress = 0;
+      nextAction = 'Order has expired and can be refunded';
+    } else if (!escrowAddresses.source) {
+      overallStatus = 'pending';
+      progress = 20;
+      nextAction = 'Waiting for TEE solver to match order';
+      estimatedCompletion = new Date(now + 5 * 60 * 1000).toISOString(); // 5 minutes
+    } else if (escrowAddresses.source && !escrowAddresses.destination) {
+      overallStatus = 'matching';
+      progress = 40;
+      nextAction = 'Creating destination escrow';
+      estimatedCompletion = new Date(now + 3 * 60 * 1000).toISOString(); // 3 minutes
+    } else if (teeStatus?.status === 'executing' || relayerStatus?.status === 'executing') {
+      overallStatus = 'executing';
+      progress = 70;
+      nextAction = 'Executing cross-chain atomic swap';
+      estimatedCompletion = new Date(now + 2 * 60 * 1000).toISOString(); // 2 minutes
+    } else if (teeStatus?.status === 'completed' && relayerStatus?.status === 'completed') {
+      overallStatus = 'completed';
+      progress = 100;
+      nextAction = 'Cross-chain swap completed successfully';
+    } else if (teeStatus?.status === 'failed' || relayerStatus?.status === 'failed') {
+      overallStatus = 'failed';
+      progress = 0;
+      nextAction = 'Cross-chain swap failed, refund available';
+    }
+    
+    const response = {
+      success: true,
+      data: {
+        orderHash,
+        overallStatus,
+        progress,
+        nextAction,
+        estimatedCompletion,
+        isExpired,
+        canCancel: overallStatus === 'pending' && !isExpired,
+        canRefund: overallStatus === 'expired' || overallStatus === 'failed',
+        
+        // Detailed status breakdown
+        stages: {
+          orderCreated: {
+            status: 'completed',
+            timestamp: new Date(now - 180000).toISOString(), // 3 minutes ago
+            description: 'Order created and submitted to TEE solver'
+          },
+          orderMatched: {
+            status: escrowAddresses.source ? 'completed' : 'pending',
+            timestamp: escrowAddresses.source ? new Date(now - 120000).toISOString() : null,
+            description: 'TEE solver matched order and created escrows'
+          },
+          crossChainExecution: {
+            status: teeStatus?.status || 'pending',
+            timestamp: teeStatus?.startedAt || null,
+            description: 'Executing atomic swap across chains',
+            details: teeStatus
+          },
+          settlement: {
+            status: relayerStatus?.status || 'pending',
+            timestamp: relayerStatus?.completedAt || null,
+            description: 'Settling tokens on destination chain',
+            details: relayerStatus
+          }
+        },
+        
+        // Technical details
+        technical: {
+          escrowAddresses,
+          expiryTime: orderDetails.expiryTime,
+          timeRemaining: Math.max(0, expiryTime - now),
+          gasEstimate: '0.002', // ETH
+          networkFees: {
+            ethereum: '0.001 ETH',
+            destination: orderDetails.destinationChainId === 397 ? '0.01 NEAR' : '0.0001 BTC'
+          }
+        }
+      },
+      timestamp: new Date().toISOString()
+    };
+    
+    res.json(response);
+    
+  } catch (error) {
+    logger.error('Failed to get order status:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to retrieve order status',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
+
+/**
+ * GET /api/1inch/orders/:orderHash
+ * Get specific order details and status
+ */
+router.get('/orders/:orderHash', [
+  param('orderHash').isLength({ min: 66, max: 66 }).withMessage('Invalid order hash format')
+], validateRequest, async (req: any, res: any) => {
+  try {
+    const { orderHash } = req.params;
+    
+    logger.info('Order details requested', { orderHash });
+    
+    // Get order from smart contract
+    const orderDetails = await req.relayerService.getOrderDetails(orderHash);
+    
+    if (!orderDetails || !orderDetails.isActive) {
+      return res.status(404).json({
+        success: false,
+        error: 'Order not found or inactive',
+        orderHash
+      });
+    }
+    
+    // Get execution status from services
+    const teeStatus = await req.teeService.getExecutionStatus(orderHash);
+    const relayerStatus = await req.relayerService.getExecutionStatus(orderHash);
+    
+    // Get escrow addresses
+    const escrowAddresses = await req.relayerService.getEscrowAddresses(orderHash);
+    
+    // Determine overall status
+    let status = 'pending';
+    let statusDetails = 'Order created, waiting for matching';
+    
+    if (escrowAddresses.source && escrowAddresses.destination) {
+      status = 'matched';
+      statusDetails = 'Order matched, executing cross-chain swap';
+      
+      if (teeStatus?.status === 'completed' && relayerStatus?.status === 'completed') {
+        status = 'completed';
+        statusDetails = 'Cross-chain swap completed successfully';
+      } else if (teeStatus?.status === 'failed' || relayerStatus?.status === 'failed') {
+        status = 'failed';
+        statusDetails = 'Cross-chain swap execution failed';
+      }
+    }
+    
+    const response = {
+      success: true,
+      data: {
+        orderHash,
+        order: {
+          maker: orderDetails.maker,
+          sourceToken: orderDetails.sourceToken,
+          sourceAmount: orderDetails.sourceAmount,
+          destinationChainId: orderDetails.destinationChainId,
+          destinationToken: orderDetails.destinationToken,
+          destinationAmount: orderDetails.destinationAmount,
+          destinationAddress: orderDetails.destinationAddress,
+          expiryTime: orderDetails.expiryTime,
+          resolverFeeAmount: orderDetails.resolverFeeAmount,
+          isActive: orderDetails.isActive
+        },
+        status,
+        statusDetails,
+        escrowAddresses,
+        execution: {
+          tee: teeStatus || { status: 'pending', message: 'Waiting for TEE processing' },
+          relayer: relayerStatus || { status: 'pending', message: 'Waiting for relayer execution' }
+        },
+        timeline: {
+          created: new Date(Date.now() - 120000).toISOString(), // Mock: 2 minutes ago
+          matched: escrowAddresses.source ? new Date(Date.now() - 60000).toISOString() : null,
+          completed: status === 'completed' ? new Date().toISOString() : null
+        },
+        canCancel: status === 'pending' && Date.now() < orderDetails.expiryTime * 1000
+      },
+      timestamp: new Date().toISOString()
+    };
+    
+    res.json(response);
+    
+  } catch (error) {
+    logger.error('Failed to get order details:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to retrieve order details',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
+
+/**
+ * GET /api/1inch/orders
+ * List user's orders with filtering and pagination
+ */
+router.get('/orders', [
+  query('userAddress').optional().matches(/^0x[a-fA-F0-9]{40}$/).withMessage('Invalid user address'),
+  query('status').optional().isIn(['pending', 'matched', 'completed', 'failed', 'cancelled']).withMessage('Invalid status'),
+  query('chainId').optional().isNumeric().withMessage('Invalid chain ID'),
+  query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1-100'),
+  query('offset').optional().isInt({ min: 0 }).withMessage('Invalid offset')
+], validateRequest, async (req: any, res: any) => {
+  try {
+    const { userAddress, status, chainId, limit = 10, offset = 0 } = req.query;
+    
+    logger.info('Orders list requested', { userAddress, status, chainId, limit, offset });
+    
+    // Get orders from relayer service
+    const ordersResult = await req.relayerService.getUserOrders({
+      userAddress,
+      status,
+      chainId: chainId ? parseInt(chainId as string) : undefined,
+      limit: parseInt(limit as string),
+      offset: parseInt(offset as string)
+    });
+    
+    // Enhance each order with current status
+    const enhancedOrders = await Promise.all(
+      ordersResult.orders.map(async (order: any) => {
+        const teeStatus = await req.teeService.getExecutionStatus(order.orderHash);
+        const relayerStatus = await req.relayerService.getExecutionStatus(order.orderHash);
+        
+        return {
+          ...order,
+          execution: {
+            tee: teeStatus || { status: 'pending' },
+            relayer: relayerStatus || { status: 'pending' }
+          },
+          canCancel: order.status === 'pending' && Date.now() < order.expiryTime * 1000
+        };
+      })
+    );
+    
+    const response = {
+      success: true,
+      data: {
+        orders: enhancedOrders,
+        pagination: {
+          total: ordersResult.total,
+          limit: parseInt(limit as string),
+          offset: parseInt(offset as string),
+          hasMore: ordersResult.total > parseInt(offset as string) + parseInt(limit as string)
+        },
+        filters: {
+          userAddress,
+          status,
+          chainId
+        }
+      },
+      timestamp: new Date().toISOString()
+    };
+    
+    res.json(response);
+    
+  } catch (error) {
+    logger.error('Failed to list orders:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to retrieve orders',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
+
+/**
+ * DELETE /api/1inch/orders/:orderHash
+ * Cancel an existing order
+ */
+router.delete('/orders/:orderHash', [
+  param('orderHash').isLength({ min: 66, max: 66 }).withMessage('Invalid order hash format'),
+  body('userAddress').matches(/^0x[a-fA-F0-9]{40}$/).withMessage('Valid user address required'),
+  body('signature').optional().isString().withMessage('Invalid signature')
+], validateRequest, async (req: any, res: any) => {
+  try {
+    const { orderHash } = req.params;
+    const { userAddress, signature } = req.body;
+    
+    logger.info('Order cancellation requested', { orderHash, userAddress });
+    
+    // Get order details to validate ownership
+    const orderDetails = await req.relayerService.getOrderDetails(orderHash);
+    
+    if (!orderDetails || !orderDetails.isActive) {
+      return res.status(404).json({
+        success: false,
+        error: 'Order not found or already inactive',
+        orderHash
+      });
+    }
+    
+    // Validate user is the order maker
+    if (orderDetails.maker.toLowerCase() !== userAddress.toLowerCase()) {
+      return res.status(403).json({
+        success: false,
+        error: 'Only order maker can cancel the order',
+        orderHash
+      });
+    }
+    
+    // Check if order can be cancelled (not yet matched)
+    const escrowAddresses = await req.relayerService.getEscrowAddresses(orderHash);
+    if (escrowAddresses.source || escrowAddresses.destination) {
+      return res.status(400).json({
+        success: false,
+        error: 'Cannot cancel order that has already been matched',
+        orderHash,
+        reason: 'Order execution has begun'
+      });
+    }
+    
+    // Check expiry
+    if (Date.now() >= orderDetails.expiryTime * 1000) {
+      return res.status(400).json({
+        success: false,
+        error: 'Order has already expired',
+        orderHash
+      });
+    }
+    
+    // Submit cancellation to relayer service
+    const cancellationResult = await req.relayerService.cancelOrder({
+      orderHash,
+      userAddress,
+      signature
+    });
+    
+    if (!cancellationResult.success) {
+      return res.status(400).json({
+        success: false,
+        error: cancellationResult.error || 'Failed to cancel order',
+        orderHash
+      });
+    }
+    
+    const response = {
+      success: true,
+      data: {
+        orderHash,
+        status: 'cancelled',
+        message: 'Order cancelled successfully',
+        transactionHash: cancellationResult.transactionHash,
+        cancelledAt: new Date().toISOString(),
+        gasUsed: cancellationResult.gasUsed,
+        etherscanUrl: cancellationResult.transactionHash ? 
+          `https://sepolia.etherscan.io/tx/${cancellationResult.transactionHash}` : null
+      },
+      timestamp: new Date().toISOString()
+    };
+    
+    res.json(response);
+    
+  } catch (error) {
+    logger.error('Failed to cancel order:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to cancel order',
       details: error instanceof Error ? error.message : 'Unknown error'
     });
   }

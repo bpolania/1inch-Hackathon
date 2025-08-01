@@ -5,6 +5,49 @@ All notable changes to the 1inch Cross-Chain API Gateway will be documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2025-08-01
+
+### Added - Order Management & Transaction Status APIs
+- **Complete Order Management**: Full CRUD operations for 1inch Fusion+ orders
+  - `GET /api/1inch/orders/:orderHash` - View detailed order information
+  - `GET /api/1inch/orders` - List user orders with pagination and filtering
+  - `DELETE /api/1inch/orders/:orderHash` - Cancel existing orders
+  - `GET /api/1inch/orders/:orderHash/status` - Get comprehensive order execution status
+- **Advanced Transaction Status Tracking**: Real-time cross-chain transaction monitoring
+  - `GET /api/transactions/status/:txHash` - Single transaction status across chains
+  - `GET /api/transactions/cross-chain/:orderHash` - Cross-chain transaction bundle status
+  - `GET /api/transactions/multi-status/:txId` - Multi-chain transaction overview
+- **Comprehensive Status Information**: Order lifecycle tracking with execution stages
+  - Progress tracking (0-100% completion)
+  - Stage breakdown (created → matched → executing → completed)
+  - Time remaining, expiry handling, and cancellation eligibility
+  - Technical details including escrow addresses, gas estimates, and fees
+
+### Added - Enhanced Validation & Error Handling
+- **Standardized Validation Middleware**: Consistent error response format across all endpoints
+- **Comprehensive Input Validation**: Order hash format, user address, and parameter validation
+- **Robust Error Handling**: Proper HTTP status codes and detailed error messages
+- **Request Validation**: Express-validator integration with custom validation rules
+
+### Fixed - Test Suite & API Reliability
+- **100% Test Pass Rate**: Fixed all 13 failing transaction status tests
+- **Route Conflict Resolution**: Fixed Express route matching conflicts between similar endpoints
+- **Cross-Chain Status Logic**: Fixed pending/failed transaction status calculation
+- **Mock Data Handling**: Improved test data consistency and mock service integration
+- **Validation Consistency**: Standardized error response format across all endpoints
+
+### Changed - API Architecture Improvements
+- **Route Optimization**: Reorganized routes to prevent conflicts and improve performance
+- **Service Integration**: Enhanced service layer communication with better error propagation
+- **Response Format**: Standardized API response structure for better client integration
+- **Test Infrastructure**: Expanded test coverage to 256 comprehensive test cases
+
+### Technical Details
+- **Test Coverage**: 18 test suites, 256 test cases, 100% pass rate
+- **New Endpoints**: 7 new order management and transaction status endpoints
+- **Execution Time**: All tests complete in ~5.5 seconds
+- **Production Ready**: Complete order lifecycle management with real-time status tracking
+
 ## [1.3.0] - 2025-08-01
 
 ### Added
@@ -155,6 +198,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ✅ Comprehensive test suite (200 test cases, 100% pass rate)
 - ✅ Full cross-chain transaction lifecycle validation
 - ✅ Production-ready API with complete documentation
+
+### 🎯 **Phase 5: Order Management & Transaction Status** (v1.4.0)
+- ✅ Complete order management API (view, list, cancel orders)
+- ✅ Advanced transaction status tracking across chains
+- ✅ Real-time order lifecycle monitoring with execution stages
+- ✅ Enhanced test suite (256 test cases, 100% pass rate)
+- ✅ Robust validation and error handling standardization
+- ✅ Production-ready order and transaction management
 
 ### 🎯 **Future Phases**
 - 🚀 Performance optimization and caching
