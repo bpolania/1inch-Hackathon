@@ -3,26 +3,15 @@
  */
 
 import { create } from 'zustand';
-import { devtools, persist } from 'zustand/middleware';
-import { IntentRequest, SolverResponse, IntentSettlement } from '@/types/intent';
+import { IntentRequest, TokenInfo } from '@/types/intent';
+import { generateId } from '@/utils/utils';
 
 interface IntentStore {
   // Current intent being created
   currentIntent: Partial<IntentRequest> | null;
   
   // Intent history
-  intentHistory: IntentRequest[];
-  
-  // Active solver competitions
-  activeCompetitions: Map<string, {
-    intent: IntentRequest;
-    responses: SolverResponse[];
-    timeRemaining: number;
-    selectedSolver?: string;
-  }>;
-  
-  // Active settlements
-  activeSettlements: Map<string, IntentSettlement>;
+  intents: IntentRequest[];
   
   // Actions
   createIntent: (intent: Partial<IntentRequest>) => void;
@@ -30,164 +19,139 @@ interface IntentStore {
   submitIntent: () => Promise<string>;
   clearCurrentIntent: () => void;
   
-  addSolverResponse: (intentId: string, response: SolverResponse) => void;
-  selectSolver: (intentId: string, solverId: string) => void;
-  
-  updateSettlement: (intentId: string, settlement: Partial<IntentSettlement>) => void;
+  // Intent management
+  addIntent: (intent: IntentRequest) => void;
+  updateIntentStatus: (id: string, status: IntentRequest['status']) => void;
+  clearAllIntents: () => void;
   
   // Getters
   getIntentById: (id: string) => IntentRequest | undefined;
-  getCompetitionById: (id: string) => any | undefined;
-  getSettlementById: (id: string) => IntentSettlement | undefined;
+  getIntentsByStatus: (status: IntentRequest['status']) => IntentRequest[];
 }
 
-export const useIntentStore = create<IntentStore>()(
-  devtools(
-    persist(
-      (set, get) => ({
-        currentIntent: null,
-        intentHistory: [],
-        activeCompetitions: new Map(),
-        activeSettlements: new Map(),
-        
-        createIntent: (intent) => {
-          set((state) => ({
-            currentIntent: {
-              id: generateIntentId(),
-              status: 'pending',
-              createdAt: Date.now(),
-              updatedAt: Date.now(),
-              ...intent,
-            }
-          }));
-        },
-        
-        updateIntent: (updates) => {
-          set((state) => ({
-            currentIntent: state.currentIntent 
-              ? { ...state.currentIntent, ...updates, updatedAt: Date.now() }
-              : null
-          }));
-        },
-        
-        submitIntent: async () => {
-          const state = get();
-          if (!state.currentIntent || !state.currentIntent.id) {
-            throw new Error('No intent to submit');
-          }
-          
-          const intent = state.currentIntent as IntentRequest;
-          
-          // Add to history
-          set((prevState) => ({
-            intentHistory: [...prevState.intentHistory, intent],
-            currentIntent: null,
-          }));
-          
-          // Initialize competition
-          set((prevState) => {
-            const newCompetitions = new Map(prevState.activeCompetitions);
-            newCompetitions.set(intent.id, {
-              intent,
-              responses: [],
-              timeRemaining: 30000, // 30 seconds for demo
-            });
-            return { activeCompetitions: newCompetitions };
-          });
-          
-          return intent.id;
-        },
-        
-        clearCurrentIntent: () => {
-          set({ currentIntent: null });
-        },
-        
-        addSolverResponse: (intentId, response) => {
-          set((state) => {
-            const newCompetitions = new Map(state.activeCompetitions);
-            const competition = newCompetitions.get(intentId);
-            
-            if (competition) {
-              competition.responses.push(response);
-              // Sort by competitiveRank
-              competition.responses.sort((a, b) => a.competitiveRank - b.competitiveRank);
-              newCompetitions.set(intentId, competition);
-            }
-            
-            return { activeCompetitions: newCompetitions };
-          });
-        },
-        
-        selectSolver: (intentId, solverId) => {
-          set((state) => {
-            const newCompetitions = new Map(state.activeCompetitions);
-            const competition = newCompetitions.get(intentId);
-            
-            if (competition) {
-              competition.selectedSolver = solverId;
-              newCompetitions.set(intentId, competition);
-              
-              // Initialize settlement
-              const selectedResponse = competition.responses.find(r => r.solverId === solverId);
-              if (selectedResponse) {
-                const newSettlements = new Map(state.activeSettlements);
-                newSettlements.set(intentId, {
-                  intentId,
-                  selectedSolver: selectedResponse,
-                  currentStep: 0,
-                  totalSteps: selectedResponse.executionPlan.length,
-                  chainSignatureTxs: [],
-                  status: 'initializing',
-                });
-                return { 
-                  activeCompetitions: newCompetitions,
-                  activeSettlements: newSettlements,
-                };
-              }
-            }
-            
-            return { activeCompetitions: newCompetitions };
-          });
-        },
-        
-        updateSettlement: (intentId, updates) => {
-          set((state) => {
-            const newSettlements = new Map(state.activeSettlements);
-            const settlement = newSettlements.get(intentId);
-            
-            if (settlement) {
-              newSettlements.set(intentId, { ...settlement, ...updates });
-            }
-            
-            return { activeSettlements: newSettlements };
-          });
-        },
-        
-        getIntentById: (id) => {
-          return get().intentHistory.find(intent => intent.id === id);
-        },
-        
-        getCompetitionById: (id) => {
-          return get().activeCompetitions.get(id);
-        },
-        
-        getSettlementById: (id) => {
-          return get().activeSettlements.get(id);
-        },
-      }),
-      {
-        name: 'near-intents-store',
-        partialize: (state) => ({
-          intentHistory: state.intentHistory,
-          // Don't persist active competitions and settlements
-        }),
+export const useIntentStore = create<IntentStore>((set, get) => ({
+  currentIntent: null,
+  intents: [],
+  
+  createIntent: (intent) => {
+    set((state) => ({
+      currentIntent: {
+        id: generateId(),
+        status: 'pending' as const,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+        ...intent,
       }
-    ),
-    { name: 'IntentStore' }
-  )
-);
+    }));
+  },
+  
+  updateIntent: (updates) => {
+    set((state) => ({
+      currentIntent: state.currentIntent 
+        ? { ...state.currentIntent, ...updates, updatedAt: Date.now() }
+        : null
+    }));
+  },
+  
+  submitIntent: async () => {
+    const state = get();
+    if (!state.currentIntent || !state.currentIntent.id) {
+      throw new Error('No current intent to submit');
+    }
+    
+    // Validate required fields
+    const { fromToken, toToken, fromAmount, minToAmount } = state.currentIntent;
+    if (!fromToken || !toToken || !fromAmount || !minToAmount) {
+      throw new Error('Intent is incomplete');
+    }
+    
+    // Check for same token swap
+    if (fromToken.address === toToken.address && fromToken.chainId === toToken.chainId) {
+      throw new Error('Cannot swap same token');
+    }
+    
+    // Check for zero amounts
+    if (parseFloat(fromAmount) <= 0 || parseFloat(minToAmount) <= 0) {
+      throw new Error('Intent is incomplete');
+    }
+    
+    const intent = state.currentIntent as IntentRequest;
+    intent.status = 'processing';
+    
+    // Add to intents list
+    set((prevState) => ({
+      intents: [...prevState.intents, intent],
+      currentIntent: null,
+    }));
+    
+    // Save to localStorage
+    try {
+      const updatedState = get();
+      localStorage.setItem('near-intents-store', JSON.stringify({
+        intents: updatedState.intents,
+        currentIntent: null,
+      }));
+    } catch (error) {
+      console.warn('Failed to save to localStorage:', error);
+    }
+    
+    return intent.id;
+  },
+  
+  clearCurrentIntent: () => {
+    set({ currentIntent: null });
+  },
+  
+  addIntent: (intent) => {
+    set((state) => ({
+      intents: [...state.intents, intent]
+    }));
+    
+    // Save to localStorage
+    try {
+      const updatedState = get();
+      localStorage.setItem('near-intents-store', JSON.stringify({
+        intents: updatedState.intents,
+        currentIntent: updatedState.currentIntent,
+      }));
+    } catch (error) {
+      console.warn('Failed to save to localStorage:', error);
+    }
+  },
+  
+  updateIntentStatus: (id, status) => {
+    set((state) => ({
+      intents: state.intents.map(intent => 
+        intent.id === id 
+          ? { ...intent, status, updatedAt: Date.now() }
+          : intent
+      )
+    }));
+  },
+  
+  clearAllIntents: () => {
+    set({ intents: [] });
+  },
+  
+  getIntentById: (id) => {
+    return get().intents.find(intent => intent.id === id);
+  },
+  
+  getIntentsByStatus: (status) => {
+    return get().intents.filter(intent => intent.status === status);
+  },
+}));
 
-// Utility function to generate intent IDs
-function generateIntentId(): string {
-  return `intent_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+// Load from localStorage on initialization
+try {
+  const stored = localStorage.getItem('near-intents-store');
+  if (stored) {
+    const data = JSON.parse(stored);
+    useIntentStore.setState({
+      intents: data.intents || [],
+      currentIntent: data.currentIntent || null,
+    });
+  }
+} catch (error) {
+  console.warn('Failed to load from localStorage:', error);
 }

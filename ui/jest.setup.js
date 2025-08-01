@@ -20,18 +20,21 @@ jest.mock('next/navigation', () => ({
   },
 }))
 
-// Mock Zustand
+// Mock Zustand - create a working implementation for tests
+const { create: actualCreate } = jest.requireActual('zustand')
+
 jest.mock('zustand', () => ({
   create: jest.fn((createState) => {
-    let state
-    const setState = jest.fn((partial) => {
-      const partialState = typeof partial === 'function' ? partial(state) : partial
-      state = Object.assign({}, state, partialState)
-    })
-    const getState = jest.fn(() => state)
-    const store = { setState, getState, subscribe: jest.fn(), destroy: jest.fn() }
-    state = createState(setState, getState, store)
-    return () => state
+    // Use actual zustand implementation but reset state before each test
+    const store = actualCreate(createState)
+    
+    // Add a reset method for tests
+    store.reset = () => {
+      const initialState = createState(store.setState, store.getState, store)
+      store.setState(initialState, true)
+    }
+    
+    return store
   }),
 }))
 
