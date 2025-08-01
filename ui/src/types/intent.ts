@@ -61,6 +61,30 @@ export interface ExecutionStep {
   completedAt?: number;
 }
 
+export interface SolverInfo {
+  id: string;
+  name: string;
+  reputation: number; // 0-1 score
+  totalVolume: number; // USD volume handled
+  successRate: number; // 0-1 success rate
+  avgExecutionTime: number; // seconds
+  teeVerified: boolean;
+  specialties: ChainId[]; // chains this solver specializes in
+}
+
+export interface SolverBid {
+  id: string;
+  solverId: string;
+  intentId: string;
+  outputAmount: string; // amount of output token offered
+  executionTime: number; // estimated execution time in seconds
+  gasCost: string; // estimated gas cost in USD
+  confidence: number; // 0-1 confidence score
+  route: string; // human readable route description
+  timestamp: number;
+  status: 'pending' | 'selected' | 'executing' | 'completed' | 'failed';
+}
+
 export interface SolverResponse {
   solverId: string;
   solverName: string;
