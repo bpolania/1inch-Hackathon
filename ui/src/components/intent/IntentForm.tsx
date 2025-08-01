@@ -108,132 +108,153 @@ export function IntentForm({ onSubmit, className }: IntentFormProps) {
   const hasMinimumBalance = balanceFormatted ? parseFloat(balanceFormatted) >= 0.1 : false;
 
   return (
-    <div className={cn('space-y-6', className)}>
+    <div className={cn('space-y-8', className)}>
       {/* Wallet Connection Required */}
       {!isConnected && (
-        <WalletStatus requiredBalance="0.1" />
+        <div className="animate-slide-up">
+          <WalletStatus requiredBalance="0.1" />
+        </div>
       )}
       
       {/* Main Intent Form */}
-      <Card className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-near-50 to-transparent opacity-50" />
-        
-        <CardHeader className="relative">
-          <CardTitle className="flex items-center gap-2">
-            <Zap className="h-5 w-5 text-near-500" />
-            Express Your Intent
-          </CardTitle>
-          <p className="text-sm text-muted-foreground">
-            Tell us what you want, we'll figure out how to make it happen
-          </p>
-          
-          {/* Wallet Status Indicator */}
-          <div className="mt-3">
-            <WalletStatusIndicator />
+      <div className="bg-card rounded-xl shadow-sm border p-8 animate-fade-in">
+        <div>
+          {/* Header */}
+          <div className="mb-8">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-2 rounded-xl bg-primary">
+                <Zap className="h-6 w-6 text-primary-foreground" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold text-card-foreground">
+                  Express Your Intent
+                </h2>
+                <p className="text-muted-foreground">
+                  Tell us what you want, we'll figure out how to make it happen
+                </p>
+              </div>
+            </div>
+            
+            {/* Wallet Status Indicator */}
+            <div className="mt-4">
+              <WalletStatusIndicator />
+            </div>
           </div>
-        </CardHeader>
         
-        <CardContent className="relative space-y-6">
-          {/* From Token Section */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground">
-              From
-            </label>
-            <div className="space-y-3">
-              <TokenSelector
-                value={fromToken}
-                onChange={setFromToken}
-                label="Select token to swap from"
-                excludeToken={toToken}
-              />
-              <AmountInput
-                value={fromAmount}
-                onChange={setFromAmount}
-                token={fromToken}
-                placeholder="0.0"
-                label="Amount to swap"
-              />
+          {/* Token Selection Section */}
+          <div className="space-y-8">
+            {/* From Token Section */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <div className="w-1 h-6 bg-primary rounded-full"></div>
+                <label className="text-base font-semibold text-card-foreground">
+                  From
+                </label>
+              </div>
+              <div className="space-y-4 p-6 rounded-xl bg-muted border">
+                <TokenSelector
+                  value={fromToken}
+                  onChange={setFromToken}
+                  label="Select token to swap from"
+                  excludeToken={toToken}
+                />
+                <AmountInput
+                  value={fromAmount}
+                  onChange={setFromAmount}
+                  token={fromToken}
+                  placeholder="0.0"
+                  label="Amount to swap"
+                />
+              </div>
+            </div>
+
+            {/* Swap Button */}
+            <div className="flex justify-center">
+              <button
+                onClick={handleSwapTokens}
+                disabled={!fromToken || !toToken}
+                className="group p-4 rounded-xl bg-primary text-primary-foreground shadow-sm hover:shadow-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              >
+                <ArrowDownUp className="h-5 w-5 transition-transform duration-300 group-hover:rotate-180" />
+              </button>
+            </div>
+
+            {/* To Token Section */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <div className="w-1 h-6 bg-primary rounded-full"></div>
+                <label className="text-base font-semibold text-card-foreground">
+                  To
+                </label>
+              </div>
+              <div className="space-y-4 p-6 rounded-xl bg-muted border">
+                <TokenSelector
+                  value={toToken}
+                  onChange={setToToken}
+                  label="Select token to receive"
+                  excludeToken={fromToken}
+                />
+                <AmountInput
+                  value={minToAmount}
+                  onChange={setMinToAmount}
+                  token={toToken}
+                  placeholder="0.0"
+                  label="Minimum amount to receive"
+                />
+              </div>
             </div>
           </div>
 
-          {/* Swap Button */}
-          <div className="flex justify-center">
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={handleSwapTokens}
-              disabled={!fromToken || !toToken}
-              className="rounded-full border-2 hover:rotate-180 transition-transform duration-300"
-            >
-              <ArrowDownUp className="h-4 w-4" />
-            </Button>
-          </div>
-
-          {/* To Token Section */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground">
-              To
-            </label>
-            <div className="space-y-3">
-              <TokenSelector
-                value={toToken}
-                onChange={setToToken}
-                label="Select token to receive"
-                excludeToken={fromToken}
+          {/* Priority Selection */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <div className="w-1 h-6 bg-primary rounded-full"></div>
+              <h3 className="text-base font-semibold text-card-foreground">
+                Execution Priority
+              </h3>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <QuickIntentButton
+                icon={<DollarSign className="h-5 w-5" />}
+                label="Best Price"
+                description="Maximize output amount"
+                onClick={() => updateIntent({ prioritize: 'cost' })}
+                active={currentIntent?.prioritize === 'cost'}
               />
-              <AmountInput
-                value={minToAmount}
-                onChange={setMinToAmount}
-                token={toToken}
-                placeholder="0.0"
-                label="Minimum amount to receive"
+              <QuickIntentButton
+                icon={<Zap className="h-5 w-5" />}
+                label="Fastest"
+                description="Minimize execution time"
+                onClick={() => updateIntent({ prioritize: 'speed' })}
+                active={currentIntent?.prioritize === 'speed'}
+              />
+              <QuickIntentButton
+                icon={<Shield className="h-5 w-5" />}
+                label="Most Secure"
+                description="TEE verified solvers"
+                onClick={() => updateIntent({ prioritize: 'security' })}
+                active={currentIntent?.prioritize === 'security'}
               />
             </div>
-          </div>
-
-          {/* Quick Intent Examples */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-            <QuickIntentButton
-              icon={<DollarSign className="h-4 w-4" />}
-              label="Best Price"
-              description="Maximize output amount"
-              onClick={() => updateIntent({ prioritize: 'cost' })}
-              active={currentIntent?.prioritize === 'cost'}
-            />
-            <QuickIntentButton
-              icon={<Zap className="h-4 w-4" />}
-              label="Fastest"
-              description="Minimize execution time"
-              onClick={() => updateIntent({ prioritize: 'speed' })}
-              active={currentIntent?.prioritize === 'speed'}
-            />
-            <QuickIntentButton
-              icon={<Shield className="h-4 w-4" />}
-              label="Most Secure"
-              description="TEE verified solvers"
-              onClick={() => updateIntent({ prioritize: 'security' })}
-              active={currentIntent?.prioritize === 'security'}
-            />
           </div>
 
           {/* Action Buttons */}
-          <div className="flex gap-3">
-            <Button
-              variant="outline"
+          <div className="flex gap-4 pt-4">
+            <button
               onClick={() => setShowPreview(!showPreview)}
               disabled={!canPreview}
-              className="flex-1"
+              className="flex-1 px-6 py-4 rounded-xl border bg-secondary text-secondary-foreground font-medium hover:border-primary hover:bg-secondary/80 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
             >
               {showPreview ? 'Hide Preview' : 'Preview Intent'}
-            </Button>
-            <Button
+            </button>
+            <button
               onClick={handleSubmit}
               disabled={!canSubmit || isSubmitting || !hasMinimumBalance}
-              className="flex-1 bg-gradient-to-r from-near-500 to-bitcoin-500 hover:from-near-600 hover:to-bitcoin-600"
+              className="flex-1 px-6 py-4 rounded-xl bg-primary text-primary-foreground font-semibold hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
             >
               {isSubmitting ? (
-                <div className="flex items-center gap-2">
-                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-current border-t-transparent" />
+                <div className="flex items-center justify-center gap-2">
+                  <div className="animate-spin rounded-full h-5 w-5 border-2 border-current border-t-transparent" />
                   Submitting...
                 </div>
               ) : !isConnected ? (
@@ -243,17 +264,21 @@ export function IntentForm({ onSubmit, className }: IntentFormProps) {
               ) : (
                 'Submit Intent'
               )}
-            </Button>
+            </button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Advanced Preferences */}
-      <PreferencesPanel />
+      <div className="animate-slide-up">
+        <PreferencesPanel />
+      </div>
 
       {/* Intent Preview */}
       {showPreview && currentIntent && fromToken && toToken && fromAmount && minToAmount && (
-        <IntentPreview intent={currentIntent as IntentRequest} />
+        <div className="animate-scale-in">
+          <IntentPreview intent={currentIntent as IntentRequest} />
+        </div>
       )}
     </div>
   );
@@ -278,23 +303,36 @@ function QuickIntentButton({
     <button
       onClick={onClick}
       className={cn(
-        "p-3 rounded-lg border transition-all text-left space-y-1",
-        "hover:border-near-300 hover:bg-near-50",
+        "p-5 rounded-xl border text-left transition-all duration-200",
         active 
-          ? "border-near-500 bg-near-50 ring-2 ring-near-200" 
-          : "border-border bg-card"
+          ? "border-primary bg-primary/5 shadow-sm" 
+          : "border-border bg-card hover:border-primary/50 hover:bg-muted/50"
       )}
     >
-      <div className="flex items-center gap-2">
+      {/* Active indicator */}
+      {active && (
+        <div className="absolute top-3 right-3 w-2 h-2 bg-primary rounded-full" />
+      )}
+      
+      <div className="flex items-center gap-3 mb-2">
         <div className={cn(
-          "p-1 rounded",
-          active ? "text-near-600" : "text-muted-foreground"
+          "p-2 rounded-xl transition-all duration-200",
+          active 
+            ? "bg-primary text-primary-foreground" 
+            : "bg-muted text-muted-foreground"
         )}>
           {icon}
         </div>
-        <span className="text-sm font-medium">{label}</span>
+        <span className={cn(
+          "font-semibold",
+          active ? "text-primary" : "text-card-foreground"
+        )}>
+          {label}
+        </span>
       </div>
-      <p className="text-xs text-muted-foreground">{description}</p>
+      <p className="text-sm text-muted-foreground">
+        {description}
+      </p>
     </button>
   );
 }

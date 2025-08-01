@@ -75,20 +75,25 @@ export function IntentsDashboard() {
     .slice(0, 5);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-near-50 via-white to-bitcoin-50">
-      <div className="container mx-auto p-6 space-y-8">
+    <div className="min-h-screen" style={{ backgroundColor: '#f9fafb' }}>
+      <div className="container mx-auto p-6 space-y-12">
         {/* Header */}
-        <div className="text-center space-y-4">
-          <div className="flex items-center justify-between mb-6">
+        <div className="text-center space-y-8 animate-fade-in">
+          <div className="flex items-center justify-between mb-8">
             <div className="flex-1" /> {/* Spacer */}
             
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-gradient-to-r from-near-500 to-bitcoin-500">
-                <Layers className="h-6 w-6 text-white" />
+            <div className="flex items-center gap-4">
+              <div className="p-3 rounded-xl shadow-sm" style={{ backgroundColor: '#2563eb' }}>
+                <Layers className="h-8 w-8" style={{ color: 'white' }} />
               </div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-near-600 to-bitcoin-600 bg-clip-text text-transparent">
-                NEAR Intents
-              </h1>
+              <div>
+                <h1 className="text-4xl font-bold" style={{ color: '#111827' }}>
+                  NEAR Intents
+                </h1>
+                <p className="text-sm font-medium" style={{ color: '#4b5563' }}>
+                  Powered by TEE Solvers
+                </p>
+              </div>
             </div>
             
             <div className="flex-1 flex justify-end">
@@ -96,66 +101,112 @@ export function IntentsDashboard() {
             </div>
           </div>
           
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-lg max-w-2xl mx-auto leading-relaxed" style={{ color: '#4b5563' }}>
             Express what you want, let our solver network figure out how to make it happen across chains
           </p>
           
-          {/* Network Debug Tool (Development Only) */}
-          <div className="max-w-md mx-auto space-y-3">
-            <NetworkTester />
-            <WalletTroubleshooting />
-          </div>
+          {/* Network Debug Tool (Development Only) - Hidden in production */}
+          {process.env.NODE_ENV === 'development' && (
+            <div className="max-w-md mx-auto space-y-4">
+              <NetworkTester />
+              <WalletTroubleshooting />
+            </div>
+          )}
           
           {/* Quick Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
-            <div className="p-4 rounded-lg bg-white/50 border">
-              <div className="text-2xl font-bold text-near-600">{stats.totalIntents}</div>
-              <div className="text-sm text-muted-foreground">Total Intents</div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
+            <div className="rounded-xl shadow-sm border p-6 text-center hover:shadow-md transition-shadow" style={{ backgroundColor: 'white' }}>
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full mb-3" style={{ backgroundColor: '#dbeafe' }}>
+                <Activity className="h-6 w-6" style={{ color: '#2563eb' }} />
+              </div>
+              <div className="text-3xl font-bold mb-1" style={{ color: '#111827' }}>{stats.totalIntents}</div>
+              <div className="text-sm font-medium" style={{ color: '#6b7280' }}>Total Intents</div>
             </div>
-            <div className="p-4 rounded-lg bg-white/50 border">
-              <div className="text-2xl font-bold text-green-600">{stats.completedIntents}</div>
-              <div className="text-sm text-muted-foreground">Completed</div>
+            <div className="rounded-xl shadow-sm border p-6 text-center hover:shadow-md transition-shadow" style={{ backgroundColor: 'white' }}>
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full mb-3" style={{ backgroundColor: '#dcfce7' }}>
+                <CheckCircle className="h-6 w-6" style={{ color: '#16a34a' }} />
+              </div>
+              <div className="text-3xl font-bold mb-1" style={{ color: '#111827' }}>{stats.completedIntents}</div>
+              <div className="text-sm font-medium" style={{ color: '#6b7280' }}>Completed</div>
             </div>
-            <div className="p-4 rounded-lg bg-white/50 border">
-              <div className="text-2xl font-bold text-blue-600">
+            <div className="rounded-xl shadow-sm border p-6 text-center hover:shadow-md transition-shadow" style={{ backgroundColor: 'white' }}>
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full mb-3" style={{ backgroundColor: '#e0f2fe' }}>
+                <TrendingUp className="h-6 w-6" style={{ color: '#0284c7' }} />
+              </div>
+              <div className="text-3xl font-bold mb-1" style={{ color: '#111827' }}>
                 {formatUSDAmount(stats.totalVolume)}
               </div>
-              <div className="text-sm text-muted-foreground">Total Volume</div>
+              <div className="text-sm font-medium" style={{ color: '#6b7280' }}>Total Volume</div>
             </div>
-            <div className="p-4 rounded-lg bg-white/50 border">
-              <div className="text-2xl font-bold text-purple-600">{stats.avgExecutionTime}s</div>
-              <div className="text-sm text-muted-foreground">Avg. Speed</div>
+            <div className="rounded-xl shadow-sm border p-6 text-center hover:shadow-md transition-shadow" style={{ backgroundColor: 'white' }}>
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full mb-3" style={{ backgroundColor: '#fed7aa' }}>
+                <Zap className="h-6 w-6" style={{ color: '#ea580c' }} />
+              </div>
+              <div className="text-3xl font-bold mb-1" style={{ color: '#111827' }}>{stats.avgExecutionTime}s</div>
+              <div className="text-sm font-medium" style={{ color: '#6b7280' }}>Avg. Speed</div>
             </div>
           </div>
         </div>
 
         {/* Main Interface */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 max-w-2xl mx-auto">
-            <TabsTrigger value="create" className="flex items-center gap-2">
-              <Plus className="h-4 w-4" />
-              Create Intent
-            </TabsTrigger>
-            <TabsTrigger value="competition" className="flex items-center gap-2">
-              <Activity className="h-4 w-4" />
-              Competition
-            </TabsTrigger>
-            <TabsTrigger value="history" className="flex items-center gap-2">
-              <Clock className="h-4 w-4" />
-              History
-            </TabsTrigger>
-            <TabsTrigger value="analytics" className="flex items-center gap-2">
-              <BarChart3 className="h-4 w-4" />
-              Analytics
-            </TabsTrigger>
-          </TabsList>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
+          <div className="flex justify-center">
+            <div className="grid grid-cols-4 gap-1 p-1 rounded-xl border" style={{ backgroundColor: '#f3f4f6' }}>
+              <button
+                onClick={() => setActiveTab('create')}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 text-sm"
+                style={activeTab === 'create' 
+                  ? { backgroundColor: 'white', color: '#2563eb', boxShadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)' }
+                  : { color: '#6b7280' }
+                }
+              >
+                <Plus className="h-4 w-4" />
+                Create Intent
+              </button>
+              <button
+                onClick={() => setActiveTab('competition')}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 text-sm"
+                style={activeTab === 'competition'
+                  ? { backgroundColor: 'white', color: '#2563eb', boxShadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)' }
+                  : { color: '#6b7280' }
+                }
+              >
+                <Activity className="h-4 w-4" />
+                Competition
+              </button>
+              <button
+                onClick={() => setActiveTab('history')}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 text-sm"
+                style={activeTab === 'history'
+                  ? { backgroundColor: 'white', color: '#2563eb', boxShadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)' }
+                  : { color: '#6b7280' }
+                }
+              >
+                <Clock className="h-4 w-4" />
+                History
+              </button>
+              <button
+                onClick={() => setActiveTab('analytics')}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 text-sm"
+                style={activeTab === 'analytics'
+                  ? { backgroundColor: 'white', color: '#2563eb', boxShadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)' }
+                  : { color: '#6b7280' }
+                }
+              >
+                <BarChart3 className="h-4 w-4" />
+                Analytics
+              </button>
+            </div>
+          </div>
 
           {/* Create Intent Tab */}
-          <TabsContent value="create" className="space-y-6">
-            <div className="max-w-2xl mx-auto">
-              <IntentForm onSubmit={handleIntentSubmitted} />
+          {activeTab === 'create' && (
+            <div className="animate-fade-in">
+              <div className="max-w-2xl mx-auto">
+                <IntentForm onSubmit={handleIntentSubmitted} />
+              </div>
             </div>
-          </TabsContent>
+          )}
 
           {/* Competition Tab */}
           <TabsContent value="competition" className="space-y-6">

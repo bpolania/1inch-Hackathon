@@ -49,151 +49,160 @@ export function WalletStatus({
   // Connection required state
   if (!isConnected) {
     return (
-      <Card className={className}>
-        <CardContent className="p-6">
+      <div className={`bg-card rounded-xl border border-border shadow-sm animate-fade-in ${className}`}>
+        <div className="p-8">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-orange-500/10">
-                <AlertCircle className="h-5 w-5 text-orange-600" />
+            <div className="flex items-center gap-4">
+              <div className="p-3 rounded-xl bg-destructive/10">
+                <AlertCircle className="h-6 w-6 text-destructive" />
               </div>
               <div>
-                <h3 className="font-medium">Wallet Connection Required</h3>
-                <p className="text-sm text-muted-foreground">
+                <h3 className="text-lg font-semibold text-card-foreground">Wallet Connection Required</h3>
+                <p className="text-muted-foreground">
                   Connect your NEAR wallet to create intents
                 </p>
               </div>
             </div>
-            <Button 
-              onClick={connect} 
+            <button
+              onClick={connect}
               disabled={isConnecting}
-              className="shrink-0"
+              className="bg-primary text-primary-foreground px-6 py-3 rounded-xl font-semibold hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
             >
               {isConnecting ? (
                 <>
-                  <RefreshCw className="h-4 w-4 animate-spin mr-2" />
+                  <RefreshCw className="h-5 w-5 animate-spin mr-2" />
                   Connecting...
                 </>
               ) : (
                 <>
-                  <Wallet className="h-4 w-4 mr-2" />
+                  <Wallet className="h-5 w-5 mr-2" />
                   Connect Wallet
                 </>
               )}
-            </Button>
+            </button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     )
   }
 
   // Connected state
   return (
-    <Card className={className}>
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <CheckCircle className="h-5 w-5 text-green-600" />
-            <span>Wallet Connected</span>
+    <div className={`bg-card rounded-xl border border-tee-200 shadow-sm animate-fade-in ${className}`}>
+      <div className="p-6">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-xl bg-tee-100">
+              <CheckCircle className="h-5 w-5 text-tee-600" />
+            </div>
+            <span className="font-semibold text-card-foreground">Wallet Connected</span>
           </div>
-          <Badge 
-            variant={networkId === 'mainnet' ? 'default' : 'secondary'}
-            className="text-xs"
-          >
-            <Network className="h-3 w-3 mr-1" />
+          <div className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 ${
+            networkId === 'mainnet' 
+              ? 'bg-primary/10 text-primary border border-primary/20' 
+              : 'bg-muted text-muted-foreground border border-border'
+          }`}>
+            <Network className="h-3 w-3" />
             {networkId}
-          </Badge>
-        </CardTitle>
-      </CardHeader>
-      
-      <CardContent className="space-y-4">
-        {/* Account Info */}
-        <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
-          <div>
-            <p className="text-sm font-medium">Account</p>
-            <p className="text-xs text-muted-foreground font-mono">
-              {accountId}
-            </p>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => window.open(`https://${networkId === 'mainnet' ? '' : 'testnet.'}nearblocks.io/address/${accountId}`, '_blank')}
-            className="h-8 w-8 p-0"
-            title="View on NEAR Explorer"
-          >
-            <ExternalLink className="h-3 w-3" />
-          </Button>
         </div>
-
-        {/* Balance Info */}
-        <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
-          <div>
-            <p className="text-sm font-medium">NEAR Balance</p>
-            <p className="text-lg font-semibold">
-              {balanceFormatted ? formatTokenAmount(balanceFormatted) : 'Click refresh to load'} NEAR
-            </p>
+        
+        <div className="space-y-4">
+          {/* Account Info */}
+          <div className="flex items-center justify-between p-4 rounded-xl bg-muted border">
+            <div>
+              <p className="text-sm font-medium text-card-foreground">Account</p>
+              <p className="text-xs text-muted-foreground font-mono mt-1">
+                {accountId}
+              </p>
+            </div>
+            <button
+              onClick={() => window.open(`https://${networkId === 'mainnet' ? '' : 'testnet.'}nearblocks.io/address/${accountId}`, '_blank')}
+              className="h-10 w-10 rounded-xl bg-secondary hover:bg-primary/10 hover:text-primary transition-all duration-200 flex items-center justify-center"
+              title="View on NEAR Explorer"
+            >
+              <ExternalLink className="h-4 w-4" />
+            </button>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={refreshBalance}
-            className="h-8 w-8 p-0"
-            title="Refresh balance"
-          >
-            <RefreshCw className="h-3 w-3" />
-          </Button>
+
+          {/* Balance Info */}
+          <div className="flex items-center justify-between p-4 rounded-xl bg-muted border">
+            <div>
+              <p className="text-sm font-medium text-card-foreground">NEAR Balance</p>
+              <p className="text-lg font-semibold mt-1">
+                {balanceFormatted ? formatTokenAmount(balanceFormatted) : 'Click refresh to load'} 
+                <span className="text-sm font-normal text-muted-foreground ml-1">NEAR</span>
+              </p>
+            </div>
+            <button
+              onClick={refreshBalance}
+              className="h-10 w-10 rounded-xl bg-secondary hover:bg-primary/10 hover:text-primary transition-all duration-200 flex items-center justify-center"
+              title="Refresh balance"
+            >
+              <RefreshCw className="h-4 w-4" />
+            </button>
+          </div>
         </div>
 
         {/* Balance Warning */}
         {!hasMinimumBalance && balance && (
-          <Alert>
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>
-              You need at least {requiredBalance} NEAR to create intents and pay for gas fees.
-              {networkId === 'testnet' && (
-                <Button
-                  variant="link"
-                  size="sm"
-                  className="p-0 h-auto ml-1 text-blue-600"
-                  onClick={() => window.open('https://near-faucet.io/', '_blank')}
-                >
-                  Get testnet NEAR from faucet
-                </Button>
-              )}
-            </AlertDescription>
-          </Alert>
+          <div className="p-4 rounded-xl bg-destructive/5 border border-destructive/20 animate-slide-up">
+            <div className="flex items-start gap-3">
+              <div className="p-1 rounded-lg bg-destructive/10">
+                <AlertCircle className="h-4 w-4 text-destructive" />
+              </div>
+              <div>
+                <p className="text-sm text-card-foreground">
+                  You need at least {requiredBalance} NEAR to create intents and pay for gas fees.
+                  {networkId === 'testnet' && (
+                    <button
+                      onClick={() => window.open('https://near-faucet.io/', '_blank')}
+                      className="ml-2 text-primary hover:text-primary/80 underline underline-offset-2 font-medium"
+                    >
+                      Get testnet NEAR from faucet
+                    </button>
+                  )}
+                </p>
+              </div>
+            </div>
+          </div>
         )}
 
         {/* Network Warning for Testnet */}
         {networkId === 'testnet' && (
-          <Alert>
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>
-              You're connected to NEAR testnet. Intents created here are for testing only.
-            </AlertDescription>
-          </Alert>
+          <div className="p-4 rounded-xl bg-bitcoin-50 border border-bitcoin-200">
+            <div className="flex items-center gap-3">
+              <div className="p-1 rounded-lg bg-bitcoin-100">
+                <AlertCircle className="h-4 w-4 text-bitcoin-600" />
+              </div>
+              <p className="text-sm text-card-foreground">
+                You're connected to NEAR testnet. Intents created here are for testing only.
+              </p>
+            </div>
+          </div>
         )}
 
         {/* Additional Details */}
         {showFullDetails && (
-          <div className="space-y-2 pt-2 border-t">
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <p className="text-muted-foreground">Network</p>
-                <p className="font-medium capitalize">{networkId}</p>
+          <div className="space-y-3 pt-4 border-t border-border/30">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="p-3 rounded-xl bg-muted">
+                <p className="text-xs text-muted-foreground mb-1">Network</p>
+                <p className="font-semibold capitalize text-card-foreground">{networkId}</p>
               </div>
-              <div>
-                <p className="text-muted-foreground">Status</p>
-                <div className="flex items-center gap-1">
-                  <div className="h-2 w-2 rounded-full bg-green-500" />
-                  <span className="font-medium">Connected</span>
+              <div className="p-3 rounded-xl bg-muted">
+                <p className="text-xs text-muted-foreground mb-1">Status</p>
+                <div className="flex items-center gap-2">
+                  <div className="h-2 w-2 rounded-full bg-tee-500 animate-pulse" />
+                  <span className="font-semibold text-card-foreground">Connected</span>
                 </div>
               </div>
             </div>
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }
 
@@ -203,19 +212,28 @@ export function WalletStatusIndicator({ className = '' }: { className?: string }
 
   if (!isConnected) {
     return (
-      <div className={`flex items-center gap-2 text-sm text-orange-600 ${className}`}>
-        <AlertCircle className="h-4 w-4" />
-        <span>Wallet not connected</span>
+      <div className={`flex items-center gap-3 p-3 rounded-xl bg-destructive/5 border border-destructive/20 ${className}`}>
+        <div className="p-1 rounded-lg bg-destructive/10">
+          <AlertCircle className="h-4 w-4 text-destructive" />
+        </div>
+        <span className="text-sm font-medium text-card-foreground">Wallet not connected</span>
       </div>
     )
   }
 
   return (
-    <div className={`flex items-center gap-2 text-sm text-green-600 ${className}`}>
-      <CheckCircle className="h-4 w-4" />
-      <span>
-        Connected to {accountId?.slice(0, 8)}...{accountId?.slice(-4)} ({networkId})
-      </span>
+    <div className={`flex items-center gap-3 p-3 rounded-xl bg-tee-50 border border-tee-200 animate-fade-in ${className}`}>
+      <div className="p-1 rounded-lg bg-tee-100">
+        <CheckCircle className="h-4 w-4 text-tee-600" />
+      </div>
+      <div className="flex items-center gap-2 text-sm">
+        <span className="font-medium text-card-foreground">
+          Connected to {accountId?.slice(0, 8)}...{accountId?.slice(-4)}
+        </span>
+        <div className="px-2 py-1 rounded-full bg-tee-100 text-xs font-medium text-tee-700">
+          {networkId}
+        </div>
+      </div>
     </div>
   )
 }
