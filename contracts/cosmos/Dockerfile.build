@@ -1,0 +1,17 @@
+FROM rust:1.60
+
+# Install necessary tools
+RUN rustup target add wasm32-unknown-unknown
+RUN cargo install cargo-generate --features vendored-openssl
+
+# Set working directory
+WORKDIR /contract
+
+# Copy source code
+COPY . .
+
+# Build the contract
+RUN cargo build --release --target wasm32-unknown-unknown
+
+# Optimize using older methods
+RUN cp target/wasm32-unknown-unknown/release/fusion_plus_cosmos.wasm artifacts/
