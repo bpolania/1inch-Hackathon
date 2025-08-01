@@ -1,10 +1,47 @@
 import React from 'react'
-import { render, screen, waitFor } from '../../../tests/utils/test-utils'
+import { render, screen, waitFor } from '@testing-library/react'
 import { TokenSelector } from '../TokenSelector'
-import { createMockToken, NEAR_TOKEN, ETH_TOKEN, BTC_TOKEN } from '../../../tests/utils/test-utils'
 import userEvent from '@testing-library/user-event'
 
 const user = userEvent.setup()
+
+// Mock token data for testing
+const NEAR_TOKEN = {
+  address: 'near',
+  symbol: 'NEAR',
+  decimals: 24,
+  chainId: 'near' as const,
+  logoURI: '/tokens/near.svg',
+  priceUSD: 3.45,
+}
+
+const ETH_TOKEN = {
+  address: '0x0000000000000000000000000000000000000000',
+  symbol: 'ETH',
+  decimals: 18,
+  chainId: 'ethereum' as const,
+  logoURI: '/tokens/eth.svg',
+  priceUSD: 2340.50,
+}
+
+const BTC_TOKEN = {
+  address: 'btc',
+  symbol: 'BTC',
+  decimals: 8,
+  chainId: 'bitcoin' as const,
+  logoURI: '/tokens/btc.svg',
+  priceUSD: 43250.00,
+}
+
+const createMockToken = (overrides = {}) => ({
+  address: 'mock-address',
+  symbol: 'MOCK',
+  decimals: 18,
+  chainId: 'ethereum' as const,
+  logoURI: '/mock-logo.svg',
+  priceUSD: 100,
+  ...overrides,
+})
 
 describe('TokenSelector', () => {
   const mockOnChange = jest.fn()

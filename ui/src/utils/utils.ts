@@ -11,7 +11,17 @@ export function cn(...inputs: ClassValue[]) {
 export function formatTokenAmount(amount: string | number, decimals: number = 6): string {
   const num = typeof amount === 'string' ? parseFloat(amount) : amount;
   
+  if (isNaN(num)) {
+    if (amount === '') return '0';
+    return 'NaN';
+  }
   if (num === 0) return '0';
+  if (num < 0) {
+    if (Math.abs(num) < 0.000001) return '< 0.000001';
+    if (Math.abs(num) >= 1000000) return `${(num / 1000000).toFixed(2)}M`;
+    if (Math.abs(num) >= 1000) return `${(num / 1000).toFixed(2)}K`;
+    return num.toFixed(decimals).replace(/\.?0+$/, '');
+  }
   if (num < 0.000001) return '< 0.000001';
   if (num >= 1000000) return `${(num / 1000000).toFixed(2)}M`;
   if (num >= 1000) return `${(num / 1000).toFixed(2)}K`;
@@ -27,6 +37,7 @@ export function formatUSDAmount(amount: string | number): string {
   
   if (num === 0) return '$0';
   if (num < 0.01) return '< $0.01';
+  if (num >= 1000000000) return `$${(num / 1000000000).toFixed(2)}B`;
   if (num >= 1000000) return `$${(num / 1000000).toFixed(2)}M`;
   if (num >= 1000) return `$${(num / 1000).toFixed(2)}K`;
   
@@ -99,7 +110,11 @@ export function sleep(ms: number): Promise<void> {
  */
 export function calculateSlippage(expectedAmount: number, actualAmount: number): number {
   if (expectedAmount === 0) return 0;
-  return ((expectedAmount - actualAmount) / expectedAmount) * 100;
+  if (expectedAmount === Infinity) return Infinity;
+  if (actualAmount === Infinity) return -Infinity;
+  
+  const result = ((expectedAmount - actualAmount) / expectedAmount) * 100;
+  return isNaN(result) ? 0 : result;
 }
 
 /**

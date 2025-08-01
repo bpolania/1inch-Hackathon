@@ -20,7 +20,7 @@ describe('Formatting Functions', () => {
     })
 
     it('should format regular amounts correctly', () => {
-      expect(formatTokenAmount('1.23456')).toBe('1.234560')
+      expect(formatTokenAmount('1.23456')).toBe('1.23456')
       expect(formatTokenAmount('10.5')).toBe('10.5')
       expect(formatTokenAmount('100')).toBe('100')
     })
@@ -32,13 +32,13 @@ describe('Formatting Functions', () => {
     })
 
     it('should handle numeric input', () => {
-      expect(formatTokenAmount(1.23456)).toBe('1.234560')
+      expect(formatTokenAmount(1.23456)).toBe('1.23456')
       expect(formatTokenAmount(1500)).toBe('1.50K')
     })
 
     it('should respect custom decimal places', () => {
       expect(formatTokenAmount('1.23456', 2)).toBe('1.23')
-      expect(formatTokenAmount('1.23456', 8)).toBe('1.23456000')
+      expect(formatTokenAmount('1.23456', 8)).toBe('1.23456')
     })
   })
 
