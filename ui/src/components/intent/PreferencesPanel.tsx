@@ -78,14 +78,14 @@ export function PreferencesPanel() {
                 min="0"
                 max="50"
                 step="0.1"
-                value={currentIntent.maxSlippage / 100}
+                value={(currentIntent.maxSlippage || 50) / 100}
                 onChange={(e) => handleSlippageChange(parseFloat(e.target.value) * 100)}
                 className="flex-1 px-3 py-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-near-500"
                 placeholder="Custom %"
               />
               <span className="text-xs text-muted-foreground">%</span>
             </div>
-            {currentIntent.maxSlippage > 500 && (
+            {(currentIntent.maxSlippage || 0) > 500 && (
               <div className="flex items-center gap-2 p-2 rounded-md bg-yellow-50 border border-yellow-200">
                 <AlertTriangle className="h-4 w-4 text-yellow-600" />
                 <span className="text-xs text-yellow-700">

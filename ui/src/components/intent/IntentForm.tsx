@@ -14,7 +14,9 @@ import { AmountInput } from './AmountInput';
 import { PreferencesPanel } from './PreferencesPanel';
 import { IntentPreview } from './IntentPreview';
 import { useIntentStore } from '@/stores/intentStore';
-import { TokenInfo, ChainId } from '@/types/intent';
+import { useWalletStore } from '@/stores/walletStore';
+import { WalletStatus, WalletStatusIndicator } from '@/components/wallet/WalletStatus';
+import { TokenInfo, ChainId, IntentRequest } from '@/types/intent';
 
 interface IntentFormProps {
   onSubmit?: (intentId: string) => void;
@@ -30,6 +32,13 @@ export function IntentForm({ onSubmit, className }: IntentFormProps) {
     clearCurrentIntent,
   } = useIntentStore();
 
+  const {
+    isConnected,
+    accountId,
+    balanceFormatted,
+    networkId
+  } = useWalletStore();
+
   const [fromToken, setFromToken] = useState<TokenInfo | null>(null);
   const [toToken, setToToken] = useState<TokenInfo | null>(null);
   const [fromAmount, setFromAmount] = useState<string>('');
@@ -37,17 +46,17 @@ export function IntentForm({ onSubmit, className }: IntentFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
 
-  // Initialize intent when component mounts
+  // Initialize intent when component mounts and wallet is connected
   useEffect(() => {
-    if (!currentIntent) {
+    if (!currentIntent && isConnected && accountId) {
       createIntent({
-        user: 'demo-user', // In real app, this would come from wallet
+        user: accountId, // Use actual connected account
         maxSlippage: 50, // 0.5%
         deadline: Math.floor(Date.now() / 1000) + 300, // 5 minutes from now
         prioritize: 'speed',
       });
     }
-  }, [currentIntent, createIntent]);
+  }, [currentIntent, createIntent, isConnected, accountId]);
 
   // Update intent when form values change
   useEffect(() => {
@@ -93,10 +102,18 @@ export function IntentForm({ onSubmit, className }: IntentFormProps) {
   };
 
   const canPreview = fromToken && toToken && fromAmount && minToAmount;
-  const canSubmit = canPreview && currentIntent;
+  const canSubmit = canPreview && currentIntent && isConnected;
+  
+  // Check if user has sufficient balance (basic check)
+  const hasMinimumBalance = balanceFormatted ? parseFloat(balanceFormatted) >= 0.1 : false;
 
   return (
     <div className={cn('space-y-6', className)}>
+      {/* Wallet Connection Required */}
+      {!isConnected && (
+        <WalletStatus requiredBalance="0.1" />
+      )}
+      
       {/* Main Intent Form */}
       <Card className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-near-50 to-transparent opacity-50" />
@@ -109,6 +126,11 @@ export function IntentForm({ onSubmit, className }: IntentFormProps) {
           <p className="text-sm text-muted-foreground">
             Tell us what you want, we'll figure out how to make it happen
           </p>
+          
+          {/* Wallet Status Indicator */}
+          <div className="mt-3">
+            <WalletStatusIndicator />
+          </div>
         </CardHeader>
         
         <CardContent className="relative space-y-6">
@@ -206,7 +228,7 @@ export function IntentForm({ onSubmit, className }: IntentFormProps) {
             </Button>
             <Button
               onClick={handleSubmit}
-              disabled={!canSubmit || isSubmitting}
+              disabled={!canSubmit || isSubmitting || !hasMinimumBalance}
               className="flex-1 bg-gradient-to-r from-near-500 to-bitcoin-500 hover:from-near-600 hover:to-bitcoin-600"
             >
               {isSubmitting ? (
@@ -214,6 +236,10 @@ export function IntentForm({ onSubmit, className }: IntentFormProps) {
                   <div className="animate-spin rounded-full h-4 w-4 border-2 border-current border-t-transparent" />
                   Submitting...
                 </div>
+              ) : !isConnected ? (
+                'Connect Wallet First'
+              ) : !hasMinimumBalance ? (
+                'Insufficient NEAR Balance'
               ) : (
                 'Submit Intent'
               )}
@@ -226,8 +252,8 @@ export function IntentForm({ onSubmit, className }: IntentFormProps) {
       <PreferencesPanel />
 
       {/* Intent Preview */}
-      {showPreview && currentIntent && (
-        <IntentPreview intent={currentIntent} />
+      {showPreview && currentIntent && fromToken && toToken && fromAmount && minToAmount && (
+        <IntentPreview intent={currentIntent as IntentRequest} />
       )}
     </div>
   );

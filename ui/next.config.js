@@ -1,8 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    appDir: true,
-  },
+  // Suppress hydration warnings for browser extension attributes
+  reactStrictMode: true,
+  
   webpack: (config, { buildId, dev, isServer, defaultLoaders, nextRuntime, webpack }) => {
     // Handle Bitcoin and crypto libraries
     config.resolve.fallback = {
@@ -14,9 +14,6 @@ const nextConfig = {
     };
     
     return config;
-  },
-  env: {
-    CUSTOM_KEY: process.env.CUSTOM_KEY,
   },
   async headers() {
     return [
@@ -34,6 +31,19 @@ const nextConfig = {
           {
             key: 'Referrer-Policy',
             value: 'origin-when-cross-origin',
+          },
+          // Add CORS headers for development
+          {
+            key: 'Access-Control-Allow-Origin',
+            value: '*',
+          },
+          {
+            key: 'Access-Control-Allow-Methods',
+            value: 'GET, POST, PUT, DELETE, OPTIONS',
+          },
+          {
+            key: 'Access-Control-Allow-Headers',
+            value: 'Content-Type, Authorization',
           },
         ],
       },

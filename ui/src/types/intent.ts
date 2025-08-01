@@ -39,6 +39,10 @@ export interface IntentRequest {
   status: 'pending' | 'processing' | 'completed' | 'failed' | 'expired';
   createdAt: number;
   updatedAt: number;
+  
+  // NEAR blockchain transaction info
+  transactionHash?: string;
+  blockHash?: string;
 }
 
 export interface ExecutionStep {

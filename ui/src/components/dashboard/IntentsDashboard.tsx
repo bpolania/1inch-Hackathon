@@ -22,9 +22,12 @@ import {
 import { cn } from '@/utils/utils';
 import { IntentForm } from '@/components/intent/IntentForm';
 import { SolverCompetition } from '@/components/solver/SolverCompetition';
+import { WalletButtonCompact } from '@/components/wallet/WalletButton';
 import { useIntentStore } from '@/stores/intentStore';
 import { IntentRequest } from '@/types/intent';
 import { formatTokenAmount, formatUSDAmount, truncateAddress } from '@/utils/utils';
+import { NetworkTester } from '@/components/debug/NetworkTester';
+import { WalletTroubleshooting } from '@/components/wallet/WalletTroubleshooting';
 
 export function IntentsDashboard() {
   const { 
@@ -76,17 +79,32 @@ export function IntentsDashboard() {
       <div className="container mx-auto p-6 space-y-8">
         {/* Header */}
         <div className="text-center space-y-4">
-          <div className="flex items-center justify-center gap-3">
-            <div className="p-2 rounded-lg bg-gradient-to-r from-near-500 to-bitcoin-500">
-              <Layers className="h-6 w-6 text-white" />
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex-1" /> {/* Spacer */}
+            
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-gradient-to-r from-near-500 to-bitcoin-500">
+                <Layers className="h-6 w-6 text-white" />
+              </div>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-near-600 to-bitcoin-600 bg-clip-text text-transparent">
+                NEAR Intents
+              </h1>
             </div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-near-600 to-bitcoin-600 bg-clip-text text-transparent">
-              NEAR Intents
-            </h1>
+            
+            <div className="flex-1 flex justify-end">
+              <WalletButtonCompact />
+            </div>
           </div>
+          
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Express what you want, let our solver network figure out how to make it happen across chains
           </p>
+          
+          {/* Network Debug Tool (Development Only) */}
+          <div className="max-w-md mx-auto space-y-3">
+            <NetworkTester />
+            <WalletTroubleshooting />
+          </div>
           
           {/* Quick Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
