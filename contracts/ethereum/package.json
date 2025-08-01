@@ -19,7 +19,9 @@
     "demo:fusion-complete": "hardhat run scripts/demo-fusion-complete.js --network sepolia",
     "complete:atomic-swap": "node scripts/complete-atomic-swap-near.js",
     "verify-swap": "hardhat run scripts/verify-end-to-end-swap.js --network sepolia",
-    "verify": "hardhat verify"
+    "verify": "hardhat verify",
+    "deploy:local": "hardhat run scripts/test-deployment-locally.js --network localhost",
+    "test:local": "hardhat test test/LocalDeployment.test.js test/CrossChainIntegration.test.js --network localhost"
   },
   "dependencies": {
     "@1inch/cross-chain-sdk": "^0.2.1-rc.58",
