@@ -23,6 +23,8 @@ import { cn } from '@/utils/utils';
 import { IntentForm } from '@/components/intent/IntentForm';
 import { SolverCompetition } from '@/components/solver/SolverCompetition';
 import { WalletButtonCompact } from '@/components/wallet/WalletButton';
+import { RelayerStatus } from '@/components/relayer/RelayerStatus';
+import { TEEStatus } from '@/components/tee/TEEStatus';
 import { useIntentStore } from '@/stores/intentStore';
 import { IntentRequest } from '@/types/intent';
 import { formatTokenAmount, formatUSDAmount, truncateAddress } from '@/utils/utils';
@@ -151,7 +153,7 @@ export function IntentsDashboard() {
         {/* Main Interface */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-8">
           <div className="flex justify-center">
-            <div className="grid grid-cols-4 gap-1 p-1 rounded-xl border" style={{ backgroundColor: '#f3f4f6' }}>
+            <div className="grid grid-cols-5 gap-1 p-1 rounded-xl border" style={{ backgroundColor: '#f3f4f6' }}>
               <button
                 onClick={() => setActiveTab('create')}
                 className="flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 text-sm"
@@ -195,6 +197,17 @@ export function IntentsDashboard() {
               >
                 <BarChart3 className="h-4 w-4" />
                 Analytics
+              </button>
+              <button
+                onClick={() => setActiveTab('relayer')}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 text-sm"
+                style={activeTab === 'relayer'
+                  ? { backgroundColor: 'white', color: '#2563eb', boxShadow: '0 1px 2px 0 rgb(0 0 0 / 0.05)' }
+                  : { color: '#6b7280' }
+                }
+              >
+                <Zap className="h-4 w-4" />
+                Relayer
               </button>
             </div>
           </div>
@@ -379,6 +392,32 @@ export function IntentsDashboard() {
               </div>
             </div>
           </TabsContent>
+
+          {/* Relayer Tab */}
+          {activeTab === 'relayer' && (
+            <div className="animate-fade-in">
+              <div className="max-w-4xl mx-auto space-y-8">
+                <div className="mb-6">
+                  <h2 className="text-xl font-semibold mb-2">Autonomous Execution Services</h2>
+                  <p className="text-muted-foreground">
+                    Monitor both the automated relayer and autonomous TEE solver services
+                  </p>
+                </div>
+                
+                {/* TEE Solver Status */}
+                <div>
+                  <h3 className="text-lg font-semibold mb-4">TEE Autonomous Solver</h3>
+                  <TEEStatus />
+                </div>
+
+                {/* Relayer Service Status */}
+                <div>
+                  <h3 className="text-lg font-semibold mb-4">Automated Relayer Service</h3>
+                  <RelayerStatus />
+                </div>
+              </div>
+            </div>
+          )}
         </Tabs>
       </div>
     </div>

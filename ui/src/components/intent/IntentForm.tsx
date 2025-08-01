@@ -13,6 +13,7 @@ import { TokenSelector } from './TokenSelector';
 import { AmountInput } from './AmountInput';
 import { PreferencesPanel } from './PreferencesPanel';
 import { IntentPreview } from './IntentPreview';
+import { PriceQuote } from './PriceQuote';
 import { useIntentStore } from '@/stores/intentStore';
 import { useWalletStore } from '@/stores/walletStore';
 import { WalletStatus, WalletStatusIndicator } from '@/components/wallet/WalletStatus';
@@ -204,6 +205,24 @@ export function IntentForm({ onSubmit, className }: IntentFormProps) {
               </div>
             </div>
           </div>
+
+          {/* Real-time 1inch Price Quote */}
+          {fromToken && toToken && fromAmount && (
+            <div className="animate-fade-in">
+              <PriceQuote
+                fromToken={fromToken}
+                toToken={toToken}
+                fromAmount={fromAmount}
+                onQuoteUpdate={(outputAmount) => {
+                  // Auto-populate the minimum amount with a small buffer
+                  if (!minToAmount) {
+                    const bufferedAmount = (parseFloat(outputAmount) * 0.99).toFixed(6);
+                    setMinToAmount(bufferedAmount);
+                  }
+                }}
+              />
+            </div>
+          )}
 
           {/* Priority Selection */}
           <div className="space-y-4">
