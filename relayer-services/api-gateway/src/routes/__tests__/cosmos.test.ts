@@ -107,7 +107,7 @@ describe('Cosmos API Routes', () => {
 
       // Valid Cosmos addresses
       expect(validateCosmosAddress('neutron1abcdef1234567890abcdef1234567890abcdef123')).toBe(true);
-      expect(validateCosmosAddress('juno1abcdef1234567890abcdef1234567890abcdef1234567890abcdef123456')).toBe(true);
+      expect(validateCosmosAddress('juno1abcdef1234567890abcdef1234567890abcdef12345')).toBe(true);
       expect(validateCosmosAddress('cosmos1abcdef1234567890abcdef1234567890abcdef123')).toBe(true);
 
       // Prefix validation

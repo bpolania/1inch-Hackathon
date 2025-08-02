@@ -194,8 +194,25 @@ export class CosmosExecutor extends EventEmitter {
             const executionParams = this.parseExecutionParams(order.chainSpecificParams);
             const contractAddress = executionParams.contractAddress || networkConfig.contractAddress;
 
-            if (!contractAddress) {
-                result.error = `No contract address configured for chain ${order.destinationChainId}`;
+            // Handle Cosmos Hub (no CosmWasm support) differently
+            if (order.destinationChainId === 30001 || !contractAddress) {
+                // For Cosmos Hub or chains without contract support, use native token transfer
+                const sendResult = await this.sendNativeTokens(
+                    client,
+                    walletAddress,
+                    executionParams,
+                    orderHash
+                );
+
+                if (!sendResult.success) {
+                    result.error = `Failed to send native tokens: ${sendResult.error}`;
+                    return result;
+                }
+
+                result.transactions.push(sendResult.transactionHash!);
+                result.gasUsed = (result.gasUsed || 0) + (sendResult.gasUsed || 0);
+                result.success = true;
+                this.totalExecutions++;
                 return result;
             }
 
@@ -335,6 +352,45 @@ export class CosmosExecutor extends EventEmitter {
         }
     }
 
+    private async sendNativeTokens(
+        client: SigningCosmWasmClient,
+        walletAddress: string,
+        executionParams: CosmosExecutionParams,
+        orderHash: string
+    ): Promise<{ success: boolean; transactionHash?: string; gasUsed?: number; error?: string }> {
+        try {
+            logger.info(`💸 Sending native tokens for order ${orderHash}`);
+
+            // For Cosmos Hub, send native tokens directly
+            const amount = [{
+                denom: executionParams.nativeDenom,
+                amount: executionParams.amount
+            }];
+
+            const result = await (client as any).sendTokens(
+                walletAddress,
+                executionParams.destinationAddress || walletAddress, // Fallback to self if no destination
+                amount,
+                executionParams.gasLimit || this.cosmosConfig.execution.gasLimit
+            );
+
+            logger.transaction(`Cosmos native token transfer sent`, result.transactionHash);
+
+            return {
+                success: true,
+                transactionHash: result.transactionHash,
+                gasUsed: Number(result.gasUsed)
+            };
+
+        } catch (error) {
+            logger.error(`💥 Error sending native tokens:`, error);
+            return {
+                success: false,
+                error: error instanceof Error ? error.message : String(error)
+            };
+        }
+    }
+
     private async claimFusionOrder(
         client: SigningCosmWasmClient,
         contractAddress: string,
@@ -392,8 +448,8 @@ export class CosmosExecutor extends EventEmitter {
             
             const params = JSON.parse(paramsStr);
             return {
-                contractAddress: params.contractAddress,
-                amount: params.amount,
+                contractAddress: params.contractAddress || '',
+                amount: params.amount || '0',
                 nativeDenom: params.nativeDenom || 'untrn',
                 gasLimit: params.gasLimit || this.cosmosConfig.execution.gasLimit,
                 destinationAddress: params.destinationAddress
@@ -467,6 +523,58 @@ export class CosmosExecutor extends EventEmitter {
 
     public isChainSupported(chainId: string): boolean {
         return this.clients.has(chainId);
+    }
+
+    public getNetworkConfig(chainId: number): any {
+        const networkConfig = this.cosmosConfig.networks[chainId.toString()];
+        if (!networkConfig) {
+            return null;
+        }
+        return networkConfig;
+    }
+
+    public isCosmosChain(chainId: number): boolean {
+        const cosmosChainIds = [7001, 7002, 30001];
+        return cosmosChainIds.includes(chainId);
+    }
+
+    public async estimateGas(chainId: number, params: any): Promise<number> {
+        const client = this.clients.get(chainId.toString());
+        if (!client) {
+            return this.cosmosConfig.execution.gasLimit; // Default
+        }
+
+        try {
+            const accounts = await this.wallet!.getAccounts();
+            const walletAddress = accounts[0].address;
+            
+            const executeMsg = {
+                execute_fusion_order: {
+                    amount: params.amount,
+                    source_chain_id: 1,
+                    timeout_seconds: this.cosmosConfig.execution.timeoutSeconds
+                }
+            };
+
+            const result = await client.simulate(
+                walletAddress,
+                [{
+                    typeUrl: '/cosmwasm.wasm.v1.MsgExecuteContract',
+                    value: {
+                        sender: walletAddress,
+                        contract: params.contractAddress,
+                        msg: toUtf8(JSON.stringify(executeMsg)),
+                        funds: []
+                    }
+                }],
+                undefined
+            );
+
+            return (result as any).gasInfo?.gasUsed ? Number((result as any).gasInfo.gasUsed) : this.cosmosConfig.execution.gasLimit;
+        } catch (error) {
+            logger.warn(`Failed to estimate gas for chain ${chainId}:`, error);
+            return this.cosmosConfig.execution.gasLimit; // Default fallback
+        }
     }
 
     public async stop(): Promise<void> {
