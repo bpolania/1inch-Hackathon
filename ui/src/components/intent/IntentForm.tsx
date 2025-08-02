@@ -14,10 +14,13 @@ import { AmountInput } from './AmountInput';
 import { PreferencesPanel } from './PreferencesPanel';
 import { IntentPreview } from './IntentPreview';
 import { PriceQuote } from './PriceQuote';
+import { CosmosAddressInput } from './CosmosAddressInput';
+import { CrossChainIndicator } from './CrossChainIndicator';
 import { useIntentStore } from '@/stores/intentStore';
 import { useWalletStore } from '@/stores/walletStore';
 import { WalletStatus, WalletStatusIndicator } from '@/components/wallet/WalletStatus';
 import { TokenInfo, ChainId, IntentRequest } from '@/types/intent';
+import { isCosmosChain } from '@/utils/cosmos';
 
 interface IntentFormProps {
   onSubmit?: (intentId: string) => void;
@@ -60,38 +63,34 @@ export function IntentForm({ onSubmit, className }: IntentFormProps) {
     }
   }, [currentIntent, createIntent, isConnected, accountId]);
 
+  // Clear destination address when switching away from Cosmos chains
+  useEffect(() => {
+    if (toToken && !isCosmosChain(toToken.chainId)) {
+      setDestinationAddress('');
+    }
+  }, [toToken]);
+
   // Update intent when form values change
   useEffect(() => {
     if (fromToken && toToken && fromAmount && minToAmount) {
-      updateIntent({
+      const intentUpdate: any = {
         fromToken,
         toToken,
         fromAmount,
         minToAmount,
-        ...(isCosmosChain(toToken.chainId) && destinationAddress && {
-          metadata: { destinationAddress }
-        })
-      });
+      };
+      
+      // Add destination address for Cosmos chains
+      if (isCosmosChain(toToken.chainId) && destinationAddress) {
+        intentUpdate.metadata = {
+          ...currentIntent?.metadata,
+          destinationAddress,
+        };
+      }
+      
+      updateIntent(intentUpdate);
     }
-  }, [fromToken, toToken, fromAmount, minToAmount, destinationAddress, updateIntent]);
-
-  // Helper function to check if a chain is a Cosmos chain
-  const isCosmosChain = (chainId: string): boolean => {
-    return ['cosmos', 'neutron', 'juno', 'osmosis', 'stargaze', 'akash'].includes(chainId);
-  };
-
-  // Helper function to get default test addresses for Cosmos chains
-  const getDefaultCosmosAddress = (chainId: string): string => {
-    const defaultAddresses: Record<string, string> = {
-      cosmos: 'cosmos1234567890abcdef1234567890abcdef12345678',
-      neutron: 'neutron1234567890abcdef1234567890abcdef12345678',
-      juno: 'juno1234567890abcdef1234567890abcdef12345678',
-      osmosis: 'osmo1234567890abcdef1234567890abcdef12345678',
-      stargaze: 'stars1234567890abcdef1234567890abcdef12345678',
-      akash: 'akash1234567890abcdef1234567890abcdef12345678',
-    };
-    return defaultAddresses[chainId] || 'cosmos1234567890abcdef1234567890abcdef12345678';
-  };
+  }, [fromToken, toToken, fromAmount, minToAmount, destinationAddress, updateIntent, currentIntent]);
 
   const handleSwapTokens = () => {
     const tempToken = fromToken;
@@ -101,7 +100,6 @@ export function IntentForm({ onSubmit, className }: IntentFormProps) {
     setToToken(tempToken);
     setFromAmount(minToAmount);
     setMinToAmount(tempAmount);
-    setDestinationAddress(''); // Clear destination address when swapping
   };
 
   const handleSubmit = async () => {
@@ -119,7 +117,6 @@ export function IntentForm({ onSubmit, className }: IntentFormProps) {
       setToToken(null);
       setFromAmount('');
       setMinToAmount('');
-      setDestinationAddress('');
       onSubmit?.(intentId);
     } catch (error) {
       console.error('Failed to submit intent:', error);
@@ -129,9 +126,13 @@ export function IntentForm({ onSubmit, className }: IntentFormProps) {
     }
   };
 
-  const canPreview = fromToken && toToken && fromAmount && minToAmount && 
-    (!toToken || !isCosmosChain(toToken.chainId) || destinationAddress);
-  const canSubmit = canPreview && currentIntent && isConnected;
+  const canPreview = fromToken && toToken && fromAmount && minToAmount;
+  
+  // Additional validation for Cosmos chains - require destination address
+  const cosmosAddressValid = !toToken || !isCosmosChain(toToken.chainId) || 
+    (destinationAddress && destinationAddress.length > 39);
+  
+  const canSubmit = canPreview && currentIntent && isConnected && cosmosAddressValid;
   
   // Check if user has sufficient balance (basic check)
   console.log('Balance debug:', { balanceFormatted, type: typeof balanceFormatted });
@@ -234,53 +235,32 @@ export function IntentForm({ onSubmit, className }: IntentFormProps) {
                   placeholder="0.0"
                   label="Minimum amount to receive"
                 />
+                
+                {/* Cosmos destination address input */}
+                {toToken && isCosmosChain(toToken.chainId) && (
+                  <div className="animate-fade-in">
+                    <CosmosAddressInput
+                      value={destinationAddress}
+                      onChange={setDestinationAddress}
+                      expectedChain={toToken.chainId}
+                      label="Destination Address"
+                      placeholder={`Enter your ${toToken.chainId} address`}
+                    />
+                  </div>
+                )}
               </div>
             </div>
-
-            {/* Cosmos Destination Address Input */}
-            {toToken && isCosmosChain(toToken.chainId) && (
-              <div className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-1 h-6 bg-primary rounded-full"></div>
-                  <label className="text-base font-semibold text-card-foreground">
-                    Destination Address
-                  </label>
-                </div>
-                <div className="p-6 rounded-xl bg-muted border">
-                  <div className="space-y-3">
-                    <input
-                      type="text"
-                      value={destinationAddress}
-                      onChange={(e) => setDestinationAddress(e.target.value)}
-                      placeholder={`Enter ${toToken.chainId} address (e.g., ${toToken.chainId}1abc...)`}
-                      className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                    />
-                    <div className="flex gap-2">
-                      <button
-                        type="button"
-                        onClick={() => setDestinationAddress(getDefaultCosmosAddress(toToken.chainId))}
-                        className="px-3 py-1 text-xs bg-primary/10 text-primary rounded-md hover:bg-primary/20 transition-colors"
-                      >
-                        Use Test Address
-                      </button>
-                      {destinationAddress && (
-                        <button
-                          type="button"
-                          onClick={() => setDestinationAddress('')}
-                          className="px-3 py-1 text-xs bg-muted-foreground/10 text-muted-foreground rounded-md hover:bg-muted-foreground/20 transition-colors"
-                        >
-                          Clear
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-2">
-                    Enter your {toToken.chainId} wallet address to receive {toToken.symbol} tokens
-                  </p>
-                </div>
-              </div>
-            )}
           </div>
+
+          {/* Cross-Chain Indicator */}
+          {fromToken && toToken && fromToken.chainId !== toToken.chainId && (
+            <div className="animate-fade-in">
+              <CrossChainIndicator 
+                fromToken={fromToken} 
+                toToken={toToken} 
+              />
+            </div>
+          )}
 
           {/* Real-time 1inch Price Quote */}
           {fromToken && toToken && fromAmount && (

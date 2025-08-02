@@ -1,8 +1,8 @@
 /**
- * Type definitions for NEAR Intents
+ * Type definitions for Cross-Chain Intents
  */
 
-export type ChainId = 'bitcoin' | 'near' | 'ethereum' | 'cosmos' | 'neutron' | 'juno' | 'osmosis' | 'stargaze' | 'akash';
+export type ChainId = 'bitcoin' | 'near' | 'ethereum' | 'neutron' | 'juno' | 'cosmos' | 'osmosis' | 'stargaze' | 'akash';
 
 export interface TokenInfo {
   address: string;
@@ -34,7 +34,6 @@ export interface IntentRequest {
     preferredRoute?: string;
     gasPrice?: string;
     tags?: string[];
-    destinationAddress?: string; // For cross-chain destinations like Cosmos
   };
   
   status: 'pending' | 'processing' | 'completed' | 'failed' | 'expired';

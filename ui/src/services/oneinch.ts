@@ -11,7 +11,7 @@ const ONEINCH_API_BASE = `${API_GATEWAY_BASE_URL}/api/1inch`;
 const FALLBACK_ONEINCH_BASE_URL = 'https://api.1inch.dev';
 const ONEINCH_API_VERSION = 'v6.0';
 
-// Supported chain IDs for 1inch
+// Supported chain IDs for 1inch + Cross-chain extension
 export const SUPPORTED_CHAINS = {
   ETHEREUM: 1,
   BSC: 56,
@@ -25,6 +25,16 @@ export const SUPPORTED_CHAINS = {
   AURORA: 1313161554,
   ZK_SYNC_ERA: 324,
   BASE: 8453,
+  // Cross-chain extensions via 1inch Fusion+
+  NEAR: 397, // Custom ID for NEAR Protocol
+  BITCOIN: 40004, // Custom ID for Bitcoin
+  // Cosmos Ecosystem
+  NEUTRON: 7001,
+  JUNO: 7002,
+  COSMOS_HUB: 30001,
+  OSMOSIS: 30003,
+  STARGAZE: 30005,
+  AKASH: 30007,
 } as const;
 
 export type ChainId = typeof SUPPORTED_CHAINS[keyof typeof SUPPORTED_CHAINS];
