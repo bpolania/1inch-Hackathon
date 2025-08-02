@@ -91,7 +91,7 @@ export function CosmosAddressInput({
   return (
     <div className={cn('space-y-2', className)}>
       {label && (
-        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+        <label htmlFor="cosmos-address-input" className="text-sm font-medium text-gray-700 dark:text-gray-300">
           {label}
           {expectedChain && (
             <span className="text-gray-500 ml-1">
@@ -103,6 +103,7 @@ export function CosmosAddressInput({
       
       <div className="relative">
         <Input
+          id="cosmos-address-input"
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder || `Enter Cosmos address (${expectedChain ? COSMOS_ADDRESS_PREFIXES[expectedChain] : 'prefix'}1...)`}
