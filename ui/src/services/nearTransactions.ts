@@ -6,13 +6,13 @@ import { utils, transactions } from 'near-api-js'
 import type { IntentRequest } from '@/types/intent'
 import type { TransactionOptions } from '@/types/wallet'
 
-// Contract methods for intent management
+// Contract methods for HTLC order management  
 export const INTENT_CONTRACT_METHODS = {
-  CREATE_INTENT: 'create_intent',
-  CANCEL_INTENT: 'cancel_intent',
-  RESOLVE_INTENT: 'resolve_intent',
-  GET_INTENT: 'get_intent',
-  GET_USER_INTENTS: 'get_user_intents'
+  CREATE_INTENT: 'create_order',
+  CANCEL_INTENT: 'cancel_order', 
+  RESOLVE_INTENT: 'claim_order',
+  GET_INTENT: 'get_order',
+  GET_USER_INTENTS: 'get_order'
 } as const
 
 // Gas amounts for different operations
@@ -25,39 +25,39 @@ export const GAS_AMOUNTS = {
 // Storage deposit for intent creation
 export const STORAGE_DEPOSIT = '100000000000000000000000' // 0.1 NEAR
 
-// Default contract ID for intent management
-export const DEFAULT_INTENT_CONTRACT = process.env.NEXT_PUBLIC_NEAR_CONTRACT_ID || 'intents.testnet'
+// Default contract ID for HTLC order management
+export const DEFAULT_INTENT_CONTRACT = process.env.NEXT_PUBLIC_NEAR_CONTRACT_ID || 'cross-chain-htlc.demo.cuteharbor3573.testnet'
 
 /**
- * Prepares a transaction to create an intent on NEAR blockchain
+ * Prepares a transaction to create an HTLC order on NEAR blockchain
  */
 export function prepareCreateIntentTransaction(
   intent: IntentRequest,
   contractId: string = DEFAULT_INTENT_CONTRACT
 ): TransactionOptions {
-  // Prepare intent data for smart contract
-  const intentData = {
-    id: intent.id,
-    user: intent.user,
-    from_token: {
-      symbol: intent.fromToken?.symbol,
-      chain_id: intent.fromToken?.chainId,
-      address: intent.fromToken?.address,
-      decimals: intent.fromToken?.decimals
-    },
-    to_token: {
-      symbol: intent.toToken?.symbol,
-      chain_id: intent.toToken?.chainId,
-      address: intent.toToken?.address,
-      decimals: intent.toToken?.decimals
-    },
-    from_amount: intent.fromAmount,
-    min_to_amount: intent.minToAmount,
-    max_slippage: intent.maxSlippage,
-    deadline: intent.deadline,
-    prioritize: intent.prioritize,
-    created_at: intent.createdAt,
-    status: 'pending'
+  // Generate a simple hashlock for demo purposes (in production, this would be coordinated)
+  const hashlock = 'a'.repeat(64) // 64-char hex string for demo
+  
+  // Calculate timelock (24 hours from now in blocks, ~1 second per block)
+  const currentTime = Date.now()
+  const timelock = Math.floor(currentTime / 1000) + (24 * 60 * 60) // 24 hours
+  
+  // Calculate deposit amount in yoctoNEAR
+  const fromAmountNear = parseFloat(intent.fromAmount || '0')
+  const resolverFeeNear = fromAmountNear * 0.01 // 1% resolver fee
+  const totalDepositYocto = utils.format.parseNearAmount((fromAmountNear + resolverFeeNear).toString()) || '0'
+  const resolverFeeYocto = utils.format.parseNearAmount(resolverFeeNear.toString()) || '0'
+  
+  // Prepare HTLC order data
+  const orderData = {
+    order_id: intent.id || `order-${Date.now()}`,
+    hashlock,
+    timelock: timelock.toString(),
+    destination_chain: intent.toToken?.symbol === 'ETH' ? 'ethereum' : 'ethereum',
+    destination_token: intent.toToken?.symbol || 'ETH',
+    destination_amount: utils.format.parseNearAmount(intent.minToAmount || '0') || '0',
+    destination_address: intent.user || 'demo.cuteharbor3573.testnet',
+    resolver_fee: resolverFeeYocto
   }
 
   // Create function call action
@@ -66,9 +66,9 @@ export function prepareCreateIntentTransaction(
       type: 'FunctionCall',
       params: {
         methodName: INTENT_CONTRACT_METHODS.CREATE_INTENT,
-        args: intentData,
+        args: orderData,
         gas: GAS_AMOUNTS.CREATE_INTENT,
-        deposit: STORAGE_DEPOSIT
+        deposit: totalDepositYocto
       }
     }
   ]
@@ -77,7 +77,7 @@ export function prepareCreateIntentTransaction(
     receiverId: contractId,
     actions,
     gas: GAS_AMOUNTS.CREATE_INTENT,
-    deposit: STORAGE_DEPOSIT
+    deposit: totalDepositYocto
   }
 }
 
@@ -169,25 +169,24 @@ export function formatTransactionResult(result: any) {
 }
 
 /**
- * Contract view functions for reading intent data
+ * Contract view functions for reading HTLC order data
  */
 export const VIEW_FUNCTIONS = {
   /**
-   * Get intent by ID
+   * Get HTLC order by ID
    */
-  getIntent: (intentId: string) => ({
+  getIntent: (orderId: string) => ({
     methodName: INTENT_CONTRACT_METHODS.GET_INTENT,
-    args: { intent_id: intentId }
+    args: { order_id: orderId }
   }),
 
   /**
-   * Get all intents for a user
+   * Get resolver authorization status
    */
-  getUserIntents: (accountId: string, status?: string) => ({
-    methodName: INTENT_CONTRACT_METHODS.GET_USER_INTENTS,
+  getUserIntents: (accountId: string) => ({
+    methodName: 'is_authorized_resolver',
     args: { 
-      account_id: accountId,
-      ...(status && { status })
+      resolver: accountId
     }
   })
 }

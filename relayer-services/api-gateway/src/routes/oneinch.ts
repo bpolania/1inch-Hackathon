@@ -423,7 +423,7 @@ router.post('/swap', [
     const fusionSwap = {
       tx: {
         from: swapParams.fromAddress,
-        to: result.contractAddress || '0xbeEab741D2869404FcB747057f5AbdEffc3A138d', // Our Fusion+ Factory
+        to: result.contractAddress || '0x2E053bA098E2DB09C7F61A2854063BB2161b7b0a', // Our Fusion+ Factory
         data: result.calldata || '0x', // Real contract call data
         value: swapParams.fromToken === '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee' 
           ? swapParams.amount 
@@ -535,7 +535,7 @@ router.get('/protocols/:chainId', [
       {
         name: '1inch Fusion+ Factory',
         type: 'cross-chain-factory',
-        address: '0xbeEab741D2869404FcB747057f5AbdEffc3A138d',
+        address: '0x2E053bA098E2DB09C7F61A2854063BB2161b7b0a',
         part: 1.0, // Primary protocol
         description: 'Main Fusion+ order creation and management',
         supportedChains: ['1', '11155111', ...(supportedRoutes.destinations || [])], // Supports Ethereum chains + destinations
@@ -605,7 +605,7 @@ router.get('/protocols/:chainId', [
         crossChainEnabled: true,
         supportedDestinations: supportedRoutes.destinations?.length || 0,
         deployedContracts: {
-          factory: '0xbeEab741D2869404FcB747057f5AbdEffc3A138d',
+          factory: '0x2E053bA098E2DB09C7F61A2854063BB2161b7b0a',
           registry: '0x09Ab998Cb3448ad281C116c9fC9e4b01e4533beD',
           nearAdapter: '0x7019aC48479e5527Cb3a5a99FbEFe5B42125C9A5',
           bitcoinAdapter: '0x15ACc1Cb04F08143e29c39972D9cF5D53D015fF8'

@@ -77,9 +77,9 @@ async function initializeServices() {
       bitcoinNetwork: process.env.BITCOIN_NETWORK as 'mainnet' | 'testnet' || 'testnet',
       bitcoinPrivateKey: process.env.BITCOIN_PRIVATE_KEY || 'cNJFgo1driFnPcBdBX8BrJrpxchBWXwXCvNH5SoSkdcF6JXXwHMm',
       contractAddresses: {
-        factory: process.env.FACTORY_CONTRACT_ADDRESS || '0xbeEab741D2869404FcB747057f5AbdEffc3A138d',
-        registry: process.env.REGISTRY_CONTRACT_ADDRESS || '0x09Ab998Cb3448ad281C116c9fC9e4b01e4533beD',
-        token: process.env.TOKEN_CONTRACT_ADDRESS || '0xaa86ed59bcf10c838F2abDa08D1Ca8C6D1609d43'
+        factory: process.env.ETHEREUM_FACTORY_ADDRESS || '0x2E053bA098E2DB09C7F61A2854063BB2161b7b0a',
+        registry: process.env.ETHEREUM_REGISTRY_ADDRESS || '0x59CE43Ea20892EC3Eff00fc7506cbfA9813FE0ca',
+        token: process.env.ETHEREUM_TOKEN_ADDRESS || '0x6295209910dEC4cc94770bfFD10e0362E6c8332e'
       }
     });
 

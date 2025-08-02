@@ -334,7 +334,7 @@ export function IntentExecution({ intent, onExecutionComplete, className }: Inte
           {!submission && (
             <button
               onClick={handleSubmit}
-              disabled={isSubmitting || (profitability && !profitability.isProfitable)}
+              disabled={isSubmitting || (profitability?.isProfitable === false)}
               className="flex-1 px-4 py-2 rounded-lg bg-primary text-primary-foreground font-medium hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? 'Submitting...' : 'Submit to Relayer'}

@@ -9,7 +9,7 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "outDir": "./dist",
-    "rootDir": "../",
+    "rootDir": "./src",
     "resolveJsonModule": true,
     "declaration": true,
     "declarationMap": true,
@@ -22,9 +22,7 @@
     }
   },
   "include": [
-    "src/**/*",
-    "../executor-client/src/**/*",
-    "../tee-solver/src/**/*"
+    "src/**/*"
   ],
   "exclude": [
     "node_modules",

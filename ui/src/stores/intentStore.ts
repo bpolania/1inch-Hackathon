@@ -6,7 +6,6 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { IntentRequest, TokenInfo } from '@/types/intent';
 import { generateId } from '@/utils/utils';
-import { prepareCreateIntentTransaction, parseTransactionError } from '@/services/nearTransactions';
 
 interface IntentStore {
   // Current intent being created
@@ -82,25 +81,37 @@ export const useIntentStore = create<IntentStore>()(
         const intent = state.currentIntent as IntentRequest;
         
         try {
-          // Get wallet store dynamically to avoid circular dependency
-          const { useWalletStore } = await import('./walletStore');
-          const wallet = useWalletStore.getState();
+          // Submit to API Gateway instead of directly to NEAR
+          const apiGatewayUrl = process.env.NEXT_PUBLIC_API_GATEWAY_URL || 'http://localhost:3001';
           
-          if (!wallet.isConnected || !wallet.wallet) {
-            throw new Error('Wallet not connected');
+          const response = await fetch(`${apiGatewayUrl}/api/relayer/submit`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              id: intent.id,
+              fromToken: intent.fromToken,
+              toToken: intent.toToken,
+              fromAmount: intent.fromAmount,
+              minToAmount: intent.minToAmount,
+              user: intent.user,
+              maxSlippage: intent.maxSlippage || 1,
+              deadline: intent.deadline || Date.now() + (24 * 60 * 60 * 1000) // 24 hours
+            })
+          });
+          
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || `API error: ${response.status}`);
           }
           
-          // Prepare NEAR transaction
-          const contractId = 'intents.testnet'; // TODO: Make this configurable
-          const transactionOptions = prepareCreateIntentTransaction(intent, contractId);
+          const result = await response.json();
           
-          // Submit to NEAR blockchain
-          const result = await wallet.signAndSendTransaction(transactionOptions.actions, contractId);
-          
-          // Update intent with transaction info
+          // Update intent with solver network submission info
           intent.status = 'processing';
-          intent.transactionHash = result.transaction?.hash;
-          intent.blockHash = result.transaction_outcome?.block_hash;
+          intent.transactionHash = result.data?.orderHash;
+          intent.blockHash = result.data?.status;
           
           // Add to intents list
           set((prevState) => ({
@@ -111,10 +122,10 @@ export const useIntentStore = create<IntentStore>()(
           return intent.id;
           
         } catch (error) {
-          console.error('Failed to submit intent to NEAR:', error);
+          console.error('Failed to submit intent to solver network:', error);
           
           // Parse error for user-friendly message
-          const errorMessage = parseTransactionError(error);
+          const errorMessage = error instanceof Error ? error.message : 'Unknown error';
           throw new Error(errorMessage);
         }
       },

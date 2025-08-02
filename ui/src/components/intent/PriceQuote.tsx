@@ -48,17 +48,21 @@ export function PriceQuote({
         // Convert amount to wei for the quote
         const amountWei = (BigInt(Math.floor(parseFloat(fromAmount) * 1e18))).toString();
         
+        // Use real token addresses for mainnet
+        const fromTokenAddress = fromToken.address || '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'; // ETH
+        const toTokenAddress = toToken.address || '0xA0b86991c6218b36C1d19D4a2e9Eb0cE3606eB48'; // Real USDC mainnet
+        
         const quoteResult = await getQuote(
           chainId,
-          fromToken.address || '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', // ETH
-          toToken.address || '0xa0b86a33e6f1b8f8c4c3f1a6b8b8c2c9d5a0b86a', // Mock USDC
+          fromTokenAddress,
+          toTokenAddress,
           amountWei,
           1 // 1% slippage
         );
 
         if (quoteResult) {
           setQuote(quoteResult);
-          setPriceImpact(quoteResult.priceImpact);
+          setPriceImpact(parseFloat(String(quoteResult.priceImpact || '0')));
           onQuoteUpdate?.(quoteResult.formattedOutput);
         }
       } catch (err) {
@@ -264,10 +268,14 @@ export function CompactPriceQuote({
         const chainId = SUPPORTED_CHAINS.ETHEREUM;
         const amountWei = (BigInt(Math.floor(parseFloat(fromAmount) * 1e18))).toString();
         
+        // Use real token addresses for mainnet
+        const fromTokenAddress = fromToken.address || '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'; // ETH
+        const toTokenAddress = toToken.address || '0xA0b86991c6218b36C1d19D4a2e9Eb0cE3606eB48'; // Real USDC mainnet
+        
         const quoteResult = await getQuote(
           chainId,
-          fromToken.address || '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee',
-          toToken.address || '0xa0b86a33e6f1b8f8c4c3f1a6b8b8c2c9d5a0b86a',
+          fromTokenAddress,
+          toTokenAddress,
           amountWei,
           1
         );

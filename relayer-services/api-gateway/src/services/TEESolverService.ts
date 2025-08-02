@@ -380,7 +380,7 @@ export class TEESolverService extends EventEmitter {
         symbol: intent.toToken.symbol,
         decimals: intent.toToken.decimals
       },
-      sourceAmount: BigInt(intent.fromAmount || '0'),
+      sourceAmount: intent.fromAmount || '0',
       userAddress: intent.user,
       maxSlippage: intent.maxSlippage || 50,
       deadline: intent.deadline || Math.floor(Date.now() / 1000) + 300
