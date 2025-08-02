@@ -298,6 +298,126 @@ describe('CrossChainExecutor', () => {
     });
   });
 
+  describe('Cosmos execution', () => {
+    let mockCosmosExecutor: any;
+    
+    beforeEach(async () => {
+      await executor.initialize();
+      
+      // Mock CosmosExecutor
+      mockCosmosExecutor = {
+        executeOrder: jest.fn().mockResolvedValue({
+          success: true,
+          transactionHash: 'COSMOS123DEF456',
+          gasUsed: 250000,
+          chainId: 7001,
+          secret: 'b8aab023149fea18759fd15443bd11bfca388dfe7f0813e372a75ce8a37dd7bd'
+        }),
+        getStatus: jest.fn().mockReturnValue({
+          initialized: true,
+          connectedChains: ['neutron', 'juno', 'cosmoshub']
+        })
+      };
+      
+      // Replace the cosmos executor instance
+      (executor as any).cosmosExecutor = mockCosmosExecutor;
+    });
+
+    it('should detect Cosmos chains correctly', () => {
+      expect((executor as any).isCosmosChain(7001)).toBe(true);  // Neutron
+      expect((executor as any).isCosmosChain(7002)).toBe(true);  // Juno
+      expect((executor as any).isCosmosChain(30001)).toBe(true); // Cosmos Hub
+      expect((executor as any).isCosmosChain(1)).toBe(false);    // Ethereum
+      expect((executor as any).isCosmosChain(40002)).toBe(false); // NEAR
+    });
+
+    it('should execute Neutron atomic swap successfully', async () => {
+      const cosmosOrder = {
+        ...mockExecutableOrder,
+        order: { ...mockExecutableOrder.order, destinationChainId: 7001 }
+      };
+
+      mockFactoryContract.sourceEscrows.mockResolvedValue('0x1030e56f8b6D003E74D41bc70fD3a1BF7AB96006');
+
+      const result = await executor.executeAtomicSwap(cosmosOrder);
+
+      expect(result.success).toBe(true);
+      expect(result.orderHash).toBe(cosmosOrder.orderHash);
+      expect(result.transactions.ethereum).toHaveLength(2); // complete, settlement
+      expect(result.transactions.cosmos).toHaveLength(1); // cosmos execution
+      expect(mockCosmosExecutor.executeOrder).toHaveBeenCalledWith(cosmosOrder);
+    });
+
+    it('should execute Juno atomic swap successfully', async () => {
+      const junoOrder = {
+        ...mockExecutableOrder,
+        order: { ...mockExecutableOrder.order, destinationChainId: 7002 }
+      };
+
+      mockFactoryContract.sourceEscrows.mockResolvedValue('0x1030e56f8b6D003E74D41bc70fD3a1BF7AB96006');
+
+      const result = await executor.executeAtomicSwap(junoOrder);
+
+      expect(result.success).toBe(true);
+      expect(result.transactions.cosmos).toHaveLength(1);
+      expect(mockCosmosExecutor.executeOrder).toHaveBeenCalledWith(junoOrder);
+    });
+
+    it('should execute Cosmos Hub atomic swap successfully', async () => {
+      const cosmosHubOrder = {
+        ...mockExecutableOrder,
+        order: { ...mockExecutableOrder.order, destinationChainId: 30001 }
+      };
+
+      mockFactoryContract.sourceEscrows.mockResolvedValue('0x1030e56f8b6D003E74D41bc70fD3a1BF7AB96006');
+
+      const result = await executor.executeAtomicSwap(cosmosHubOrder);
+
+      expect(result.success).toBe(true);
+      expect(result.transactions.cosmos).toHaveLength(1);
+      expect(mockCosmosExecutor.executeOrder).toHaveBeenCalledWith(cosmosHubOrder);
+    });
+
+    it('should handle Cosmos execution failures', async () => {
+      const cosmosOrder = {
+        ...mockExecutableOrder,
+        order: { ...mockExecutableOrder.order, destinationChainId: 7001 }
+      };
+
+      mockFactoryContract.sourceEscrows.mockResolvedValue('0x1030e56f8b6D003E74D41bc70fD3a1BF7AB96006');
+      mockCosmosExecutor.executeOrder.mockResolvedValue({
+        success: false,
+        error: 'CosmWasm execution failed',
+        chainId: 7001
+      });
+
+      const result = await executor.executeAtomicSwap(cosmosOrder);
+
+      expect(result.success).toBe(false);
+      expect(result.error).toContain('Failed to execute destination chain');
+    });
+
+    it('should return deterministic secret for Cosmos orders', async () => {
+      const cosmosOrder = {
+        ...mockExecutableOrder,
+        order: { ...mockExecutableOrder.order, destinationChainId: 7001 }
+      };
+
+      const result1 = await (executor as any).executeCosmosSide(
+        cosmosOrder.orderHash,
+        cosmosOrder.order
+      );
+      
+      const result2 = await (executor as any).executeCosmosSide(
+        cosmosOrder.orderHash,
+        cosmosOrder.order
+      );
+
+      expect(result1.secret).toBe(result2.secret);
+      expect(result1.secret).toHaveLength(64); // 32 bytes in hex
+    });
+  });
+
   describe('Ethereum order completion', () => {
     beforeEach(async () => {
       await executor.initialize();
