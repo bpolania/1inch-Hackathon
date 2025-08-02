@@ -95,14 +95,6 @@ async function main() {
     await tx.wait();
     console.log("✅ NEAR Testnet adapter registered");
 
-    // Register Bitcoin family adapters
-    console.log("📝 Registering Bitcoin family adapters...");
-    for (const chain of bitcoinChains) {
-        tx = await registry.registerChainAdapter(chain.id, await bitcoinAdapters[chain.id].getAddress());
-        await tx.wait();
-        console.log(`✅ ${chain.name} adapter registered`);
-    }
-
     // Register Cosmos adapters
     console.log("📝 Registering Neutron Testnet adapter...");
     tx = await registry.registerChainAdapter(NEUTRON_TESTNET_ID, await neutronTestnetAdapter.getAddress());
@@ -137,10 +129,6 @@ async function main() {
     console.log("🌐 NEAR Mainnet:", nearMainnetInfo.name, "- Active:", nearMainnetInfo.isActive);
     console.log("🌐 NEAR Testnet:", nearTestnetInfo.name, "- Active:", nearTestnetInfo.isActive);
     
-    // Verify Bitcoin adapters
-    const bitcoinTestnetInfo = await registry.getChainInfo(BITCOIN_TESTNET_ID);
-    console.log("🌐 Bitcoin Testnet:", bitcoinTestnetInfo.name, "- Active:", bitcoinTestnetInfo.isActive);
-
     // Verify Cosmos adapters
     const neutronTestnetInfo = await registry.getChainInfo(NEUTRON_TESTNET_ID);
     const junoTestnetInfo = await registry.getChainInfo(JUNO_TESTNET_ID);
@@ -159,10 +147,6 @@ async function main() {
     console.log(`🏭 FusionPlusFactory: ${await factory.getAddress()}`);
     console.log(`🌐 NEAR Mainnet Adapter: ${await nearMainnetAdapter.getAddress()}`);
     console.log(`🌐 NEAR Testnet Adapter: ${await nearTestnetAdapter.getAddress()}`);
-    console.log("🌐 Bitcoin Adapters:");
-    for (const chain of bitcoinChains) {
-        console.log(`   - ${chain.name}: ${await bitcoinAdapters[chain.id].getAddress()}`);
-    }
     console.log(`🌌 Neutron Testnet Adapter: ${await neutronTestnetAdapter.getAddress()}`);
     console.log(`🌌 Juno Testnet Adapter: ${await junoTestnetAdapter.getAddress()}`);
     console.log(`🌌 Cosmos Hub Mainnet Adapter: ${await cosmosHubMainnetAdapter.getAddress()}`);
@@ -188,11 +172,6 @@ async function main() {
             FusionPlusFactory: await factory.getAddress(),
             NearMainnetAdapter: await nearMainnetAdapter.getAddress(),
             NearTestnetAdapter: await nearTestnetAdapter.getAddress(),
-            BitcoinMainnetAdapter: await bitcoinAdapters[BITCOIN_MAINNET_ID].getAddress(),
-            BitcoinTestnetAdapter: await bitcoinAdapters[BITCOIN_TESTNET_ID].getAddress(),
-            DogecoinAdapter: await bitcoinAdapters[DOGECOIN_MAINNET_ID].getAddress(),
-            LitecoinAdapter: await bitcoinAdapters[LITECOIN_MAINNET_ID].getAddress(),
-            BitcoinCashAdapter: await bitcoinAdapters[BITCOIN_CASH_MAINNET_ID].getAddress(),
             NeutronTestnetAdapter: await neutronTestnetAdapter.getAddress(),
             JunoTestnetAdapter: await junoTestnetAdapter.getAddress(),
             CosmosHubMainnetAdapter: await cosmosHubMainnetAdapter.getAddress(),
@@ -200,11 +179,6 @@ async function main() {
         chainIds: {
             NEAR_MAINNET: NEAR_MAINNET_ID,
             NEAR_TESTNET: NEAR_TESTNET_ID,
-            BITCOIN_MAINNET: BITCOIN_MAINNET_ID,
-            BITCOIN_TESTNET: BITCOIN_TESTNET_ID,
-            DOGECOIN_MAINNET: DOGECOIN_MAINNET_ID,
-            LITECOIN_MAINNET: LITECOIN_MAINNET_ID,
-            BITCOIN_CASH_MAINNET: BITCOIN_CASH_MAINNET_ID,
             NEUTRON_TESTNET: NEUTRON_TESTNET_ID,
             JUNO_TESTNET: JUNO_TESTNET_ID,
             COSMOS_HUB_MAINNET: COSMOS_HUB_MAINNET_ID,

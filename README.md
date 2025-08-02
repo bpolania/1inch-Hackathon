@@ -33,6 +33,7 @@ npm test test/NearDestinationChain.test.js
 
 # Run the complete NEAR demonstration (create order → complete → transfer tokens)
 npm run demo:fusion-complete
+<<<<<<< HEAD
 
 # Test NEAR integration
 cd contracts/near && npm test
@@ -51,6 +52,8 @@ cd contracts/bitcoin && node scripts/verify-bounty-compliance.js
 
 # Run all integration tests
 npm test
+=======
+>>>>>>> 60545bf5f3b22e8cd9a550763615c822d862076e
 ```
 
 **Cosmos Ecosystem Integration:**
@@ -58,6 +61,21 @@ npm test
 # Run comprehensive Cosmos end-to-end demo
 cd contracts/ethereum
 npx hardhat run scripts/robust-e2e-demo.js --network localhost
+<<<<<<< HEAD
+=======
+
+# Run Cosmos-specific tests
+npm test test/CosmosDestinationChain.test.js
+
+# Run all integration tests
+npm test
+```
+
+The verification confirms:
+- ✅ **NEAR**: Real DT tokens moved (0.2 DT in escrow) + Real NEAR tokens transferred (0.004 NEAR)
+- ✅ **Cosmos**: Complete parameter validation, safety deposits (5%), and cross-chain coordination
+- ✅ **Multi-chain**: All atomic swap criteria verified across both ecosystems
+>>>>>>> 60545bf5f3b22e8cd9a550763615c822d862076e
 
 # Run Cosmos-specific tests
 npm test test/CosmosDestinationChain.test.js
@@ -77,6 +95,7 @@ The verification confirms:
 ## 🎯 **Implementation Status**: MULTI-CHAIN INTEGRATION COMPLETE
 
 - ✅ **True 1inch Integration**: Production-ready `EscrowFactory` and `ITakerInteraction` implementation
+<<<<<<< HEAD
 - ✅ **NEAR Protocol Support**: Live contracts on both Ethereum Sepolia and NEAR testnet
 - ✅ **Bitcoin Integration Complete**: All Bitcoin family adapters deployed on Sepolia with comprehensive validation
 - ✅ **Cosmos Integration Complete**: CosmWasm contracts and 8-chain ecosystem support with 115+ tests passing
@@ -142,6 +161,8 @@ This is the **first successful integration** of Bitcoin atomic swaps with the 1i
 - Cross-chain atomic coordination
 - Production-ready architecture
 =======
+=======
+>>>>>>> 60545bf5f3b22e8cd9a550763615c822d862076e
 - ✅ **Multi-Chain Support**: Complete implementations for NEAR Protocol and Cosmos ecosystem
 - ✅ **NEAR Protocol**: Live contracts on both Ethereum Sepolia and NEAR testnet with real token transfers
 - ✅ **Cosmos Ecosystem**: Complete CosmWasm contracts supporting Neutron, Juno, Cosmos Hub, and 5+ additional chains
@@ -189,6 +210,7 @@ This is the **first successful integration** of Bitcoin atomic swaps with the 1i
 - Gas estimation and safety deposit calculations
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 #### **BitcoinDestinationChain** (`contracts/adapters/BitcoinDestinationChain.sol`)
 - Bitcoin family implementation of `IDestinationChain` interface
 - Comprehensive Bitcoin address validation (P2PKH, P2SH, Bech32, Bitcoin Cash)
@@ -205,6 +227,8 @@ This is the **first successful integration** of Bitcoin atomic swaps with the 1i
 - Support for Bitcoin family blockchains (BTC, DOGE, LTC, BCH)
 
 =======
+=======
+>>>>>>> 60545bf5f3b22e8cd9a550763615c822d862076e
 #### **CosmosDestinationChain** (`contracts/adapters/CosmosDestinationChain.sol`)
 - Cosmos ecosystem implementation of `IDestinationChain` interface
 - Multi-chain support: Neutron, Juno, Cosmos Hub, Osmosis, Stargaze, Akash
@@ -212,7 +236,10 @@ This is the **first successful integration** of Bitcoin atomic swaps with the 1i
 - CosmWasm execution parameter encoding and validation
 - Native token denomination handling (untrn, ujuno, uatom, etc.)
 - Dynamic cost estimation based on chain characteristics
+<<<<<<< HEAD
 >>>>>>> 60545bf (docs: update documentation and enhance Cosmos   integration testing)
+=======
+>>>>>>> 60545bf5f3b22e8cd9a550763615c822d862076e
 
 ### 1inch Protocol Compliance
 
@@ -252,6 +279,7 @@ This is the **first successful integration** of Bitcoin atomic swaps with the 1i
 - **Execution Parameters**: Native NEAR contract calls, gas, and deposits
 - **Cost Estimation**: Accurate NEAR transaction cost calculations
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 ### 🎨 **NEAR Intents UI - Complete User Interface**
 
@@ -315,13 +343,18 @@ Overall: Production-ready with complete backend integration
 ```
 
 =======
+=======
+>>>>>>> 60545bf5f3b22e8cd9a550763615c822d862076e
 #### **Cosmos Ecosystem Support**
 - **8 Chains Supported**: Neutron (7001), Juno (7002), Cosmos Hub (30001/30002), Osmosis (30003/30004), Stargaze (30005/30006), Akash (30007/30008)
 - **Bech32 Address Validation**: Universal support for all Cosmos address formats
 - **CosmWasm Integration**: Complete smart contract execution parameter handling
 - **Native Token Support**: Automatic denomination handling (untrn, ujuno, uatom, uosmo, ustars, uakt)
 - **Dynamic Cost Estimation**: Chain-specific gas costs and complexity scaling
+<<<<<<< HEAD
 >>>>>>> 60545bf (docs: update documentation and enhance Cosmos   integration testing)
+=======
+>>>>>>> 60545bf5f3b22e8cd9a550763615c822d862076e
 
 ## Getting Started
 
@@ -385,9 +418,12 @@ npm test test/CrossChainRegistry.test.js
 - **CrossChainRegistry**: 19 tests - Chain management and validation
 - **NearDestinationChain**: 19 tests - NEAR-specific functionality
 <<<<<<< HEAD
+<<<<<<< HEAD
 - **BitcoinDestinationChain**: 27 tests - Bitcoin family blockchain support
 - **1inch Integration**: 17 tests - Complete 1inch Fusion+ integration with Bitcoin support
 =======
+=======
+>>>>>>> 60545bf5f3b22e8cd9a550763615c822d862076e
 - **CosmosDestinationChain**: 29 tests - Cosmos ecosystem functionality
 - **Cross-Chain Integration**: 12 tests - Multi-chain parameter validation and coordination
 - **1inch Integration**: 11 tests - Complete 1inch Fusion+ integration
@@ -396,12 +432,15 @@ npm test test/CrossChainRegistry.test.js
 - **Production Integration**: 5 tests - Full local deployment testing
 - **EndToEnd Verification**: 17 tests - Integration tests for deployed contracts and complete atomic swaps
 - **Local Deployment**: 25 tests - Comprehensive local testing infrastructure
+<<<<<<< HEAD
 
 **Total: 530+ tests passing** - Complete coverage across all components
 - **UI Tests**: 366/366 passing (Perfect test suite)
 - **Contract Tests**: 164+ passing (Ethereum, NEAR, Bitcoin)
 
 > 📋 **For detailed testing instructions, see [TESTING.md](./TESTING.md)**
+=======
+>>>>>>> 60545bf5f3b22e8cd9a550763615c822d862076e
 
 ### Verification System
 The project includes a comprehensive 8-point verification system that confirms complete atomic swap success:
@@ -437,7 +476,10 @@ npm run verify-swap
 | **NEAR Mainnet Adapter** | `0xEb58DbeB1Bd71A0Dd3c07F005C929AcEb597Be01` | [View](https://sepolia.etherscan.io/address/0xEb58DbeB1Bd71A0Dd3c07F005C929AcEb597Be01) |
 | **NEAR Testnet Adapter** | `0x3cF27b67e96CB3B21C98EF1C57E274A53f0ab014` | [View](https://sepolia.etherscan.io/address/0x3cF27b67e96CB3B21C98EF1C57E274A53f0ab014) |
 | **Cosmos Ecosystem Adapter** | *Local Testing Only* | Multi-chain support for Neutron, Juno, Cosmos Hub, Osmosis, Stargaze, Akash |
+<<<<<<< HEAD
 >>>>>>> 60545bf (docs: update documentation and enhance Cosmos   integration testing)
+=======
+>>>>>>> 60545bf5f3b22e8cd9a550763615c822d862076e
 
 #### NEAR Protocol Adapters ✅
 | Contract | Address | Etherscan |
@@ -628,7 +670,10 @@ contracts/ethereum/
     ├── robust-e2e-demo.js               # Cosmos end-to-end demo
     ├── simple-e2e-demo.js               # Simplified integration demo
     └── test-deployment-locally.js       # Local deployment script
+<<<<<<< HEAD
 >>>>>>> 60545bf (docs: update documentation and enhance Cosmos   integration testing)
+=======
+>>>>>>> 60545bf5f3b22e8cd9a550763615c822d862076e
 ```
 
 ## 1inch Integration Details
@@ -688,10 +733,14 @@ address escrowAddress = escrowFactory.createDstEscrow(
 ## Bounty Compliance
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 This implementation satisfies **multiple ETHGlobal Unite bounty requirements**:
 =======
 This implementation satisfies **multiple bounty requirements** including the **$32K NEAR bounty** and demonstrates extensibility for future **Cosmos ecosystem bounties**:
 >>>>>>> 60545bf (docs: update documentation and enhance Cosmos   integration testing)
+=======
+This implementation satisfies **multiple bounty requirements** including the **$32K NEAR bounty** and demonstrates extensibility for future **Cosmos ecosystem bounties**:
+>>>>>>> 60545bf5f3b22e8cd9a550763615c822d862076e
 
 ### $32K NEAR Bounty Requirements Met
 - ✅ **True 1inch Extension**: Properly extends 1inch Fusion+ using official interfaces (`ITakerInteraction`, `IOneInchEscrowFactory`)
@@ -700,6 +749,7 @@ This implementation satisfies **multiple bounty requirements** including the **$
 - ✅ **Atomic Guarantees**: SHA-256 hashlock coordination ensures both chains succeed or both can refund
 - ✅ **Live Demonstration**: Real token transfers on Sepolia (NEAR) + comprehensive local testing (Cosmos)
 - ✅ **Production Infrastructure**: Complete deployment scripts and integration testing for both ecosystems
+<<<<<<< HEAD
 
 ### $32K Bitcoin Bounty Requirements Met
 - ✅ **Preserve Hashlock/Timelock**: Real Bitcoin HTLC scripts with SHA-256 hashlock and CHECKLOCKTIMEVERIFY timelock
@@ -715,12 +765,19 @@ This implementation satisfies **multiple bounty requirements** including the **$
 4. **Production Ready**: 95+ tests, proper error handling, and mainnet migration guide
 5. **Extensible**: Modular architecture allows adding any blockchain via `IDestinationChain`
 =======
+=======
+
+### What Makes This Special
+>>>>>>> 60545bf5f3b22e8cd9a550763615c822d862076e
 1. **Multi-Chain Ready**: Proven extensibility across different blockchain architectures (NEAR Protocol + Cosmos ecosystem)
 2. **Not a Fork**: This is a true extension that integrates with 1inch's existing infrastructure
 3. **Complete Flow**: Demonstrates actual token movement (wallet → escrow → settlement) for NEAR + full validation for Cosmos
 4. **Production Ready**: 115+ tests, proper error handling, CosmWasm contracts, and mainnet migration guide
 5. **Universal Architecture**: Modular `IDestinationChain` interface proven across multiple blockchain ecosystems
+<<<<<<< HEAD
 >>>>>>> 60545bf (docs: update documentation and enhance Cosmos   integration testing)
+=======
+>>>>>>> 60545bf5f3b22e8cd9a550763615c822d862076e
 
 ## Security Considerations
 
@@ -874,6 +931,7 @@ The modular architecture enables easy addition of new blockchains:
 
 **Completed Extensions:**
 <<<<<<< HEAD
+<<<<<<< HEAD
 - ✅ NEAR Protocol (Live on testnet with comprehensive integration)
 - ✅ Bitcoin (Complete implementation with full test coverage - 113/113 tests passing)
 
@@ -890,6 +948,15 @@ The modular architecture enables easy addition of new blockchains:
 - Aptos (Move modules)
 - Solana (Program-based atomic swaps)
 >>>>>>> 60545bf (docs: update documentation and enhance Cosmos   integration testing)
+=======
+- ✅ NEAR Protocol (Live on Sepolia + NEAR testnet)
+- ✅ Cosmos Ecosystem (Complete CosmWasm implementation, 8 chains supported)
+
+**Planned Extensions:**
+- Bitcoin (Script-based HTLCs)  
+- Aptos (Move modules)
+- Solana (Program-based atomic swaps)
+>>>>>>> 60545bf5f3b22e8cd9a550763615c822d862076e
 
 ## License
 
