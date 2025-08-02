@@ -6,9 +6,14 @@
  */
 
 import { EventEmitter } from 'events';
-// import { ShadeAgentFusionManager, ShadeAgentFusionConfig } from '../../tee-solver/src/tee/ShadeAgentFusionManager';
+import { logger } from '../utils/logger';
 
-// Mock types for now
+// Import from built version using absolute path
+const path = require('path');
+const ShadeAgentFusionManagerPath = path.resolve(__dirname, '../../../tee-solver/dist/tee/ShadeAgentFusionManager');
+const { ShadeAgentFusionManager } = require(ShadeAgentFusionManagerPath);
+
+// Type definitions
 interface ShadeAgentFusionConfig {
   walletPrivateKey: string;
   crossChainApiUrl: string;
@@ -36,9 +41,11 @@ interface ShadeAgentFusionConfig {
     securityLevel: string;
   };
   trustedMeasurements: {
+    expectedMrSeam: string;
+    expectedMrSignerSeam: string;
+    expectedMrtd: string;
     expectedCodeHash: string;
-    allowedSigners: string[];
-    minimumSecurityVersion: number;
+    minimumTcbLevel: number;
   };
   requireAttestation: boolean;
   allowFallbackSigning: boolean;
@@ -48,33 +55,11 @@ interface ShadeAgentFusionConfig {
   enableAuditLogging: boolean;
 }
 
-class ShadeAgentFusionManager extends EventEmitter {
-  constructor(config: ShadeAgentFusionConfig) {
-    super();
-  }
-  async initialize(): Promise<void> {}
-  async processQuoteRequest(request: any): Promise<any> {
-    return { success: true };
-  }
-  getStats(): any {
-    return {
-      tee: {
-        registrationStatus: 'registered',
-        teeSecurityLevel: 'high'
-      },
-      shadeAgent: {
-        teeOrders: 0
-      }
-    };
-  }
-  async stop(): Promise<void> {}
-}
-import { logger } from '../utils/logger';
-
 export interface TEEConfig {
   nearNetwork: 'mainnet' | 'testnet';
   nearAccountId: string;
   nearPrivateKey: string;
+  ethereumPrivateKey: string;
   enableChainSignatures: boolean;
   teeMode: boolean;
 }
@@ -118,7 +103,7 @@ export interface ExecutionStatus {
 
 export class TEESolverService extends EventEmitter {
   private config: TEEConfig;
-  private shadeAgentManager: ShadeAgentFusionManager | null = null;
+  private shadeAgentManager: any | null = null;
   private isInitialized = false;
   private executionStatus = new Map<string, ExecutionStatus>();
 
@@ -134,7 +119,7 @@ export class TEESolverService extends EventEmitter {
       // Create configuration for ShadeAgentFusionManager
       const fusionConfig: ShadeAgentFusionConfig = {
         // Basic Fusion config
-        walletPrivateKey: this.config.nearPrivateKey,
+        walletPrivateKey: this.config.ethereumPrivateKey,
         crossChainApiUrl: 'https://api.1inch.dev/fusion-plus',
         fusionApiUrl: 'https://api.1inch.dev/fusion',
         authKey: process.env.ONEINCH_API_KEY || '',
@@ -164,9 +149,11 @@ export class TEESolverService extends EventEmitter {
           securityLevel: 'high'
         },
         trustedMeasurements: {
-          expectedCodeHash: process.env.TEE_CODE_HASH || '',
-          allowedSigners: process.env.TEE_ALLOWED_SIGNERS?.split(',') || [],
-          minimumSecurityVersion: 1
+          expectedMrSeam: process.env.TEE_EXPECTED_MR_SEAM || '0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+          expectedMrSignerSeam: process.env.TEE_EXPECTED_MR_SIGNER_SEAM || '0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+          expectedMrtd: process.env.TEE_EXPECTED_MRTD || '0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+          expectedCodeHash: process.env.TEE_CODE_HASH || '0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+          minimumTcbLevel: parseInt(process.env.TEE_MINIMUM_TCB_LEVEL || '1')
         },
 
         // Security settings

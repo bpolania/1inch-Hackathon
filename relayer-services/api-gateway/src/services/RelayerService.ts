@@ -6,11 +6,13 @@
  */
 
 import { EventEmitter } from 'events';
-import { CrossChainExecutor } from '../../executor-client/src/execution/CrossChainExecutor';
-import { ProfitabilityAnalyzer } from '../../executor-client/src/analysis/ProfitabilityAnalyzer';
-import { OrderMonitor } from '../../executor-client/src/monitoring/OrderMonitor';
-import { WalletManager } from '../../executor-client/src/wallet/WalletManager';
-import { Config } from '../../executor-client/src/config/config';
+// Import built JavaScript modules using absolute paths
+const path = require('path');
+const { CrossChainExecutor } = require(path.resolve(__dirname, '../../../executor-client/dist/execution/CrossChainExecutor'));
+const { ProfitabilityAnalyzer } = require(path.resolve(__dirname, '../../../executor-client/dist/analysis/ProfitabilityAnalyzer'));
+const { OrderMonitor } = require(path.resolve(__dirname, '../../../executor-client/dist/monitoring/OrderMonitor'));
+const { WalletManager } = require(path.resolve(__dirname, '../../../executor-client/dist/wallet/WalletManager'));
+const { Config } = require(path.resolve(__dirname, '../../../executor-client/dist/config/config'));
 import { logger } from '../utils/logger';
 
 export interface RelayerConfig {
@@ -59,10 +61,10 @@ export interface RelayerMetrics {
 
 export class RelayerService extends EventEmitter {
   private config: RelayerConfig;
-  private crossChainExecutor: CrossChainExecutor | null = null;
-  private profitabilityAnalyzer: ProfitabilityAnalyzer | null = null;
-  private orderMonitor: OrderMonitor | null = null;
-  private walletManager: WalletManager | null = null;
+  private crossChainExecutor: any | null = null;
+  private profitabilityAnalyzer: any | null = null;
+  private orderMonitor: any | null = null;
+  private walletManager: any | null = null;
   private isInitialized = false;
   private orderSubmissions = new Map<string, OrderSubmission>();
   private metrics: RelayerMetrics = {
@@ -83,64 +85,96 @@ export class RelayerService extends EventEmitter {
     logger.info('🔧 Initializing Relayer Service...');
 
     try {
-      // Create configuration for executor components
-      const executorConfig: Config = {
-        wallet: {
-          ethereum: {
-            privateKey: this.config.ethereumPrivateKey,
-            rpcUrl: this.config.ethereumRpcUrl,
-            address: '' // Will be derived from private key
-          },
-          bitcoin: {
-            privateKey: this.config.bitcoinPrivateKey,
-            network: this.config.bitcoinNetwork,
-            apiUrl: this.config.bitcoinNetwork === 'mainnet' 
-              ? 'https://blockstream.info/api'
-              : 'https://blockstream.info/testnet/api'
-          }
-        },
+      // Create configuration matching executor-client's Config interface
+      // Derive ethereum address from private key
+      const { ethers } = require('ethers');
+      const ethereumWallet = new ethers.Wallet(this.config.ethereumPrivateKey);
+      
+      const executorConfig: any = {
+        networks: ['ethereum', 'near', 'bitcoin'],
         ethereum: {
+          name: 'Ethereum Sepolia',
           rpcUrl: this.config.ethereumRpcUrl,
+          chainId: 11155111,
           contracts: {
             factory: this.config.contractAddresses.factory,
             registry: this.config.contractAddresses.registry,
             token: this.config.contractAddresses.token
           }
         },
+        near: {
+          name: 'NEAR Testnet',
+          rpcUrl: process.env.NEAR_RPC_URL || 'https://rpc.testnet.near.org',
+          chainId: 40002,
+          contracts: {
+            factory: process.env.NEAR_CONTRACT_ID || 'fusion-plus.demo.cuteharbor3573.testnet'
+          }
+        },
         bitcoin: {
           network: this.config.bitcoinNetwork,
+          feeRate: 10,
+          htlcTimelock: 144,
+          dustThreshold: 546,
+          minConfirmations: 1,
           privateKey: this.config.bitcoinPrivateKey,
           apiUrl: this.config.bitcoinNetwork === 'mainnet' 
             ? 'https://blockstream.info/api'
-            : 'https://blockstream.info/testnet/api',
-          feeRate: 10,
-          htlcTimelock: 144,
-          minConfirmations: 1,
-          dustThreshold: 546
+            : 'https://blockstream.info/testnet/api'
+        },
+        wallet: {
+          ethereum: {
+            privateKey: this.config.ethereumPrivateKey,
+            address: ethereumWallet.address
+          },
+          near: {
+            accountId: process.env.NEAR_ACCOUNT_ID || 'relayer.testnet',
+            privateKey: process.env.NEAR_PRIVATE_KEY || '',
+            networkId: process.env.NEAR_NETWORK_ID || 'testnet'
+          },
+          bitcoin: {
+            privateKey: this.config.bitcoinPrivateKey,
+            network: this.config.bitcoinNetwork,
+            addressType: 'p2pkh'
+          }
         },
         execution: {
-          maxConcurrentOrders: 5,
+          loopInterval: 10000,
+          maxConcurrentExecutions: 3,
+          minProfitThreshold: '0.001',
+          maxGasPrice: '50',
           retryAttempts: 3,
-          retryDelay: 5000,
-          gasLimitMultiplier: 1.2,
-          profitabilityThreshold: 0.01
+          retryDelay: 5000
+        },
+        logging: {
+          level: 'info',
+          format: 'json'
         },
         dataDir: './data'
       };
 
       // Initialize wallet manager
+      logger.info('Initializing WalletManager...');
       this.walletManager = new WalletManager(executorConfig);
       await this.walletManager.initialize();
 
       // Initialize profitability analyzer
+      logger.info('Initializing ProfitabilityAnalyzer...');
       this.profitabilityAnalyzer = new ProfitabilityAnalyzer(executorConfig);
       await this.profitabilityAnalyzer.initialize();
 
       // Initialize order monitor
-      this.orderMonitor = new OrderMonitor(executorConfig);
-      await this.orderMonitor.initialize();
+      logger.info('Initializing OrderMonitor...');
+      try {
+        this.orderMonitor = new OrderMonitor(executorConfig, this.walletManager);
+        await this.orderMonitor.initialize();
+        logger.info('OrderMonitor initialized successfully');
+      } catch (error) {
+        logger.error('OrderMonitor initialization failed:', error);
+        throw error;
+      }
 
       // Initialize cross-chain executor
+      logger.info('Initializing CrossChainExecutor...');
       this.crossChainExecutor = new CrossChainExecutor(executorConfig, this.walletManager);
       await this.crossChainExecutor.initialize();
 
@@ -359,19 +393,19 @@ export class RelayerService extends EventEmitter {
 
   private setupEventHandlers(): void {
     if (this.crossChainExecutor) {
-      this.crossChainExecutor.on('executionComplete', (result) => {
+      this.crossChainExecutor.on('executionComplete', (result: any) => {
         logger.info('✅ Cross-chain execution completed:', result);
         this.handleExecutionComplete(result);
       });
 
-      this.crossChainExecutor.on('executionFailed', (result) => {
+      this.crossChainExecutor.on('executionFailed', (result: any) => {
         logger.error('💥 Cross-chain execution failed:', result);
         this.handleExecutionFailed(result);
       });
     }
 
     if (this.orderMonitor) {
-      this.orderMonitor.on('orderUpdate', (update) => {
+      this.orderMonitor.on('orderUpdate', (update: any) => {
         logger.info('📊 Order update received:', update);
         // Handle order monitor updates
       });
