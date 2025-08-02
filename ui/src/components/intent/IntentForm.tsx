@@ -14,10 +14,13 @@ import { AmountInput } from './AmountInput';
 import { PreferencesPanel } from './PreferencesPanel';
 import { IntentPreview } from './IntentPreview';
 import { PriceQuote } from './PriceQuote';
+import { CosmosAddressInput } from './CosmosAddressInput';
+import { CrossChainIndicator } from './CrossChainIndicator';
 import { useIntentStore } from '@/stores/intentStore';
 import { useWalletStore } from '@/stores/walletStore';
 import { WalletStatus, WalletStatusIndicator } from '@/components/wallet/WalletStatus';
 import { TokenInfo, ChainId, IntentRequest } from '@/types/intent';
+import { isCosmosChain } from '@/utils/cosmos';
 
 interface IntentFormProps {
   onSubmit?: (intentId: string) => void;
@@ -44,6 +47,7 @@ export function IntentForm({ onSubmit, className }: IntentFormProps) {
   const [toToken, setToToken] = useState<TokenInfo | null>(null);
   const [fromAmount, setFromAmount] = useState<string>('');
   const [minToAmount, setMinToAmount] = useState<string>('');
+  const [destinationAddress, setDestinationAddress] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
 
@@ -59,17 +63,34 @@ export function IntentForm({ onSubmit, className }: IntentFormProps) {
     }
   }, [currentIntent, createIntent, isConnected, accountId]);
 
+  // Clear destination address when switching away from Cosmos chains
+  useEffect(() => {
+    if (toToken && !isCosmosChain(toToken.chainId)) {
+      setDestinationAddress('');
+    }
+  }, [toToken]);
+
   // Update intent when form values change
   useEffect(() => {
     if (fromToken && toToken && fromAmount && minToAmount) {
-      updateIntent({
+      const intentUpdate: any = {
         fromToken,
         toToken,
         fromAmount,
         minToAmount,
-      });
+      };
+      
+      // Add destination address for Cosmos chains
+      if (isCosmosChain(toToken.chainId) && destinationAddress) {
+        intentUpdate.metadata = {
+          ...currentIntent?.metadata,
+          destinationAddress,
+        };
+      }
+      
+      updateIntent(intentUpdate);
     }
-  }, [fromToken, toToken, fromAmount, minToAmount, updateIntent]);
+  }, [fromToken, toToken, fromAmount, minToAmount, destinationAddress, updateIntent, currentIntent]);
 
   const handleSwapTokens = () => {
     const tempToken = fromToken;
@@ -106,7 +127,12 @@ export function IntentForm({ onSubmit, className }: IntentFormProps) {
   };
 
   const canPreview = fromToken && toToken && fromAmount && minToAmount;
-  const canSubmit = canPreview && currentIntent && isConnected;
+  
+  // Additional validation for Cosmos chains - require destination address
+  const cosmosAddressValid = !toToken || !isCosmosChain(toToken.chainId) || 
+    (destinationAddress && destinationAddress.length > 39);
+  
+  const canSubmit = canPreview && currentIntent && isConnected && cosmosAddressValid;
   
   // Check if user has sufficient balance (basic check)
   console.log('Balance debug:', { balanceFormatted, type: typeof balanceFormatted });
@@ -209,9 +235,32 @@ export function IntentForm({ onSubmit, className }: IntentFormProps) {
                   placeholder="0.0"
                   label="Minimum amount to receive"
                 />
+                
+                {/* Cosmos destination address input */}
+                {toToken && isCosmosChain(toToken.chainId) && (
+                  <div className="animate-fade-in">
+                    <CosmosAddressInput
+                      value={destinationAddress}
+                      onChange={setDestinationAddress}
+                      expectedChain={toToken.chainId}
+                      label="Destination Address"
+                      placeholder={`Enter your ${toToken.chainId} address`}
+                    />
+                  </div>
+                )}
               </div>
             </div>
           </div>
+
+          {/* Cross-Chain Indicator */}
+          {fromToken && toToken && fromToken.chainId !== toToken.chainId && (
+            <div className="animate-fade-in">
+              <CrossChainIndicator 
+                fromToken={fromToken} 
+                toToken={toToken} 
+              />
+            </div>
+          )}
 
           {/* Real-time 1inch Price Quote */}
           {fromToken && toToken && fromAmount && (

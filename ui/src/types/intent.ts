@@ -1,8 +1,8 @@
 /**
- * Type definitions for NEAR Intents
+ * Type definitions for Cross-Chain Intents
  */
 
-export type ChainId = 'bitcoin' | 'near' | 'ethereum';
+export type ChainId = 'bitcoin' | 'near' | 'ethereum' | 'neutron' | 'juno' | 'cosmos' | 'osmosis' | 'stargaze' | 'akash';
 
 export interface TokenInfo {
   address: string;

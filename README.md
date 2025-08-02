@@ -13,7 +13,7 @@ A **production-ready multi-chain extension** to 1inch Fusion+ that enables atomi
 3. **Live Bitcoin Atomic Swap**: **WORLD'S FIRST** Bitcoin atomic swap integrated with 1inch Fusion+ completed on testnets
 4. **Live on Sepolia**: All contracts deployed and operational ([View Contracts](#deployed-contracts))
 5. **Complete Atomic Swaps**: Full end-to-end cross-chain swaps with real token transfers **EXECUTING AUTOMATICALLY**
-6. **Frontend UI Complete**: **Next.js web application** with wallet integration and intent management (366/366 tests passing)
+6. **Frontend UI Complete**: **Next.js web application** with wallet integration, intent management, and **full Cosmos UI integration** (366/366 tests passing)
 7. **Real Token Transfers**: Demonstrated with 0.43 DT total transfers across multiple swaps including live Bitcoin swap
 8. **Comprehensive Testing**: 164+ contract tests + 366 UI tests + 385+ API/executor tests passing with complete integration coverage
 9. **Bitcoin HTLC Implementation**: Complete Bitcoin-side atomic swap functionality with real Bitcoin scripts
@@ -277,20 +277,29 @@ This is the **first successful integration** of Bitcoin atomic swaps with the 1i
 - **Native Token Support**: Automatic denomination handling (untrn, ujuno, uatom, uosmo, ustars, uakt)
 - **Dynamic Cost Estimation**: Chain-specific gas costs and complexity scaling
 
-### 🎨 **NEAR Intents UI - Complete User Interface**
+### 🎨 **Multi-Chain UI - Complete User Interface with Cosmos Integration**
 
 **Production-Ready Web Application** (`/ui/`)
 
-Complete user interface for creating and managing cross-chain intents with full wallet integration:
+Complete user interface for creating and managing cross-chain intents with full wallet integration and **comprehensive Cosmos ecosystem support**:
+
+#### 🌌 **NEW: COSMOS UI INTEGRATION COMPLETE** ✅
+- **🪙 Cosmos Token Selection**: Full support for 6 Cosmos chains (Neutron, Juno, Cosmos Hub, Osmosis, Stargaze, Akash)
+- **🔗 Address Validation**: Real-time bech32 address validation with chain-specific prefixes
+- **📍 Destination Address Input**: Dynamic Cosmos address input with validation and format examples
+- **🌉 Cross-Chain Indicators**: Visual indicators for cross-chain swaps with HTLC security explanations
+- **⚡ Real-Time Validation**: Instant feedback with green checkmarks or error indicators
+- **🎯 Chain Detection**: Automatic chain detection from address prefixes (neutron1, juno1, cosmos1, etc.)
 
 #### 🚀 **UI Features Complete**:
 - **💳 Wallet Integration**: MyNearWallet connection with full transaction signing
-- **🔄 Intent Creation**: Complete form for cross-chain swap intents
+- **🔄 Intent Creation**: Complete form for cross-chain swap intents **+ Cosmos destinations**
 - **📊 Intent Dashboard**: View and track intent status and history
-- **🔍 Token Selection**: Comprehensive token picker with search and filtering
+- **🔍 Token Selection**: Comprehensive token picker with search and filtering **+ 6 Cosmos chains**
 - **⚖️ Amount Input**: Smart amount input with balance validation
 - **🎛️ Preferences Panel**: Slippage tolerance, deadline, and priority settings
 - **📱 Responsive Design**: Works seamlessly on desktop, tablet, and mobile
+- **🌍 Multi-Chain Support**: Ethereum, NEAR, Bitcoin family, and **complete Cosmos ecosystem**
 
 #### 🔧 **Technical Stack**:
 - **Framework**: Next.js 14 with TypeScript and Tailwind CSS

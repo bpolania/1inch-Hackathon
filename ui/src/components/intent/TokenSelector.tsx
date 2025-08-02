@@ -75,12 +75,95 @@ const MOCK_TOKENS: TokenInfo[] = [
     logoURI: '/tokens/btc.svg',
     priceUSD: 43250.00,
   },
+
+  // Cosmos Ecosystem tokens
+  // Neutron Testnet
+  {
+    address: 'untrn',
+    symbol: 'NTRN',
+    decimals: 6,
+    chainId: 'neutron',
+    logoURI: '/tokens/neutron.svg',
+    priceUSD: 0.45,
+  },
+  {
+    address: 'neutron1fhkzytllmzv8xqz6cjcm5k0qj58y8w8gknhfmzj',
+    symbol: 'USDC.axl',
+    decimals: 6,
+    chainId: 'neutron',
+    logoURI: '/tokens/usdc.svg',
+    priceUSD: 1.00,
+  },
+
+  // Juno Testnet  
+  {
+    address: 'ujunox',
+    symbol: 'JUNOX',
+    decimals: 6,
+    chainId: 'juno',
+    logoURI: '/tokens/juno.svg',
+    priceUSD: 0.33,
+  },
+  {
+    address: 'juno1mkw83sv6c7sjdvsaplrzc8yaes9l42p4mhy0ssuxjnyzl87c9eps7dswql',
+    symbol: 'USDC',
+    decimals: 6,
+    chainId: 'juno',
+    logoURI: '/tokens/usdc.svg',
+    priceUSD: 1.00,
+  },
+
+  // Cosmos Hub
+  {
+    address: 'uatom',
+    symbol: 'ATOM',
+    decimals: 6,
+    chainId: 'cosmos',
+    logoURI: '/tokens/atom.svg',
+    priceUSD: 8.45,
+  },
+
+  // Osmosis
+  {
+    address: 'uosmo',
+    symbol: 'OSMO',
+    decimals: 6,
+    chainId: 'osmosis',
+    logoURI: '/tokens/osmosis.svg',
+    priceUSD: 0.65,
+  },
+
+  // Stargaze
+  {
+    address: 'ustars',
+    symbol: 'STARS',
+    decimals: 6,
+    chainId: 'stargaze',
+    logoURI: '/tokens/stargaze.svg',
+    priceUSD: 0.02,
+  },
+
+  // Akash
+  {
+    address: 'uakt',
+    symbol: 'AKT',
+    decimals: 6,
+    chainId: 'akash',
+    logoURI: '/tokens/akash.svg',
+    priceUSD: 3.22,
+  },
 ];
 
 const CHAIN_INFO = {
   near: { name: 'NEAR', color: 'bg-near-500', textColor: 'text-near-600' },
   ethereum: { name: 'Ethereum', color: 'bg-blue-500', textColor: 'text-blue-600' },
   bitcoin: { name: 'Bitcoin', color: 'bg-bitcoin-500', textColor: 'text-bitcoin-600' },
+  neutron: { name: 'Neutron', color: 'bg-purple-500', textColor: 'text-purple-600' },
+  juno: { name: 'Juno', color: 'bg-pink-500', textColor: 'text-pink-600' },
+  cosmos: { name: 'Cosmos Hub', color: 'bg-indigo-500', textColor: 'text-indigo-600' },
+  osmosis: { name: 'Osmosis', color: 'bg-gradient-to-r bg-purple-400', textColor: 'text-purple-600' },
+  stargaze: { name: 'Stargaze', color: 'bg-red-500', textColor: 'text-red-600' },
+  akash: { name: 'Akash', color: 'bg-green-500', textColor: 'text-green-600' },
 };
 
 interface TokenSelectorProps {
