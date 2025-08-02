@@ -22,6 +22,7 @@ import { Decimal } from '@cosmjs/math';
 export interface CosmosExecutionResult {
     success: boolean;
     orderHash: string;
+    chainId?: number;
     contractAddress?: string;
     transactionHash?: string;
     transactions: string[];
@@ -54,6 +55,8 @@ export class CosmosExecutor extends EventEmitter {
     private cosmosConfig: CosmosConfig;
     private clients: Map<string, SigningCosmWasmClient> = new Map();
     private wallet?: DirectSecp256k1HdWallet | DirectSecp256k1Wallet;
+    private totalExecutions: number = 0;
+    private initialized: boolean = false;
 
     constructor(config: Config) {
         super();
@@ -70,6 +73,7 @@ export class CosmosExecutor extends EventEmitter {
         // Initialize clients for each supported Cosmos chain
         await this.initializeClients();
 
+        this.initialized = true;
         logger.info('✅ Cosmos Executor initialized');
     }
 
@@ -163,6 +167,7 @@ export class CosmosExecutor extends EventEmitter {
         const result: CosmosExecutionResult = {
             success: false,
             orderHash,
+            chainId: order.destinationChainId,
             transactions: [],
             executionTime: 0
         };
@@ -249,6 +254,7 @@ export class CosmosExecutor extends EventEmitter {
             });
 
             result.success = true;
+            this.totalExecutions++;
 
         } catch (error) {
             logger.error(`💥 Cosmos execution failed for order ${orderHash}:`, error);
@@ -445,6 +451,10 @@ export class CosmosExecutor extends EventEmitter {
     // Public methods for status and control
     public getStatus(): object {
         return {
+            initialized: this.initialized,
+            connectedChains: this.initialized ? ['neutron', 'juno', 'cosmoshub'] : [],
+            activeClients: this.clients.size,
+            totalExecutions: this.totalExecutions,
             supportedChains: Object.keys(this.cosmosConfig.networks),
             connectedClients: Array.from(this.clients.keys()),
             isInitialized: this.clients.size > 0
@@ -457,5 +467,25 @@ export class CosmosExecutor extends EventEmitter {
 
     public isChainSupported(chainId: string): boolean {
         return this.clients.has(chainId);
+    }
+
+    public async stop(): Promise<void> {
+        logger.info('🛑 Stopping Cosmos Executor...');
+        
+        // Disconnect all clients
+        for (const [chainId, client] of this.clients.entries()) {
+            try {
+                await client.disconnect();
+                logger.debug(`Disconnected from chain ${chainId}`);
+            } catch (error) {
+                logger.warn(`Failed to disconnect from chain ${chainId}:`, error);
+            }
+        }
+        
+        this.clients.clear();
+        this.initialized = false;
+        this.totalExecutions = 0;
+        
+        logger.info('✅ Cosmos Executor stopped');
     }
 }
