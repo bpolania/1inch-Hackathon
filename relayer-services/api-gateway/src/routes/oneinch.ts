@@ -27,8 +27,82 @@ const validateRequest = (req: any, res: any, next: any) => {
 };
 
 /**
- * GET /api/1inch/quote
- * Get Fusion+ cross-chain quote using our TEE solver
+ * @swagger
+ * /api/1inch/quote:
+ *   get:
+ *     summary: Get cross-chain swap quote
+ *     description: Get a quote for swapping tokens using 1inch Fusion+ with TEE solver integration
+ *     tags: [1inch]
+ *     parameters:
+ *       - in: query
+ *         name: chainId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Source chain ID
+ *         example: "1"
+ *       - in: query
+ *         name: fromToken
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Source token address
+ *         example: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+ *       - in: query
+ *         name: toToken
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Destination token address
+ *         example: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+ *       - in: query
+ *         name: amount
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Amount to swap (in smallest unit)
+ *         example: "1000000000000000000"
+ *       - in: query
+ *         name: toChainId
+ *         schema:
+ *           type: string
+ *         description: Destination chain ID (for cross-chain swaps)
+ *         example: "137"
+ *       - in: query
+ *         name: slippage
+ *         schema:
+ *           type: number
+ *         description: Slippage tolerance percentage
+ *         default: 1.0
+ *         example: 1.0
+ *     responses:
+ *       200:
+ *         description: Quote retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   $ref: '#/components/schemas/QuoteResponse'
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ *       400:
+ *         description: Validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 router.get('/quote', [
   query('chainId').isNumeric().withMessage('Chain ID is required'),
@@ -106,8 +180,55 @@ router.get('/quote', [
 });
 
 /**
- * GET /api/1inch/tokens/:chainId
- * Get supported tokens for Fusion+ cross-chain swaps
+ * @swagger
+ * /api/1inch/tokens/{chainId}:
+ *   get:
+ *     summary: Get supported tokens
+ *     description: Get list of tokens supported for Fusion+ cross-chain swaps on a specific chain
+ *     tags: [1inch]
+ *     parameters:
+ *       - in: path
+ *         name: chainId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Chain ID to get tokens for
+ *         example: "1"
+ *     responses:
+ *       200:
+ *         description: Tokens retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   additionalProperties:
+ *                     $ref: '#/components/schemas/Token'
+ *                 supportedRoutes:
+ *                   type: object
+ *                 crossChainEnabled:
+ *                   type: boolean
+ *                   example: true
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ *       400:
+ *         description: Validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 router.get('/tokens/:chainId', [
   param('chainId').isNumeric().withMessage('Chain ID is required')
@@ -195,8 +316,46 @@ router.get('/tokens/:chainId', [
 });
 
 /**
- * POST /api/1inch/swap
- * Create Fusion+ cross-chain swap order using our deployed factory
+ * @swagger
+ * /api/1inch/swap:
+ *   post:
+ *     summary: Create cross-chain swap
+ *     description: Create a Fusion+ cross-chain swap order using TEE solver and deployed factory contracts
+ *     tags: [1inch]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/SwapRequest'
+ *     responses:
+ *       200:
+ *         description: Swap created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   $ref: '#/components/schemas/SwapResponse'
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ *       400:
+ *         description: Validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 router.post('/swap', [
   body('chainId').isNumeric().withMessage('Chain ID is required'),
@@ -303,8 +462,61 @@ router.post('/swap', [
 });
 
 /**
- * GET /api/1inch/protocols/:chainId
- * Get supported Fusion+ cross-chain protocols and adapters
+ * @swagger
+ * /api/1inch/protocols/{chainId}:
+ *   get:
+ *     summary: Get supported protocols
+ *     description: Get list of Fusion+ cross-chain protocols and adapters for a specific chain
+ *     tags: [1inch]
+ *     parameters:
+ *       - in: path
+ *         name: chainId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Chain ID to get protocols for
+ *         example: "1"
+ *     responses:
+ *       200:
+ *         description: Protocols retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Protocol'
+ *                 summary:
+ *                   type: object
+ *                   properties:
+ *                     totalProtocols:
+ *                       type: number
+ *                     crossChainEnabled:
+ *                       type: boolean
+ *                     supportedDestinations:
+ *                       type: number
+ *                     deployedContracts:
+ *                       type: object
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ *       400:
+ *         description: Validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 router.get('/protocols/:chainId', [
   param('chainId').isNumeric().withMessage('Chain ID is required')
@@ -412,8 +624,56 @@ router.get('/protocols/:chainId', [
 });
 
 /**
- * GET /api/1inch/orders/:orderHash/status
- * Get detailed order status and execution progress
+ * @swagger
+ * /api/1inch/orders/{orderHash}/status:
+ *   get:
+ *     summary: Get detailed order status
+ *     description: Get comprehensive order status including execution progress and cross-chain stages
+ *     tags: [Orders]
+ *     parameters:
+ *       - in: path
+ *         name: orderHash
+ *         required: true
+ *         schema:
+ *           type: string
+ *           minLength: 66
+ *           maxLength: 66
+ *         description: Order hash (0x-prefixed 66 characters)
+ *         example: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef12"
+ *     responses:
+ *       200:
+ *         description: Order status retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   $ref: '#/components/schemas/OrderStatus'
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ *       404:
+ *         description: Order not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       400:
+ *         description: Validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 router.get('/orders/:orderHash/status', [
   param('orderHash').isLength({ min: 66, max: 66 }).withMessage('Invalid order hash format')
@@ -548,8 +808,74 @@ router.get('/orders/:orderHash/status', [
 });
 
 /**
- * GET /api/1inch/orders/:orderHash
- * Get specific order details and status
+ * @swagger
+ * /api/1inch/orders/{orderHash}:
+ *   get:
+ *     summary: Get order details
+ *     description: Get specific order details including current status and execution information
+ *     tags: [Orders]
+ *     parameters:
+ *       - in: path
+ *         name: orderHash
+ *         required: true
+ *         schema:
+ *           type: string
+ *           minLength: 66
+ *           maxLength: 66
+ *         description: Order hash (0x-prefixed 66 characters)
+ *         example: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef12"
+ *     responses:
+ *       200:
+ *         description: Order details retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     orderHash:
+ *                       type: string
+ *                     order:
+ *                       $ref: '#/components/schemas/Order'
+ *                     status:
+ *                       type: string
+ *                       enum: [pending, matched, completed, failed]
+ *                     statusDetails:
+ *                       type: string
+ *                     escrowAddresses:
+ *                       type: object
+ *                     execution:
+ *                       type: object
+ *                     timeline:
+ *                       type: object
+ *                     canCancel:
+ *                       type: boolean
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ *       404:
+ *         description: Order not found or inactive
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       400:
+ *         description: Validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 router.get('/orders/:orderHash', [
   param('orderHash').isLength({ min: 66, max: 66 }).withMessage('Invalid order hash format')
@@ -640,8 +966,101 @@ router.get('/orders/:orderHash', [
 });
 
 /**
- * GET /api/1inch/orders
- * List user's orders with filtering and pagination
+ * @swagger
+ * /api/1inch/orders:
+ *   get:
+ *     summary: List orders
+ *     description: List user's orders with filtering, sorting, and pagination
+ *     tags: [Orders]
+ *     parameters:
+ *       - in: query
+ *         name: userAddress
+ *         schema:
+ *           type: string
+ *           pattern: '^0x[a-fA-F0-9]{40}$'
+ *         description: Filter by user address
+ *         example: "0x742d35Cc6634C0532925a3b844Bc9e7595f9B3e0"
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           enum: [pending, matched, completed, failed, cancelled]
+ *         description: Filter by order status
+ *       - in: query
+ *         name: chainId
+ *         schema:
+ *           type: string
+ *         description: Filter by chain ID
+ *         example: "1"
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 100
+ *           default: 10
+ *         description: Number of results per page
+ *       - in: query
+ *         name: offset
+ *         schema:
+ *           type: integer
+ *           minimum: 0
+ *           default: 0
+ *         description: Number of results to skip
+ *     responses:
+ *       200:
+ *         description: Orders retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     orders:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         allOf:
+ *                           - $ref: '#/components/schemas/Order'
+ *                           - type: object
+ *                             properties:
+ *                               execution:
+ *                                 type: object
+ *                               canCancel:
+ *                                 type: boolean
+ *                     pagination:
+ *                       type: object
+ *                       properties:
+ *                         total:
+ *                           type: integer
+ *                         limit:
+ *                           type: integer
+ *                         offset:
+ *                           type: integer
+ *                         hasMore:
+ *                           type: boolean
+ *                     filters:
+ *                       type: object
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ *       400:
+ *         description: Validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 router.get('/orders', [
   query('userAddress').optional().matches(/^0x[a-fA-F0-9]{40}$/).withMessage('Invalid user address'),
@@ -713,8 +1132,96 @@ router.get('/orders', [
 });
 
 /**
- * DELETE /api/1inch/orders/:orderHash
- * Cancel an existing order
+ * @swagger
+ * /api/1inch/orders/{orderHash}:
+ *   delete:
+ *     summary: Cancel order
+ *     description: Cancel an existing order (only allowed for pending orders by the maker)
+ *     tags: [Orders]
+ *     parameters:
+ *       - in: path
+ *         name: orderHash
+ *         required: true
+ *         schema:
+ *           type: string
+ *           minLength: 66
+ *           maxLength: 66
+ *         description: Order hash to cancel
+ *         example: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef12"
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - userAddress
+ *             properties:
+ *               userAddress:
+ *                 type: string
+ *                 pattern: '^0x[a-fA-F0-9]{40}$'
+ *                 description: Address of the order maker
+ *                 example: "0x742d35Cc6634C0532925a3b844Bc9e7595f9B3e0"
+ *               signature:
+ *                 type: string
+ *                 description: Optional signature for verification
+ *     responses:
+ *       200:
+ *         description: Order cancelled successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     orderHash:
+ *                       type: string
+ *                     status:
+ *                       type: string
+ *                       example: "cancelled"
+ *                     message:
+ *                       type: string
+ *                     transactionHash:
+ *                       type: string
+ *                     cancelledAt:
+ *                       type: string
+ *                       format: date-time
+ *                     gasUsed:
+ *                       type: string
+ *                     etherscanUrl:
+ *                       type: string
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ *       400:
+ *         description: Cannot cancel order (already matched or expired)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       403:
+ *         description: Forbidden (not order maker)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       404:
+ *         description: Order not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 router.delete('/orders/:orderHash', [
   param('orderHash').isLength({ min: 66, max: 66 }).withMessage('Invalid order hash format'),

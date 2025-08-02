@@ -8,8 +8,32 @@ import { logger } from '../utils/logger';
 const router = Router();
 
 /**
- * GET /api/health
- * Basic health check
+ * @swagger
+ * /api/health:
+ *   get:
+ *     summary: Basic health check
+ *     description: Returns basic health status of the API
+ *     tags: [System]
+ *     responses:
+ *       200:
+ *         description: Service is healthy
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 status:
+ *                   type: string
+ *                   example: "healthy"
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ *                 uptime:
+ *                   type: number
+ *                   description: Uptime in seconds
+ *                 version:
+ *                   type: string
+ *                   example: "1.0.0"
  */
 router.get('/', (req, res) => {
   res.json({
@@ -21,8 +45,25 @@ router.get('/', (req, res) => {
 });
 
 /**
- * GET /api/health/detailed
- * Detailed health check including services
+ * @swagger
+ * /api/health/detailed:
+ *   get:
+ *     summary: Detailed health check
+ *     description: Returns detailed health status including all services
+ *     tags: [System]
+ *     responses:
+ *       200:
+ *         description: All services are healthy
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/HealthStatus'
+ *       503:
+ *         description: One or more services are unhealthy
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/HealthStatus'
  */
 router.get('/detailed', async (req, res) => {
   try {

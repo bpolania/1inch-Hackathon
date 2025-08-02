@@ -11,6 +11,7 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { WebSocketServer } from 'ws';
 import { createServer } from 'http';
+import swaggerUi from 'swagger-ui-express';
 import dotenv from 'dotenv';
 
 // Import route handlers
@@ -28,6 +29,7 @@ import { TEESolverService } from './services/TEESolverService';
 import { RelayerService } from './services/RelayerService';
 import { WebSocketService } from './services/WebSocketService';
 import { logger } from './utils/logger';
+import { swaggerSpec } from './swagger/config';
 
 dotenv.config();
 
@@ -46,12 +48,22 @@ let wsService: WebSocketService;
 async function initializeServices() {
   logger.info('🔧 Initializing API Gateway services...');
 
+  // Skip service initialization in development mode for Swagger testing
+  if (process.env.NODE_ENV === 'development' && process.env.SKIP_SERVICES === 'true') {
+    logger.info('⚠️ Skipping service initialization (SKIP_SERVICES=true)');
+    teeService = null as any;
+    relayerService = null as any;
+    wsService = null as any;
+    return;
+  }
+
   try {
     // Initialize TEE Solver Service
     teeService = new TEESolverService({
       nearNetwork: process.env.NEAR_NETWORK as 'mainnet' | 'testnet' || 'testnet',
       nearAccountId: process.env.NEAR_ACCOUNT_ID || 'tee-solver.testnet',
       nearPrivateKey: process.env.NEAR_PRIVATE_KEY || '',
+      ethereumPrivateKey: process.env.ETHEREUM_PRIVATE_KEY || '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80',
       enableChainSignatures: process.env.ENABLE_CHAIN_SIGNATURES === 'true',
       teeMode: process.env.TEE_MODE === 'true'
     });
@@ -60,14 +72,14 @@ async function initializeServices() {
 
     // Initialize Relayer Service
     relayerService = new RelayerService({
-      ethereumRpcUrl: process.env.ETHEREUM_RPC_URL || 'https://sepolia.infura.io/v3/PROJECT_ID',
-      ethereumPrivateKey: process.env.ETHEREUM_PRIVATE_KEY || '',
+      ethereumRpcUrl: process.env.ETHEREUM_RPC_URL || 'https://ethereum-sepolia-rpc.publicnode.com',
+      ethereumPrivateKey: process.env.ETHEREUM_PRIVATE_KEY || '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80',
       bitcoinNetwork: process.env.BITCOIN_NETWORK as 'mainnet' | 'testnet' || 'testnet',
-      bitcoinPrivateKey: process.env.BITCOIN_PRIVATE_KEY || '',
+      bitcoinPrivateKey: process.env.BITCOIN_PRIVATE_KEY || 'cNJFgo1driFnPcBdBX8BrJrpxchBWXwXCvNH5SoSkdcF6JXXwHMm',
       contractAddresses: {
-        factory: process.env.FACTORY_CONTRACT_ADDRESS || '',
-        registry: process.env.REGISTRY_CONTRACT_ADDRESS || '',
-        token: process.env.TOKEN_CONTRACT_ADDRESS || ''
+        factory: process.env.FACTORY_CONTRACT_ADDRESS || '0xbeEab741D2869404FcB747057f5AbdEffc3A138d',
+        registry: process.env.REGISTRY_CONTRACT_ADDRESS || '0x09Ab998Cb3448ad281C116c9fC9e4b01e4533beD',
+        token: process.env.TOKEN_CONTRACT_ADDRESS || '0xaa86ed59bcf10c838F2abDa08D1Ca8C6D1609d43'
       }
     });
 
@@ -81,7 +93,7 @@ async function initializeServices() {
 
   } catch (error) {
     logger.error('💥 Failed to initialize services:', error);
-    process.exit(1);
+    throw error;
   }
 }
 
@@ -136,6 +148,12 @@ function configureRoutes() {
     next();
   });
 
+  // Swagger documentation
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+    customCss: '.swagger-ui .topbar { display: none }',
+    customSiteTitle: '1inch Fusion+ API Documentation'
+  }));
+
   // API routes
   app.use('/api/health', healthRoutes);
   app.use('/api/tee', teeRoutes);
@@ -165,7 +183,8 @@ function configureRoutes() {
         users: '/api/users',
         chains: '/api/chains',
         proofs: '/api/proofs',
-        websocket: '/ws'
+        websocket: '/ws',
+        documentation: '/api-docs'
       }
     });
   });

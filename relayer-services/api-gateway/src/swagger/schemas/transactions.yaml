@@ -1,0 +1,159 @@
+# Transaction Schemas
+components:
+  schemas:
+    TransactionStatus:
+      type: object
+      properties:
+        txHash:
+          type: string
+          example: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef12"
+        chainId:
+          type: number
+          example: 1
+        status:
+          type: string
+          enum: [pending, confirmed, failed]
+          example: "confirmed"
+        confirmations:
+          type: number
+          example: 12
+        blockNumber:
+          type: number
+          example: 18500000
+        blockHash:
+          type: string
+          example: "0xabcd..."
+        from:
+          type: string
+          example: "0x742d35Cc6634C0532925a3b844Bc9e7595f9B3e0"
+        to:
+          type: string
+          example: "0xbeEab741D2869404FcB747057f5AbdEffc3A138d"
+        value:
+          type: string
+          example: "1000000000000000000"
+        gasUsed:
+          type: string
+          example: "150000"
+        gasPrice:
+          type: string
+          example: "20000000000"
+        explorerUrl:
+          type: string
+          example: "https://etherscan.io/tx/0x123..."
+        isConfirmed:
+          type: boolean
+          example: true
+        timestamp:
+          type: number
+          example: 1704326400
+
+    CrossChainStatus:
+      type: object
+      properties:
+        bundleId:
+          type: string
+          example: "cross-chain-bundle-123"
+        overallStatus:
+          type: string
+          enum: [pending, partial, completed, failed]
+          example: "completed"
+        isAtomic:
+          type: boolean
+          example: true
+        transactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/TransactionStatus'
+        summary:
+          type: object
+          properties:
+            totalTransactions:
+              type: integer
+              example: 3
+            confirmedTransactions:
+              type: integer
+              example: 3
+            failedTransactions:
+              type: integer
+              example: 0
+            pendingTransactions:
+              type: integer
+              example: 0
+            estimatedCompletionTime:
+              type: string
+              format: date-time
+            nextAction:
+              type: string
+              example: "All transactions confirmed, swap completed"
+
+    IntentLifecycle:
+      type: object
+      properties:
+        intentId:
+          type: string
+          example: "intent-123"
+        status:
+          type: string
+          enum: [created, analyzing, matching, executing, completed, failed]
+          example: "completed"
+        progress:
+          type: number
+          minimum: 0
+          maximum: 100
+          example: 100
+        stages:
+          type: array
+          items:
+            type: object
+            properties:
+              stage:
+                type: string
+                example: "Intent Created"
+              status:
+                type: string
+                enum: [pending, in_progress, completed, failed]
+              timestamp:
+                type: string
+                format: date-time
+              details:
+                type: object
+        transactions:
+          type: array
+          items:
+            type: object
+            properties:
+              chainId:
+                type: number
+              txHash:
+                type: string
+              status:
+                type: string
+              explorerUrl:
+                type: string
+        timeline:
+          type: object
+          properties:
+            created:
+              type: string
+              format: date-time
+            matched:
+              type: string
+              format: date-time
+            executionStarted:
+              type: string
+              format: date-time
+            completed:
+              type: string
+              format: date-time
+        profitAnalysis:
+          type: object
+          properties:
+            estimatedProfit:
+              type: string
+            actualProfit:
+              type: string
+            gasSpent:
+              type: string
+            feesCollected:
+              type: string

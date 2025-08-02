@@ -17,6 +17,8 @@
     "lint": "eslint src --ext .ts"
   },
   "dependencies": {
+    "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-express": "^4.1.8",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "ethers": "^6.15.0",
@@ -25,6 +27,8 @@
     "express-validator": "^7.0.1",
     "helmet": "^7.1.0",
     "node-fetch": "^2.7.0",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
     "ws": "^8.16.0",
     "zod": "^3.22.4"
   },

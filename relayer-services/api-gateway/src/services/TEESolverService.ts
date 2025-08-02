@@ -6,13 +6,60 @@
  */
 
 import { EventEmitter } from 'events';
-import { ShadeAgentFusionManager, ShadeAgentFusionConfig } from '../../tee-solver/src/tee/ShadeAgentFusionManager';
 import { logger } from '../utils/logger';
+
+// Import from built version using absolute path
+const path = require('path');
+const ShadeAgentFusionManagerPath = path.resolve(__dirname, '../../../tee-solver/dist/tee/ShadeAgentFusionManager');
+const { ShadeAgentFusionManager } = require(ShadeAgentFusionManagerPath);
+
+// Type definitions
+interface ShadeAgentFusionConfig {
+  walletPrivateKey: string;
+  crossChainApiUrl: string;
+  fusionApiUrl: string;
+  authKey: string;
+  supportedNetworks: number[];
+  defaultPreset: string;
+  defaultValidityPeriod: number;
+  solverAddress: string;
+  enableChainSignatures: boolean;
+  chainSignatureConfig?: {
+    nearNetwork: string;
+    nearAccountId: string;
+    nearPrivateKey: string;
+    derivationPath: string;
+  };
+  fallbackToPrivateKey: boolean;
+  signatureValidation: boolean;
+  teeConfig: {
+    teeMode: boolean;
+    attestationEndpoint: string;
+    shadeAgentEndpoint: string;
+    registrationRetries: number;
+    attestationCacheTimeout: number;
+    securityLevel: string;
+  };
+  trustedMeasurements: {
+    expectedMrSeam: string;
+    expectedMrSignerSeam: string;
+    expectedMrtd: string;
+    expectedCodeHash: string;
+    minimumTcbLevel: number;
+  };
+  requireAttestation: boolean;
+  allowFallbackSigning: boolean;
+  attestationCacheTimeout: number;
+  strictVerification: boolean;
+  minimumTrustLevel: string;
+  enableAuditLogging: boolean;
+}
 
 export interface TEEConfig {
   nearNetwork: 'mainnet' | 'testnet';
   nearAccountId: string;
   nearPrivateKey: string;
+  ethereumPrivateKey: string;
   enableChainSignatures: boolean;
   teeMode: boolean;
 }
@@ -56,7 +103,7 @@ export interface ExecutionStatus {
 
 export class TEESolverService extends EventEmitter {
   private config: TEEConfig;
-  private shadeAgentManager: ShadeAgentFusionManager | null = null;
+  private shadeAgentManager: any | null = null;
   private isInitialized = false;
   private executionStatus = new Map<string, ExecutionStatus>();
 
@@ -72,7 +119,7 @@ export class TEESolverService extends EventEmitter {
       // Create configuration for ShadeAgentFusionManager
       const fusionConfig: ShadeAgentFusionConfig = {
         // Basic Fusion config
-        walletPrivateKey: this.config.nearPrivateKey,
+        walletPrivateKey: this.config.ethereumPrivateKey,
         crossChainApiUrl: 'https://api.1inch.dev/fusion-plus',
         fusionApiUrl: 'https://api.1inch.dev/fusion',
         authKey: process.env.ONEINCH_API_KEY || '',
@@ -102,9 +149,11 @@ export class TEESolverService extends EventEmitter {
           securityLevel: 'high'
         },
         trustedMeasurements: {
-          expectedCodeHash: process.env.TEE_CODE_HASH || '',
-          allowedSigners: process.env.TEE_ALLOWED_SIGNERS?.split(',') || [],
-          minimumSecurityVersion: 1
+          expectedMrSeam: process.env.TEE_EXPECTED_MR_SEAM || '0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+          expectedMrSignerSeam: process.env.TEE_EXPECTED_MR_SIGNER_SEAM || '0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+          expectedMrtd: process.env.TEE_EXPECTED_MRTD || '0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+          expectedCodeHash: process.env.TEE_CODE_HASH || '0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
+          minimumTcbLevel: parseInt(process.env.TEE_MINIMUM_TCB_LEVEL || '1')
         },
 
         // Security settings
@@ -305,12 +354,12 @@ export class TEESolverService extends EventEmitter {
   private setupEventHandlers(): void {
     if (!this.shadeAgentManager) return;
 
-    this.shadeAgentManager.on('order_verified_and_submitted', (data) => {
+    this.shadeAgentManager.on('order_verified_and_submitted', (data: any) => {
       logger.info('📤 TEE order submitted:', data);
       this.emit('orderSubmitted', data);
     });
 
-    this.shadeAgentManager.on('processing_failed', (data) => {
+    this.shadeAgentManager.on('processing_failed', (data: any) => {
       logger.error('💥 TEE processing failed:', data);
       this.emit('processingFailed', data);
     });
