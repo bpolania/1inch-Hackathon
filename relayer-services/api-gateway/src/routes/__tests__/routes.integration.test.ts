@@ -76,6 +76,76 @@ describe('API Gateway Routes Integration', () => {
       expect(errors).toHaveLength(0);
     });
 
+    it('should validate Cosmos intent data', () => {
+      const validateCosmosIntent = (intent: any) => {
+        const errors: string[] = [];
+        
+        if (!intent.id) errors.push('Intent ID is required');
+        if (!intent.destinationChainId) errors.push('Destination chain ID is required');
+        if (!intent.fromAmount) errors.push('From amount is required');
+        if (!intent.user) errors.push('User address is required');
+        
+        // Validate Cosmos chain IDs
+        const validCosmosChains = [7001, 7002, 30001];
+        if (intent.destinationChainId && !validCosmosChains.includes(intent.destinationChainId)) {
+          errors.push('Invalid Cosmos chain ID');
+        }
+
+        // Validate Cosmos address format
+        if (intent.destinationAddress) {
+          const bech32Regex = /^[a-z]+1[a-z0-9]{38,58}$/;
+          if (!bech32Regex.test(intent.destinationAddress)) {
+            errors.push('Invalid Cosmos address format');
+          }
+        }
+
+        // Validate CosmWasm parameters if present
+        if (intent.cosmwasmParams) {
+          if (!intent.cosmwasmParams.contractAddress) {
+            errors.push('CosmWasm contract address is required');
+          }
+          if (!intent.cosmwasmParams.msg) {
+            errors.push('CosmWasm message is required');
+          }
+        }
+        
+        return errors;
+      };
+
+      // Valid Cosmos intent
+      const validCosmosIntent = {
+        id: 'cosmos-intent-789',
+        destinationChainId: 7001, // Neutron
+        destinationAddress: 'neutron1abcdef1234567890abcdef1234567890abcdef123',
+        fromAmount: '1000000000000000000',
+        user: '0x1234567890123456789012345678901234567890',
+        cosmwasmParams: {
+          contractAddress: 'neutron1contract123456789',
+          msg: { execute_fusion_order: { amount: '1000000' } },
+          gasLimit: 300000
+        }
+      };
+
+      const validErrors = validateCosmosIntent(validCosmosIntent);
+      expect(validErrors).toHaveLength(0);
+
+      // Invalid Cosmos intent
+      const invalidCosmosIntent = {
+        destinationChainId: 99999, // Invalid chain
+        destinationAddress: 'invalid_address',
+        cosmwasmParams: {
+          contractAddress: '' // Empty contract address
+        }
+      };
+
+      const invalidErrors = validateCosmosIntent(invalidCosmosIntent);
+      expect(invalidErrors).toContain('Intent ID is required');
+      expect(invalidErrors).toContain('Invalid Cosmos chain ID');
+      expect(invalidErrors).toContain('Invalid Cosmos address format');
+      expect(invalidErrors).toContain('CosmWasm contract address is required');
+      expect(invalidErrors).toContain('CosmWasm message is required');
+    });
+
     it('should validate 1inch quote parameters', () => {
       const validate1inchParams = (params: any) => {
         const errors: string[] = [];
