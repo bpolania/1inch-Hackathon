@@ -68,30 +68,41 @@ describe('RelayerIntegrationService', () => {
 
   describe('checkRelayerHealth', () => {
     it('should return healthy status when service is running', async () => {
-      const mockStatus = {
-        isRunning: true,
-        queueLength: 2,
-        walletStatus: {
-          ethereum: { connected: true, address: '0x123', balance: '1.5' },
-          near: { connected: true, accountId: 'test.near', balance: '100' }
+      const mockApiResponse = {
+        success: true,
+        data: {
+          isRunning: true,
+          queueLength: 2,
+          ethereumAddress: '0x123',
+          ethereumBalance: '1.5',
+          nearAccountId: 'test.near',
+          nearBalance: '100',
+          totalProcessed: 42
         },
-        monitorStatus: {
-          connected: true,
-          lastEvent: Date.now(),
-          eventsProcessed: 42
+        isHealthy: true,
+        status: {
+          isRunning: true,
+          queueLength: 2,
+          ethereumAddress: '0x123',
+          ethereumBalance: '1.5',
+          nearAccountId: 'test.near',
+          nearBalance: '100',
+          totalProcessed: 42
         }
       };
 
       (global.fetch as jest.Mock).mockResolvedValueOnce({
         ok: true,
-        json: async () => mockStatus
+        json: async () => mockApiResponse
       });
 
       const result = await service.checkRelayerHealth();
 
       expect(result.healthy).toBe(true);
-      expect(result.status).toEqual(mockStatus);
-      expect(global.fetch).toHaveBeenCalledWith('http://localhost:3001/api/status');
+      expect(result.status?.isRunning).toBe(true);
+      expect(result.status?.walletStatus.ethereum.address).toBe('0x123');
+      expect(result.status?.walletStatus.near.accountId).toBe('test.near');
+      expect(global.fetch).toHaveBeenCalledWith('http://localhost:3001/status');
     });
 
     it('should return unhealthy status when service is down', async () => {
@@ -107,8 +118,11 @@ describe('RelayerIntegrationService', () => {
   describe('submitIntent', () => {
     it('should submit intent and return order submission', async () => {
       const mockResponse = {
-        orderHash: '0xorder123',
-        status: 'submitted'
+        success: true,
+        data: {
+          orderHash: '0xorder123',
+          status: 'submitted'
+        }
       };
 
       (global.fetch as jest.Mock).mockResolvedValueOnce({
@@ -124,7 +138,7 @@ describe('RelayerIntegrationService', () => {
       expect(result.timestamp).toBeDefined();
 
       expect(global.fetch).toHaveBeenCalledWith(
-        'http://localhost:3001/api/orders/submit',
+        'http://localhost:3001/submit',
         expect.objectContaining({
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -164,7 +178,7 @@ describe('RelayerIntegrationService', () => {
 
       expect(result).toEqual(mockAnalysis);
       expect(global.fetch).toHaveBeenCalledWith(
-        'http://localhost:3001/api/analysis/profitability',
+        'http://localhost:3001/analyze',
         expect.objectContaining({
           method: 'POST',
           headers: { 'Content-Type': 'application/json' }
@@ -222,7 +236,7 @@ describe('RelayerIntegrationService', () => {
       const result = await service.getExecutionStatus('intent-456');
 
       expect(result).toEqual(mockStatus);
-      expect(global.fetch).toHaveBeenCalledWith('http://localhost:3001/api/orders/intent-456/status');
+      expect(global.fetch).toHaveBeenCalledWith('http://localhost:3001/execution/intent-456');
     });
 
     it('should return null if status not found', async () => {
@@ -316,7 +330,7 @@ describe('RelayerIntegrationService', () => {
       const result = await service.getRelayerMetrics();
 
       expect(result).toEqual(mockMetrics);
-      expect(global.fetch).toHaveBeenCalledWith('http://localhost:3001/api/metrics');
+      expect(global.fetch).toHaveBeenCalledWith('http://localhost:3001/metrics');
     });
 
     it('should return default metrics on failure', async () => {
@@ -340,7 +354,7 @@ describe('RelayerIntegrationService', () => {
 
       expect(result).toBe(true);
       expect(global.fetch).toHaveBeenCalledWith(
-        'http://localhost:3001/api/orders/intent-123/execute',
+        'http://localhost:3001/execution/intent-123/execute',
         { method: 'POST' }
       );
     });
@@ -380,8 +394,8 @@ describe('RelayerIntegrationService', () => {
 
       expect(result).toBe(true);
       expect(global.fetch).toHaveBeenLastCalledWith(
-        'http://localhost:3001/api/orders/intent-123/cancel',
-        { method: 'POST' }
+        'http://localhost:3001/execution/intent-123',
+        { method: 'DELETE' }
       );
 
       // Check that cache was updated

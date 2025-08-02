@@ -94,7 +94,7 @@ describe('TEESolverIntegrationService', () => {
       expect(result.healthy).toBe(true);
       expect(result.status).toEqual(mockStatus);
       expect(result.status?.attestationValid).toBe(true);
-      expect(global.fetch).toHaveBeenCalledWith('http://localhost:3002/api/status');
+      expect(global.fetch).toHaveBeenCalledWith('http://localhost:3002/status');
     });
 
     it('should return unhealthy status when TEE is down', async () => {
@@ -137,7 +137,7 @@ describe('TEESolverIntegrationService', () => {
       expect(result.execution).toBeDefined();
 
       expect(global.fetch).toHaveBeenCalledWith(
-        'http://localhost:3002/api/intents/submit',
+        'http://localhost:3002/submit',
         expect.objectContaining({
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -380,7 +380,7 @@ describe('TEESolverIntegrationService', () => {
 
       expect(result).toBe(true);
       expect(global.fetch).toHaveBeenCalledWith(
-        'http://localhost:3002/api/executions/solver-req-123/execute',
+        'http://localhost:3002/execution/solver-req-123',
         { method: 'POST' }
       );
     });
@@ -396,8 +396,8 @@ describe('TEESolverIntegrationService', () => {
 
       expect(result).toBe(true);
       expect(global.fetch).toHaveBeenCalledWith(
-        'http://localhost:3002/api/intents/solver-req-123/cancel',
-        { method: 'POST' }
+        'http://localhost:3002/execution/solver-req-123',
+        { method: 'DELETE' }
       );
     });
   });

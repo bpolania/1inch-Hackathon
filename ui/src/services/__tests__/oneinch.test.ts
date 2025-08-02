@@ -35,7 +35,7 @@ describe('OneInchService', () => {
       const result = await service.getTokens(SUPPORTED_CHAINS.ETHEREUM);
 
       expect(global.fetch).toHaveBeenCalledWith(
-        'https://api.1inch.dev/v6.0/1/tokens',
+        'http://localhost:3001/api/1inch/1/tokens',
         expect.objectContaining({
           headers: expect.objectContaining({
             'Authorization': 'Bearer test-api-key',
@@ -87,7 +87,7 @@ describe('OneInchService', () => {
       const result = await service.getQuote(SUPPORTED_CHAINS.ETHEREUM, params);
 
       expect(global.fetch).toHaveBeenCalledWith(
-        'https://api.1inch.dev/v6.0/1/quote?src=0x123&dst=0x456&amount=1000000000000000000&fee=1',
+        'http://localhost:3001/api/1inch/1/quote?src=0x123&dst=0x456&amount=1000000000000000000&fee=1',
         expect.any(Object)
       );
       expect(result).toEqual(mockQuote);

@@ -197,7 +197,7 @@ export class RelayerIntegrationService {
     }
 
     try {
-      const response = await fetch(`${this.baseUrl}/api/orders/${intentId}/status`);
+      const response = await fetch(`${this.baseUrl}/execution/${intentId}`);
       if (!response.ok) {
         return null;
       }
@@ -215,7 +215,7 @@ export class RelayerIntegrationService {
    * Start real-time monitoring for intent updates
    */
   startMonitoring(intentId: string, callback: (update: OrderSubmission) => void): () => void {
-    const eventSource = new EventSource(`${this.baseUrl}/api/orders/${intentId}/events`);
+    const eventSource = new EventSource(`${this.baseUrl}/execution/${intentId}/events`);
     
     eventSource.onmessage = (event) => {
       try {
@@ -248,7 +248,7 @@ export class RelayerIntegrationService {
     queueLength: number;
   }> {
     try {
-      const response = await fetch(`${this.baseUrl}/api/metrics`);
+      const response = await fetch(`${this.baseUrl}/metrics`);
       if (!response.ok) {
         throw new Error('Failed to fetch metrics');
       }
@@ -271,7 +271,7 @@ export class RelayerIntegrationService {
    */
   async requestImmediateExecution(intentId: string): Promise<boolean> {
     try {
-      const response = await fetch(`${this.baseUrl}/api/orders/${intentId}/execute`, {
+      const response = await fetch(`${this.baseUrl}/execution/${intentId}/execute`, {
         method: 'POST'
       });
 
@@ -287,8 +287,8 @@ export class RelayerIntegrationService {
    */
   async cancelOrder(intentId: string): Promise<boolean> {
     try {
-      const response = await fetch(`${this.baseUrl}/api/orders/${intentId}/cancel`, {
-        method: 'POST'
+      const response = await fetch(`${this.baseUrl}/execution/${intentId}`, {
+        method: 'DELETE'
       });
 
       if (response.ok) {
