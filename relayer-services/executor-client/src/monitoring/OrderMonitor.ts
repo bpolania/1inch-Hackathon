@@ -59,13 +59,13 @@ export class OrderMonitor extends EventEmitter {
         // Connect to factory contract
         const factoryAddress = this.config.ethereum.contracts.factory!;
         
-        // Factory ABI (simplified - just the events we need)
+        // Factory ABI (corrected to match actual contract)
         const factoryABI = [
-            'event FusionOrderCreated(bytes32 indexed orderHash, address indexed maker, uint256 sourceAmount, uint256 destinationChainId)',
-            'event FusionOrderMatched(bytes32 indexed orderHash, address indexed resolver, uint256 safetyDeposit)',
-            'event FusionOrderCompleted(bytes32 indexed orderHash, bytes32 secret)',
-            'event FusionOrderCancelled(bytes32 indexed orderHash, string reason)',
-            'function getOrder(bytes32 orderHash) view returns (tuple(address maker, bool isActive, address sourceToken, uint256 sourceAmount, uint256 destinationChainId, address destinationToken, uint256 destinationAmount, uint256 resolverFeeAmount, uint256 expiryTime, bytes32 hashlock))',
+            'event FusionOrderCreated(bytes32 indexed orderHash, address indexed maker, address sourceToken, uint256 sourceAmount, uint256 destinationChainId, bytes destinationToken, uint256 destinationAmount, bytes destinationAddress, uint256 resolverFeeAmount, uint256 expiryTime, bytes32 hashlock)',
+            'event FusionOrderMatched(bytes32 indexed orderHash, address indexed resolver, address sourceEscrow, address destinationEscrow, bytes32 hashlock, uint256 safetyDeposit)',
+            'event FusionOrderCompleted(bytes32 indexed orderHash, address indexed resolver, bytes32 secret)',
+            'event FusionOrderCancelled(bytes32 indexed orderHash, address indexed maker)',
+            'function getOrder(bytes32 orderHash) view returns (tuple(bytes32 orderHash, address maker, address sourceToken, uint256 sourceAmount, uint256 destinationChainId, bytes destinationToken, uint256 destinationAmount, bytes destinationAddress, uint256 resolverFeeAmount, uint256 expiryTime, bytes chainSpecificParams, bool isActive))',
             'function totalOrdersCreated() view returns (uint256)'
         ];
 
@@ -112,11 +112,14 @@ export class OrderMonitor extends EventEmitter {
     }
 
     private setupEventListeners(): void {
-        // Listen for new order creation
-        this.factoryContract!.on('FusionOrderCreated', async (orderHash: string, maker: string, sourceAmount: bigint, destinationChainId: number, event: any) => {
+        // Listen for new order creation (corrected parameters)
+        this.factoryContract!.on('FusionOrderCreated', async (orderHash: string, maker: string, sourceToken: string, sourceAmount: bigint, destinationChainId: number, destinationToken: string, destinationAmount: bigint, destinationAddress: string, resolverFeeAmount: bigint, expiryTime: number, hashlock: string, event: any) => {
             try {
                 logger.info(`🆕 New order detected: ${orderHash}`);
-                const order = await this.fetchOrderDetails(orderHash, event);
+                logger.info(`   Source: ${ethers.formatEther(sourceAmount)} tokens → Chain ${destinationChainId}`);
+                logger.info(`   Resolver Fee: ${ethers.formatEther(resolverFeeAmount)} tokens`);
+                
+                const order = await this.fetchOrderDetails(orderHash, event, hashlock);
                 
                 if (order && !this.knownOrders.has(orderHash)) {
                     this.knownOrders.add(orderHash);
@@ -217,11 +220,11 @@ export class OrderMonitor extends EventEmitter {
             const events = await this.factoryContract!.queryFilter(filter, this.lastProcessedBlock + 1, currentBlock);
 
             for (const event of events) {
-                const [orderHash, maker, sourceAmount, destinationChainId] = (event as ethers.EventLog).args;
+                const [orderHash, maker, sourceToken, sourceAmount, destinationChainId, destinationToken, destinationAmount, destinationAddress, resolverFeeAmount, expiryTime, hashlock] = (event as ethers.EventLog).args;
                 
                 if (!this.knownOrders.has(orderHash)) {
                     logger.info(`🔍 Found missed order: ${orderHash}`);
-                    const order = await this.fetchOrderDetails(orderHash, event);
+                    const order = await this.fetchOrderDetails(orderHash, event, hashlock);
                     
                     if (order) {
                         this.knownOrders.add(orderHash);
@@ -237,7 +240,7 @@ export class OrderMonitor extends EventEmitter {
         }
     }
 
-    private async fetchOrderDetails(orderHash: string, event: any): Promise<Order | null> {
+    private async fetchOrderDetails(orderHash: string, event: any, hashlock?: string): Promise<Order | null> {
         try {
             // Get order details from contract
             const orderData = await this.factoryContract!.getOrder(orderHash);
@@ -252,7 +255,7 @@ export class OrderMonitor extends EventEmitter {
                 destinationAmount: orderData.destinationAmount,
                 resolverFeeAmount: orderData.resolverFeeAmount,
                 expiryTime: Number(orderData.expiryTime),
-                hashlock: orderData.hashlock,
+                hashlock: hashlock || '', // Use hashlock from event parameter
                 isActive: orderData.isActive,
                 blockNumber: event.blockNumber,
                 transactionHash: event.transactionHash

@@ -36,7 +36,9 @@ export class Logger {
         // In production, this could be JSON format for log aggregation
         const timestamp = entry.timestamp;
         const levelStr = `[${entry.level}]`.padEnd(7);
-        const dataStr = data ? ` | ${JSON.stringify(data)}` : '';
+        const dataStr = data ? ` | ${JSON.stringify(data, (key, value) => 
+            typeof value === 'bigint' ? value.toString() : value
+        )}` : '';
         
         return `${timestamp} ${levelStr} ${message}${dataStr}`;
     }

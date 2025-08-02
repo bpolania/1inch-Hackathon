@@ -451,11 +451,36 @@ export class RelayerService extends EventEmitter {
   }
 
   private convertIntentToFusionOrder(intent: any): any {
+    // Debug the incoming intent data
+    logger.info(`🔍 Converting intent to fusion order:`, {
+      intentId: intent.id,
+      fromAmount: intent.fromAmount,
+      minToAmount: intent.minToAmount,
+      fromToken: intent.fromToken,
+      toToken: intent.toToken
+    });
+
     // Helper function to convert decimal amounts to wei (string)
     const toWei = (amount: string, decimals: number = 18): string => {
       const amountFloat = parseFloat(amount || '0');
+      
+      // Validation: Warn if amount seems unreasonably large
+      if (amountFloat > 1000) {
+        logger.warn(`⚠️ Suspiciously large amount detected: ${amount} (parsed as ${amountFloat})`);
+      }
+      
       const factor = Math.pow(10, decimals);
       const amountWei = Math.floor(amountFloat * factor);
+      
+      logger.info(`💱 Amount conversion:`, {
+        input: amount,
+        decimals: decimals,
+        amountFloat: amountFloat,
+        factor: factor,
+        amountWei: amountWei,
+        result: BigInt(amountWei).toString()
+      });
+      
       return BigInt(amountWei).toString(); // Convert BigInt to string for JSON serialization
     };
 
@@ -466,13 +491,29 @@ export class RelayerService extends EventEmitter {
     const hashlockBuffer = crypto.createHash('sha256').update(secretBytes).digest();
     const hashlock = '0x' + hashlockBuffer.toString('hex');
 
-    // Get token decimals
-    const srcDecimals = intent.fromToken?.decimals || 18;
+    // Get token decimals - IMPORTANT: Use actual contract token decimals, not UI token decimals
+    // Since we're always creating orders with DT token on Ethereum (18 decimals) regardless of UI selection
+    const srcDecimals = 18; // DT token always has 18 decimals
     const dstDecimals = intent.toToken?.decimals || 24; // NEAR uses 24 decimals
+    
+    logger.info(`🔢 Using decimals:`, {
+      uiFromTokenDecimals: intent.fromToken?.decimals,
+      actualSrcDecimals: srcDecimals,
+      dstDecimals: dstDecimals,
+      reasoning: "Always use 18 decimals for DT token on Ethereum side"
+    });
 
     const sourceAmount = toWei(intent.fromAmount || '0', srcDecimals);
     const destinationAmount = toWei(intent.minToAmount || '0', dstDecimals);
     const resolverFee = (BigInt(sourceAmount) / BigInt(10)).toString(); // 10% resolver fee
+
+    logger.info(`📊 Final order amounts:`, {
+      sourceAmount: sourceAmount,
+      sourceAmountInEther: (BigInt(sourceAmount) / BigInt(10**18)).toString(),
+      destinationAmount: destinationAmount,
+      resolverFee: resolverFee,
+      resolverFeeInEther: (BigInt(resolverFee) / BigInt(10**18)).toString()
+    });
 
     // Map token addresses correctly
     let sourceTokenAddress;
@@ -486,6 +527,17 @@ export class RelayerService extends EventEmitter {
     // Convert strings to ethers.toUtf8Bytes for proper ABI encoding
     const { ethers } = require('ethers');
     
+    const expiryTime = Math.floor(Date.now() / 1000) + 7200; // 2 hours
+    
+    logger.debug(`🕒 Order timing:`, {
+      currentTime: Math.floor(Date.now() / 1000),
+      currentTimeReadable: new Date().toISOString(),
+      expiryTime: expiryTime,
+      expiryTimeReadable: new Date(expiryTime * 1000).toISOString(),
+      timeUntilExpiry: 7200,
+      timeUntilExpiryMinutes: 120
+    });
+    
     return {
       secret: '0x' + secret,
       hashlock: hashlock,
@@ -498,7 +550,7 @@ export class RelayerService extends EventEmitter {
         destinationAmount: destinationAmount,
         destinationAddress: ethers.toUtf8Bytes('fusion-plus.demo.cuteharbor3573.testnet'),
         resolverFeeAmount: resolverFee,
-        expiryTime: Math.floor(Date.now() / 1000) + 3600, // 1 hour
+        expiryTime: expiryTime,
         chainParams: {
           destinationAddress: ethers.toUtf8Bytes('fusion-plus.demo.cuteharbor3573.testnet'),
           executionParams: ethers.toUtf8Bytes(''),

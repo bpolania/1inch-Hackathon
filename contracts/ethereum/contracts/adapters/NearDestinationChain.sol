@@ -149,7 +149,24 @@ contract NearDestinationChain is IDestinationChain {
      * @inheritdoc IDestinationChain
      */
     function calculateMinSafetyDeposit(uint256 amount) external pure override returns (uint256) {
-        return (amount * MIN_SAFETY_DEPOSIT_BPS) / 10000;
+        // Fixed safety deposit approach for NEAR cross-chain swaps
+        // Rather than using a percentage of token amount (which can be enormous for tokens with many decimals),
+        // we use a reasonable fixed safety deposit that covers typical NEAR execution costs
+        
+        // Base safety deposit: 0.01 ETH (reasonable for most cross-chain operations)
+        uint256 baseSafetyDeposit = 0.01 ether;
+        
+        // For very large transfers (>= 1 ETH equivalent), add a small percentage
+        if (amount >= 1 ether) {
+            // Add 0.1% of amount but cap the additional deposit at 0.1 ETH
+            uint256 additionalDeposit = (amount * 10) / 10000; // 0.1%
+            if (additionalDeposit > 0.1 ether) {
+                additionalDeposit = 0.1 ether;
+            }
+            return baseSafetyDeposit + additionalDeposit;
+        }
+        
+        return baseSafetyDeposit;
     }
 
     /**
