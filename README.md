@@ -490,6 +490,13 @@ npm run test:sepolia
 │   │   ├── scenarios/                  # E2E workflow tests
 │   │   └── utils/                      # Test utilities and mocks
 │   └── public/                         # Static assets
+├── relayer-services/                   # Backend services
+│   ├── api-gateway/                    # REST API service
+│   ├── executor-client/                # Cross-chain executor
+│   ├── marketplace-api/                # Marketplace service
+│   └── tee-solver/                     # TEE solver service
+├── shared/                             # Shared libraries
+├── bitcoin-scripts/                    # Bitcoin utilities
 ├── docs/                               # Documentation
 │   ├── architecture/                   # Architecture documentation
 │   └── research/                       # Research and analysis
