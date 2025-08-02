@@ -358,7 +358,7 @@ describe('1inch Fusion+ Integration Routes', () => {
       // Check Fusion+ Factory
       const factory = protocols.find((p: any) => p.name === '1inch Fusion+ Factory');
       expect(factory).toMatchObject({
-        address: '0xbeEab741D2869404FcB747057f5AbdEffc3A138d',
+        address: '0x2E053bA098E2DB09C7F61A2854063BB2161b7b0a',
         type: 'cross-chain-factory',
         part: 1.0,
         isActive: true
@@ -398,7 +398,7 @@ describe('1inch Fusion+ Integration Routes', () => {
       expect(response.body.summary).toMatchObject({
         crossChainEnabled: true,
         deployedContracts: {
-          factory: '0xbeEab741D2869404FcB747057f5AbdEffc3A138d',
+          factory: '0x2E053bA098E2DB09C7F61A2854063BB2161b7b0a',
           registry: '0x09Ab998Cb3448ad281C116c9fC9e4b01e4533beD',
           nearAdapter: '0x7019aC48479e5527Cb3a5a99FbEFe5B42125C9A5',
           bitcoinAdapter: '0x15ACc1Cb04F08143e29c39972D9cF5D53D015fF8'
