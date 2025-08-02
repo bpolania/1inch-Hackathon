@@ -61,7 +61,6 @@ export interface RelayerMetrics {
 
 export class RelayerService extends EventEmitter {
   private config: RelayerConfig;
-  private cosmosConfig: any | null = null;
   private crossChainExecutor: any | null = null;
   private profitabilityAnalyzer: any | null = null;
   private orderMonitor: any | null = null;
@@ -90,48 +89,6 @@ export class RelayerService extends EventEmitter {
       // Derive ethereum address from private key
       const { ethers } = require('ethers');
       const ethereumWallet = new ethers.Wallet(this.config.ethereumPrivateKey);
-      
-      // Store cosmos config for later use
-      this.cosmosConfig = {
-        networks: {
-          '7001': { // Neutron Testnet
-            name: 'Neutron Testnet',
-            rpcUrl: process.env.NEUTRON_RPC_URL || 'https://neutron-testnet-rpc.polkachu.com:443',
-            chainId: 'pion-1',
-            denom: 'untrn',
-            prefix: 'neutron',
-            gasPrice: process.env.NEUTRON_GAS_PRICE || '0.025untrn',
-            contractAddress: process.env.NEUTRON_CONTRACT_ADDRESS
-          },
-          '7002': { // Juno Testnet
-            name: 'Juno Testnet',
-            rpcUrl: process.env.JUNO_RPC_URL || 'https://juno-testnet-rpc.polkachu.com:443',
-            chainId: 'uni-7',
-            denom: 'ujunox',
-            prefix: 'juno',
-            gasPrice: process.env.JUNO_GAS_PRICE || '0.025ujunox',
-            contractAddress: process.env.JUNO_CONTRACT_ADDRESS
-          },
-          '30001': { // Cosmos Hub Mainnet
-            name: 'Cosmos Hub',
-            rpcUrl: process.env.COSMOS_RPC_URL || 'https://cosmos-rpc.polkachu.com:443',
-            chainId: 'cosmoshub-4',
-            denom: 'uatom',
-            prefix: 'cosmos',
-            gasPrice: process.env.COSMOS_GAS_PRICE || '0.025uatom',
-            contractAddress: process.env.COSMOS_CONTRACT_ADDRESS
-          }
-        },
-        wallet: {
-          mnemonic: process.env.COSMOS_MNEMONIC,
-          privateKey: process.env.COSMOS_PRIVATE_KEY
-        },
-        execution: {
-          gasLimit: parseInt(process.env.COSMOS_GAS_LIMIT || '300000'),
-          timeoutSeconds: parseInt(process.env.COSMOS_TIMEOUT_SECONDS || '3600'), // 1 hour
-          minSafetyDepositBps: parseInt(process.env.COSMOS_MIN_SAFETY_DEPOSIT_BPS || '500') // 5%
-        }
-      };
       
       const executorConfig: any = {
         networks: ['ethereum', 'near', 'bitcoin', 'cosmos'],
@@ -180,7 +137,46 @@ export class RelayerService extends EventEmitter {
             addressType: 'p2pkh'
           }
         },
-        cosmos: this.cosmosConfig,
+        cosmos: {
+          networks: {
+            '7001': { // Neutron Testnet
+              name: 'Neutron Testnet',
+              rpcUrl: process.env.NEUTRON_RPC_URL || 'https://neutron-testnet-rpc.polkachu.com:443',
+              chainId: 'pion-1',
+              denom: 'untrn',
+              prefix: 'neutron',
+              gasPrice: process.env.NEUTRON_GAS_PRICE || '0.025untrn',
+              contractAddress: process.env.NEUTRON_CONTRACT_ADDRESS
+            },
+            '7002': { // Juno Testnet
+              name: 'Juno Testnet',
+              rpcUrl: process.env.JUNO_RPC_URL || 'https://juno-testnet-rpc.polkachu.com:443',
+              chainId: 'uni-7',
+              denom: 'ujunox',
+              prefix: 'juno',
+              gasPrice: process.env.JUNO_GAS_PRICE || '0.025ujunox',
+              contractAddress: process.env.JUNO_CONTRACT_ADDRESS
+            },
+            '30001': { // Cosmos Hub Mainnet
+              name: 'Cosmos Hub',
+              rpcUrl: process.env.COSMOS_RPC_URL || 'https://cosmos-rpc.polkachu.com:443',
+              chainId: 'cosmoshub-4',
+              denom: 'uatom',
+              prefix: 'cosmos',
+              gasPrice: process.env.COSMOS_GAS_PRICE || '0.025uatom',
+              contractAddress: process.env.COSMOS_CONTRACT_ADDRESS
+            }
+          },
+          wallet: {
+            mnemonic: process.env.COSMOS_MNEMONIC,
+            privateKey: process.env.COSMOS_PRIVATE_KEY
+          },
+          execution: {
+            gasLimit: parseInt(process.env.COSMOS_GAS_LIMIT || '300000'),
+            timeoutSeconds: parseInt(process.env.COSMOS_TIMEOUT_SECONDS || '3600'), // 1 hour
+            minSafetyDepositBps: parseInt(process.env.COSMOS_MIN_SAFETY_DEPOSIT_BPS || '500') // 5%
+          }
+        },
         execution: {
           loopInterval: 10000,
           maxConcurrentExecutions: 3,
@@ -571,49 +567,7 @@ export class RelayerService extends EventEmitter {
     // Convert strings to ethers.toUtf8Bytes for proper ABI encoding
     const { ethers } = require('ethers');
     
-    // Map UI chainIds to numeric chainIds for backend
-    const chainIdMapping: Record<string, number> = {
-      'near': 40002,
-      'ethereum': 11155111,
-      'bitcoin': 40004,
-      'neutron': 7001,
-      'juno': 7002,
-      'cosmos': 30001,
-      'osmosis': 7003,
-      'stargaze': 7004,
-      'akash': 7005
-    };
-    
-    // Determine destination chain and parameters
-    const toTokenChainId = intent.toToken?.chainId || 'near';
-    const destinationChainId = chainIdMapping[toTokenChainId] || 40002; // Default to NEAR
-    
-    let destinationToken: Uint8Array;
-    let destinationAddress: Uint8Array;
-    
-    if (toTokenChainId === 'near') {
-      destinationToken = ethers.toUtf8Bytes('native.near');
-      destinationAddress = ethers.toUtf8Bytes('fusion-plus.demo.cuteharbor3573.testnet');
-    } else if (['neutron', 'juno', 'cosmos', 'osmosis', 'stargaze', 'akash'].includes(toTokenChainId)) {
-      // For Cosmos chains, use the selected token and user-provided address
-      destinationToken = ethers.toUtf8Bytes(intent.toToken?.symbol || 'ATOM');
-      const cosmosAddress = intent.metadata?.destinationAddress || `${toTokenChainId}1abcdefghijklmnopqrstuvwxyz1234567890abcdef`;
-      destinationAddress = ethers.toUtf8Bytes(cosmosAddress);
-    } else {
-      // Default to NEAR for unknown chains
-      destinationToken = ethers.toUtf8Bytes('native.near');
-      destinationAddress = ethers.toUtf8Bytes('fusion-plus.demo.cuteharbor3573.testnet');
-    }
-    
     const expiryTime = Math.floor(Date.now() / 1000) + 7200; // 2 hours
-    
-    logger.info(`🎯 Destination chain mapping:`, {
-      toTokenChainId,
-      destinationChainId,
-      destinationToken: intent.toToken?.symbol,
-      destinationAddress: intent.metadata?.destinationAddress || 'default',
-      isCosmosChain: ['neutron', 'juno', 'cosmos', 'osmosis', 'stargaze', 'akash'].includes(toTokenChainId)
-    });
     
     logger.debug(`🕒 Order timing:`, {
       currentTime: Math.floor(Date.now() / 1000),
@@ -631,14 +585,14 @@ export class RelayerService extends EventEmitter {
       orderParams: {
         sourceToken: sourceTokenAddress,
         sourceAmount: sourceAmount,
-        destinationChainId: destinationChainId,
-        destinationToken: destinationToken,
+        destinationChainId: 40002, // NEAR Testnet
+        destinationToken: ethers.toUtf8Bytes('native.near'),
         destinationAmount: destinationAmount,
-        destinationAddress: destinationAddress,
+        destinationAddress: ethers.toUtf8Bytes('fusion-plus.demo.cuteharbor3573.testnet'),
         resolverFeeAmount: resolverFee,
         expiryTime: expiryTime,
         chainParams: {
-          destinationAddress: destinationAddress,
+          destinationAddress: ethers.toUtf8Bytes('fusion-plus.demo.cuteharbor3573.testnet'),
           executionParams: ethers.toUtf8Bytes(''),
           estimatedGas: BigInt('300000000000000'),
           additionalData: hashlock
@@ -824,94 +778,8 @@ export class RelayerService extends EventEmitter {
       let result;
       
       try {
-        // Check if this is a Cosmos destination
-        const isCosmosDestination = [7001, 7002, 30001, 7003, 7004, 7005].includes(fusionOrder.orderParams.destinationChainId);
-        
-        if (isCosmosDestination) {
-          // For Cosmos destinations, execute directly via CosmosExecutor (bypass Ethereum contracts)
-          logger.info('🌌 Executing NEAR → Cosmos order directly via CosmosExecutor');
-          
-          if (!this.crossChainExecutor || !this.crossChainExecutor.cosmosExecutor) {
-            throw new Error('CosmosExecutor not available');
-          }
-          
-          // Create executable order for CosmosExecutor
-          let decodedDestinationAddress: string;
-          try {
-            // Handle different types of destinationAddress
-            if (typeof fusionOrder.orderParams.destinationAddress === 'string') {
-              decodedDestinationAddress = fusionOrder.orderParams.destinationAddress;
-            } else if (fusionOrder.orderParams.destinationAddress instanceof Uint8Array) {
-              decodedDestinationAddress = new TextDecoder().decode(fusionOrder.orderParams.destinationAddress);
-            } else {
-              // Fallback - convert to string
-              decodedDestinationAddress = String(fusionOrder.orderParams.destinationAddress);
-            }
-          } catch (error) {
-            logger.warn('Failed to decode destination address, using fallback', { error });
-            decodedDestinationAddress = 'cosmos1234567890abcdef1234567890abcdef12345678'; // Fallback address
-          }
-
-          const cosmosParams = {
-            contractAddress: this.cosmosConfig?.networks[fusionOrder.orderParams.destinationChainId]?.contractAddress || '',
-            amount: fusionOrder.orderParams.destinationAmount,
-            nativeDenom: this.getCosmosNativeDenom(fusionOrder.orderParams.destinationChainId),
-            gasLimit: 300000,
-            destinationAddress: decodedDestinationAddress
-          };
-          
-          logger.info('🔍 Cosmos execution parameters:', {
-            chainId: fusionOrder.orderParams.destinationChainId,
-            originalDestinationAddress: fusionOrder.orderParams.destinationAddress,
-            destinationAddressType: typeof fusionOrder.orderParams.destinationAddress,
-            decodedDestinationAddress,
-            cosmosParams,
-            cosmosConfig: this.cosmosConfig?.networks[fusionOrder.orderParams.destinationChainId]
-          });
-
-          const executableOrder = {
-            orderHash: fusionOrder.hashlock,
-            order: fusionOrder.orderParams,
-            chainSpecificParams: JSON.stringify(cosmosParams),
-            profitability: {
-              estimatedProfit: BigInt('50000000000000000'), // 0.05 ETH estimated profit
-              gasEstimate: BigInt('300000000000000'),      // Gas estimate  
-              safetyDeposit: BigInt('10000000000000000'),  // Safety deposit
-              isProfitable: true
-            },
-            priority: 1
-          };
-          
-          logger.info('🔍 Created executableOrder:', {
-            orderHash: executableOrder.orderHash,
-            hasChainSpecificParams: !!executableOrder.chainSpecificParams,
-            chainSpecificParamsLength: executableOrder.chainSpecificParams?.length,
-            chainSpecificParamsPreview: executableOrder.chainSpecificParams?.substring(0, 100)
-          });
-          
-          // Execute directly via CosmosExecutor (skip Ethereum contract interaction)
-          const cosmosResult = await this.crossChainExecutor.cosmosExecutor.executeOrder(executableOrder);
-          
-          result = {
-            success: cosmosResult.success,
-            orderHash: cosmosResult.orderHash,
-            actualProfit: BigInt('0'),
-            gasUsed: BigInt(cosmosResult.gasUsed || '0'),
-            executionTime: cosmosResult.executionTime || 0,
-            transactions: { 
-              ethereum: [], 
-              near: [], 
-              bitcoin: [], 
-              cosmos: cosmosResult.transactions || [] 
-            },
-            secret: cosmosResult.secret || fusionOrder.secret,
-            hashlock: fusionOrder.hashlock,
-            error: cosmosResult.error
-          };
-        } else {
-          // For non-Cosmos destinations, create order on Ethereum as before
-          result = await this.createFusionOrderDirect(fusionOrder);
-        }
+        // Create the Fusion order first, then execute it
+        result = await this.createFusionOrderDirect(fusionOrder);
       } catch (error: any) {
         logger.error('❌ Execution failed:');
         logger.error('Execution error details:', {
@@ -994,17 +862,5 @@ export class RelayerService extends EventEmitter {
       this.metrics.averageExecutionTime = 
         this.metrics.averageExecutionTime * (1 - alpha) + executionTime * alpha;
     }
-  }
-
-  private getCosmosNativeDenom(chainId: number): string {
-    const denomMapping: Record<number, string> = {
-      7001: 'untrn',  // Neutron
-      7002: 'ujunox', // Juno testnet
-      30001: 'uatom', // Cosmos Hub
-      7003: 'uosmo',  // Osmosis
-      7004: 'ustars', // Stargaze
-      7005: 'uakt'    // Akash
-    };
-    return denomMapping[chainId] || 'uatom';
   }
 }

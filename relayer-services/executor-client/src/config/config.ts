@@ -160,8 +160,8 @@ export async function loadConfig(): Promise<Config> {
                 },
                 '7002': { // Juno Testnet
                     name: 'Juno Testnet',
-                    rpcUrl: process.env.JUNO_RPC_URL || 'https://rpc.uni.junonetwork.io:443',
-                    chainId: 'uni-6',
+                    rpcUrl: process.env.JUNO_RPC_URL || 'https://juno-testnet-rpc.polkachu.com:443',
+                    chainId: 'uni-7',
                     denom: 'ujunox',
                     prefix: 'juno',
                     gasPrice: process.env.JUNO_GAS_PRICE || '0.025ujunox',
@@ -169,7 +169,7 @@ export async function loadConfig(): Promise<Config> {
                 },
                 '30001': { // Cosmos Hub Mainnet
                     name: 'Cosmos Hub',
-                    rpcUrl: process.env.COSMOS_RPC_URL || 'https://rpc.cosmos.network:443',
+                    rpcUrl: process.env.COSMOS_RPC_URL || 'https://cosmos-rpc.polkachu.com:443',
                     chainId: 'cosmoshub-4',
                     denom: 'uatom',
                     prefix: 'cosmos',
