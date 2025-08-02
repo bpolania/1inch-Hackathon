@@ -91,7 +91,7 @@ export class RelayerService extends EventEmitter {
       const ethereumWallet = new ethers.Wallet(this.config.ethereumPrivateKey);
       
       const executorConfig: any = {
-        networks: ['ethereum', 'near', 'bitcoin'],
+        networks: ['ethereum', 'near', 'bitcoin', 'cosmos'],
         ethereum: {
           name: 'Ethereum Sepolia',
           rpcUrl: this.config.ethereumRpcUrl,
@@ -135,6 +135,46 @@ export class RelayerService extends EventEmitter {
             privateKey: this.config.bitcoinPrivateKey,
             network: this.config.bitcoinNetwork,
             addressType: 'p2pkh'
+          }
+        },
+        cosmos: {
+          networks: {
+            '7001': { // Neutron Testnet
+              name: 'Neutron Testnet',
+              rpcUrl: process.env.NEUTRON_RPC_URL || 'https://neutron-testnet-rpc.polkachu.com:443',
+              chainId: 'pion-1',
+              denom: 'untrn',
+              prefix: 'neutron',
+              gasPrice: process.env.NEUTRON_GAS_PRICE || '0.025untrn',
+              contractAddress: process.env.NEUTRON_CONTRACT_ADDRESS
+            },
+            '7002': { // Juno Testnet
+              name: 'Juno Testnet',
+              rpcUrl: process.env.JUNO_RPC_URL || 'https://juno-testnet-rpc.polkachu.com:443',
+              chainId: 'uni-7',
+              denom: 'ujunox',
+              prefix: 'juno',
+              gasPrice: process.env.JUNO_GAS_PRICE || '0.025ujunox',
+              contractAddress: process.env.JUNO_CONTRACT_ADDRESS
+            },
+            '30001': { // Cosmos Hub Mainnet
+              name: 'Cosmos Hub',
+              rpcUrl: process.env.COSMOS_RPC_URL || 'https://cosmos-rpc.polkachu.com:443',
+              chainId: 'cosmoshub-4',
+              denom: 'uatom',
+              prefix: 'cosmos',
+              gasPrice: process.env.COSMOS_GAS_PRICE || '0.025uatom',
+              contractAddress: process.env.COSMOS_CONTRACT_ADDRESS
+            }
+          },
+          wallet: {
+            mnemonic: process.env.COSMOS_MNEMONIC,
+            privateKey: process.env.COSMOS_PRIVATE_KEY
+          },
+          execution: {
+            gasLimit: parseInt(process.env.COSMOS_GAS_LIMIT || '300000'),
+            timeoutSeconds: parseInt(process.env.COSMOS_TIMEOUT_SECONDS || '3600'), // 1 hour
+            minSafetyDepositBps: parseInt(process.env.COSMOS_MIN_SAFETY_DEPOSIT_BPS || '500') // 5%
           }
         },
         execution: {

@@ -7,6 +7,52 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### 🔧 **API GATEWAY COSMOS INTEGRATION**: Fixed Cosmos RPC Connectivity & UI Balance Validation (v2.3.0) - 2025-08-02
+
+#### ✅ **API GATEWAY COSMOS FIXES**
+- **Fixed Cosmos RPC Connectivity Issues**: Resolved all Cosmos chain connection failures
+  - **Updated RPC Endpoints**: Replaced failing endpoints with working Polkachu RPC URLs
+    - **Juno Testnet**: `https://juno-testnet-rpc.polkachu.com:443` (was failing on uni.junonetwork.io)
+    - **Cosmos Hub**: `https://cosmos-rpc.polkachu.com:443` (was failing on rpc.cosmos.network)
+    - **Neutron**: Already working on `https://neutron-testnet-rpc.polkachu.com:443`
+  - **Fixed Chain ID Mismatch**: Updated Juno testnet from `uni-6` to `uni-7`
+  - **Environment Configuration**: Updated both executor-client/.env and RelayerService configuration
+- **Added Missing Cosmos Configuration**: Fixed CosmosExecutor initialization errors
+  - **RelayerService Integration**: Added complete cosmos configuration block to RelayerService.ts
+  - **Network Support**: Added cosmos to supported networks array
+  - **Wallet Configuration**: Proper cosmos wallet setup with mnemonic and execution settings
+  - **Environment Loading**: Fixed dotenv path to load executor-client/.env from API gateway
+
+#### 🐛 **UI BALANCE VALIDATION FIXES**
+- **Fixed Intent Submission Issues**: Resolved button staying disabled for non-NEAR transactions
+  - **Smart Balance Validation**: Only validate NEAR balance for NEAR token swaps
+  - **Non-NEAR Token Support**: Allow ETH, BTC, Cosmos token swaps to proceed (balance checked on-chain)
+  - **Removed Redundant Validation**: Fixed duplicate balance check in button disabled condition
+  - **Better Error Messages**: Dynamic error messages based on specific balance requirements
+- **Improved User Experience**: More permissive validation for cross-chain transactions
+  - **Reduced NEAR Requirements**: From 0.1 to 0.01 NEAR for basic wallet connection
+  - **Token-Specific Logic**: Different validation rules for different token types
+  - **Production-Ready Approach**: Backend/blockchain handles actual balance validation
+
+#### 🔍 **DEBUGGING IMPROVEMENTS**
+- **Enhanced Error Logging**: Added detailed error information for Cosmos chain failures
+  - **Network Configuration Details**: RPC URL, chain ID, and prefix in error logs
+  - **Stack Traces**: Full error stack traces for debugging connectivity issues
+  - **Validation State Logging**: Real-time debug output for UI form validation states
+- **Development Tools**: Added console logging for troubleshooting form submission issues
+  - **Submit Validation Tracking**: Real-time validation state monitoring
+  - **Form State Debugging**: Track wallet connection, token selection, and address validation
+
+#### 📊 **COSMOS CONNECTIVITY STATUS**
+- **Neutron Testnet (7001)**: ✅ Connected successfully
+- **Juno Testnet (7002)**: ✅ Fixed - now connecting with correct RPC endpoint
+- **Cosmos Hub (30001)**: ✅ Fixed - now connecting with working RPC endpoint
+- **API Gateway**: ✅ All services initialized successfully
+- **WebSocket Service**: ✅ Real-time updates working
+- **Cross-Chain Executor**: ✅ Full multi-chain support operational
+
+---
+
 ### 🎨 **COSMOS UI INTEGRATION**: Complete Frontend Integration for Cosmos Chains (v2.2.0) - 2025-08-02
 
 #### ✅ **FULL COSMOS UI INTEGRATION IMPLEMENTED**

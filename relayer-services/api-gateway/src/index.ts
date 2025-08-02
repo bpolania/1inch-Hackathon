@@ -13,6 +13,7 @@ import { WebSocketServer } from 'ws';
 import { createServer } from 'http';
 import swaggerUi from 'swagger-ui-express';
 import dotenv from 'dotenv';
+import path from 'path';
 
 // Import route handlers
 import { teeRoutes } from './routes/tee';
@@ -32,7 +33,8 @@ import { WebSocketService } from './services/WebSocketService';
 import { logger } from './utils/logger';
 import { swaggerSpec } from './swagger/config';
 
-dotenv.config();
+// Load environment variables from executor-client directory
+dotenv.config({ path: path.resolve(__dirname, '../../executor-client/.env') });
 
 const app = express();
 const server = createServer(app);

@@ -78,6 +78,10 @@ export class CosmosExecutor extends EventEmitter {
     }
 
     private async initializeWallet(): Promise<void> {
+        if (!this.cosmosConfig.wallet) {
+            throw new Error('Cosmos wallet configuration is missing');
+        }
+
         if (this.cosmosConfig.wallet.mnemonic) {
             // Create wallet from mnemonic
             this.wallet = await DirectSecp256k1HdWallet.fromMnemonic(
@@ -145,7 +149,16 @@ export class CosmosExecutor extends EventEmitter {
                 });
 
             } catch (error) {
-                logger.error(`❌ Failed to initialize client for chain ${chainIdStr}:`, error);
+                logger.error(`❌ Failed to initialize client for chain ${chainIdStr}:`, {
+                    error: error instanceof Error ? error.message : String(error),
+                    stack: error instanceof Error ? error.stack : undefined,
+                    networkConfig: {
+                        name: networkConfig.name,
+                        rpcUrl: networkConfig.rpcUrl,
+                        chainId: networkConfig.chainId,
+                        prefix: networkConfig.prefix
+                    }
+                });
                 // Continue with other chains even if one fails
             }
         }
