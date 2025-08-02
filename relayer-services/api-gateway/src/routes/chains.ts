@@ -34,12 +34,12 @@ router.get('/status', async (req: any, res) => {
     const chainStatuses = {
       lastUpdated: Date.now(),
       summary: {
-        totalChains: 6,
-        healthyChains: 5,
+        totalChains: 9,
+        healthyChains: 8,
         degradedChains: 1,
         downChains: 0,
-        avgBlockTime: 12.5,
-        totalTps: 1250
+        avgBlockTime: 8.2,
+        totalTps: 1750
       },
       chains: {
         ethereum: {
@@ -187,6 +187,114 @@ router.get('/status', async (req: any, res) => {
             size: '45.2 MB',
             totalFees: '2.5 BTC'
           }
+        },
+        neutron: {
+          chainId: 7001,
+          name: 'Neutron Testnet',
+          status: 'healthy',
+          rpcStatus: 'online',
+          blockHeight: 8234567,
+          avgBlockTime: 6.2,
+          gasPrice: {
+            standard: 0.025,
+            unit: 'untrn'
+          },
+          congestion: {
+            level: 'low',
+            percentage: 15,
+            estimatedDelay: 8
+          },
+          lastBlock: {
+            number: 8234567,
+            timestamp: Date.now() - 6200,
+            gasUsed: '2500000',
+            gasLimit: '100000000',
+            utilization: 2.5
+          },
+          bridgeStatus: {
+            'neutron-ethereum': 'operational',
+            'neutron-cosmoshub': 'operational'
+          },
+          cosmwasmSupport: {
+            status: 'full',
+            version: '1.5.0',
+            activeContracts: 156,
+            deployedContracts: 892
+          }
+        },
+        juno: {
+          chainId: 7002,
+          name: 'Juno Testnet',
+          status: 'healthy',
+          rpcStatus: 'online',
+          blockHeight: 12456789,
+          avgBlockTime: 5.8,
+          gasPrice: {
+            standard: 0.025,
+            unit: 'ujunox'
+          },
+          congestion: {
+            level: 'low',
+            percentage: 20,
+            estimatedDelay: 6
+          },
+          lastBlock: {
+            number: 12456789,
+            timestamp: Date.now() - 5800,
+            gasUsed: '3200000',
+            gasLimit: '150000000',
+            utilization: 2.1
+          },
+          bridgeStatus: {
+            'juno-ethereum': 'operational',
+            'juno-cosmoshub': 'operational'
+          },
+          cosmwasmSupport: {
+            status: 'full',
+            version: '1.5.0',
+            activeContracts: 234,
+            deployedContracts: 1456
+          }
+        },
+        cosmoshub: {
+          chainId: 30001,
+          name: 'Cosmos Hub',
+          status: 'healthy',
+          rpcStatus: 'online',
+          blockHeight: 18567234,
+          avgBlockTime: 6.5,
+          gasPrice: {
+            standard: 0.025,
+            unit: 'uatom'
+          },
+          congestion: {
+            level: 'low',
+            percentage: 25,
+            estimatedDelay: 7
+          },
+          lastBlock: {
+            number: 18567234,
+            timestamp: Date.now() - 6500,
+            gasUsed: '4500000',
+            gasLimit: '200000000',
+            utilization: 2.3
+          },
+          bridgeStatus: {
+            'cosmos-ethereum': 'operational',
+            'cosmos-osmosis': 'operational',
+            'cosmos-juno': 'operational'
+          },
+          governance: {
+            activeProposals: 3,
+            totalValidators: 180,
+            bondedTokens: '205,430,000 ATOM',
+            stakingRatio: 67.2
+          },
+          ibc: {
+            activeChannels: 45,
+            totalTransfers24h: '1.2M USD',
+            supportedChains: 38
+          }
         }
       }
     };
@@ -308,8 +416,8 @@ router.get('/bridges/routes', async (req: any, res) => {
   try {
     const bridgeRoutes = {
       lastUpdated: Date.now(),
-      totalRoutes: 15,
-      activeRoutes: 13,
+      totalRoutes: 21,
+      activeRoutes: 19,
       routes: [
         {
           id: 'eth-polygon',
@@ -403,6 +511,120 @@ router.get('/bridges/routes', async (req: any, res) => {
           volume24h: '25000000 USD',
           reliability: 96.2,
           issues: ['Sequencer delays', 'Higher than normal processing time']
+        },
+        {
+          id: 'eth-neutron',
+          from: { chainId: 1, name: 'Ethereum', symbol: 'ETH' },
+          to: { chainId: 7001, name: 'Neutron', symbol: 'NTRN' },
+          bridge: '1inch Fusion+ Cosmos Extension',
+          status: 'operational',
+          estimatedTime: 480000, // 8 minutes
+          fees: {
+            base: '0.004 ETH',
+            variable: '0.12%'
+          },
+          limits: {
+            min: '0.01 ETH',
+            max: '5000 ETH'
+          },
+          volume24h: '3200000 USD',
+          reliability: 99.1,
+          special: 'CosmWasm atomic swaps'
+        },
+        {
+          id: 'eth-juno',
+          from: { chainId: 1, name: 'Ethereum', symbol: 'ETH' },
+          to: { chainId: 7002, name: 'Juno', symbol: 'JUNO' },
+          bridge: '1inch Fusion+ Cosmos Extension',
+          status: 'operational',
+          estimatedTime: 420000, // 7 minutes
+          fees: {
+            base: '0.0035 ETH',
+            variable: '0.1%'
+          },
+          limits: {
+            min: '0.01 ETH',
+            max: '3000 ETH'
+          },
+          volume24h: '2800000 USD',
+          reliability: 98.9,
+          special: 'CosmWasm atomic swaps'
+        },
+        {
+          id: 'eth-cosmoshub',
+          from: { chainId: 1, name: 'Ethereum', symbol: 'ETH' },
+          to: { chainId: 30001, name: 'Cosmos Hub', symbol: 'ATOM' },
+          bridge: '1inch Fusion+ Cosmos Extension',
+          status: 'operational',
+          estimatedTime: 540000, // 9 minutes
+          fees: {
+            base: '0.0045 ETH',
+            variable: '0.08%'
+          },
+          limits: {
+            min: '0.01 ETH',
+            max: '10000 ETH'
+          },
+          volume24h: '5500000 USD',
+          reliability: 99.3,
+          special: 'IBC compatible'
+        },
+        {
+          id: 'neutron-juno',
+          from: { chainId: 7001, name: 'Neutron', symbol: 'NTRN' },
+          to: { chainId: 7002, name: 'Juno', symbol: 'JUNO' },
+          bridge: 'IBC Bridge',
+          status: 'operational',
+          estimatedTime: 60000, // 1 minute
+          fees: {
+            base: '0.1 NTRN',
+            variable: '0.05%'
+          },
+          limits: {
+            min: '1 NTRN',
+            max: '100000 NTRN'
+          },
+          volume24h: '850000 USD',
+          reliability: 99.8,
+          special: 'Native IBC transfer'
+        },
+        {
+          id: 'juno-cosmoshub',
+          from: { chainId: 7002, name: 'Juno', symbol: 'JUNO' },
+          to: { chainId: 30001, name: 'Cosmos Hub', symbol: 'ATOM' },
+          bridge: 'IBC Bridge',
+          status: 'operational',
+          estimatedTime: 45000, // 45 seconds
+          fees: {
+            base: '0.05 JUNO',
+            variable: '0.03%'
+          },
+          limits: {
+            min: '1 JUNO',
+            max: '50000 JUNO'
+          },
+          volume24h: '1200000 USD',
+          reliability: 99.9,
+          special: 'Native IBC transfer'
+        },
+        {
+          id: 'neutron-cosmoshub',
+          from: { chainId: 7001, name: 'Neutron', symbol: 'NTRN' },
+          to: { chainId: 30001, name: 'Cosmos Hub', symbol: 'ATOM' },
+          bridge: 'IBC Bridge',
+          status: 'operational',
+          estimatedTime: 50000, // 50 seconds
+          fees: {
+            base: '0.08 NTRN',
+            variable: '0.04%'
+          },
+          limits: {
+            min: '1 NTRN',
+            max: '75000 NTRN'
+          },
+          volume24h: '950000 USD',
+          reliability: 99.7,
+          special: 'Native IBC transfer'
         }
       ],
       emergencyRoutes: [
@@ -499,6 +721,57 @@ router.get(
             estimatedTime: 600000,
             gasEstimate: '120000',
             special: 'TEE verification included'
+          },
+          {
+            from: 1,
+            to: 7001,
+            fees: {
+              fixed: '6.80',
+              percentage: '0.12',
+              total: amount ? (parseFloat(amount) * 0.0012 + 6.8).toFixed(2) : 'N/A',
+              breakdown: {
+                networkFee: '5.50',
+                bridgeFee: '0.80',
+                processingFee: '0.50'
+              }
+            },
+            estimatedTime: 480000,
+            gasEstimate: '300000',
+            special: 'CosmWasm execution included'
+          },
+          {
+            from: 1,
+            to: 7002,
+            fees: {
+              fixed: '5.90',
+              percentage: '0.1',
+              total: amount ? (parseFloat(amount) * 0.001 + 5.9).toFixed(2) : 'N/A',
+              breakdown: {
+                networkFee: '4.80',
+                bridgeFee: '0.70',
+                processingFee: '0.40'
+              }
+            },
+            estimatedTime: 420000,
+            gasEstimate: '280000',
+            special: 'CosmWasm execution included'
+          },
+          {
+            from: 1,
+            to: 30001,
+            fees: {
+              fixed: '7.50',
+              percentage: '0.08',
+              total: amount ? (parseFloat(amount) * 0.0008 + 7.5).toFixed(2) : 'N/A',
+              breakdown: {
+                networkFee: '6.20',
+                bridgeFee: '0.90',
+                processingFee: '0.40'
+              }
+            },
+            estimatedTime: 540000,
+            gasEstimate: '320000',
+            special: 'Cosmos Hub mainnet bridge'
           }
         ],
         feeFactors: {
@@ -613,6 +886,74 @@ router.get('/congestion', async (req: any, res) => {
             nextHour: 'stable',
             next4Hours: 'stable',
             confidence: 95
+          }
+        },
+        {
+          chainId: 7001,
+          name: 'Neutron',
+          congestion: 15,
+          level: 'low',
+          gasPrice: {
+            current: 0.025,
+            recommended: 0.025,
+            trend: 'stable'
+          },
+          cosmwasm: {
+            activeContracts: 156,
+            executionsPerBlock: 12,
+            avgExecutionTime: 450
+          },
+          predictions: {
+            nextHour: 'stable',
+            next4Hours: 'stable',
+            confidence: 98
+          }
+        },
+        {
+          chainId: 7002,
+          name: 'Juno',
+          congestion: 20,
+          level: 'low',
+          gasPrice: {
+            current: 0.025,
+            recommended: 0.025,
+            trend: 'stable'
+          },
+          cosmwasm: {
+            activeContracts: 234,
+            executionsPerBlock: 18,
+            avgExecutionTime: 380
+          },
+          predictions: {
+            nextHour: 'stable',
+            next4Hours: 'stable',
+            confidence: 96
+          }
+        },
+        {
+          chainId: 30001,
+          name: 'Cosmos Hub',
+          congestion: 25,
+          level: 'low',
+          gasPrice: {
+            current: 0.025,
+            recommended: 0.025,
+            trend: 'stable'
+          },
+          ibc: {
+            activeChannels: 45,
+            transfersPerBlock: 25,
+            avgTransferTime: 6500
+          },
+          governance: {
+            activeProposals: 3,
+            votingPeriod: '14 days',
+            participation: 67.2
+          },
+          predictions: {
+            nextHour: 'stable',
+            next4Hours: 'stable',
+            confidence: 97
           }
         }
       ],

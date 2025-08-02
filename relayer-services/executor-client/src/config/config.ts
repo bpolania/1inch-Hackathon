@@ -57,11 +57,35 @@ export interface BitcoinConfig {
     apiUrl?: string;
 }
 
+export interface CosmosConfig {
+    networks: {
+        [chainId: string]: {
+            name: string;
+            rpcUrl: string;
+            chainId: string;
+            denom: string;
+            prefix: string;
+            gasPrice: string;
+            contractAddress?: string;
+        };
+    };
+    wallet: {
+        mnemonic?: string;
+        privateKey?: string;
+    };
+    execution: {
+        gasLimit: number;
+        timeoutSeconds: number;
+        minSafetyDepositBps: number;
+    };
+}
+
 export interface Config {
     networks: string[];
     ethereum: NetworkConfig;
     near: NetworkConfig;
     bitcoin: BitcoinConfig;
+    cosmos: CosmosConfig;
     wallet: WalletConfig;
     execution: ExecutionConfig;
     logging: {
@@ -91,7 +115,7 @@ export async function loadConfig(): Promise<Config> {
     }
 
     const config: Config = {
-        networks: ['ethereum', 'near', 'bitcoin'],
+        networks: ['ethereum', 'near', 'bitcoin', 'cosmos'],
         
         ethereum: {
             name: 'Ethereum Sepolia',
@@ -121,6 +145,47 @@ export async function loadConfig(): Promise<Config> {
             minConfirmations: parseInt(process.env.BITCOIN_MIN_CONFIRMATIONS || '1'),
             privateKey: process.env.BITCOIN_PRIVATE_KEY, // Optional: for real transaction execution
             apiUrl: process.env.BITCOIN_API_URL // Optional: custom API endpoint
+        },
+
+        cosmos: {
+            networks: {
+                '7001': { // Neutron Testnet
+                    name: 'Neutron Testnet',
+                    rpcUrl: process.env.NEUTRON_RPC_URL || 'https://neutron-testnet-rpc.polkachu.com:443',
+                    chainId: 'pion-1',
+                    denom: 'untrn',
+                    prefix: 'neutron',
+                    gasPrice: process.env.NEUTRON_GAS_PRICE || '0.025untrn',
+                    contractAddress: process.env.NEUTRON_CONTRACT_ADDRESS
+                },
+                '7002': { // Juno Testnet
+                    name: 'Juno Testnet',
+                    rpcUrl: process.env.JUNO_RPC_URL || 'https://rpc.uni.junonetwork.io:443',
+                    chainId: 'uni-6',
+                    denom: 'ujunox',
+                    prefix: 'juno',
+                    gasPrice: process.env.JUNO_GAS_PRICE || '0.025ujunox',
+                    contractAddress: process.env.JUNO_CONTRACT_ADDRESS
+                },
+                '30001': { // Cosmos Hub Mainnet
+                    name: 'Cosmos Hub',
+                    rpcUrl: process.env.COSMOS_RPC_URL || 'https://rpc.cosmos.network:443',
+                    chainId: 'cosmoshub-4',
+                    denom: 'uatom',
+                    prefix: 'cosmos',
+                    gasPrice: process.env.COSMOS_GAS_PRICE || '0.025uatom',
+                    contractAddress: process.env.COSMOS_CONTRACT_ADDRESS
+                }
+            },
+            wallet: {
+                mnemonic: process.env.COSMOS_MNEMONIC,
+                privateKey: process.env.COSMOS_PRIVATE_KEY
+            },
+            execution: {
+                gasLimit: parseInt(process.env.COSMOS_GAS_LIMIT || '300000'),
+                timeoutSeconds: parseInt(process.env.COSMOS_TIMEOUT_SECONDS || '3600'), // 1 hour
+                minSafetyDepositBps: parseInt(process.env.COSMOS_MIN_SAFETY_DEPOSIT_BPS || '500') // 5%
+            }
         },
 
         wallet: {
