@@ -60,11 +60,11 @@ export function IntentPreview({ intent, className }: IntentPreviewProps) {
 
   const priority = priorityConfig[intent.prioritize];
   
-  const fromUsdValue = intent.fromToken.priceUSD 
+  const fromUsdValue = intent.fromToken?.priceUSD 
     ? parseFloat(intent.fromAmount) * intent.fromToken.priceUSD
     : null;
     
-  const toUsdValue = intent.toToken.priceUSD 
+  const toUsdValue = intent.toToken?.priceUSD 
     ? parseFloat(intent.minToAmount) * intent.toToken.priceUSD
     : null;
 
@@ -91,25 +91,25 @@ export function IntentPreview({ intent, className }: IntentPreviewProps) {
               <div className="flex items-center gap-2">
                 <div className="relative">
                   <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center text-xs font-medium">
-                    {intent.fromToken.symbol.slice(0, 2)}
+                    {intent.fromToken?.symbol?.slice(0, 2) || 'N/A'}
                   </div>
                   <div className={cn(
                     "absolute -bottom-1 -right-1 h-3 w-3 rounded-full border-2 border-background",
-                    intent.fromToken.chainId === 'near' && 'bg-near-500',
-                    intent.fromToken.chainId === 'ethereum' && 'bg-blue-500',
-                    intent.fromToken.chainId === 'bitcoin' && 'bg-bitcoin-500'
+                    intent.fromToken?.chainId === 'near' && 'bg-near-500',
+                    intent.fromToken?.chainId === 'ethereum' && 'bg-blue-500',
+                    intent.fromToken?.chainId === 'bitcoin' && 'bg-bitcoin-500'
                   )} />
                 </div>
                 <div>
-                  <div className="font-medium">{intent.fromToken.symbol}</div>
+                  <div className="font-medium">{intent.fromToken?.symbol || 'Unknown'}</div>
                   <div className="text-xs text-muted-foreground capitalize">
-                    {intent.fromToken.chainId}
+                    {intent.fromToken?.chainId || 'unknown'}
                   </div>
                 </div>
               </div>
               <div className="space-y-1">
                 <div className="text-lg font-semibold">
-                  {formatTokenAmount(intent.fromAmount)} {intent.fromToken.symbol}
+                  {formatTokenAmount(intent.fromAmount)} {intent.fromToken?.symbol || ''}
                 </div>
                 {fromUsdValue && (
                   <div className="text-sm text-muted-foreground">
@@ -131,25 +131,25 @@ export function IntentPreview({ intent, className }: IntentPreviewProps) {
               <div className="flex items-center gap-2">
                 <div className="relative">
                   <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center text-xs font-medium">
-                    {intent.toToken.symbol.slice(0, 2)}
+                    {intent.toToken?.symbol?.slice(0, 2) || 'N/A'}
                   </div>
                   <div className={cn(
                     "absolute -bottom-1 -right-1 h-3 w-3 rounded-full border-2 border-background",
-                    intent.toToken.chainId === 'near' && 'bg-near-500',
-                    intent.toToken.chainId === 'ethereum' && 'bg-blue-500',
-                    intent.toToken.chainId === 'bitcoin' && 'bg-bitcoin-500'
+                    intent.toToken?.chainId === 'near' && 'bg-near-500',
+                    intent.toToken?.chainId === 'ethereum' && 'bg-blue-500',
+                    intent.toToken?.chainId === 'bitcoin' && 'bg-bitcoin-500'
                   )} />
                 </div>
                 <div>
-                  <div className="font-medium">{intent.toToken.symbol}</div>
+                  <div className="font-medium">{intent.toToken?.symbol || 'Unknown'}</div>
                   <div className="text-xs text-muted-foreground capitalize">
-                    {intent.toToken.chainId}
+                    {intent.toToken?.chainId || 'unknown'}
                   </div>
                 </div>
               </div>
               <div className="space-y-1">
                 <div className="text-lg font-semibold">
-                  ≥ {formatTokenAmount(intent.minToAmount)} {intent.toToken.symbol}
+                  ≥ {formatTokenAmount(intent.minToAmount)} {intent.toToken?.symbol || ''}
                 </div>
                 {toUsdValue && (
                   <div className="text-sm text-muted-foreground">
@@ -226,7 +226,7 @@ export function IntentPreview({ intent, className }: IntentPreviewProps) {
         </div>
 
         {/* Cross-Chain Notice */}
-        {intent.fromToken.chainId !== intent.toToken.chainId && (
+        {intent.fromToken?.chainId !== intent.toToken?.chainId && (
           <div className="p-4 rounded-lg bg-gradient-to-r from-near-50 to-bitcoin-50 border border-near-200">
             <div className="flex items-start gap-3">
               <div className="flex-shrink-0 mt-0.5">

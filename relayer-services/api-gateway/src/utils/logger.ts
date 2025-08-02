@@ -22,7 +22,16 @@ class Logger {
     const prefix = `${level.color}[${timestamp}] ${level.level}${RESET_COLOR}`;
     
     if (data) {
-      return `${prefix} ${message} ${JSON.stringify(data)}`;
+      try {
+        // Handle BigInt serialization by converting to string
+        const serializedData = JSON.stringify(data, (key, value) =>
+          typeof value === 'bigint' ? value.toString() : value
+        );
+        return `${prefix} ${message} ${serializedData}`;
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        return `${prefix} ${message} [Data serialization failed: ${errorMessage}]`;
+      }
     }
     
     return `${prefix} ${message}`;

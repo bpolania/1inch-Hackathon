@@ -148,20 +148,22 @@ export const useWalletStore = create<WalletStore>((set, get) => ({
             
             console.log('🔍 Found modal containers:', possibleModals.length)
             possibleModals.forEach((modal, i) => {
-              console.log(`🔍 Modal ${i}:`, modal.className, modal.tagName)
-              const style = window.getComputedStyle(modal)
-              console.log(`🎨 Modal ${i} styles:`, {
-                position: style.position,
-                display: style.display,
-                zIndex: style.zIndex,
-                background: style.backgroundColor
-              })
-              
-              // Just log the modal state - let CSS handle positioning
-              if (style.position !== 'fixed') {
-                console.log('🔧 Modal position will be fixed by CSS:', modal.className)
-              } else {
-                console.log('✅ Modal positioned correctly')
+              if (modal) {
+                console.log(`🔍 Modal ${i}:`, modal.className, modal.tagName)
+                const style = window.getComputedStyle(modal)
+                console.log(`🎨 Modal ${i} styles:`, {
+                  position: style.position,
+                  display: style.display,
+                  zIndex: style.zIndex,
+                  background: style.backgroundColor
+                })
+                
+                // Just log the modal state - let CSS handle positioning
+                if (style.position !== 'fixed') {
+                  console.log('🔧 Modal position will be fixed by CSS:', modal.className)
+                } else {
+                  console.log('✅ Modal positioned correctly')
+                }
               }
             })
           }, 100)

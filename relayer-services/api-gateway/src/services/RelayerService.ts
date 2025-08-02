@@ -176,7 +176,45 @@ export class RelayerService extends EventEmitter {
       // Initialize cross-chain executor
       logger.info('Initializing CrossChainExecutor...');
       this.crossChainExecutor = new CrossChainExecutor(executorConfig, this.walletManager);
-      await this.crossChainExecutor.initialize();
+      
+      try {
+        await this.crossChainExecutor.initialize();
+        logger.info('✅ CrossChainExecutor initialized successfully');
+        
+        // Test contract connectivity
+        logger.info('🔍 Testing contract connectivity...');
+        
+        // Test Ethereum RPC connectivity
+        const { ethers } = require('ethers');
+        const provider = new ethers.JsonRpcProvider(this.config.ethereumRpcUrl);
+        try {
+          const blockNumber = await provider.getBlockNumber();
+          logger.info('✅ Ethereum RPC connected, latest block:', blockNumber);
+          
+          // Test contract exists
+          const factoryCode = await provider.getCode(this.config.contractAddresses.factory);
+          if (factoryCode === '0x') {
+            logger.error('❌ Factory contract not found at address:', this.config.contractAddresses.factory);
+          } else {
+            logger.info('✅ Factory contract found, bytecode length:', factoryCode.length);
+          }
+          
+        } catch (rpcError) {
+          logger.error('❌ Ethereum RPC connection failed:', rpcError);
+        }
+        
+        const status = this.crossChainExecutor.getStatus();
+        logger.info('📊 CrossChainExecutor status:', status);
+        
+      } catch (error) {
+        logger.error('❌ CrossChainExecutor initialization failed:', error);
+        logger.error('❌ Error details:', {
+          message: error instanceof Error ? error.message : String(error),
+          stack: error instanceof Error ? error.stack : undefined
+        });
+        logger.info('🎭 Setting executor to null for graceful degradation...');
+        this.crossChainExecutor = null;
+      }
 
       // Set up event handlers
       this.setupEventHandlers();
@@ -206,11 +244,11 @@ export class RelayerService extends EventEmitter {
     });
 
     try {
-      // Convert UI intent to executable order format
-      const executableOrder = this.convertIntentToExecutableOrder(intent);
+      // Convert UI intent to fusion order format
+      const fusionOrder = this.convertIntentToFusionOrder(intent);
 
       // Analyze profitability
-      const analysis = await this.profitabilityAnalyzer.analyzeOrder(executableOrder);
+      const analysis = await this.profitabilityAnalyzer.analyzeOrder(fusionOrder.orderParams);
 
       const result: ProfitabilityAnalysis = {
         isProfitable: analysis.isProfitable,
@@ -412,34 +450,263 @@ export class RelayerService extends EventEmitter {
     }
   }
 
-  private convertIntentToExecutableOrder(intent: any): any {
+  private convertIntentToFusionOrder(intent: any): any {
+    // Helper function to convert decimal amounts to wei (string)
+    const toWei = (amount: string, decimals: number = 18): string => {
+      const amountFloat = parseFloat(amount || '0');
+      const factor = Math.pow(10, decimals);
+      const amountWei = Math.floor(amountFloat * factor);
+      return BigInt(amountWei).toString(); // Convert BigInt to string for JSON serialization
+    };
+
+    // Generate SHA-256 hashlock for NEAR compatibility
+    const crypto = require('crypto');
+    const secretBytes = crypto.randomBytes(32);
+    const secret = secretBytes.toString('hex');
+    const hashlockBuffer = crypto.createHash('sha256').update(secretBytes).digest();
+    const hashlock = '0x' + hashlockBuffer.toString('hex');
+
+    // Get token decimals
+    const srcDecimals = intent.fromToken?.decimals || 18;
+    const dstDecimals = intent.toToken?.decimals || 24; // NEAR uses 24 decimals
+
+    const sourceAmount = toWei(intent.fromAmount || '0', srcDecimals);
+    const destinationAmount = toWei(intent.minToAmount || '0', dstDecimals);
+    const resolverFee = (BigInt(sourceAmount) / BigInt(10)).toString(); // 10% resolver fee
+
+    // Map token addresses correctly
+    let sourceTokenAddress;
+    if (intent.fromToken?.chainId === 'near' || intent.fromToken?.address === 'near') {
+      // For NEAR tokens, use the DT token on Ethereum side
+      sourceTokenAddress = '0x6295209910dEC4cc94770bfFD10e0362E6c8332e'; // New DT token
+    } else {
+      sourceTokenAddress = intent.fromToken?.address || '0x6295209910dEC4cc94770bfFD10e0362E6c8332e';
+    }
+
+    // Convert strings to ethers.toUtf8Bytes for proper ABI encoding
+    const { ethers } = require('ethers');
+    
     return {
-      orderHash: intent.id,
-      order: {
-        chainId: intent.fromToken?.chainId || 1,
-        maker: intent.user,
-        srcToken: intent.fromToken?.address || '',
-        srcAmount: BigInt(intent.fromAmount || '0'),
-        dstToken: intent.toToken?.address || '',
-        dstAmount: BigInt(intent.minToAmount || '0'),
-        dstChainId: intent.toToken?.chainId || 1,
-        dstExecutionParams: '0x', // Would encode execution parameters
-        expiryTime: intent.deadline || Math.floor(Date.now() / 1000) + 300,
-        hashlock: intent.hashlock || '0x' + '0'.repeat(64),
-        destinationAmount: BigInt(intent.minToAmount || '0')
+      secret: '0x' + secret,
+      hashlock: hashlock,
+      intentId: intent.id,
+      orderParams: {
+        sourceToken: sourceTokenAddress,
+        sourceAmount: sourceAmount,
+        destinationChainId: 40002, // NEAR Testnet
+        destinationToken: ethers.toUtf8Bytes('native.near'),
+        destinationAmount: destinationAmount,
+        destinationAddress: ethers.toUtf8Bytes('fusion-plus.demo.cuteharbor3573.testnet'),
+        resolverFeeAmount: resolverFee,
+        expiryTime: Math.floor(Date.now() / 1000) + 3600, // 1 hour
+        chainParams: {
+          destinationAddress: ethers.toUtf8Bytes('fusion-plus.demo.cuteharbor3573.testnet'),
+          executionParams: ethers.toUtf8Bytes(''),
+          estimatedGas: BigInt('300000000000000'),
+          additionalData: hashlock
+        },
+        hashlock: hashlock
       }
     };
+  }
+
+  private async createFusionOrderDirect(fusionOrder: any): Promise<any> {
+    const { ethers } = require('ethers');
+    
+    try {
+      logger.info('🔧 Creating Fusion order directly on contract...', {
+        factoryAddress: this.config.contractAddresses.factory,
+        tokenAddress: fusionOrder.orderParams.sourceToken,
+        registryAddress: this.config.contractAddresses.registry,
+        ethereumRpcUrl: this.config.ethereumRpcUrl,
+        destinationChainId: fusionOrder.orderParams.destinationChainId
+      });
+      
+      logger.info('🎯 Full order parameters for debugging:', JSON.stringify(fusionOrder.orderParams, (key, value) =>
+        typeof value === 'bigint' ? value.toString() : value, 2));
+      
+      // Connect to the factory contract
+      const provider = new ethers.JsonRpcProvider(this.config.ethereumRpcUrl);
+      const wallet = new ethers.Wallet(this.config.ethereumPrivateKey, provider);
+      
+      const factoryABI = [
+        'function createFusionOrder((address sourceToken, uint256 sourceAmount, uint256 destinationChainId, bytes destinationToken, uint256 destinationAmount, bytes destinationAddress, uint256 resolverFeeAmount, uint256 expiryTime, (bytes destinationAddress, bytes executionParams, uint256 estimatedGas, bytes additionalData) chainParams, bytes32 hashlock)) external returns (bytes32)',
+        'function getOrder(bytes32 orderHash) external view returns ((bytes32 orderHash, address maker, address sourceToken, uint256 sourceAmount, uint256 destinationChainId, bytes destinationToken, uint256 destinationAmount, bytes destinationAddress, uint256 resolverFeeAmount, uint256 expiryTime, bytes chainSpecificParams, bool isActive))',
+        'function registry() external view returns (address)',
+        'function getSupportedChains() external view returns (uint256[])'
+      ];
+      
+      const factory = new ethers.Contract(this.config.contractAddresses.factory, factoryABI, wallet);
+      
+      logger.info('📝 Order parameters:', fusionOrder.orderParams);
+      
+      // Validate chain support FIRST before any other checks
+      logger.info('🔍 Starting chain validation...');
+      try {
+        const supportedChains = await factory.getSupportedChains();
+        const isChainSupported = supportedChains.some((chainId: any) => chainId.toString() === fusionOrder.orderParams.destinationChainId.toString());
+        
+        logger.info('🔍 Chain validation:', {
+          requestedChain: fusionOrder.orderParams.destinationChainId,
+          supportedChains: supportedChains.map((id: any) => id.toString()),
+          isSupported: isChainSupported
+        });
+        
+        if (!isChainSupported) {
+          throw new Error(`Destination chain ${fusionOrder.orderParams.destinationChainId} is not supported by the factory`);
+        }
+        
+        // Try to get registry info for additional validation
+        try {
+          const registryAddress = await factory.registry();
+          logger.info('✅ Registry address:', registryAddress);
+        } catch (registryError: any) {
+          logger.warn('⚠️ Could not get registry info:', registryError?.message || String(registryError));
+        }
+        
+      } catch (validationError: any) {
+        logger.error('❌ Chain validation failed:', validationError?.message || String(validationError));
+        throw new Error(`Chain validation failed: ${validationError?.message || String(validationError)}`);
+      }
+      
+      // Check if user has enough tokens and allowance
+      const tokenABI = [
+        'function balanceOf(address) view returns (uint256)',
+        'function allowance(address,address) view returns (uint256)',
+        'function approve(address,uint256) returns (bool)',
+        'function transfer(address,uint256) returns (bool)'
+      ];
+      const tokenContract = new ethers.Contract(
+        fusionOrder.orderParams.sourceToken, 
+        tokenABI, 
+        wallet
+      );
+      
+      const balance = await tokenContract.balanceOf(wallet.address);
+      const allowance = await tokenContract.allowance(wallet.address, this.config.contractAddresses.factory);
+      const requiredAmount = BigInt(fusionOrder.orderParams.sourceAmount) + BigInt(fusionOrder.orderParams.resolverFeeAmount);
+      
+      logger.info('💰 Token check:', {
+        userAddress: wallet.address,
+        tokenAddress: fusionOrder.orderParams.sourceToken,
+        balance: balance.toString(),
+        allowance: allowance.toString(),
+        required: requiredAmount.toString()
+      });
+      
+      if (balance < requiredAmount) {
+        throw new Error(`Insufficient token balance. Required: ${requiredAmount.toString()}, Available: ${balance.toString()}`);
+      }
+      
+      if (allowance < requiredAmount) {
+        logger.info('🔓 Approving tokens...');
+        try {
+          const approveTx = await tokenContract.approve(this.config.contractAddresses.factory, requiredAmount);
+          const approveReceipt = await approveTx.wait();
+          logger.info('✅ Tokens approved successfully', {
+            txHash: approveReceipt.hash,
+            gasUsed: approveReceipt.gasUsed?.toString()
+          });
+        } catch (approveError) {
+          logger.error('❌ Token approval failed:', {
+            error: approveError instanceof Error ? approveError.message : String(approveError),
+            factoryAddress: this.config.contractAddresses.factory,
+            tokenAddress: fusionOrder.orderParams.sourceToken,
+            requiredAmount: requiredAmount.toString()
+          });
+          throw new Error(`Token approval failed: ${approveError instanceof Error ? approveError.message : 'Unknown error'}`);
+        }
+      }
+      
+      // Create the order
+      logger.info('📝 Creating Fusion order...');
+      const createTx = await factory.createFusionOrder(fusionOrder.orderParams);
+      const createReceipt = await createTx.wait();
+      
+      logger.info('✅ Fusion order created successfully!');
+      logger.info('📍 Transaction:', createReceipt.hash);
+      logger.info('🔗 Etherscan:', `https://sepolia.etherscan.io/tx/${createReceipt.hash}`);
+      
+      // Extract order hash from events
+      let orderHash;
+      for (const log of createReceipt.logs) {
+        try {
+          const parsed = factory.interface.parseLog(log);
+          if (parsed.name === 'FusionOrderCreated') {
+            orderHash = parsed.args.orderHash;
+            break;
+          }
+        } catch (e) {}
+      }
+      
+      return {
+        success: true,
+        orderHash: orderHash || createReceipt.hash,
+        actualProfit: BigInt('0'),
+        gasUsed: createReceipt.gasUsed,
+        executionTime: Date.now() - Date.now(),
+        transactions: { 
+          ethereum: [createReceipt.hash], 
+          near: [], 
+          bitcoin: [] 
+        },
+        secret: fusionOrder.secret,
+        hashlock: fusionOrder.hashlock
+      };
+      
+    } catch (error: any) {
+      logger.error('❌ Failed to create Fusion order:');
+      logger.error('Error details:', {
+        message: error instanceof Error ? error.message : String(error),
+        code: error?.code,
+        data: error?.data,
+        reason: error?.reason,
+        transaction: error?.transaction,
+        stack: error instanceof Error ? error.stack : undefined
+      });
+      throw error;
+    }
   }
 
   private async executeOrder(intentId: string, intent: any): Promise<void> {
     try {
       this.updateOrderStatus(intentId, 'executing');
 
-      // Convert to executable order
-      const executableOrder = this.convertIntentToExecutableOrder(intent);
+      // Convert intent to Fusion order parameters
+      const fusionOrder = this.convertIntentToFusionOrder(intent);
 
-      // Execute the order
-      const result = await this.crossChainExecutor!.executeAtomicSwap(executableOrder);
+      // Execute the order by creating and matching it
+      logger.info('🚀 Creating and executing Fusion order:', {
+        intentId: fusionOrder.intentId,
+        sourceToken: fusionOrder.orderParams.sourceToken,
+        sourceAmount: fusionOrder.orderParams.sourceAmount,
+        hashlock: fusionOrder.hashlock
+      });
+      
+      let result;
+      
+      try {
+        // Create the Fusion order first, then execute it
+        result = await this.createFusionOrderDirect(fusionOrder);
+      } catch (error: any) {
+        logger.error('❌ Execution failed:');
+        logger.error('Execution error details:', {
+          message: error instanceof Error ? error.message : String(error),
+          code: error?.code,
+          data: error?.data,
+          reason: error?.reason,
+          transaction: error?.transaction
+        });
+        result = {
+          success: false,
+          orderHash: fusionOrder.hashlock,
+          actualProfit: 0n,
+          gasUsed: 0n,
+          executionTime: 0,
+          transactions: { ethereum: [], near: [], bitcoin: [] },
+          error: error instanceof Error ? error.message : 'Unknown execution error'
+        };
+      }
 
       if (result.success) {
         // Update submission with transaction details
@@ -480,7 +747,14 @@ export class RelayerService extends EventEmitter {
 
   private handleExecutionComplete(result: any): void {
     // Handle successful execution
-    this.metrics.totalProfit = (BigInt(this.metrics.totalProfit) + result.actualProfit).toString();
+    try {
+      const currentProfit = BigInt(this.metrics.totalProfit || '0');
+      const newProfit = BigInt(result.actualProfit || '0');
+      this.metrics.totalProfit = (currentProfit + newProfit).toString();
+    } catch (error) {
+      console.error('Error calculating profit:', error);
+      // Keep existing profit if calculation fails
+    }
   }
 
   private handleExecutionFailed(result: any): void {

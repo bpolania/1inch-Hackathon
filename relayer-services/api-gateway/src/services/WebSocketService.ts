@@ -308,7 +308,15 @@ export class WebSocketService extends EventEmitter {
 
   private sendMessage(ws: WebSocket, message: any): void {
     if (ws.readyState === WebSocket.OPEN) {
-      ws.send(JSON.stringify(message));
+      try {
+        // Handle BigInt serialization by converting to string
+        const serializedMessage = JSON.stringify(message, (key, value) =>
+          typeof value === 'bigint' ? value.toString() : value
+        );
+        ws.send(serializedMessage);
+      } catch (error) {
+        logger.error('Failed to serialize WebSocket message:', error);
+      }
     }
   }
 

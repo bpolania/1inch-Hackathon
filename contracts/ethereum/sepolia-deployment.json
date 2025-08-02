@@ -37,13 +37,25 @@
       "EscrowDstImplementation": "0x454fFCf3fd993c93d2C13DE36948d9eec0Ee6adE",
       "NearTakerInteraction": "0xA438D7aB66013A13D99f5fDaAFC73e17a2706784",
       "OneInchFusionPlusFactory": "0x2E053bA098E2DB09C7F61A2854063BB2161b7b0a",
-      "DemoToken": "0xaa86ed59bcf10c838F2abDa08D1Ca8C6D1609d43"
+      "DemoToken": "0x6295209910dEC4cc94770bfFD10e0362E6c8332e"
     },
     "etherscanLinks": {
       "escrowFactory": "https://sepolia.etherscan.io/address/0xf9dE921BbEAbC78F14a5F65aa22aF1697370caED",
       "nearTakerInteraction": "https://sepolia.etherscan.io/address/0xA438D7aB66013A13D99f5fDaAFC73e17a2706784",
       "oneInchFactory": "https://sepolia.etherscan.io/address/0x2E053bA098E2DB09C7F61A2854063BB2161b7b0a",
-      "demoToken": "https://sepolia.etherscan.io/address/0xaa86ed59bcf10c838F2abDa08D1Ca8C6D1609d43"
+      "demoToken": "https://sepolia.etherscan.io/address/0x6295209910dEC4cc94770bfFD10e0362E6c8332e"
+    }
+  },
+  "tokenDeployment": {
+    "deploymentDate": "2025-08-02T10:07:01.513Z",
+    "deployer": "0x7E96116E84BB737F8aFF371362e5359ac0dd5BDf",
+    "oldTokenAddress": "0xaa86ed59bcf10c838F2abDa08D1Ca8C6D1609d43",
+    "newTokenAddress": "0x6295209910dEC4cc94770bfFD10e0362E6c8332e",
+    "tokenInfo": {
+      "name": "Demo Token",
+      "symbol": "DT",
+      "decimals": "18",
+      "initialSupply": "1000000.0"
     }
   }
 }

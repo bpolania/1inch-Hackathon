@@ -39,7 +39,7 @@ export class FusionOrderProcessor {
     constructor(
         fusionSDK: FusionSDK,
         ethereumProvider: ethers.JsonRpcProvider,
-        factoryAddress: string = '0xbeEab741D2869404FcB747057f5AbdEffc3A138d'
+        factoryAddress: string = '0x2E053bA098E2DB09C7F61A2854063BB2161b7b0a'
     ) {
         this.fusionSDK = fusionSDK;
         this.ethereumProvider = ethereumProvider;
