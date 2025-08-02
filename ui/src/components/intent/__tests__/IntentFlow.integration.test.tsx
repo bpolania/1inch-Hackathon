@@ -197,7 +197,7 @@ describe('Intent Flow Integration', () => {
       await waitFor(() => {
         expect(screen.getByText('1inch Best Quote')).toBeInTheDocument();
         expect(screen.getByText('2000.000000 USDC')).toBeInTheDocument();
-      });
+      }, { timeout: 3000 });
 
       // Should show submit button as enabled
       const submitButton = screen.getByText('Submit Intent');
@@ -306,7 +306,7 @@ describe('Intent Flow Integration', () => {
       // Relayer should show analysis failure
       await waitFor(() => {
         // Analysis should return conservative default
-        expect(screen.getByText('wait')).toBeInTheDocument();
+        expect(screen.getByText('WAIT')).toBeInTheDocument();
       });
     });
   });

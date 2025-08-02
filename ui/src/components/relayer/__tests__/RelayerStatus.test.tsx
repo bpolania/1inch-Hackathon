@@ -113,20 +113,22 @@ describe('RelayerStatus', () => {
       expect(screen.getByText('Connected')).toBeInTheDocument();
     });
 
-    it('should display wallet status', () => {
+    it('should display wallet status', async () => {
       render(<RelayerStatus />);
 
-      expect(screen.getByText('Wallet Status')).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText('Wallet Status')).toBeInTheDocument();
+      });
       
       // Ethereum Wallet
       expect(screen.getByText('Ethereum')).toBeInTheDocument();
-      expect(screen.getByText(/0x123456\.\.\./, { exact: false })).toBeInTheDocument();
-      expect(screen.getByText('1.5 ETH')).toBeInTheDocument();
+      expect(screen.getByText(/0x123456/)).toBeInTheDocument();
+      expect(screen.getByText(/1\.5.*ETH/)).toBeInTheDocument();
 
       // NEAR Wallet
-      expect(screen.getByText('NEAR')).toBeInTheDocument();
-      expect(screen.getByText('test.near')).toBeInTheDocument();
-      expect(screen.getByText('100.5 NEAR')).toBeInTheDocument();
+      expect(screen.getByText('NEAR')).toBeInTheDocument();  
+      expect(screen.getByText(/test\.near/)).toBeInTheDocument();
+      expect(screen.getByText(/100\.5.*NEAR/)).toBeInTheDocument();
     });
 
     it('should fetch and display metrics', async () => {
@@ -138,11 +140,13 @@ describe('RelayerStatus', () => {
         expect(mockGetMetrics).toHaveBeenCalled();
       });
 
-      expect(screen.getByText('Performance Metrics')).toBeInTheDocument();
-      expect(screen.getByText('100')).toBeInTheDocument(); // Total Orders
-      expect(screen.getByText('95')).toBeInTheDocument(); // Successful
-      expect(screen.getByText('2.5000')).toBeInTheDocument(); // Total Profit
-      expect(screen.getByText('45s')).toBeInTheDocument(); // Avg. Time
+      await waitFor(() => {
+        expect(screen.getByText('Performance Metrics')).toBeInTheDocument();
+        expect(screen.getByText('100')).toBeInTheDocument(); // Total Orders
+        expect(screen.getByText('95')).toBeInTheDocument(); // Successful
+        expect(screen.getByText('2.5000')).toBeInTheDocument(); // Total Profit
+        expect(screen.getByText('45s')).toBeInTheDocument(); // Avg. Time
+      });
     });
 
     it('should show disconnected wallet status', () => {

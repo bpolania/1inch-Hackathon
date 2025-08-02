@@ -96,13 +96,25 @@ describe('Wallet Store', () => {
       const { setupModal } = require('@near-wallet-selector/modal-ui')
       
       const mockModal = { show: jest.fn() }
+      const mockSelector = {
+        ...mockWalletSelector,
+        store: {
+          observable: {
+            subscribe: jest.fn()
+          }
+        }
+      }
+      
       setupModal.mockReturnValue(mockModal)
-      setupWalletSelector.mockResolvedValue(mockWalletSelector)
+      setupWalletSelector.mockResolvedValue(mockSelector)
       
       const store = useWalletStore.getState()
       
       // Test connection initiation
       await store.connect()
+      
+      // Wait for setTimeout to complete
+      await new Promise(resolve => setTimeout(resolve, 100))
       
       expect(setupWalletSelector).toHaveBeenCalledWith({
         network: expect.objectContaining({

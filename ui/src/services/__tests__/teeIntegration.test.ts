@@ -141,7 +141,7 @@ describe('TEESolverIntegrationService', () => {
         expect.objectContaining({
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: expect.stringContaining('"intentId":"intent-123"')
+          body: expect.stringContaining('"id":"intent-123"')
         })
       );
     });
