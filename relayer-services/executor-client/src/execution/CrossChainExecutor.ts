@@ -15,7 +15,7 @@ import { Config } from '../config/config';
 import { logger } from '../utils/logger';
 import { ExecutableOrder } from '../core/ExecutorEngine';
 import { BitcoinExecutor, BitcoinExecutionResult } from './BitcoinExecutor';
-import { CosmosExecutor } from './CosmosExecutor';
+import { CosmosExecutor, CosmosExecutionResult } from './CosmosExecutor';
 
 export interface ExecutionResult {
     success: boolean;
@@ -41,7 +41,7 @@ export class CrossChainExecutor extends EventEmitter {
     private registryContract!: ethers.Contract;
     private tokenContract!: ethers.Contract;
     private bitcoinExecutor: BitcoinExecutor;
-    public cosmosExecutor: CosmosExecutor;
+    private cosmosExecutor: CosmosExecutor;
 
     constructor(config: Config, walletManager: WalletManager) {
         super();
@@ -63,7 +63,7 @@ export class CrossChainExecutor extends EventEmitter {
 
         // Initialize Bitcoin executor
         await this.bitcoinExecutor.initialize();
-        
+
         // Initialize Cosmos executor
         await this.cosmosExecutor.initialize();
 
@@ -168,7 +168,7 @@ export class CrossChainExecutor extends EventEmitter {
                         result.transactions.bitcoin!.push(...destinationResult.transactions);
                     }
                 } else if (this.isCosmosChain(order.destinationChainId)) {
-                    // Cosmos execution
+                    // Cosmos execution (Neutron, Juno, Cosmos Hub, etc.)
                     destinationResult = await this.executeCosmosSide(executableOrder);
                     if (destinationResult.success && destinationResult.transactions) {
                         result.transactions.cosmos!.push(...destinationResult.transactions);
@@ -473,6 +473,68 @@ export class CrossChainExecutor extends EventEmitter {
         }
     }
 
+    /**
+     * Execute Cosmos side of atomic swap
+     */
+    private async executeCosmosSide(executableOrder: ExecutableOrder): Promise<{
+        success: boolean;
+        transactions: string[];
+        secret?: string;
+        error?: string;
+    }> {
+        logger.info(`🌌 Executing Cosmos side for order ${executableOrder.orderHash}`);
+
+        try {
+            // Execute Cosmos CosmWasm contract using our CosmosExecutor
+            const cosmosResult = await this.cosmosExecutor.executeOrder(executableOrder);
+            
+            if (!cosmosResult.success) {
+                return {
+                    success: false,
+                    transactions: [],
+                    error: cosmosResult.error
+                };
+            }
+
+            logger.info(`✅ Cosmos side executed successfully`);
+            logger.info(`   Contract: ${cosmosResult.contractAddress}`);
+            logger.info(`   Transactions: ${cosmosResult.transactions.join(', ')}`);
+
+            return {
+                success: true,
+                transactions: cosmosResult.transactions,
+                secret: cosmosResult.secret // Secret revealed when Cosmos side is claimed
+            };
+
+        } catch (error) {
+            logger.error(`💥 Error executing Cosmos side:`, error);
+            return {
+                success: false,
+                transactions: [],
+                error: error instanceof Error ? error.message : String(error)
+            };
+        }
+    }
+
+    /**
+     * Check if a chain ID corresponds to a Cosmos chain
+     */
+    private isCosmosChain(chainId: number): boolean {
+        const cosmosChainIds = [
+            7001,  // Neutron Testnet
+            7002,  // Juno Testnet
+            30001, // Cosmos Hub Mainnet
+            30002, // Cosmos Hub Testnet
+            30003, // Osmosis Mainnet
+            30004, // Osmosis Testnet
+            30005, // Stargaze Mainnet
+            30006, // Stargaze Testnet
+            30007, // Akash Mainnet
+            30008  // Akash Testnet
+        ];
+        return cosmosChainIds.includes(chainId);
+    }
+
     private async executeNearContract(orderHash: string, order: any, secret: string): Promise<string[]> {
         // This method would implement the actual NEAR contract execution
         // For the MVP, we'll simulate the process and return mock transaction hashes
@@ -609,62 +671,18 @@ export class CrossChainExecutor extends EventEmitter {
         return profit > 0n ? profit : 0n;
     }
 
-    /**
-     * Check if the destination chain is a Cosmos chain
-     */
-    private isCosmosChain(chainId: number): boolean {
-        // Cosmos chain IDs: 7001 (Neutron), 7002 (Juno), 30001 (Cosmos Hub), 7003 (Osmosis), 7004 (Stargaze), 7005 (Akash)
-        return [7001, 7002, 30001, 7003, 7004, 7005].includes(chainId);
-    }
-
-    /**
-     * Execute Cosmos side of atomic swap
-     */
-    private async executeCosmosSide(executableOrder: ExecutableOrder): Promise<{
-        success: boolean;
-        transactions: string[];
-        secret?: string;
-        error?: string;
-    }> {
-        logger.info(`🌌 Executing Cosmos side for order ${executableOrder.orderHash}`);
-
-        try {
-            // Execute Cosmos order using our CosmosExecutor
-            const cosmosResult = await this.cosmosExecutor.executeOrder(executableOrder);
-            
-            if (!cosmosResult.success) {
-                return {
-                    success: false,
-                    transactions: [],
-                    error: cosmosResult.error
-                };
-            }
-
-            logger.info(`✅ Cosmos side executed successfully`);
-            logger.info(`   Transactions: ${cosmosResult.transactions?.length || 0}`);
-
-            return {
-                success: true,
-                transactions: cosmosResult.transactions || [],
-                secret: cosmosResult.secret || executableOrder.order.hashlock
-            };
-
-        } catch (error) {
-            logger.error(`💥 Error executing Cosmos side:`, error);
-            return {
-                success: false,
-                transactions: [],
-                error: error instanceof Error ? error.message : String(error)
-            };
-        }
-    }
-
     // Public methods for status and control
     public getStatus(): object {
         return {
             walletAddress: this.config.wallet.ethereum.address,
             factoryContract: this.config.ethereum.contracts.factory,
-            isInitialized: !!this.factoryContract
+            isInitialized: !!this.factoryContract,
+            supportedChains: {
+                ethereum: true,
+                near: true,
+                bitcoin: true,
+                cosmos: this.cosmosExecutor.getSupportedChains()
+            }
         };
     }
 }

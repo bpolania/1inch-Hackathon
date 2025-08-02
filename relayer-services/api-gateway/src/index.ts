@@ -23,6 +23,7 @@ import { transactionRoutes } from './routes/transactions';
 import { userRoutes } from './routes/users';
 import { chainRoutes } from './routes/chains';
 import { proofRoutes } from './routes/proofs';
+import { cosmosRoutes } from './routes/cosmos';
 
 // Import services
 import { TEESolverService } from './services/TEESolverService';
@@ -163,6 +164,7 @@ function configureRoutes() {
   app.use('/api/users', userRoutes);
   app.use('/api/chains', chainRoutes);
   app.use('/api/proofs', proofRoutes);
+  app.use('/api/cosmos', cosmosRoutes);
 
   // Root endpoint
   app.get('/', (req, res) => {
@@ -183,6 +185,7 @@ function configureRoutes() {
         users: '/api/users',
         chains: '/api/chains',
         proofs: '/api/proofs',
+        cosmos: '/api/cosmos',
         websocket: '/ws',
         documentation: '/api-docs'
       }
