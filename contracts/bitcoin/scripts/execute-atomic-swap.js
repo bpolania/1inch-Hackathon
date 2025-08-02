@@ -13,6 +13,7 @@ const ECPairFactory = require('ecpair').default;
 const tinysecp = require('tiny-secp256k1');
 const axios = require('axios');
 const fs = require('fs');
+require('dotenv').config();
 
 // Initialize bitcoin-js
 bitcoin.initEccLib(tinysecp);
@@ -56,8 +57,14 @@ async function executeAtomicSwap() {
         console.log('🔓 Step 1: Reveal Secret on Ethereum');
         console.log('====================================');
         
-        const provider = new ethers.JsonRpcProvider('https://eth-sepolia.g.alchemy.com/v2/R19Ism5lmNQKNRlnPqzPu');
-        const signer = new ethers.Wallet('3a7bb163d352f1c19c2fcd439e3dc70568efa4efb5163d8209084fcbfd531d47', provider);
+        const provider = new ethers.JsonRpcProvider(process.env.ETHEREUM_RPC_URL);
+        const privateKey = process.env.FACTORY_OWNER_PRIVATE_KEY || process.env.ETHEREUM_PRIVATE_KEY;
+        
+        if (!privateKey) {
+            throw new Error('No private key found in environment variables. Set ETHEREUM_PRIVATE_KEY or FACTORY_OWNER_PRIVATE_KEY in .env file');
+        }
+        
+        const signer = new ethers.Wallet(privateKey, provider);
         
         // For demonstration, we'll reveal the secret by creating a simple transaction
         // In a real implementation, this would be done by the resolver/matcher

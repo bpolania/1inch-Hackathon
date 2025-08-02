@@ -10,6 +10,7 @@
 const { ethers } = require('ethers');
 const crypto = require('crypto');
 const fs = require('fs');
+require('dotenv').config();
 
 async function createBitcoinOrder(options = {}) {
     const {
@@ -23,12 +24,22 @@ async function createBitcoinOrder(options = {}) {
     console.log('====================\n');
     
     try {
-        // Setup
-        const provider = new ethers.JsonRpcProvider('https://eth-sepolia.g.alchemy.com/v2/R19Ism5lmNQKNRlnPqzPu');
-        const signer = new ethers.Wallet('3a7bb163d352f1c19c2fcd439e3dc70568efa4efb5163d8209084fcbfd531d47', provider);
+        // Setup using environment variables
+        const provider = new ethers.JsonRpcProvider(process.env.ETHEREUM_RPC_URL);
+        const privateKey = process.env.FACTORY_OWNER_PRIVATE_KEY || process.env.ETHEREUM_PRIVATE_KEY;
         
-        const FACTORY_ADDRESS = '0xbeEab741D2869404FcB747057f5AbdEffc3A138d';
-        const TOKEN_ADDRESS = '0xaa86ed59bcf10c838F2abDa08D1Ca8C6D1609d43';
+        if (!privateKey) {
+            throw new Error('No private key found in environment variables. Set ETHEREUM_PRIVATE_KEY or FACTORY_OWNER_PRIVATE_KEY in .env file');
+        }
+        
+        const signer = new ethers.Wallet(privateKey, provider);
+        
+        const FACTORY_ADDRESS = process.env.FACTORY_ADDRESS;
+        const TOKEN_ADDRESS = process.env.TOKEN_ADDRESS;
+        
+        if (!FACTORY_ADDRESS || !TOKEN_ADDRESS) {
+            throw new Error('FACTORY_ADDRESS and TOKEN_ADDRESS must be set in .env file');
+        }
         
         const FACTORY_ABI = [
             "function createFusionOrder((address,uint256,uint256,bytes,uint256,bytes,uint256,uint256,(bytes,bytes,uint256,bytes),bytes32)) external returns (bytes32)",
