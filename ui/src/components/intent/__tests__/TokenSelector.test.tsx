@@ -87,7 +87,8 @@ describe('TokenSelector', () => {
         />
       )
 
-      const clearButton = screen.getByRole('button', { name: '' }) // X button
+      // The clear button is a clickable div with cursor-pointer class containing an X icon
+      const clearButton = document.querySelector('.cursor-pointer')
       expect(clearButton).toBeInTheDocument()
     })
   })
@@ -207,14 +208,12 @@ describe('TokenSelector', () => {
         />
       )
 
-      // Look for the X clear button - find the smaller button with X icon
-      const buttons = screen.getAllByRole('button')
-      const clearButton = buttons.find(btn => 
-        btn.querySelector('svg') && btn.className.includes('p-1')
-      ) || buttons[1] // Second button is typically the clear button
+      // Find the clickable div with cursor-pointer class containing the X icon
+      const clearButton = document.querySelector('.cursor-pointer')
+      expect(clearButton).toBeInTheDocument()
       
       await act(async () => {
-        await user.click(clearButton)
+        await user.click(clearButton!)
       })
 
       expect(mockOnChange).toHaveBeenCalledWith(null)

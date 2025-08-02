@@ -129,7 +129,7 @@ export class OneInchService {
   private apiKey?: string;
 
   constructor(apiKey?: string) {
-    this.baseUrl = `${ONEINCH_BASE_URL}/${ONEINCH_API_VERSION}`;
+    this.baseUrl = ONEINCH_API_BASE;
     this.apiKey = apiKey;
   }
 

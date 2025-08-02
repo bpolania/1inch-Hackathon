@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent, within } from '@testing-library/react';
 import { PriceQuote, CompactPriceQuote } from '../PriceQuote';
 import { useOneInchQuotes } from '@/services/oneinch';
 import { TokenInfo } from '@/types/intent';
@@ -218,8 +218,12 @@ describe('PriceQuote', () => {
         );
 
         await waitFor(() => {
-          const impactElement = screen.getByText(`${testCase.impact.toFixed(2)}%`);
-          expect(impactElement.parentElement).toHaveClass(testCase.expectedClass);
+          // Find the price impact element by data-testid
+          const priceImpactElement = screen.getByTestId('price-impact');
+          expect(priceImpactElement).toHaveClass(testCase.expectedClass);
+          
+          // Also verify the text content
+          expect(priceImpactElement).toHaveTextContent(`${testCase.impact.toFixed(2)}%`);
         });
 
         // Clean up for next iteration

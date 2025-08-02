@@ -4,6 +4,31 @@ import { IntentsDashboard } from '@/components/dashboard/IntentsDashboard'
 import { useIntentStore } from '@/stores/intentStore'
 import userEvent from '@testing-library/user-event'
 
+// Mock wallet store to provide connected state with zustand structure
+const mockWalletState = {
+  isConnected: true,
+  isConnecting: false,
+  accountId: 'test.near',
+  balanceFormatted: '10.5',
+  networkId: 'testnet',
+  wallet: {}, // Required for intentStore validation
+  connect: jest.fn(),
+  disconnect: jest.fn(),
+  refreshBalance: jest.fn(),
+  signAndSendTransaction: jest.fn().mockResolvedValue({
+    transaction: { hash: 'test-tx-hash' }
+  })
+}
+
+jest.mock('@/stores/walletStore', () => ({
+  useWalletStore: Object.assign(
+    jest.fn(() => mockWalletState),
+    {
+      getState: jest.fn(() => mockWalletState)
+    }
+  )
+}))
+
 const user = userEvent.setup()
 
 // Use the real store instead of mocking it

@@ -2,6 +2,32 @@ import { useIntentStore } from '../intentStore'
 import { createMockIntent, createMockToken } from '../../../tests/utils/test-utils'
 import { IntentRequest } from '@/types/intent'
 
+// Mock wallet store for intent submission
+const mockSignAndSendTransaction = jest.fn().mockResolvedValue({
+  transaction: { hash: 'test-tx-hash' },
+  transaction_outcome: { block_hash: 'test-block-hash' }
+})
+
+const mockWalletStore = {
+  isConnected: true,
+  wallet: {}, // wallet object exists but signAndSendTransaction is on the store
+  signAndSendTransaction: mockSignAndSendTransaction
+}
+
+jest.mock('../walletStore', () => ({
+  useWalletStore: {
+    getState: jest.fn(() => mockWalletStore)
+  }
+}))
+
+// Mock NEAR transaction utilities
+jest.mock('@/services/nearTransactions', () => ({
+  prepareCreateIntentTransaction: jest.fn(() => ({
+    actions: [{ type: 'FunctionCall', params: {} }]
+  })),
+  parseTransactionError: jest.fn((error) => error.message || 'Transaction failed')
+}))
+
 // Mock localStorage
 const mockLocalStorage = {
   getItem: jest.fn(),
@@ -26,6 +52,12 @@ describe('Intent Store', () => {
     // Clear mock calls
     jest.clearAllMocks()
     mockLocalStorage.getItem.mockReturnValue(null)
+    
+    // Reset wallet mock to successful state
+    mockSignAndSendTransaction.mockResolvedValue({
+      transaction: { hash: 'test-tx-hash' },
+      transaction_outcome: { block_hash: 'test-block-hash' }
+    })
   })
 
   describe('Current Intent Management', () => {

@@ -84,7 +84,7 @@ export interface TEEStatus {
 export class TEESolverIntegrationService {
   private baseUrl: string;
 
-  constructor(baseUrl: string = TEE_SOLVER_BASE_URL) {
+  constructor(baseUrl: string = TEE_API_BASE_URL) {
     this.baseUrl = baseUrl;
   }
 
@@ -93,7 +93,7 @@ export class TEESolverIntegrationService {
    */
   async checkTEEHealth(): Promise<{ healthy: boolean; status?: TEEStatus }> {
     try {
-      const response = await fetch(`${this.baseUrl}/api/status`);
+      const response = await fetch(`${this.baseUrl}/status`);
       if (!response.ok) {
         return { healthy: false };
       }
@@ -133,7 +133,7 @@ export class TEESolverIntegrationService {
   }> {
     try {
       // Submit intent to real TEE service via API Gateway
-      const response = await fetch(`${TEE_API_BASE_URL}/submit`, {
+      const response = await fetch(`${this.baseUrl}/submit`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(intent)
@@ -274,7 +274,7 @@ export class TEESolverIntegrationService {
    */
   async requestImmediateExecution(solverRequestId: string): Promise<boolean> {
     try {
-      const response = await fetch(`${this.baseUrl}/api/executions/${solverRequestId}/execute`, {
+      const response = await fetch(`${this.baseUrl}/execution/${solverRequestId}`, {
         method: 'POST'
       });
 
@@ -290,8 +290,8 @@ export class TEESolverIntegrationService {
    */
   async cancelTEERequest(solverRequestId: string): Promise<boolean> {
     try {
-      const response = await fetch(`${this.baseUrl}/api/intents/${solverRequestId}/cancel`, {
-        method: 'POST'
+      const response = await fetch(`${this.baseUrl}/execution/${solverRequestId}`, {
+        method: 'DELETE'
       });
 
       return response.ok;

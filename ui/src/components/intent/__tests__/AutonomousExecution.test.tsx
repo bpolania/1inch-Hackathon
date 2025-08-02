@@ -519,6 +519,11 @@ describe('AutonomousExecution', () => {
         fireEvent.click(submitButton);
       });
 
+      // Wait for startMonitoring to be called after submission and state update
+      await waitFor(() => {
+        expect(mockTEEService.startMonitoring).toHaveBeenCalled();
+      });
+
       // Simulate monitoring callback
       const monitoringCallback = mockTEEService.startMonitoring.mock.calls[0][1];
       monitoringCallback(completedExecution);
