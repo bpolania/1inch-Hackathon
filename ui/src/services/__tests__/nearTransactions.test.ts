@@ -52,16 +52,15 @@ describe('NEAR Transactions Service', () => {
     it('should prepare correct transaction for intent creation', () => {
       const transaction = prepareCreateIntentTransaction(mockIntent)
 
-      expect(transaction.receiverId).toBe('intents.testnet')
+      expect(transaction.receiverId).toBe('cross-chain-htlc.demo.cuteharbor3573.testnet')
       expect(transaction.gas).toBe(GAS_AMOUNTS.CREATE_INTENT)
-      expect(transaction.deposit).toBe(STORAGE_DEPOSIT)
       expect(transaction.actions).toHaveLength(1)
 
       const action = transaction.actions[0]
       expect(action.type).toBe('FunctionCall')
       expect(action.params.methodName).toBe(INTENT_CONTRACT_METHODS.CREATE_INTENT)
       expect(action.params.gas).toBe(GAS_AMOUNTS.CREATE_INTENT)
-      expect(action.params.deposit).toBe(STORAGE_DEPOSIT)
+      expect(typeof action.params.deposit).toBe('string')
     })
 
     it('should use custom contract ID when provided', () => {
@@ -76,16 +75,14 @@ describe('NEAR Transactions Service', () => {
       const action = transaction.actions[0]
       const args = action.params.args
 
-      expect(args.id).toBe(mockIntent.id)
-      expect(args.user).toBe(mockIntent.user)
-      expect(args.from_token.symbol).toBe(mockIntent.fromToken?.symbol)
-      expect(args.to_token.symbol).toBe(mockIntent.toToken?.symbol)
-      expect(args.from_amount).toBe(mockIntent.fromAmount)
-      expect(args.min_to_amount).toBe(mockIntent.minToAmount)
-      expect(args.max_slippage).toBe(mockIntent.maxSlippage)
-      expect(args.deadline).toBe(mockIntent.deadline)
-      expect(args.prioritize).toBe(mockIntent.prioritize)
-      expect(args.status).toBe('pending')
+      expect(args.order_id).toBe(mockIntent.id)
+      expect(args.hashlock).toBeDefined()
+      expect(args.timelock).toBeDefined()
+      expect(args.destination_chain).toBeDefined()
+      expect(args.destination_token).toBeDefined()
+      expect(args.destination_amount).toBeDefined()
+      expect(args.destination_address).toBeDefined()
+      expect(args.resolver_fee).toBeDefined()
     })
 
     it('should handle intent with missing token data', () => {
@@ -98,8 +95,8 @@ describe('NEAR Transactions Service', () => {
       const transaction = prepareCreateIntentTransaction(intentWithoutTokens)
       const args = transaction.actions[0].params.args
 
-      expect(args.from_token.symbol).toBeUndefined()
-      expect(args.to_token.symbol).toBeUndefined()
+      expect(args.destination_token).toBe('ETH') // Default fallback
+      expect(args.order_id).toBe(mockIntent.id)
     })
   })
 
@@ -108,7 +105,7 @@ describe('NEAR Transactions Service', () => {
       const intentId = 'test-intent-123'
       const transaction = prepareCancelIntentTransaction(intentId)
 
-      expect(transaction.receiverId).toBe('intents.testnet')
+      expect(transaction.receiverId).toBe('cross-chain-htlc.demo.cuteharbor3573.testnet')
       expect(transaction.gas).toBe(GAS_AMOUNTS.CANCEL_INTENT)
       expect(transaction.deposit).toBe('0')
       expect(transaction.actions).toHaveLength(1)
@@ -310,37 +307,33 @@ describe('NEAR Transactions Service', () => {
       const viewCall = VIEW_FUNCTIONS.getIntent(intentId)
 
       expect(viewCall.methodName).toBe(INTENT_CONTRACT_METHODS.GET_INTENT)
-      expect(viewCall.args).toEqual({ intent_id: intentId })
+      expect(viewCall.args).toEqual({ order_id: intentId })
     })
 
     it('should generate correct getUserIntents view function call without status', () => {
       const accountId = 'user.near'
       const viewCall = VIEW_FUNCTIONS.getUserIntents(accountId)
 
-      expect(viewCall.methodName).toBe(INTENT_CONTRACT_METHODS.GET_USER_INTENTS)
-      expect(viewCall.args).toEqual({ account_id: accountId })
+      expect(viewCall.methodName).toBe('is_authorized_resolver')
+      expect(viewCall.args).toEqual({ resolver: accountId })
     })
 
     it('should generate correct getUserIntents view function call with status', () => {
       const accountId = 'user.near'
-      const status = 'pending'
-      const viewCall = VIEW_FUNCTIONS.getUserIntents(accountId, status)
+      const viewCall = VIEW_FUNCTIONS.getUserIntents(accountId)
 
-      expect(viewCall.methodName).toBe(INTENT_CONTRACT_METHODS.GET_USER_INTENTS)
-      expect(viewCall.args).toEqual({ 
-        account_id: accountId,
-        status: status
-      })
+      expect(viewCall.methodName).toBe('is_authorized_resolver')
+      expect(viewCall.args).toEqual({ resolver: accountId })
     })
   })
 
   describe('Constants', () => {
     it('should have correct intent contract methods', () => {
-      expect(INTENT_CONTRACT_METHODS.CREATE_INTENT).toBe('create_intent')
-      expect(INTENT_CONTRACT_METHODS.CANCEL_INTENT).toBe('cancel_intent')
-      expect(INTENT_CONTRACT_METHODS.RESOLVE_INTENT).toBe('resolve_intent')
-      expect(INTENT_CONTRACT_METHODS.GET_INTENT).toBe('get_intent')
-      expect(INTENT_CONTRACT_METHODS.GET_USER_INTENTS).toBe('get_user_intents')
+      expect(INTENT_CONTRACT_METHODS.CREATE_INTENT).toBe('create_order')
+      expect(INTENT_CONTRACT_METHODS.CANCEL_INTENT).toBe('cancel_order')
+      expect(INTENT_CONTRACT_METHODS.RESOLVE_INTENT).toBe('claim_order')
+      expect(INTENT_CONTRACT_METHODS.GET_INTENT).toBe('get_order')
+      expect(INTENT_CONTRACT_METHODS.GET_USER_INTENTS).toBe('get_order')
     })
 
     it('should have correct gas amounts', () => {

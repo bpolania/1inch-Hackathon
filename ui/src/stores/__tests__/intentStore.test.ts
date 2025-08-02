@@ -2,6 +2,9 @@ import { useIntentStore } from '../intentStore'
 import { createMockIntent, createMockToken } from '../../../tests/utils/test-utils'
 import { IntentRequest } from '@/types/intent'
 
+// Mock fetch globally
+global.fetch = jest.fn() as jest.MockedFunction<typeof fetch>
+
 // Mock wallet store for intent submission
 const mockSignAndSendTransaction = jest.fn().mockResolvedValue({
   transaction: { hash: 'test-tx-hash' },
@@ -52,6 +55,12 @@ describe('Intent Store', () => {
     // Clear mock calls
     jest.clearAllMocks()
     mockLocalStorage.getItem.mockReturnValue(null)
+    
+    // Mock successful fetch response for solver network
+    ;(global.fetch as jest.MockedFunction<typeof fetch>).mockResolvedValue({
+      ok: true,
+      json: async () => ({ id: 'test-intent-id', status: 'processing' }),
+    } as Response)
     
     // Reset wallet mock to successful state
     mockSignAndSendTransaction.mockResolvedValue({
