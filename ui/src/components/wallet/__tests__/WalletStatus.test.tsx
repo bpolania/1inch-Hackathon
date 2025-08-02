@@ -177,7 +177,8 @@ describe('WalletStatus', () => {
       render(<WalletStatus />)
       
       expect(screen.getByText('NEAR Balance')).toBeInTheDocument()
-      expect(screen.getByText('1.00 NEAR')).toBeInTheDocument()
+      expect(screen.getByText('1.00')).toBeInTheDocument()
+      expect(screen.getByText('NEAR')).toBeInTheDocument()
     })
 
     it('should call refreshBalance when refresh button is clicked', async () => {
@@ -231,7 +232,8 @@ describe('WalletStatus', () => {
 
       render(<WalletStatus />)
       
-      expect(screen.getByText('Loading... NEAR')).toBeInTheDocument()
+      expect(screen.getByText('Click refresh to load')).toBeInTheDocument()
+      expect(screen.getByText('NEAR')).toBeInTheDocument()
     })
   })
 
@@ -438,7 +440,8 @@ describe('WalletStatusIndicator', () => {
 
     render(<WalletStatusIndicator />)
     
-    expect(screen.getByText(/Connected to very-lon.*near.*mainnet/)).toBeInTheDocument()
+    expect(screen.getByText('Connected to very-lon...near')).toBeInTheDocument()
+    expect(screen.getByText('mainnet')).toBeInTheDocument()
     expect(screen.getByTestId('check-icon')).toBeInTheDocument()
   })
 

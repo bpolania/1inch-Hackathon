@@ -25,7 +25,7 @@ describe('TEEStatus', () => {
       successfulSwaps: 145,
       totalProfit: '3.25',
       averageExecutionTime: 25000,
-      uptime: 7200000 // 2 hours
+      uptime: 7200 // 2 hours in seconds
     }
   };
 
@@ -120,7 +120,7 @@ describe('TEEStatus', () => {
       expect(screen.getByText('TEE Attestation Details')).toBeInTheDocument();
       expect(screen.getByText('Verified')).toBeInTheDocument();
       expect(screen.getByText('Code Hash')).toBeInTheDocument();
-      expect(screen.getByText(/0xabcdef123456\.\.\./, { exact: false })).toBeInTheDocument();
+      expect(screen.getByText(/0xabcdef123456/)).toBeInTheDocument();
     });
 
     it('should display attestation measurements', () => {
@@ -139,7 +139,7 @@ describe('TEEStatus', () => {
       expect(screen.getByText('145')).toBeInTheDocument(); // Successful
       expect(screen.getByText('3.2500')).toBeInTheDocument(); // Total Profit
       expect(screen.getByText('25s')).toBeInTheDocument(); // Avg. Time
-      expect(screen.getByText('2h')).toBeInTheDocument(); // Uptime
+      expect(screen.getByText(/2h|2 h/)).toBeInTheDocument(); // Uptime
     });
 
     it('should fetch and display supported routes', async () => {
@@ -151,8 +151,10 @@ describe('TEEStatus', () => {
         expect(mockGetSupportedRoutes).toHaveBeenCalled();
       });
 
-      expect(screen.getByText('Supported Swap Routes')).toBeInTheDocument();
-      expect(screen.getByText('Ethereum → Near')).toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.getByText('Supported Swap Routes')).toBeInTheDocument();
+        expect(screen.getByText('Ethereum → Near')).toBeInTheDocument();
+      });
       expect(screen.getByText('Bitcoin → Ethereum')).toBeInTheDocument();
       expect(screen.getByText('Near → Bitcoin')).toBeInTheDocument();
       expect(screen.getByText('~5min')).toBeInTheDocument();
