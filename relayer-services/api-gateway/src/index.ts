@@ -11,6 +11,7 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { WebSocketServer } from 'ws';
 import { createServer } from 'http';
+import swaggerUi from 'swagger-ui-express';
 import dotenv from 'dotenv';
 
 // Import route handlers
@@ -28,6 +29,7 @@ import { TEESolverService } from './services/TEESolverService';
 import { RelayerService } from './services/RelayerService';
 import { WebSocketService } from './services/WebSocketService';
 import { logger } from './utils/logger';
+import { swaggerSpec } from './swagger/config';
 
 dotenv.config();
 
@@ -136,6 +138,12 @@ function configureRoutes() {
     next();
   });
 
+  // Swagger documentation
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+    customCss: '.swagger-ui .topbar { display: none }',
+    customSiteTitle: '1inch Fusion+ API Documentation'
+  }));
+
   // API routes
   app.use('/api/health', healthRoutes);
   app.use('/api/tee', teeRoutes);
@@ -165,7 +173,8 @@ function configureRoutes() {
         users: '/api/users',
         chains: '/api/chains',
         proofs: '/api/proofs',
-        websocket: '/ws'
+        websocket: '/ws',
+        documentation: '/api-docs'
       }
     });
   });

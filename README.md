@@ -195,6 +195,11 @@ This is the **first successful integration** of Bitcoin atomic swaps with the 1i
   - Technical details including escrow addresses and gas estimates
 - **Service Integration**: Connected to TEE solver and relayer services
 - **Comprehensive Testing**: 256 test cases with 100% success rate across 18 test suites
+- **Interactive API Documentation**: Swagger UI available at `/api-docs`
+  - Complete OpenAPI 3.0 specification
+  - Interactive endpoint testing
+  - Request/response schemas with examples
+  - Organized by functional areas (1inch, Orders, Transactions, System)
 
 ### 1inch Protocol Compliance
 

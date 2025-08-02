@@ -1,0 +1,186 @@
+# System Schemas
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, unhealthy]
+          example: "healthy"
+        timestamp:
+          type: string
+          format: date-time
+        uptime:
+          type: number
+          description: Uptime in seconds
+          example: 3600
+        services:
+          type: object
+          properties:
+            tee:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [operational, degraded, down]
+                attestationValid:
+                  type: boolean
+                lastHealthCheck:
+                  type: string
+                  format: date-time
+            relayer:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [operational, degraded, down]
+                activeIntents:
+                  type: integer
+                lastHealthCheck:
+                  type: string
+                  format: date-time
+            websocket:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [operational, degraded, down]
+                connectedClients:
+                  type: integer
+        version:
+          type: string
+          example: "1.0.0"
+
+    Metrics:
+      type: object
+      properties:
+        period:
+          type: string
+          example: "last_24h"
+        transactions:
+          type: object
+          properties:
+            total:
+              type: integer
+            successful:
+              type: integer
+            failed:
+              type: integer
+            pending:
+              type: integer
+        volume:
+          type: object
+          properties:
+            totalUSD:
+              type: string
+              example: "1234567.89"
+            byChain:
+              type: object
+              additionalProperties:
+                type: string
+        performance:
+          type: object
+          properties:
+            avgExecutionTime:
+              type: number
+              description: Average execution time in milliseconds
+            successRate:
+              type: number
+              description: Success rate percentage
+            gasEfficiency:
+              type: number
+
+    ChainInfo:
+      type: object
+      properties:
+        chainId:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "Ethereum"
+        network:
+          type: string
+          example: "mainnet"
+        isTestnet:
+          type: boolean
+        nativeCurrency:
+          type: object
+          properties:
+            name:
+              type: string
+            symbol:
+              type: string
+            decimals:
+              type: integer
+        rpcUrl:
+          type: string
+        explorerUrl:
+          type: string
+        supported:
+          type: boolean
+        features:
+          type: array
+          items:
+            type: string
+          example: ["swap", "bridge", "atomic-swap"]
+
+    User:
+      type: object
+      properties:
+        address:
+          type: string
+          example: "0x742d35Cc6634C0532925a3b844Bc9e7595f9B3e0"
+        registeredAt:
+          type: string
+          format: date-time
+        statistics:
+          type: object
+          properties:
+            totalTransactions:
+              type: integer
+            totalVolume:
+              type: string
+            successRate:
+              type: number
+        preferences:
+          type: object
+          properties:
+            defaultSlippage:
+              type: number
+            notifications:
+              type: boolean
+            priorityFee:
+              type: string
+              enum: [low, medium, high]
+
+    TEEStatus:
+      type: object
+      properties:
+        isHealthy:
+          type: boolean
+        status:
+          type: object
+          properties:
+            attestationValid:
+              type: boolean
+            trustLevel:
+              type: string
+              enum: [high, medium, low, unknown]
+            ordersProcessed:
+              type: integer
+        attestation:
+          type: object
+          properties:
+            valid:
+              type: boolean
+            timestamp:
+              type: number
+            certificate:
+              type: string
+        capabilities:
+          type: array
+          items:
+            type: string
+          example: ["cross-chain", "autonomous-execution", "chain-signatures"]

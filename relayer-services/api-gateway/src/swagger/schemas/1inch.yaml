@@ -1,0 +1,321 @@
+# Quote Schema
+components:
+  schemas:
+    QuoteRequest:
+      type: object
+      required:
+        - chainId
+        - fromToken
+        - toToken
+        - amount
+      properties:
+        chainId:
+          type: string
+          description: Source chain ID
+          example: "1"
+        fromToken:
+          type: string
+          description: Source token address
+          example: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        toToken:
+          type: string
+          description: Destination token address
+          example: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+        amount:
+          type: string
+          description: Amount to swap (in smallest unit)
+          example: "1000000000000000000"
+        toChainId:
+          type: string
+          description: Destination chain ID (for cross-chain swaps)
+          example: "137"
+        slippage:
+          type: number
+          description: Slippage tolerance percentage
+          example: 1.0
+          default: 1.0
+
+    QuoteResponse:
+      type: object
+      properties:
+        outputAmount:
+          type: string
+          description: Expected output amount
+          example: "1000000"
+        formattedOutput:
+          type: string
+          description: Human-readable output amount
+          example: "1.000000"
+        priceImpact:
+          type: number
+          description: Price impact percentage
+          example: 0.15
+        route:
+          type: string
+          description: Swap route description
+          example: "Fusion+ Cross-Chain via Multi-Chain"
+        gasEstimate:
+          type: string
+          description: Estimated gas units
+          example: "200000"
+        gasPrice:
+          type: string
+          description: Current gas price in wei
+          example: "20000000000"
+        protocols:
+          type: array
+          items:
+            type: string
+          example: ["1inch Fusion+", "NEAR Protocol", "Bitcoin HTLC"]
+        confidence:
+          type: number
+          description: Quote confidence score
+          example: 0.95
+        timestamp:
+          type: number
+          description: Quote timestamp
+          example: 1704326400000
+        crossChain:
+          type: boolean
+          description: Whether this is a cross-chain swap
+          example: true
+        estimatedTime:
+          type: number
+          description: Estimated execution time in milliseconds
+          example: 300000
+        fees:
+          type: object
+          properties:
+            gasFee:
+              type: string
+              example: "0.002"
+            bridgeFee:
+              type: string
+              example: "0.001"
+            solverFee:
+              type: string
+              example: "0.0025"
+            total:
+              type: string
+              example: "0.0055"
+
+    SwapRequest:
+      type: object
+      required:
+        - chainId
+        - fromToken
+        - toToken
+        - amount
+        - fromAddress
+      properties:
+        chainId:
+          type: string
+          description: Source chain ID
+          example: "1"
+        fromToken:
+          type: string
+          description: Source token address
+          example: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        toToken:
+          type: string
+          description: Destination token address
+          example: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+        amount:
+          type: string
+          description: Amount to swap
+          example: "1000000000000000000"
+        fromAddress:
+          type: string
+          description: User's address
+          example: "0x742d35Cc6634C0532925a3b844Bc9e7595f9B3e0"
+        toChainId:
+          type: string
+          description: Destination chain ID
+          example: "137"
+        toAddress:
+          type: string
+          description: Destination address (if different from fromAddress)
+          example: "0x742d35Cc6634C0532925a3b844Bc9e7595f9B3e0"
+        slippage:
+          type: number
+          description: Slippage tolerance
+          example: 1.0
+        deadline:
+          type: number
+          description: Unix timestamp deadline
+          example: 1704330000
+
+    SwapResponse:
+      type: object
+      properties:
+        tx:
+          type: object
+          properties:
+            from:
+              type: string
+              example: "0x742d35Cc6634C0532925a3b844Bc9e7595f9B3e0"
+            to:
+              type: string
+              example: "0xbeEab741D2869404FcB747057f5AbdEffc3A138d"
+            data:
+              type: string
+              example: "0x..."
+            value:
+              type: string
+              example: "1000000000000000000"
+            gas:
+              type: string
+              example: "300000"
+            gasPrice:
+              type: string
+              example: "20000000000"
+        toTokenAmount:
+          type: string
+          example: "1000000"
+        protocols:
+          type: array
+          items:
+            type: string
+          example: ["1inch Fusion+", "Cross-Chain Bridge"]
+        orderHash:
+          type: string
+          example: "0x..."
+        intentId:
+          type: string
+          example: "swap-1704326400000-abc123"
+        crossChain:
+          type: boolean
+          example: true
+        estimatedTime:
+          type: number
+          example: 300000
+        tracking:
+          type: object
+          properties:
+            intentId:
+              type: string
+            status:
+              type: string
+            trackingUrl:
+              type: string
+
+    Token:
+      type: object
+      properties:
+        symbol:
+          type: string
+          example: "USDC"
+        name:
+          type: string
+          example: "USD Coin"
+        decimals:
+          type: number
+          example: 6
+        logoURI:
+          type: string
+          example: "https://token-icons.s3.amazonaws.com/usdc.png"
+        crossChainSupported:
+          type: boolean
+          example: true
+        supportedDestinations:
+          type: array
+          items:
+            type: string
+          example: ["1", "137", "42161"]
+
+    Protocol:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "1inch Fusion+ Factory"
+        type:
+          type: string
+          example: "cross-chain-factory"
+        address:
+          type: string
+          example: "0xbeEab741D2869404FcB747057f5AbdEffc3A138d"
+        part:
+          type: number
+          example: 1.0
+        description:
+          type: string
+          example: "Main Fusion+ order creation and management"
+        supportedChains:
+          type: array
+          items:
+            type: string
+          example: ["1", "137", "42161"]
+        isActive:
+          type: boolean
+          example: true
+        features:
+          type: array
+          items:
+            type: string
+          example: ["atomic-swaps", "hash-time-locks"]
+
+    Order:
+      type: object
+      properties:
+        orderHash:
+          type: string
+          example: "0x123..."
+        maker:
+          type: string
+          example: "0x742d35Cc6634C0532925a3b844Bc9e7595f9B3e0"
+        sourceToken:
+          type: string
+          example: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        sourceAmount:
+          type: string
+          example: "1000000000000000000"
+        destinationChainId:
+          type: number
+          example: 137
+        destinationToken:
+          type: string
+          example: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+        destinationAmount:
+          type: string
+          example: "1000000"
+        destinationAddress:
+          type: string
+          example: "0x742d35Cc6634C0532925a3b844Bc9e7595f9B3e0"
+        expiryTime:
+          type: number
+          example: 1704330000
+        resolverFeeAmount:
+          type: string
+          example: "1000000"
+        isActive:
+          type: boolean
+          example: true
+
+    OrderStatus:
+      type: object
+      properties:
+        orderHash:
+          type: string
+        overallStatus:
+          type: string
+          enum: [pending, matched, executing, completed, failed, cancelled, expired]
+        progress:
+          type: number
+          minimum: 0
+          maximum: 100
+        nextAction:
+          type: string
+        estimatedCompletion:
+          type: string
+          format: date-time
+        isExpired:
+          type: boolean
+        canCancel:
+          type: boolean
+        canRefund:
+          type: boolean
+        stages:
+          type: object
+        technical:
+          type: object

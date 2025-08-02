@@ -27,8 +27,54 @@ const validateRequest = (req: any, res: any, next: any) => {
 };
 
 /**
- * GET /api/transactions/lifecycle/:txId
- * Track multi-step cross-chain transaction progress
+ * @swagger
+ * /api/transactions/lifecycle/{txId}:
+ *   get:
+ *     summary: Track transaction lifecycle
+ *     description: Track the complete lifecycle of a cross-chain transaction from creation to completion
+ *     tags: [Transactions]
+ *     parameters:
+ *       - in: path
+ *         name: txId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Transaction or intent ID
+ *         example: "intent-1704326400000-abc123"
+ *     responses:
+ *       200:
+ *         description: Transaction lifecycle retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   $ref: '#/components/schemas/IntentLifecycle'
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ *       400:
+ *         description: Validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       404:
+ *         description: Transaction not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 router.get(
   '/lifecycle/:txId',
@@ -135,8 +181,54 @@ router.get(
 );
 
 /**
- * GET /api/transactions/multi-status/:txId
- * Get detailed transaction status across all chains
+ * @swagger
+ * /api/transactions/multi-status/{txId}:
+ *   get:
+ *     summary: Get cross-chain transaction bundle status
+ *     description: Get status of all transactions in a cross-chain bundle across multiple blockchains
+ *     tags: [Transactions]
+ *     parameters:
+ *       - in: path
+ *         name: txId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Cross-chain bundle ID
+ *         example: "cross-chain-bundle-123"
+ *     responses:
+ *       200:
+ *         description: Cross-chain status retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   $ref: '#/components/schemas/CrossChainStatus'
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ *       400:
+ *         description: Validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       404:
+ *         description: Bundle not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 router.get(
   '/multi-status/:txId',
@@ -564,8 +656,56 @@ router.get(
 );
 
 /**
- * GET /api/transactions/status/:txHash
- * Get transaction status across multiple chains
+ * @swagger
+ * /api/transactions/status/{txHash}:
+ *   get:
+ *     summary: Get transaction status
+ *     description: Get transaction status from a specific blockchain by transaction hash
+ *     tags: [Transactions]
+ *     parameters:
+ *       - in: path
+ *         name: txHash
+ *         required: true
+ *         schema:
+ *           type: string
+ *           minLength: 66
+ *           maxLength: 66
+ *         description: Transaction hash (0x-prefixed 66 characters)
+ *         example: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef12"
+ *       - in: query
+ *         name: chainId
+ *         schema:
+ *           type: integer
+ *         description: Chain ID to query (defaults to Ethereum mainnet)
+ *         example: 1
+ *     responses:
+ *       200:
+ *         description: Transaction status retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   $ref: '#/components/schemas/TransactionStatus'
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ *       400:
+ *         description: Invalid request or unsupported chain
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
  */
 router.get('/status/:txHash', [
   param('txHash').isLength({ min: 66, max: 66 }).withMessage('Invalid transaction hash'),
