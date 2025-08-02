@@ -25,12 +25,15 @@ export const GAS_AMOUNTS = {
 // Storage deposit for intent creation
 export const STORAGE_DEPOSIT = '100000000000000000000000' // 0.1 NEAR
 
+// Default contract ID for intent management
+export const DEFAULT_INTENT_CONTRACT = process.env.NEXT_PUBLIC_NEAR_CONTRACT_ID || 'intents.testnet'
+
 /**
  * Prepares a transaction to create an intent on NEAR blockchain
  */
 export function prepareCreateIntentTransaction(
   intent: IntentRequest,
-  contractId: string
+  contractId: string = DEFAULT_INTENT_CONTRACT
 ): TransactionOptions {
   // Prepare intent data for smart contract
   const intentData = {
@@ -83,7 +86,7 @@ export function prepareCreateIntentTransaction(
  */
 export function prepareCancelIntentTransaction(
   intentId: string,
-  contractId: string
+  contractId: string = DEFAULT_INTENT_CONTRACT
 ): TransactionOptions {
   const actions = [
     {

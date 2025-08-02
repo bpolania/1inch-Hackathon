@@ -140,11 +140,13 @@ export function PriceQuote({
             {/* Price Impact */}
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">Price Impact</span>
-              <div className={cn(
-                'flex items-center gap-1 text-sm font-medium',
-                priceImpact > 3 ? 'text-red-500' : 
-                priceImpact > 1 ? 'text-yellow-500' : 'text-green-500'
-              )}>
+              <div 
+                data-testid="price-impact"
+                className={cn(
+                  'flex items-center gap-1 text-sm font-medium',
+                  priceImpact > 3 ? 'text-red-500' : 
+                  priceImpact > 1 ? 'text-yellow-500' : 'text-green-500'
+                )}>
                 {priceImpact > 1 ? <TrendingDown className="h-3 w-3" /> : <TrendingUp className="h-3 w-3" />}
                 {priceImpact.toFixed(2)}%
               </div>

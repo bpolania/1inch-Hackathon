@@ -86,7 +86,11 @@ describe('IntentExecution', () => {
         expect(mockRelayerService.analyzeProfitability).toHaveBeenCalledWith(mockIntent);
       });
 
-      expect(screen.getByText('Profitability Analysis')).toBeInTheDocument();
+      // Wait for the profitability analysis to render
+      await waitFor(() => {
+        expect(screen.getByText('Profitability Analysis')).toBeInTheDocument();
+      });
+
       expect(screen.getByText('0.015000 ETH')).toBeInTheDocument();
       expect(screen.getByText('15.00%')).toBeInTheDocument();
       expect(screen.getByText('EXECUTE')).toBeInTheDocument();
@@ -380,6 +384,11 @@ describe('IntentExecution', () => {
       await waitFor(() => {
         const submitButton = screen.getByText('Submit to Relayer');
         fireEvent.click(submitButton);
+      });
+
+      // Wait for startMonitoring to be called after submission and state update
+      await waitFor(() => {
+        expect(mockRelayerService.startMonitoring).toHaveBeenCalled();
       });
 
       // Simulate monitoring update

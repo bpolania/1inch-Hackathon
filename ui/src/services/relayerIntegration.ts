@@ -64,7 +64,7 @@ export class RelayerIntegrationService {
   private baseUrl: string;
   private submissions = new Map<string, OrderSubmission>();
 
-  constructor(baseUrl: string = RELAYER_BASE_URL) {
+  constructor(baseUrl: string = RELAYER_API_BASE_URL) {
     this.baseUrl = baseUrl;
   }
 
