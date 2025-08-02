@@ -90,7 +90,9 @@ export function IntentForm({ onSubmit, className }: IntentFormProps) {
       
       updateIntent(intentUpdate);
     }
-  }, [fromToken, toToken, fromAmount, minToAmount, destinationAddress, updateIntent, currentIntent]);
+    // Explicitly excluding currentIntent and updateIntent to prevent infinite loops
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fromToken, toToken, fromAmount, minToAmount, destinationAddress]);
 
   const handleSwapTokens = () => {
     const tempToken = fromToken;
@@ -111,7 +113,10 @@ export function IntentForm({ onSubmit, className }: IntentFormProps) {
     try {
       const intentId = await submitIntent();
       console.log('✅ Intent submitted successfully to real solver network!', intentId);
-      alert(`✅ Intent ${intentId} submitted successfully to solver network!`);
+      // Only show alert in production/browser environment
+      if (typeof window !== 'undefined' && !process.env.NODE_ENV?.includes('test')) {
+        alert(`✅ Intent ${intentId} submitted successfully to solver network!`);
+      }
       setShowPreview(false);
       setFromToken(null);
       setToToken(null);
@@ -120,7 +125,10 @@ export function IntentForm({ onSubmit, className }: IntentFormProps) {
       onSubmit?.(intentId);
     } catch (error) {
       console.error('Failed to submit intent:', error);
-      alert(`❌ Failed to submit intent: ${error.message}`);
+      // Only show alert in production/browser environment
+      if (typeof window !== 'undefined' && !process.env.NODE_ENV?.includes('test')) {
+        alert(`❌ Failed to submit intent: ${error.message}`);
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -128,18 +136,16 @@ export function IntentForm({ onSubmit, className }: IntentFormProps) {
 
   const canPreview = fromToken && toToken && fromAmount && minToAmount;
   
+  // Check if user has sufficient balance (basic check)
+  const cleanBalance = balanceFormatted ? balanceFormatted.replace(/,/g, '').trim() : '0';
+  const numericBalance = parseFloat(cleanBalance);
+  const hasMinimumBalance = !isNaN(numericBalance) && numericBalance >= 0.1;
+  
   // Additional validation for Cosmos chains - require destination address
   const cosmosAddressValid = !toToken || !isCosmosChain(toToken.chainId) || 
     (destinationAddress && destinationAddress.length > 39);
   
-  const canSubmit = canPreview && currentIntent && isConnected && cosmosAddressValid;
-  
-  // Check if user has sufficient balance (basic check)
-  console.log('Balance debug:', { balanceFormatted, type: typeof balanceFormatted });
-  const cleanBalance = balanceFormatted ? balanceFormatted.replace(/,/g, '').trim() : '0';
-  const numericBalance = parseFloat(cleanBalance);
-  console.log('Balance parsing:', { cleanBalance, numericBalance, hasMinimum: numericBalance >= 0.1 });
-  const hasMinimumBalance = true; // !isNaN(numericBalance) && numericBalance >= 0.1;
+  const canSubmit = canPreview && currentIntent && isConnected && cosmosAddressValid && hasMinimumBalance;
 
   return (
     <div className={cn('space-y-8', className)}>

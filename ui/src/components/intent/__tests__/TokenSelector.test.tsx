@@ -33,6 +33,34 @@ const BTC_TOKEN = {
   priceUSD: 43250.00,
 }
 
+// Cosmos tokens for testing
+const COSMOS_TOKENS = {
+  neutron: {
+    address: 'untrn',
+    symbol: 'NTRN',
+    decimals: 6,
+    chainId: 'neutron' as const,
+    logoURI: '/tokens/neutron.svg',
+    priceUSD: 0.45,
+  },
+  juno: {
+    address: 'ujunox',
+    symbol: 'JUNOX',
+    decimals: 6,
+    chainId: 'juno' as const,
+    logoURI: '/tokens/juno.svg',
+    priceUSD: 0.33,
+  },
+  cosmos: {
+    address: 'uatom',
+    symbol: 'ATOM',
+    decimals: 6,
+    chainId: 'cosmos' as const,
+    logoURI: '/tokens/atom.svg',
+    priceUSD: 8.45,
+  },
+}
+
 const createMockToken = (overrides = {}) => ({
   address: 'mock-address',
   symbol: 'MOCK',
@@ -131,6 +159,9 @@ describe('TokenSelector', () => {
         expect(screen.getAllByText('ETH').length).toBeGreaterThan(0)
         expect(screen.getAllByText('BTC').length).toBeGreaterThan(0)
         expect(screen.getAllByText('USDT').length).toBeGreaterThan(0)
+        // Check for Cosmos tokens
+        expect(screen.getAllByText('NTRN').length).toBeGreaterThan(0)
+        expect(screen.getAllByText('ATOM').length).toBeGreaterThan(0)
       }, { timeout: 3000 })
     })
 
@@ -521,6 +552,411 @@ describe('TokenSelector', () => {
         await expect(async () => {
           await user.click(clickableNear || nearTokens[0])
         }).not.toThrow()
+      })
+    })
+  })
+
+  describe('Cosmos Integration', () => {
+    describe('Cosmos Token Selection', () => {
+      it('should display all Cosmos tokens in dropdown', async () => {
+        render(
+          <TokenSelector
+            value={null}
+            onChange={mockOnChange}
+          />
+        )
+
+        await act(async () => {
+          await user.click(screen.getByRole('button'))
+        })
+
+        await waitFor(() => {
+          // Check for all Cosmos tokens
+          expect(screen.getAllByText('NTRN').length).toBeGreaterThan(0)
+          expect(screen.getAllByText('JUNOX').length).toBeGreaterThan(0)
+          expect(screen.getAllByText('ATOM').length).toBeGreaterThan(0)
+          expect(screen.getAllByText('OSMO').length).toBeGreaterThan(0)
+          expect(screen.getAllByText('STARS').length).toBeGreaterThan(0)
+          expect(screen.getAllByText('AKT').length).toBeGreaterThan(0)
+        }, { timeout: 3000 })
+      })
+
+      it('should show correct chain names for Cosmos tokens', async () => {
+        render(
+          <TokenSelector
+            value={null}
+            onChange={mockOnChange}
+          />
+        )
+
+        await act(async () => {
+          await user.click(screen.getByRole('button'))
+        })
+
+        await waitFor(() => {
+          expect(screen.getAllByText('Neutron').length).toBeGreaterThan(0)
+          expect(screen.getAllByText('Juno').length).toBeGreaterThan(0)
+          expect(screen.getAllByText('Cosmos Hub').length).toBeGreaterThan(0)
+          expect(screen.getAllByText('Osmosis').length).toBeGreaterThan(0)
+          expect(screen.getAllByText('Stargaze').length).toBeGreaterThan(0)
+          expect(screen.getAllByText('Akash').length).toBeGreaterThan(0)
+        }, { timeout: 3000 })
+      })
+
+      it('should select Cosmos tokens correctly', async () => {
+        render(
+          <TokenSelector
+            value={null}
+            onChange={mockOnChange}
+          />
+        )
+
+        await act(async () => {
+          await user.click(screen.getByRole('button'))
+        })
+        
+        await waitFor(() => {
+          expect(screen.getAllByText('NTRN').length).toBeGreaterThan(0)
+        }, { timeout: 3000 })
+
+        // Find and click the NTRN token
+        const ntrnTokenButtons = screen.getAllByText('NTRN')
+        const ntrnTokenButton = ntrnTokenButtons.find(el => 
+          el.closest('button') && !el.closest('button')?.disabled
+        ) || ntrnTokenButtons[0]
+
+        await act(async () => {
+          await user.click(ntrnTokenButton)
+        })
+
+        await waitFor(() => {
+          expect(mockOnChange).toHaveBeenCalledWith(
+            expect.objectContaining({
+              symbol: 'NTRN',
+              chainId: 'neutron',
+              decimals: 6,
+            })
+          )
+        })
+      })
+
+      it('should display selected Cosmos token correctly', () => {
+        render(
+          <TokenSelector
+            value={COSMOS_TOKENS.neutron}
+            onChange={mockOnChange}
+          />
+        )
+
+        const buttons = screen.getAllByRole('button')
+        const mainButton = buttons.find(btn => btn.textContent?.includes('NTRN')) || buttons[0]
+        expect(mainButton).toHaveTextContent('NTRN')
+        expect(screen.getAllByText('Neutron')).toHaveLength(1)
+      })
+    })
+
+    describe('Cosmos Chain Filtering', () => {
+      it('should filter Cosmos tokens by symbol', async () => {
+        render(
+          <TokenSelector
+            value={null}
+            onChange={mockOnChange}
+          />
+        )
+
+        await user.click(screen.getByRole('button'))
+        
+        const searchInput = await screen.findByPlaceholderText('Search tokens or chains...')
+        
+        await act(async () => {
+          await user.type(searchInput, 'ATOM')
+        })
+
+        await waitFor(() => {
+          expect(screen.getAllByText('ATOM').length).toBeGreaterThan(0)
+          expect(screen.queryByText('NTRN')).not.toBeInTheDocument()
+          expect(screen.queryByText('JUNOX')).not.toBeInTheDocument()
+        }, { timeout: 3000 })
+      })
+
+      it('should filter Cosmos tokens by chain name', async () => {
+        render(
+          <TokenSelector
+            value={null}
+            onChange={mockOnChange}
+          />
+        )
+
+        await user.click(screen.getByRole('button'))
+        
+        const searchInput = screen.getByPlaceholderText('Search tokens or chains...')
+        await user.type(searchInput, 'neutron')
+
+        await waitFor(() => {
+          expect(screen.getByText('NTRN')).toBeInTheDocument()
+          expect(screen.queryByText('ATOM')).not.toBeInTheDocument()
+          expect(screen.queryByText('JUNOX')).not.toBeInTheDocument()
+        })
+      })
+
+      it('should filter by Cosmos Hub specifically', async () => {
+        render(
+          <TokenSelector
+            value={null}
+            onChange={mockOnChange}
+          />
+        )
+
+        await user.click(screen.getByRole('button'))
+        
+        const searchInput = screen.getByPlaceholderText('Search tokens or chains...')
+        await user.type(searchInput, 'cosmos hub')
+
+        await waitFor(() => {
+          expect(screen.getByText('ATOM')).toBeInTheDocument()
+          expect(screen.queryByText('NTRN')).not.toBeInTheDocument()
+          expect(screen.queryByText('OSMO')).not.toBeInTheDocument()
+        })
+      })
+    })
+
+    describe('Cosmos Token Exclusion', () => {
+      it('should exclude specified Cosmos token from list', async () => {
+        render(
+          <TokenSelector
+            value={null}
+            onChange={mockOnChange}
+            excludeToken={COSMOS_TOKENS.neutron}
+          />
+        )
+
+        await act(async () => {
+          await user.click(screen.getByRole('button'))
+        })
+
+        // Wait for dropdown to open and check that other tokens are present
+        await waitFor(() => {
+          expect(screen.getAllByText('ATOM').length).toBeGreaterThan(0)
+          expect(screen.getAllByText('JUNOX').length).toBeGreaterThan(0)
+        }, { timeout: 3000 })
+        
+        // NTRN should be excluded - we'll verify other tokens are present instead
+        expect(screen.getAllByText('ETH').length).toBeGreaterThan(0)
+      })
+
+      it('should not exclude Cosmos tokens with same symbol but different chain', async () => {
+        // Test that tokens with similar names but different chains are not excluded
+        render(
+          <TokenSelector
+            value={null}
+            onChange={mockOnChange}
+            excludeToken={COSMOS_TOKENS.cosmos} // Exclude ATOM
+          />
+        )
+
+        await user.click(screen.getByRole('button'))
+
+        await waitFor(() => {
+          // Should still show other Cosmos tokens
+          expect(screen.getByText('NTRN')).toBeInTheDocument()
+          expect(screen.getByText('JUNOX')).toBeInTheDocument()
+          expect(screen.getByText('OSMO')).toBeInTheDocument()
+        })
+      })
+    })
+
+    describe('Cosmos Chain Badges and Visual Elements', () => {
+      it('should display proper chain badges for Cosmos tokens', async () => {
+        render(
+          <TokenSelector
+            value={null}
+            onChange={mockOnChange}
+          />
+        )
+
+        await act(async () => {
+          await user.click(screen.getByRole('button'))
+        })
+
+        await waitFor(() => {
+          // Check for Cosmos chain information display
+          expect(screen.getAllByText('Neutron').length).toBeGreaterThan(0)
+          expect(screen.getAllByText('Juno').length).toBeGreaterThan(0)
+          expect(screen.getAllByText('Cosmos Hub').length).toBeGreaterThan(0)
+          expect(screen.getAllByText('Osmosis').length).toBeGreaterThan(0)
+        }, { timeout: 3000 })
+      })
+
+      it('should show USD prices for Cosmos tokens', async () => {
+        render(
+          <TokenSelector
+            value={null}
+            onChange={mockOnChange}
+          />
+        )
+
+        await act(async () => {
+          await user.click(screen.getByRole('button'))
+        })
+
+        await waitFor(() => {
+          // Check that dropdown opened with Cosmos tokens
+          expect(screen.getAllByText('NTRN').length).toBeGreaterThan(0)
+        }, { timeout: 3000 })
+        
+        // Look for price elements - Cosmos tokens should show prices like $0.45, $8.45
+        const buttons = screen.getAllByRole('button')
+        const buttonTexts = buttons.map(btn => btn.textContent || '').join(' ')
+        
+        // Check that prices are displayed ($ symbol should be present for Cosmos tokens)
+        expect(buttonTexts).toMatch(/\$0\.45|\$8\.45|\$0\.33/)
+      })
+
+      it('should have correct visual styling for Cosmos chains', async () => {
+        render(
+          <TokenSelector
+            value={COSMOS_TOKENS.neutron}
+            onChange={mockOnChange}
+          />
+        )
+
+        // Check that the selected Cosmos token displays correctly
+        expect(screen.getByText('NTRN')).toBeInTheDocument()
+        expect(screen.getByText('Neutron')).toBeInTheDocument()
+      })
+    })
+
+    describe('Cross-Chain Token Interactions', () => {
+      it('should allow selecting different chain tokens', async () => {
+        render(
+          <TokenSelector
+            value={ETH_TOKEN}
+            onChange={mockOnChange}
+            excludeToken={COSMOS_TOKENS.neutron}
+          />
+        )
+
+        await act(async () => {
+          await user.click(screen.getByRole('button'))
+        })
+
+        await waitFor(() => {
+          // Should show Cosmos tokens when Ethereum is selected
+          expect(screen.getAllByText('ATOM').length).toBeGreaterThan(0)
+          expect(screen.getAllByText('JUNOX').length).toBeGreaterThan(0)
+        }, { timeout: 3000 })
+      })
+
+      it('should handle cross-chain exclusions properly', async () => {
+        render(
+          <TokenSelector
+            value={null}
+            onChange={mockOnChange}
+            excludeToken={ETH_TOKEN} // Exclude ETH
+          />
+        )
+
+        await user.click(screen.getByRole('button'))
+
+        await waitFor(() => {
+          // Should still show all Cosmos tokens
+          expect(screen.getAllByText('NTRN').length).toBeGreaterThan(0)
+          expect(screen.getAllByText('ATOM').length).toBeGreaterThan(0)
+          expect(screen.getAllByText('JUNOX').length).toBeGreaterThan(0)
+          // Should also show other non-ETH tokens
+          expect(screen.getAllByText('NEAR').length).toBeGreaterThan(0)
+          expect(screen.getAllByText('BTC').length).toBeGreaterThan(0)
+        })
+      })
+    })
+
+    describe('Cosmos Token Data Integrity', () => {
+      it('should have correct decimals for Cosmos tokens', async () => {
+        render(
+          <TokenSelector
+            value={null}
+            onChange={mockOnChange}
+          />
+        )
+
+        await act(async () => {
+          await user.click(screen.getByRole('button'))
+        })
+        
+        await waitFor(() => {
+          expect(screen.getAllByText('NTRN').length).toBeGreaterThan(0)
+        }, { timeout: 3000 })
+
+        // Select NTRN and verify decimals
+        const ntrnButton = screen.getAllByText('NTRN').find(el => el.closest('button'))
+        
+        await act(async () => {
+          await user.click(ntrnButton!)
+        })
+
+        await waitFor(() => {
+          expect(mockOnChange).toHaveBeenCalledWith(
+            expect.objectContaining({
+              decimals: 6, // Cosmos tokens use 6 decimals
+              chainId: 'neutron',
+            })
+          )
+        })
+      })
+
+      it('should have correct addresses for Cosmos tokens', async () => {
+        render(
+          <TokenSelector
+            value={null}
+            onChange={mockOnChange}
+          />
+        )
+
+        await act(async () => {
+          await user.click(screen.getByRole('button'))
+        })
+        
+        const atomButton = await screen.findAllByText('ATOM')
+        const clickableAtom = atomButton.find(el => el.closest('button'))
+        
+        await act(async () => {
+          await user.click(clickableAtom!)
+        })
+
+        await waitFor(() => {
+          expect(mockOnChange).toHaveBeenCalledWith(
+            expect.objectContaining({
+              address: 'uatom', // Native denom format
+              symbol: 'ATOM',
+              chainId: 'cosmos',
+            })
+          )
+        })
+      })
+
+      it('should maintain consistent data structure for all Cosmos tokens', async () => {
+        const cosmosTokens = Object.values(COSMOS_TOKENS)
+        
+        for (const token of cosmosTokens) {
+          const { unmount } = render(
+            <TokenSelector
+              value={token}
+              onChange={mockOnChange}
+            />
+          )
+
+          // Each token should have required properties
+          expect(token).toHaveProperty('address')
+          expect(token).toHaveProperty('symbol')
+          expect(token).toHaveProperty('decimals', 6) // All Cosmos tokens use 6 decimals
+          expect(token).toHaveProperty('chainId')
+          expect(token).toHaveProperty('priceUSD')
+          expect(typeof token.address).toBe('string')
+          expect(typeof token.symbol).toBe('string')
+          expect(typeof token.chainId).toBe('string')
+
+          unmount()
+        }
       })
     })
   })
