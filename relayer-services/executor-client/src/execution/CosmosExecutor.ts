@@ -22,7 +22,6 @@ import { Decimal } from '@cosmjs/math';
 export interface CosmosExecutionResult {
     success: boolean;
     orderHash: string;
-    chainId?: number;
     contractAddress?: string;
     transactionHash?: string;
     transactions: string[];
@@ -55,8 +54,6 @@ export class CosmosExecutor extends EventEmitter {
     private cosmosConfig: CosmosConfig;
     private clients: Map<string, SigningCosmWasmClient> = new Map();
     private wallet?: DirectSecp256k1HdWallet | DirectSecp256k1Wallet;
-    private totalExecutions: number = 0;
-    private initialized: boolean = false;
 
     constructor(config: Config) {
         super();
@@ -73,15 +70,10 @@ export class CosmosExecutor extends EventEmitter {
         // Initialize clients for each supported Cosmos chain
         await this.initializeClients();
 
-        this.initialized = true;
         logger.info('✅ Cosmos Executor initialized');
     }
 
     private async initializeWallet(): Promise<void> {
-        if (!this.cosmosConfig.wallet) {
-            throw new Error('Cosmos wallet configuration is missing');
-        }
-
         if (this.cosmosConfig.wallet.mnemonic) {
             // Create wallet from mnemonic
             this.wallet = await DirectSecp256k1HdWallet.fromMnemonic(
@@ -149,16 +141,7 @@ export class CosmosExecutor extends EventEmitter {
                 });
 
             } catch (error) {
-                logger.error(`❌ Failed to initialize client for chain ${chainIdStr}:`, {
-                    error: error instanceof Error ? error.message : String(error),
-                    stack: error instanceof Error ? error.stack : undefined,
-                    networkConfig: {
-                        name: networkConfig.name,
-                        rpcUrl: networkConfig.rpcUrl,
-                        chainId: networkConfig.chainId,
-                        prefix: networkConfig.prefix
-                    }
-                });
+                logger.error(`❌ Failed to initialize client for chain ${chainIdStr}:`, error);
                 // Continue with other chains even if one fails
             }
         }
@@ -171,33 +154,15 @@ export class CosmosExecutor extends EventEmitter {
     }
 
     async executeOrder(executableOrder: ExecutableOrder): Promise<CosmosExecutionResult> {
-        logger.info('🔍 CosmosExecutor.executeOrder called with:', {
-            type: typeof executableOrder,
-            keys: Object.keys(executableOrder || {}),
-            orderHash: executableOrder?.orderHash,
-            hasChainSpecificParams: !!executableOrder?.chainSpecificParams
-        });
-
         const startTime = Date.now();
         const orderHash = executableOrder.orderHash;
         const order = executableOrder.order;
 
         logger.info(`🌌 Executing Cosmos order ${orderHash} on chain ${order.destinationChainId}`);
-        
-        logger.info('🔍 ExecutableOrder structure:', {
-            orderHash,
-            orderKeys: Object.keys(order),
-            executableOrderKeys: Object.keys(executableOrder),
-            orderChainSpecificParams: order.chainSpecificParams,
-            executableOrderChainSpecificParams: executableOrder.chainSpecificParams,
-            orderType: typeof order.chainSpecificParams,
-            executableOrderType: typeof executableOrder.chainSpecificParams
-        });
 
         const result: CosmosExecutionResult = {
             success: false,
             orderHash,
-            chainId: order.destinationChainId,
             transactions: [],
             executionTime: 0
         };
@@ -220,36 +185,12 @@ export class CosmosExecutor extends EventEmitter {
             const accounts = await this.wallet!.getAccounts();
             const walletAddress = accounts[0].address;
 
-            // Parse execution parameters from order - try both sources
-            const chainParams = executableOrder.chainSpecificParams || order.chainSpecificParams || '';
-            logger.info('🔍 Using chainSpecificParams:', { 
-                chainParams, 
-                type: typeof chainParams,
-                fromExecutableOrder: !!executableOrder.chainSpecificParams,
-                fromOrder: !!order.chainSpecificParams
-            });
-            const executionParams = this.parseExecutionParams(chainParams);
+            // Parse execution parameters from order
+            const executionParams = this.parseExecutionParams(order.chainSpecificParams);
             const contractAddress = executionParams.contractAddress || networkConfig.contractAddress;
 
-            // Handle Cosmos Hub (no CosmWasm support) differently
-            if (order.destinationChainId === 30001 || !contractAddress) {
-                // For Cosmos Hub or chains without contract support, use native token transfer
-                const sendResult = await this.sendNativeTokens(
-                    client,
-                    walletAddress,
-                    executionParams,
-                    orderHash
-                );
-
-                if (!sendResult.success) {
-                    result.error = `Failed to send native tokens: ${sendResult.error}`;
-                    return result;
-                }
-
-                result.transactions.push(sendResult.transactionHash!);
-                result.gasUsed = (result.gasUsed || 0) + (sendResult.gasUsed || 0);
-                result.success = true;
-                this.totalExecutions++;
+            if (!contractAddress) {
+                result.error = `No contract address configured for chain ${order.destinationChainId}`;
                 return result;
             }
 
@@ -308,7 +249,6 @@ export class CosmosExecutor extends EventEmitter {
             });
 
             result.success = true;
-            this.totalExecutions++;
 
         } catch (error) {
             logger.error(`💥 Cosmos execution failed for order ${orderHash}:`, error);
@@ -389,60 +329,6 @@ export class CosmosExecutor extends EventEmitter {
         }
     }
 
-    private async sendNativeTokens(
-        client: SigningCosmWasmClient,
-        walletAddress: string,
-        executionParams: CosmosExecutionParams,
-        orderHash: string
-    ): Promise<{ success: boolean; transactionHash?: string; gasUsed?: number; error?: string }> {
-        try {
-            logger.info(`💸 Sending native tokens for order ${orderHash}`);
-
-            // For Cosmos Hub, send native tokens directly
-            const amount = [{
-                denom: executionParams.nativeDenom,
-                amount: executionParams.amount
-            }];
-
-            // Use the proper method for sending tokens on CosmWasm client
-            const sendMsg = {
-                typeUrl: '/cosmos.bank.v1beta1.MsgSend',
-                value: {
-                    fromAddress: walletAddress,
-                    toAddress: executionParams.destinationAddress || walletAddress,
-                    amount: amount
-                }
-            };
-            
-            const fee = {
-                amount: [{ denom: executionParams.nativeDenom, amount: '5000' }],
-                gas: (executionParams.gasLimit || this.cosmosConfig.execution.gasLimit).toString()
-            };
-            
-            const result = await client.signAndBroadcast(walletAddress, [sendMsg], fee);
-
-            logger.transaction(`Cosmos native token transfer sent`, result.transactionHash);
-
-            return {
-                success: true,
-                transactionHash: result.transactionHash,
-                gasUsed: Number(result.gasUsed)
-            };
-
-        } catch (error) {
-            logger.error(`💥 Error sending native tokens:`, {
-                error: error instanceof Error ? error.message : String(error),
-                stack: error instanceof Error ? error.stack : undefined,
-                orderHash,
-                executionParams
-            });
-            return {
-                success: false,
-                error: error instanceof Error ? error.message : String(error)
-            };
-        }
-    }
-
     private async claimFusionOrder(
         client: SigningCosmWasmClient,
         contractAddress: string,
@@ -491,35 +377,23 @@ export class CosmosExecutor extends EventEmitter {
     }
 
     private parseExecutionParams(chainSpecificParams: string): CosmosExecutionParams {
-        logger.info('🔍 CosmosExecutor receiving parameters:', {
-            chainSpecificParams,
-            type: typeof chainSpecificParams,
-            length: chainSpecificParams?.length || 0
-        });
-
         try {
             // Decode from hex if necessary
             let paramsStr = chainSpecificParams;
             if (chainSpecificParams.startsWith('0x')) {
                 paramsStr = Buffer.from(chainSpecificParams.slice(2), 'hex').toString('utf8');
-                logger.info('🔍 Decoded from hex:', { paramsStr });
             }
             
             const params = JSON.parse(paramsStr);
-            logger.info('🔍 Parsed parameters:', { params });
             return {
-                contractAddress: params.contractAddress || '',
-                amount: params.amount || '0',
+                contractAddress: params.contractAddress,
+                amount: params.amount,
                 nativeDenom: params.nativeDenom || 'untrn',
                 gasLimit: params.gasLimit || this.cosmosConfig.execution.gasLimit,
                 destinationAddress: params.destinationAddress
             };
         } catch (error) {
-            logger.warn(`⚠️ Failed to parse execution parameters, using defaults:`, {
-                error: error instanceof Error ? error.message : String(error),
-                chainSpecificParams,
-                chainSpecificParamsType: typeof chainSpecificParams
-            });
+            logger.warn(`⚠️ Failed to parse execution parameters, using defaults:`, error);
             return {
                 contractAddress: '',
                 amount: '0',
@@ -571,10 +445,6 @@ export class CosmosExecutor extends EventEmitter {
     // Public methods for status and control
     public getStatus(): object {
         return {
-            initialized: this.initialized,
-            connectedChains: this.initialized ? ['neutron', 'juno', 'cosmoshub'] : [],
-            activeClients: this.clients.size,
-            totalExecutions: this.totalExecutions,
             supportedChains: Object.keys(this.cosmosConfig.networks),
             connectedClients: Array.from(this.clients.keys()),
             isInitialized: this.clients.size > 0
@@ -587,77 +457,5 @@ export class CosmosExecutor extends EventEmitter {
 
     public isChainSupported(chainId: string): boolean {
         return this.clients.has(chainId);
-    }
-
-    public getNetworkConfig(chainId: number): any {
-        const networkConfig = this.cosmosConfig.networks[chainId.toString()];
-        if (!networkConfig) {
-            return null;
-        }
-        return networkConfig;
-    }
-
-    public isCosmosChain(chainId: number): boolean {
-        const cosmosChainIds = [7001, 7002, 30001];
-        return cosmosChainIds.includes(chainId);
-    }
-
-    public async estimateGas(chainId: number, params: any): Promise<number> {
-        const client = this.clients.get(chainId.toString());
-        if (!client) {
-            return this.cosmosConfig.execution.gasLimit; // Default
-        }
-
-        try {
-            const accounts = await this.wallet!.getAccounts();
-            const walletAddress = accounts[0].address;
-            
-            const executeMsg = {
-                execute_fusion_order: {
-                    amount: params.amount,
-                    source_chain_id: 1,
-                    timeout_seconds: this.cosmosConfig.execution.timeoutSeconds
-                }
-            };
-
-            const result = await client.simulate(
-                walletAddress,
-                [{
-                    typeUrl: '/cosmwasm.wasm.v1.MsgExecuteContract',
-                    value: {
-                        sender: walletAddress,
-                        contract: params.contractAddress,
-                        msg: toUtf8(JSON.stringify(executeMsg)),
-                        funds: []
-                    }
-                }],
-                undefined
-            );
-
-            return (result as any).gasInfo?.gasUsed ? Number((result as any).gasInfo.gasUsed) : this.cosmosConfig.execution.gasLimit;
-        } catch (error) {
-            logger.warn(`Failed to estimate gas for chain ${chainId}:`, error);
-            return this.cosmosConfig.execution.gasLimit; // Default fallback
-        }
-    }
-
-    public async stop(): Promise<void> {
-        logger.info('🛑 Stopping Cosmos Executor...');
-        
-        // Disconnect all clients
-        for (const [chainId, client] of this.clients.entries()) {
-            try {
-                await client.disconnect();
-                logger.debug(`Disconnected from chain ${chainId}`);
-            } catch (error) {
-                logger.warn(`Failed to disconnect from chain ${chainId}:`, error);
-            }
-        }
-        
-        this.clients.clear();
-        this.initialized = false;
-        this.totalExecutions = 0;
-        
-        logger.info('✅ Cosmos Executor stopped');
     }
 }
