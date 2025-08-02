@@ -5,7 +5,7 @@
   "workspaces": [
     "executor-client",
     "marketplace-api",
-    "ai-module"
+    "api-gateway"
   ],
   "scripts": {
     "dev": "npm run dev --workspaces",
