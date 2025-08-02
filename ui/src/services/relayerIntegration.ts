@@ -73,13 +73,37 @@ export class RelayerIntegrationService {
    */
   async checkRelayerHealth(): Promise<{ healthy: boolean; status?: RelayerStatus }> {
     try {
-      const response = await fetch(`${this.baseUrl}/api/status`);
+      const response = await fetch(`${this.baseUrl}/status`);
       if (!response.ok) {
         return { healthy: false };
       }
 
-      const status = await response.json();
-      return { healthy: true, status };
+      const result = await response.json();
+      
+      // Transform API Gateway response to expected format
+      const status: RelayerStatus = {
+        isRunning: result.status?.isRunning || false,
+        queueLength: result.status?.queueLength || 0,
+        walletStatus: {
+          ethereum: {
+            connected: true,
+            address: result.status?.ethereumAddress || '',
+            balance: result.status?.ethereumBalance || '0'
+          },
+          near: {
+            connected: true,
+            accountId: result.status?.nearAccountId || '',
+            balance: result.status?.nearBalance || '0'
+          }
+        },
+        monitorStatus: {
+          connected: result.isHealthy || false,
+          lastEvent: Date.now(),
+          eventsProcessed: result.status?.totalProcessed || 0
+        }
+      };
+
+      return { healthy: result.isHealthy, status };
     } catch (error) {
       console.error('Relayer health check failed:', error);
       return { healthy: false };
@@ -92,10 +116,10 @@ export class RelayerIntegrationService {
   async submitIntent(intent: IntentRequest): Promise<OrderSubmission> {
     try {
       // Submit intent to real relayer service via API Gateway
-      const response = await fetch(`${RELAYER_API_BASE_URL}/submit`, {
+      const response = await fetch(`${this.baseUrl}/submit`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(intent)
+        body: JSON.stringify({ intent })
       });
 
       if (!response.ok) {
@@ -106,7 +130,7 @@ export class RelayerIntegrationService {
       
       const submission: OrderSubmission = {
         intentId: intent.id,
-        orderHash: result.orderHash,
+        orderHash: result.data?.orderHash,
         status: 'submitted',
         timestamp: Date.now()
       };
@@ -134,7 +158,7 @@ export class RelayerIntegrationService {
    */
   async analyzeProfitability(intent: IntentRequest): Promise<ProfitabilityAnalysis> {
     try {
-      const response = await fetch(`${this.baseUrl}/api/analysis/profitability`, {
+      const response = await fetch(`${this.baseUrl}/analyze`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ intent })
@@ -144,7 +168,8 @@ export class RelayerIntegrationService {
         throw new Error(`Profitability analysis failed: ${response.statusText}`);
       }
 
-      return await response.json();
+      const result = await response.json();
+      return result.data || result;
     } catch (error) {
       console.error('Profitability analysis failed:', error);
       

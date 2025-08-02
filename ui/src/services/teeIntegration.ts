@@ -84,7 +84,7 @@ export interface TEEStatus {
 export class TEESolverIntegrationService {
   private baseUrl: string;
 
-  constructor(baseUrl: string = TEE_SOLVER_BASE_URL) {
+  constructor(baseUrl: string = TEE_API_BASE_URL) {
     this.baseUrl = baseUrl;
   }
 
@@ -93,7 +93,7 @@ export class TEESolverIntegrationService {
    */
   async checkTEEHealth(): Promise<{ healthy: boolean; status?: TEEStatus }> {
     try {
-      const response = await fetch(`${this.baseUrl}/api/status`);
+      const response = await fetch(`${this.baseUrl}/status`);
       if (!response.ok) {
         return { healthy: false };
       }
