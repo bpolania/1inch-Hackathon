@@ -44,6 +44,7 @@ export function IntentForm({ onSubmit, className }: IntentFormProps) {
   const [toToken, setToToken] = useState<TokenInfo | null>(null);
   const [fromAmount, setFromAmount] = useState<string>('');
   const [minToAmount, setMinToAmount] = useState<string>('');
+  const [destinationAddress, setDestinationAddress] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
 
@@ -67,9 +68,17 @@ export function IntentForm({ onSubmit, className }: IntentFormProps) {
         toToken,
         fromAmount,
         minToAmount,
+        ...(isCosmosChain(toToken.chainId) && destinationAddress && {
+          metadata: { destinationAddress }
+        })
       });
     }
-  }, [fromToken, toToken, fromAmount, minToAmount, updateIntent]);
+  }, [fromToken, toToken, fromAmount, minToAmount, destinationAddress, updateIntent]);
+
+  // Helper function to check if a chain is a Cosmos chain
+  const isCosmosChain = (chainId: string): boolean => {
+    return ['cosmos', 'neutron', 'juno', 'osmosis', 'stargaze', 'akash'].includes(chainId);
+  };
 
   const handleSwapTokens = () => {
     const tempToken = fromToken;
@@ -79,6 +88,7 @@ export function IntentForm({ onSubmit, className }: IntentFormProps) {
     setToToken(tempToken);
     setFromAmount(minToAmount);
     setMinToAmount(tempAmount);
+    setDestinationAddress(''); // Clear destination address when swapping
   };
 
   const handleSubmit = async () => {
@@ -96,6 +106,7 @@ export function IntentForm({ onSubmit, className }: IntentFormProps) {
       setToToken(null);
       setFromAmount('');
       setMinToAmount('');
+      setDestinationAddress('');
       onSubmit?.(intentId);
     } catch (error) {
       console.error('Failed to submit intent:', error);
@@ -105,7 +116,8 @@ export function IntentForm({ onSubmit, className }: IntentFormProps) {
     }
   };
 
-  const canPreview = fromToken && toToken && fromAmount && minToAmount;
+  const canPreview = fromToken && toToken && fromAmount && minToAmount && 
+    (!toToken || !isCosmosChain(toToken.chainId) || destinationAddress);
   const canSubmit = canPreview && currentIntent && isConnected;
   
   // Check if user has sufficient balance (basic check)
@@ -211,6 +223,30 @@ export function IntentForm({ onSubmit, className }: IntentFormProps) {
                 />
               </div>
             </div>
+
+            {/* Cosmos Destination Address Input */}
+            {toToken && isCosmosChain(toToken.chainId) && (
+              <div className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-1 h-6 bg-primary rounded-full"></div>
+                  <label className="text-base font-semibold text-card-foreground">
+                    Destination Address
+                  </label>
+                </div>
+                <div className="p-6 rounded-xl bg-muted border">
+                  <input
+                    type="text"
+                    value={destinationAddress}
+                    onChange={(e) => setDestinationAddress(e.target.value)}
+                    placeholder={`Enter ${toToken.chainId} address (e.g., ${toToken.chainId}1abc...)`}
+                    className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                  />
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Enter your {toToken.chainId} wallet address to receive {toToken.symbol} tokens
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Real-time 1inch Price Quote */}
