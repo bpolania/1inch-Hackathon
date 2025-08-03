@@ -1,9 +1,0 @@
-[package]
-name = "CrossChainSwap"
-version = "0.1.0"
-
-[dependencies]
-AptosFramework = { git = "https://github.com/aptos-labs/aptos-core.git", subdir = "aptos-move/framework/aptos-framework", rev = "mainnet" }
-
-[addresses]
-cross_chain_swap = "0x1"
