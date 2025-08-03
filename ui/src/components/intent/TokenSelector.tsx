@@ -75,12 +75,68 @@ const MOCK_TOKENS: TokenInfo[] = [
     logoURI: '/tokens/btc.svg',
     priceUSD: 43250.00,
   },
+
+  // Cosmos chains
+  {
+    address: 'uatom',
+    symbol: 'ATOM',
+    decimals: 6,
+    chainId: 'cosmos',
+    logoURI: '/tokens/atom.svg',
+    priceUSD: 8.25,
+  },
+  {
+    address: 'untrn',
+    symbol: 'NTRN',
+    decimals: 6,
+    chainId: 'neutron',
+    logoURI: '/tokens/neutron.svg',
+    priceUSD: 0.45,
+  },
+  {
+    address: 'ujunox',
+    symbol: 'JUNO',
+    decimals: 6,
+    chainId: 'juno',
+    logoURI: '/tokens/juno.svg',
+    priceUSD: 0.32,
+  },
+  {
+    address: 'uosmo',
+    symbol: 'OSMO',
+    decimals: 6,
+    chainId: 'osmosis',
+    logoURI: '/tokens/osmosis.svg',
+    priceUSD: 0.58,
+  },
+  {
+    address: 'ustars',
+    symbol: 'STARS',
+    decimals: 6,
+    chainId: 'stargaze',
+    logoURI: '/tokens/stargaze.svg',
+    priceUSD: 0.02,
+  },
+  {
+    address: 'uakt',
+    symbol: 'AKT',
+    decimals: 6,
+    chainId: 'akash',
+    logoURI: '/tokens/akash.svg',
+    priceUSD: 2.15,
+  },
 ];
 
 const CHAIN_INFO = {
   near: { name: 'NEAR', color: 'bg-near-500', textColor: 'text-near-600' },
   ethereum: { name: 'Ethereum', color: 'bg-blue-500', textColor: 'text-blue-600' },
   bitcoin: { name: 'Bitcoin', color: 'bg-bitcoin-500', textColor: 'text-bitcoin-600' },
+  cosmos: { name: 'Cosmos Hub', color: 'bg-purple-500', textColor: 'text-purple-600' },
+  neutron: { name: 'Neutron', color: 'bg-green-500', textColor: 'text-green-600' },
+  juno: { name: 'Juno', color: 'bg-orange-500', textColor: 'text-orange-600' },
+  osmosis: { name: 'Osmosis', color: 'bg-pink-500', textColor: 'text-pink-600' },
+  stargaze: { name: 'Stargaze', color: 'bg-indigo-500', textColor: 'text-indigo-600' },
+  akash: { name: 'Akash', color: 'bg-red-500', textColor: 'text-red-600' },
 };
 
 interface TokenSelectorProps {

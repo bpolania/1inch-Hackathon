@@ -19,7 +19,23 @@ import {
   CheckCircle
 } from 'lucide-react';
 import { cn } from '@/utils/utils';
-import { IntentRequest } from '@/types/intent';
+import { IntentRequest, ChainId } from '@/types/intent';
+
+// Helper function to get chain colors
+const getChainColor = (chainId: ChainId): string => {
+  const chainColors: Record<ChainId, string> = {
+    near: 'bg-near-500',
+    ethereum: 'bg-blue-500',
+    bitcoin: 'bg-bitcoin-500',
+    cosmos: 'bg-purple-500',
+    neutron: 'bg-green-500',
+    juno: 'bg-orange-500',
+    osmosis: 'bg-pink-500',
+    stargaze: 'bg-indigo-500',
+    akash: 'bg-red-500',
+  };
+  return chainColors[chainId] || 'bg-gray-500';
+};
 import { 
   formatTokenAmount, 
   formatUSDAmount, 
@@ -95,9 +111,7 @@ export function IntentPreview({ intent, className }: IntentPreviewProps) {
                   </div>
                   <div className={cn(
                     "absolute -bottom-1 -right-1 h-3 w-3 rounded-full border-2 border-background",
-                    intent.fromToken?.chainId === 'near' && 'bg-near-500',
-                    intent.fromToken?.chainId === 'ethereum' && 'bg-blue-500',
-                    intent.fromToken?.chainId === 'bitcoin' && 'bg-bitcoin-500'
+                    intent.fromToken?.chainId && getChainColor(intent.fromToken.chainId)
                   )} />
                 </div>
                 <div>
@@ -135,9 +149,7 @@ export function IntentPreview({ intent, className }: IntentPreviewProps) {
                   </div>
                   <div className={cn(
                     "absolute -bottom-1 -right-1 h-3 w-3 rounded-full border-2 border-background",
-                    intent.toToken?.chainId === 'near' && 'bg-near-500',
-                    intent.toToken?.chainId === 'ethereum' && 'bg-blue-500',
-                    intent.toToken?.chainId === 'bitcoin' && 'bg-bitcoin-500'
+                    intent.toToken?.chainId && getChainColor(intent.toToken.chainId)
                   )} />
                 </div>
                 <div>
