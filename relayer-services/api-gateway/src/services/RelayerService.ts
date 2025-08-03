@@ -572,10 +572,12 @@ export class RelayerService extends EventEmitter {
     const { ethers } = require('ethers');
     
     // Map UI chainIds to numeric chainIds for backend
+    // Based on factory contract supported chains: ["40001","40002","50002","50003","50005"]
+    // From the error: 50002 expects Bitcoin address format, so 50002 = Bitcoin
     const chainIdMapping: Record<string, number> = {
-      'near': 40002,
-      'ethereum': 11155111,
-      'bitcoin': 40004,
+      'near': 40002,      // NEAR destination
+      'ethereum': 40002,  // Ethereum destination → fallback to NEAR (original working behavior)
+      'bitcoin': 50002,   // Bitcoin destination - uses Bitcoin address format
       'neutron': 7001,
       'juno': 7002,
       'cosmos': 30001,
@@ -663,6 +665,13 @@ export class RelayerService extends EventEmitter {
       logger.info('🎯 Full order parameters for debugging:', JSON.stringify(fusionOrder.orderParams, (key, value) =>
         typeof value === 'bigint' ? value.toString() : value, 2));
       
+      // Check if this is a Cosmos destination that should bypass factory contract
+      const isCosmosDestination = [7001, 7002, 30001, 7003, 7004, 7005].includes(fusionOrder.orderParams.destinationChainId);
+      
+      if (isCosmosDestination) {
+        throw new Error('Cosmos destinations should be handled by executeOrder method, not createFusionOrderDirect');
+      }
+      
       // Connect to the factory contract
       const provider = new ethers.JsonRpcProvider(this.config.ethereumRpcUrl);
       const wallet = new ethers.Wallet(this.config.ethereumPrivateKey, provider);
@@ -678,7 +687,7 @@ export class RelayerService extends EventEmitter {
       
       logger.info('📝 Order parameters:', fusionOrder.orderParams);
       
-      // Validate chain support FIRST before any other checks
+      // Validate chain support FIRST before any other checks (only for non-Cosmos chains)
       logger.info('🔍 Starting chain validation...');
       try {
         const supportedChains = await factory.getSupportedChains();
@@ -829,7 +838,7 @@ export class RelayerService extends EventEmitter {
         
         if (isCosmosDestination) {
           // For Cosmos destinations, execute directly via CosmosExecutor (bypass Ethereum contracts)
-          logger.info('🌌 Executing NEAR → Cosmos order directly via CosmosExecutor');
+          logger.info('🌌 Executing Ethereum → Cosmos order directly via CosmosExecutor');
           
           if (!this.crossChainExecutor || !this.crossChainExecutor.cosmosExecutor) {
             throw new Error('CosmosExecutor not available');
