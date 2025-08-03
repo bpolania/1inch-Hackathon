@@ -80,6 +80,19 @@ export function IntentForm({ onSubmit, className }: IntentFormProps) {
     return ['cosmos', 'neutron', 'juno', 'osmosis', 'stargaze', 'akash'].includes(chainId);
   };
 
+  // Helper function to get default test addresses for Cosmos chains
+  const getDefaultCosmosAddress = (chainId: string): string => {
+    const defaultAddresses: Record<string, string> = {
+      cosmos: 'cosmos1234567890abcdef1234567890abcdef12345678',
+      neutron: 'neutron1234567890abcdef1234567890abcdef12345678',
+      juno: 'juno1234567890abcdef1234567890abcdef12345678',
+      osmosis: 'osmo1234567890abcdef1234567890abcdef12345678',
+      stargaze: 'stars1234567890abcdef1234567890abcdef12345678',
+      akash: 'akash1234567890abcdef1234567890abcdef12345678',
+    };
+    return defaultAddresses[chainId] || 'cosmos1234567890abcdef1234567890abcdef12345678';
+  };
+
   const handleSwapTokens = () => {
     const tempToken = fromToken;
     const tempAmount = fromAmount;
@@ -234,13 +247,33 @@ export function IntentForm({ onSubmit, className }: IntentFormProps) {
                   </label>
                 </div>
                 <div className="p-6 rounded-xl bg-muted border">
-                  <input
-                    type="text"
-                    value={destinationAddress}
-                    onChange={(e) => setDestinationAddress(e.target.value)}
-                    placeholder={`Enter ${toToken.chainId} address (e.g., ${toToken.chainId}1abc...)`}
-                    className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                  />
+                  <div className="space-y-3">
+                    <input
+                      type="text"
+                      value={destinationAddress}
+                      onChange={(e) => setDestinationAddress(e.target.value)}
+                      placeholder={`Enter ${toToken.chainId} address (e.g., ${toToken.chainId}1abc...)`}
+                      className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                    />
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setDestinationAddress(getDefaultCosmosAddress(toToken.chainId))}
+                        className="px-3 py-1 text-xs bg-primary/10 text-primary rounded-md hover:bg-primary/20 transition-colors"
+                      >
+                        Use Test Address
+                      </button>
+                      {destinationAddress && (
+                        <button
+                          type="button"
+                          onClick={() => setDestinationAddress('')}
+                          className="px-3 py-1 text-xs bg-muted-foreground/10 text-muted-foreground rounded-md hover:bg-muted-foreground/20 transition-colors"
+                        >
+                          Clear
+                        </button>
+                      )}
+                    </div>
+                  </div>
                   <p className="text-xs text-muted-foreground mt-2">
                     Enter your {toToken.chainId} wallet address to receive {toToken.symbol} tokens
                   </p>
