@@ -85,7 +85,7 @@ export interface Config {
     bitcoin: BitcoinConfig;
     wallet: WalletConfig;
     execution: ExecutionConfig;
-    cosmos?: CosmosConfig;
+    cosmos: CosmosConfig;
     logging: {
         level: string;
         format: string;
@@ -215,47 +215,6 @@ export async function loadConfig(): Promise<Config> {
         logging: {
             level: process.env.LOG_LEVEL || 'info',
             format: process.env.LOG_FORMAT || 'json'
-        },
-
-        cosmos: {
-            networks: {
-                '7001': { // Neutron Testnet
-                    name: 'Neutron Testnet',
-                    rpcUrl: process.env.NEUTRON_RPC_URL || 'https://neutron-testnet-rpc.polkachu.com:443',
-                    chainId: 'pion-1',
-                    denom: 'untrn',
-                    prefix: 'neutron',
-                    gasPrice: process.env.NEUTRON_GAS_PRICE || '0.025untrn',
-                    contractAddress: process.env.NEUTRON_CONTRACT_ADDRESS
-                },
-                '7002': { // Juno Testnet
-                    name: 'Juno Testnet',
-                    rpcUrl: process.env.JUNO_RPC_URL || 'https://juno-testnet-rpc.polkachu.com:443',
-                    chainId: 'uni-7',
-                    denom: 'ujunox',
-                    prefix: 'juno',
-                    gasPrice: process.env.JUNO_GAS_PRICE || '0.025ujunox',
-                    contractAddress: process.env.JUNO_CONTRACT_ADDRESS
-                },
-                '30001': { // Cosmos Hub
-                    name: 'Cosmos Hub',
-                    rpcUrl: process.env.COSMOS_RPC_URL || 'https://cosmos-rpc.polkachu.com:443',
-                    chainId: 'cosmoshub-4',
-                    denom: 'uatom',
-                    prefix: 'cosmos',
-                    gasPrice: process.env.COSMOS_GAS_PRICE || '0.025uatom',
-                    contractAddress: process.env.COSMOS_CONTRACT_ADDRESS
-                }
-            },
-            wallet: {
-                mnemonic: process.env.COSMOS_MNEMONIC,
-                privateKey: process.env.COSMOS_PRIVATE_KEY
-            },
-            execution: {
-                gasLimit: parseInt(process.env.COSMOS_GAS_LIMIT || '300000'),
-                timeoutSeconds: parseInt(process.env.COSMOS_TIMEOUT_SECONDS || '3600'),
-                minSafetyDepositBps: parseInt(process.env.COSMOS_MIN_SAFETY_DEPOSIT_BPS || '500')
-            }
         },
 
         dataDir: process.env.DATA_DIR || './data'
