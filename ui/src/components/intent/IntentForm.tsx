@@ -165,50 +165,110 @@ export function IntentForm({ onSubmit, className }: IntentFormProps) {
   const canSubmit = canPreview && currentIntent && isConnected && cosmosAddressValid && hasMinimumBalance;
 
   return (
-    <div className={cn('space-y-8', className)}>
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '2rem'
+    }}>
       {/* Wallet Connection Required */}
       {!isConnected && (
-        <div className="animate-slide-up">
+        <div style={{
+          animation: 'slideUp 0.5s ease-out'
+        }}>
           <WalletStatus requiredBalance="0.1" />
         </div>
       )}
       
       {/* Main Intent Form */}
-      <div className="bg-card rounded-xl shadow-sm border p-8 animate-fade-in">
+      <div style={{
+        backgroundColor: 'rgba(255, 255, 255, 0.08)',
+        borderRadius: '1rem',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
+        border: '1px solid rgba(255, 255, 255, 0.15)',
+        padding: '2rem',
+        backdropFilter: 'blur(10px)'
+      }}>
         <div>
           {/* Header */}
-          <div className="mb-8">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="p-2 rounded-xl bg-primary">
-                <Zap className="h-6 w-6 text-primary-foreground" />
+          <div style={{ marginBottom: '2rem' }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.75rem',
+              marginBottom: '0.75rem'
+            }}>
+              <div style={{
+                padding: '0.5rem',
+                borderRadius: '0.75rem',
+                background: 'linear-gradient(45deg, #3B82F6, #06B6D4)'
+              }}>
+                <Zap style={{ height: '1.5rem', width: '1.5rem', color: 'white' }} />
               </div>
               <div>
-                <h2 className="text-2xl font-bold text-card-foreground">
+                <h2 style={{
+                  fontSize: '1.5rem',
+                  fontWeight: '700',
+                  color: '#f9fafb',
+                  margin: 0
+                }}>
                   Express Your Intent
                 </h2>
-                <p className="text-muted-foreground">
+                <p style={{
+                  color: '#d1d5db',
+                  margin: 0,
+                  fontSize: '0.875rem'
+                }}>
                   Tell us what you want, we'll figure out how to make it happen
                 </p>
               </div>
             </div>
             
             {/* Wallet Status Indicator */}
-            <div className="mt-4">
+            <div style={{ marginTop: '1rem' }}>
               <WalletStatusIndicator />
             </div>
           </div>
         
           {/* Token Selection Section */}
-          <div className="space-y-8">
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '2rem'
+          }}>
             {/* From Token Section */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-2">
-                <div className="w-1 h-6 bg-primary rounded-full"></div>
-                <label className="text-base font-semibold text-card-foreground">
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '1rem'
+            }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem'
+              }}>
+                <div style={{
+                  width: '0.25rem',
+                  height: '1.5rem',
+                  background: 'linear-gradient(45deg, #3B82F6, #06B6D4)',
+                  borderRadius: '0.125rem'
+                }}></div>
+                <label style={{
+                  fontSize: '1rem',
+                  fontWeight: '600',
+                  color: '#f9fafb'
+                }}>
                   From
                 </label>
               </div>
-              <div className="space-y-4 p-6 rounded-xl bg-muted border">
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '1rem',
+                padding: '1.5rem',
+                borderRadius: '0.75rem',
+                backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid rgba(255, 255, 255, 0.1)'
+              }}>
                 <TokenSelector
                   value={fromToken}
                   onChange={setFromToken}
@@ -226,25 +286,77 @@ export function IntentForm({ onSubmit, className }: IntentFormProps) {
             </div>
 
             {/* Swap Button */}
-            <div className="flex justify-center">
+            <div style={{
+              display: 'flex',
+              justifyContent: 'center'
+            }}>
               <button
                 onClick={handleSwapTokens}
                 disabled={!fromToken || !toToken}
-                className="group p-4 rounded-xl bg-primary text-primary-foreground shadow-sm hover:shadow-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                style={{
+                  padding: '1rem',
+                  borderRadius: '0.75rem',
+                  background: 'linear-gradient(45deg, #3B82F6, #06B6D4)',
+                  color: 'white',
+                  border: 'none',
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                  cursor: fromToken && toToken ? 'pointer' : 'not-allowed',
+                  opacity: fromToken && toToken ? 1 : 0.5,
+                  transition: 'all 0.2s'
+                }}
+                onMouseEnter={(e) => {
+                  if (fromToken && toToken) {
+                    e.currentTarget.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.2)';
+                    e.currentTarget.style.transform = 'translateY(-1px)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }}
               >
-                <ArrowDownUp className="h-5 w-5 transition-transform duration-300 group-hover:rotate-180" />
+                <ArrowDownUp style={{ 
+                  height: '1.25rem', 
+                  width: '1.25rem',
+                  transition: 'transform 0.3s'
+                }} />
               </button>
             </div>
 
             {/* To Token Section */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-2">
-                <div className="w-1 h-6 bg-primary rounded-full"></div>
-                <label className="text-base font-semibold text-card-foreground">
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '1rem'
+            }}>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem'
+              }}>
+                <div style={{
+                  width: '0.25rem',
+                  height: '1.5rem',
+                  background: 'linear-gradient(45deg, #3B82F6, #06B6D4)',
+                  borderRadius: '0.125rem'
+                }}></div>
+                <label style={{
+                  fontSize: '1rem',
+                  fontWeight: '600',
+                  color: '#f9fafb'
+                }}>
                   To
                 </label>
               </div>
-              <div className="space-y-4 p-6 rounded-xl bg-muted border">
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '1rem',
+                padding: '1.5rem',
+                borderRadius: '0.75rem',
+                backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid rgba(255, 255, 255, 0.1)'
+              }}>
                 <TokenSelector
                   value={toToken}
                   onChange={setToToken}
@@ -304,30 +416,51 @@ export function IntentForm({ onSubmit, className }: IntentFormProps) {
           )}
 
           {/* Priority Selection */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <div className="w-1 h-6 bg-primary rounded-full"></div>
-              <h3 className="text-base font-semibold text-card-foreground">
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '1rem'
+          }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem'
+            }}>
+              <div style={{
+                width: '0.25rem',
+                height: '1.5rem',
+                background: 'linear-gradient(45deg, #3B82F6, #06B6D4)',
+                borderRadius: '0.125rem'
+              }}></div>
+              <h3 style={{
+                fontSize: '1rem',
+                fontWeight: '600',
+                color: '#f9fafb'
+              }}>
                 Execution Priority
               </h3>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(3, 1fr)',
+              gap: '1rem'
+            }}>
               <QuickIntentButton
-                icon={<DollarSign className="h-5 w-5" />}
+                icon={<DollarSign style={{ height: '1.25rem', width: '1.25rem' }} />}
                 label="Best Price"
                 description="Maximize output amount"
                 onClick={() => updateIntent({ prioritize: 'cost' })}
                 active={currentIntent?.prioritize === 'cost'}
               />
               <QuickIntentButton
-                icon={<Zap className="h-5 w-5" />}
+                icon={<Zap style={{ height: '1.25rem', width: '1.25rem' }} />}
                 label="Fastest"
                 description="Minimize execution time"
                 onClick={() => updateIntent({ prioritize: 'speed' })}
                 active={currentIntent?.prioritize === 'speed'}
               />
               <QuickIntentButton
-                icon={<Shield className="h-5 w-5" />}
+                icon={<Shield style={{ height: '1.25rem', width: '1.25rem' }} />}
                 label="Most Secure"
                 description="TEE verified solvers"
                 onClick={() => updateIntent({ prioritize: 'security' })}
@@ -337,22 +470,88 @@ export function IntentForm({ onSubmit, className }: IntentFormProps) {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex gap-4 pt-4">
+          <div style={{
+            display: 'flex',
+            gap: '1rem',
+            paddingTop: '1rem'
+          }}>
             <button
               onClick={() => setShowPreview(!showPreview)}
               disabled={!canPreview}
-              className="flex-1 px-6 py-4 rounded-xl border bg-secondary text-secondary-foreground font-medium hover:border-primary hover:bg-secondary/80 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              style={{
+                flex: 1,
+                padding: '1rem 1.5rem',
+                borderRadius: '0.75rem',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                color: '#f9fafb',
+                fontWeight: '500',
+                cursor: canPreview ? 'pointer' : 'not-allowed',
+                opacity: canPreview ? 1 : 0.5,
+                transition: 'all 0.2s',
+                backdropFilter: 'blur(10px)'
+              }}
+              onMouseEnter={(e) => {
+                if (canPreview) {
+                  e.currentTarget.style.borderColor = 'rgba(59, 130, 246, 0.5)';
+                  e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (canPreview) {
+                  e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                  e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+                }
+              }}
             >
               {showPreview ? 'Hide Preview' : 'Preview Intent'}
             </button>
             <button
               onClick={handleSubmit}
               disabled={!canSubmit || isSubmitting}
-              className="flex-1 px-6 py-4 rounded-xl bg-primary text-primary-foreground font-semibold hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              style={{
+                flex: 1,
+                padding: '1rem 1.5rem',
+                borderRadius: '0.75rem',
+                background: canSubmit && !isSubmitting 
+                  ? 'linear-gradient(45deg, #3B82F6, #06B6D4)' 
+                  : 'rgba(107, 114, 128, 0.5)',
+                color: 'white',
+                border: 'none',
+                fontWeight: '600',
+                cursor: canSubmit && !isSubmitting ? 'pointer' : 'not-allowed',
+                opacity: canSubmit && !isSubmitting ? 1 : 0.5,
+                transition: 'all 0.2s',
+                boxShadow: canSubmit && !isSubmitting ? '0 4px 6px -1px rgba(0, 0, 0, 0.1)' : 'none'
+              }}
+              onMouseEnter={(e) => {
+                if (canSubmit && !isSubmitting) {
+                  e.currentTarget.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.2)';
+                  e.currentTarget.style.transform = 'translateY(-1px)';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (canSubmit && !isSubmitting) {
+                  e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }
+              }}
             >
               {isSubmitting ? (
-                <div className="flex items-center justify-center gap-2">
-                  <div className="animate-spin rounded-full h-5 w-5 border-2 border-current border-t-transparent" />
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.5rem'
+                }}>
+                  <div style={{
+                    width: '1.25rem',
+                    height: '1.25rem',
+                    border: '2px solid currentColor',
+                    borderTop: '2px solid transparent',
+                    borderRadius: '50%',
+                    animation: 'spin 1s linear infinite'
+                  }} />
                   Submitting...
                 </div>
               ) : !isConnected ? (
@@ -400,35 +599,77 @@ function QuickIntentButton({
   return (
     <button
       onClick={onClick}
-      className={cn(
-        "p-5 rounded-xl border text-left transition-all duration-200",
-        active 
-          ? "border-primary bg-primary/5 shadow-sm" 
-          : "border-border bg-card hover:border-primary/50 hover:bg-muted/50"
-      )}
+      style={{
+        position: 'relative',
+        padding: '1.25rem',
+        borderRadius: '0.75rem',
+        border: active 
+          ? '1px solid rgba(59, 130, 246, 0.5)' 
+          : '1px solid rgba(255, 255, 255, 0.15)',
+        backgroundColor: active 
+          ? 'rgba(59, 130, 246, 0.1)' 
+          : 'rgba(255, 255, 255, 0.05)',
+        textAlign: 'left',
+        cursor: 'pointer',
+        transition: 'all 0.2s',
+        backdropFilter: 'blur(10px)',
+        boxShadow: active ? '0 4px 6px -1px rgba(59, 130, 246, 0.2)' : 'none'
+      }}
+      onMouseEnter={(e) => {
+        if (!active) {
+          e.currentTarget.style.borderColor = 'rgba(59, 130, 246, 0.3)';
+          e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
+        }
+      }}
+      onMouseLeave={(e) => {
+        if (!active) {
+          e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+          e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+        }
+      }}
     >
       {/* Active indicator */}
       {active && (
-        <div className="absolute top-3 right-3 w-2 h-2 bg-primary rounded-full" />
+        <div style={{
+          position: 'absolute',
+          top: '0.75rem',
+          right: '0.75rem',
+          width: '0.5rem',
+          height: '0.5rem',
+          backgroundColor: '#3B82F6',
+          borderRadius: '50%'
+        }} />
       )}
       
-      <div className="flex items-center gap-3 mb-2">
-        <div className={cn(
-          "p-2 rounded-xl transition-all duration-200",
-          active 
-            ? "bg-primary text-primary-foreground" 
-            : "bg-muted text-muted-foreground"
-        )}>
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '0.75rem',
+        marginBottom: '0.5rem'
+      }}>
+        <div style={{
+          padding: '0.5rem',
+          borderRadius: '0.75rem',
+          backgroundColor: active 
+            ? 'rgba(59, 130, 246, 0.2)' 
+            : 'rgba(255, 255, 255, 0.1)',
+          color: active ? '#3B82F6' : '#9ca3af',
+          transition: 'all 0.2s'
+        }}>
           {icon}
         </div>
-        <span className={cn(
-          "font-semibold",
-          active ? "text-primary" : "text-card-foreground"
-        )}>
+        <span style={{
+          fontWeight: '600',
+          color: active ? '#3B82F6' : '#f9fafb'
+        }}>
           {label}
         </span>
       </div>
-      <p className="text-sm text-muted-foreground">
+      <p style={{
+        fontSize: '0.875rem',
+        color: '#9ca3af',
+        margin: 0
+      }}>
         {description}
       </p>
     </button>

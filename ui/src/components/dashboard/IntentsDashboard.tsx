@@ -79,13 +79,24 @@ const SimpleHeader = () => (
         gap: '0.75rem'
       }}>
         <button style={{
-          padding: '0.5rem',
-          borderRadius: '0.5rem',
-          backgroundColor: 'transparent',
-          border: 'none',
+          padding: '0.75rem',
+          borderRadius: '0.75rem',
+          backgroundColor: 'rgba(255, 255, 255, 0.05)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
           color: '#9CA3AF',
           cursor: 'pointer',
-          transition: 'all 0.2s'
+          transition: 'all 0.2s',
+          backdropFilter: 'blur(10px)'
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
+          e.currentTarget.style.borderColor = 'rgba(59, 130, 246, 0.3)';
+          e.currentTarget.style.color = '#3B82F6';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+          e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+          e.currentTarget.style.color = '#9CA3AF';
         }}>
           <Settings style={{ height: '1.25rem', width: '1.25rem' }} />
         </button>

@@ -218,89 +218,199 @@ export function TokenSelector({
   };
 
   return (
-    <div className={cn('relative', className)}>
-      <Button
-        variant="outline"
+    <div style={{ position: 'relative' }}>
+      <button
         onClick={() => setIsOpen(!isOpen)}
-        className={cn(
-          "w-full justify-between h-auto p-4",
-          !value && "text-muted-foreground"
-        )}
+        style={{
+          width: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '1rem',
+          backgroundColor: 'rgba(255, 255, 255, 0.05)',
+          border: '1px solid rgba(255, 255, 255, 0.15)',
+          borderRadius: '0.75rem',
+          color: value ? '#f9fafb' : '#9ca3af',
+          cursor: 'pointer',
+          transition: 'all 0.2s',
+          backdropFilter: 'blur(10px)'
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
+          e.currentTarget.style.borderColor = 'rgba(59, 130, 246, 0.3)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+          e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.15)';
+        }}
       >
         {value ? (
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2">
-              <div className="relative">
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.75rem',
+            flex: 1
+          }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.75rem'
+            }}>
+              <div style={{ position: 'relative' }}>
                 <TokenIcon token={value} size="sm" />
                 <ChainBadge chainId={value.chainId} />
               </div>
-              <div className="text-left">
-                <div className="font-medium">{value.symbol}</div>
-                <div className="text-xs text-muted-foreground">
-                  {CHAIN_INFO[value.chainId].name}
+              <div>
+                <div style={{
+                  fontWeight: '600',
+                  color: '#f9fafb',
+                  fontSize: '0.95rem'
+                }}>
+                  {value.symbol}
+                </div>
+                <div style={{
+                  fontSize: '0.75rem',
+                  color: '#9ca3af'
+                }}>
+                  {CHAIN_INFO[value.chainId].name} • ${value.priceUSD?.toFixed(2)}
                 </div>
               </div>
             </div>
-            <div
+            <button
               onClick={handleClear}
-              className="ml-auto p-1 hover:bg-destructive/10 hover:text-destructive rounded cursor-pointer"
+              style={{
+                padding: '0.25rem',
+                borderRadius: '0.25rem',
+                backgroundColor: 'transparent',
+                border: 'none',
+                color: '#ef4444',
+                cursor: 'pointer',
+                transition: 'all 0.2s'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'transparent';
+              }}
             >
-              <X className="h-3 w-3" />
-            </div>
+              <X style={{ height: '0.875rem', width: '0.875rem' }} />
+            </button>
           </div>
         ) : (
-          <span>{label || 'Select token'}</span>
+          <span style={{ fontSize: '0.95rem' }}>{label || 'Select token'}</span>
         )}
-        <ChevronDown className={cn(
-          "h-4 w-4 transition-transform",
-          isOpen && "transform rotate-180"
-        )} />
-      </Button>
+        <ChevronDown style={{
+          height: '1rem',
+          width: '1rem',
+          transition: 'transform 0.2s',
+          transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+          marginLeft: '0.5rem'
+        }} />
+      </button>
 
       {isOpen && (
         <>
           {/* Backdrop */}
           <div
-            className="fixed inset-0 z-40"
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              zIndex: 40
+            }}
             onClick={() => setIsOpen(false)}
           />
           
           {/* Dropdown */}
-          <Card className="absolute top-full mt-2 w-full z-50 shadow-lg">
-            <CardContent className="p-0">
-              {/* Search */}
-              <div className="p-3 border-b">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <input
-                    type="text"
-                    placeholder="Search tokens or chains..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-3 py-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-near-500"
-                  />
-                </div>
+          <div style={{
+            position: 'absolute',
+            top: '100%',
+            left: 0,
+            width: '100%',
+            marginTop: '0.5rem',
+            zIndex: 50,
+            backgroundColor: 'rgba(30, 41, 59, 0.95)',
+            border: '1px solid rgba(148, 163, 184, 0.2)',
+            borderRadius: '0.75rem',
+            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3)',
+            backdropFilter: 'blur(20px)',
+            overflow: 'hidden'
+          }}>
+            {/* Search */}
+            <div style={{
+              padding: '1rem',
+              borderBottom: '1px solid rgba(148, 163, 184, 0.2)'
+            }}>
+              <div style={{ position: 'relative' }}>
+                <Search style={{
+                  position: 'absolute',
+                  left: '0.75rem',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  height: '1rem',
+                  width: '1rem',
+                  color: '#9ca3af'
+                }} />
+                <input
+                  type="text"
+                  placeholder="Search tokens or chains..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  style={{
+                    width: '100%',
+                    paddingLeft: '2.5rem',
+                    paddingRight: '0.75rem',
+                    paddingTop: '0.5rem',
+                    paddingBottom: '0.5rem',
+                    fontSize: '0.875rem',
+                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    borderRadius: '0.5rem',
+                    color: '#f9fafb',
+                    outline: 'none',
+                    transition: 'all 0.2s'
+                  }}
+                  onFocus={(e) => {
+                    e.currentTarget.style.borderColor = 'rgba(59, 130, 246, 0.5)';
+                    e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                    e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+                  }}
+                />
               </div>
+            </div>
 
-              {/* Token List */}
-              <div className="max-h-64 overflow-y-auto">
-                {filteredTokens.length === 0 ? (
-                  <div className="p-4 text-center text-sm text-muted-foreground">
-                    No tokens found
-                  </div>
-                ) : (
-                  filteredTokens.map((token) => (
-                    <TokenOption
-                      key={`${token.chainId}-${token.address}`}
-                      token={token}
-                      onClick={() => handleTokenSelect(token)}
-                      isSelected={value?.address === token.address && value?.chainId === token.chainId}
-                    />
-                  ))
-                )}
-              </div>
-            </CardContent>
-          </Card>
+            {/* Token List */}
+            <div style={{
+              maxHeight: '16rem',
+              overflowY: 'auto'
+            }}>
+              {filteredTokens.length === 0 ? (
+                <div style={{
+                  padding: '1rem',
+                  textAlign: 'center',
+                  fontSize: '0.875rem',
+                  color: '#9ca3af'
+                }}>
+                  No tokens found
+                </div>
+              ) : (
+                filteredTokens.map((token) => (
+                  <TokenOption
+                    key={`${token.chainId}-${token.address}`}
+                    token={token}
+                    onClick={() => handleTokenSelect(token)}
+                    isSelected={value?.address === token.address && value?.chainId === token.chainId}
+                  />
+                ))
+              )}
+            </div>
+          </div>
         </>
       )}
     </div>
@@ -317,25 +427,86 @@ function TokenOption({ token, onClick, isSelected }: TokenOptionProps) {
   return (
     <button
       onClick={onClick}
-      className={cn(
-        "w-full p-3 flex items-center gap-3 hover:bg-accent transition-colors text-left",
-        isSelected && "bg-accent"
-      )}
+      style={{
+        width: '100%',
+        padding: '0.75rem',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '0.75rem',
+        backgroundColor: isSelected ? 'rgba(59, 130, 246, 0.1)' : 'transparent',
+        border: 'none',
+        cursor: 'pointer',
+        transition: 'all 0.2s',
+        textAlign: 'left',
+        borderRadius: '0.5rem',
+        margin: '0.25rem'
+      }}
+      onMouseEnter={(e) => {
+        if (!isSelected) {
+          e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+        }
+      }}
+      onMouseLeave={(e) => {
+        if (!isSelected) {
+          e.currentTarget.style.backgroundColor = 'transparent';
+        }
+      }}
     >
-      <div className="relative">
+      <div style={{ position: 'relative' }}>
         <TokenIcon token={token} size="md" />
         <ChainBadge chainId={token.chainId} />
       </div>
       
-      <div className="flex-1">
-        <div className="flex items-center gap-2">
-          <span className="font-medium">{token.symbol}</span>
-          <span className="text-xs px-2 py-1 rounded-full bg-muted text-muted-foreground">
-            {CHAIN_INFO[token.chainId].name}
-          </span>
+      <div style={{ flex: 1 }}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          marginBottom: '0.25rem'
+        }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.5rem'
+          }}>
+            <span style={{
+              fontWeight: '600',
+              color: '#f9fafb',
+              fontSize: '0.95rem'
+            }}>
+              {token.symbol}
+            </span>
+            <span style={{
+              fontSize: '0.75rem',
+              padding: '0.25rem 0.5rem',
+              borderRadius: '0.5rem',
+              backgroundColor: 'rgba(255, 255, 255, 0.1)',
+              color: '#d1d5db'
+            }}>
+              {CHAIN_INFO[token.chainId].name}
+            </span>
+          </div>
+          {token.priceUSD && (
+            <span style={{
+              fontWeight: '600',
+              color: '#10b981',
+              fontSize: '0.875rem'
+            }}>
+              ${token.priceUSD.toLocaleString('en-US', { 
+                minimumFractionDigits: 2, 
+                maximumFractionDigits: token.priceUSD >= 1 ? 2 : 6 
+              })}
+            </span>
+          )}
         </div>
-        <div className="text-xs text-muted-foreground">
-          {token.priceUSD && formatUSDAmount(token.priceUSD)}
+        <div style={{
+          fontSize: '0.75rem',
+          color: '#9ca3af'
+        }}>
+          {token.address.length > 20 
+            ? `${token.address.slice(0, 8)}...${token.address.slice(-6)}`
+            : token.address
+          }
         </div>
       </div>
     </button>
@@ -348,18 +519,29 @@ interface TokenIconProps {
 }
 
 function TokenIcon({ token, size }: TokenIconProps) {
-  const sizeClasses = {
-    sm: 'h-6 w-6',
-    md: 'h-8 w-8',
-    lg: 'h-10 w-10',
+  const sizeMap = {
+    sm: { width: '1.5rem', height: '1.5rem', fontSize: '0.625rem' },
+    md: { width: '2rem', height: '2rem', fontSize: '0.75rem' },
+    lg: { width: '2.5rem', height: '2.5rem', fontSize: '0.875rem' },
   };
 
+  const sizeStyle = sizeMap[size];
+
   return (
-    <div className={cn(
-      "rounded-full bg-muted flex items-center justify-center font-medium text-xs",
-      sizeClasses[size]
-    )}>
-      {token.symbol.slice(0, 2)}
+    <div style={{
+      width: sizeStyle.width,
+      height: sizeStyle.height,
+      borderRadius: '50%',
+      background: 'linear-gradient(135deg, #3B82F6, #06B6D4)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontWeight: '600',
+      fontSize: sizeStyle.fontSize,
+      color: 'white',
+      border: '2px solid rgba(255, 255, 255, 0.2)'
+    }}>
+      {token.symbol.slice(0, 2).toUpperCase()}
     </div>
   );
 }
@@ -369,12 +551,29 @@ interface ChainBadgeProps {
 }
 
 function ChainBadge({ chainId }: ChainBadgeProps) {
-  const chain = CHAIN_INFO[chainId];
+  const chainColors = {
+    near: '#00D4AA',
+    ethereum: '#627EEA',
+    bitcoin: '#F7931A',
+    neutron: '#8B5CF6',
+    juno: '#EC4899',
+    cosmos: '#6366F1',
+    osmosis: '#9333EA',
+    stargaze: '#EF4444',
+    akash: '#10B981',
+  };
   
   return (
-    <div className={cn(
-      "absolute -bottom-1 -right-1 h-3 w-3 rounded-full border-2 border-background",
-      chain.color
-    )} />
+    <div style={{
+      position: 'absolute',
+      bottom: '-0.125rem',
+      right: '-0.125rem',
+      width: '0.75rem',
+      height: '0.75rem',
+      borderRadius: '50%',
+      backgroundColor: chainColors[chainId] || '#6B7280',
+      border: '2px solid rgba(30, 41, 59, 0.9)',
+      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.3)'
+    }} />
   );
 }

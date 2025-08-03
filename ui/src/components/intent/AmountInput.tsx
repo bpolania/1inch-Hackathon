@@ -63,64 +63,132 @@ export function AmountInput({
     : null;
 
   return (
-    <div className={cn('space-y-2', className)}>
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '0.5rem'
+    }}>
       {label && (
-        <label className="text-sm font-medium text-foreground">
+        <label style={{
+          fontSize: '0.875rem',
+          fontWeight: '500',
+          color: '#f9fafb'
+        }}>
           {label}
         </label>
       )}
       
-      <div className={cn(
-        "relative rounded-lg border transition-colors",
-        focused ? "border-near-500 ring-2 ring-near-200" : "border-border",
-        disabled && "opacity-50 cursor-not-allowed",
-        "bg-background"
-      )}>
-        <div className="p-4">
-          <div className="flex items-center gap-2">
-            <input
-              type="text"
-              value={value}
-              onChange={handleInputChange}
-              onFocus={() => setFocused(true)}
-              onBlur={() => setFocused(false)}
-              placeholder={placeholder}
-              disabled={disabled}
-              className={cn(
-                "flex-1 text-2xl font-medium bg-transparent border-none outline-none",
-                "placeholder:text-muted-foreground",
-                disabled && "cursor-not-allowed"
-              )}
-            />
+      <div style={{
+        position: 'relative',
+        borderRadius: '0.75rem',
+        border: focused ? '1px solid rgba(59, 130, 246, 0.5)' : '1px solid rgba(255, 255, 255, 0.15)',
+        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+        transition: 'all 0.2s',
+        opacity: disabled ? 0.5 : 1,
+        cursor: disabled ? 'not-allowed' : 'default',
+        backdropFilter: 'blur(10px)',
+        boxShadow: focused ? '0 0 0 3px rgba(59, 130, 246, 0.1)' : 'none'
+      }}>
+        <div style={{ padding: '1rem' }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'flex-end',
+            gap: '1rem'
+          }}>
+            {/* Input Section */}
+            <div style={{ flex: 1 }}>
+              <input
+                type="text"
+                value={value}
+                onChange={handleInputChange}
+                onFocus={() => setFocused(true)}
+                onBlur={() => setFocused(false)}
+                placeholder={placeholder}
+                disabled={disabled}
+                style={{
+                  width: '100%',
+                  fontSize: '1.5rem',
+                  fontWeight: '600',
+                  backgroundColor: 'transparent',
+                  border: 'none',
+                  outline: 'none',
+                  color: '#f9fafb',
+                  cursor: disabled ? 'not-allowed' : 'text'
+                }}
+              />
+            </div>
             
-            {/* Token Symbol */}
+            {/* Token Symbol and Max Button Section */}
             {token && (
-              <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                {token.symbol}
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'flex-end',
+                gap: '0.5rem'
+              }}>
+                {/* Token Symbol */}
+                <div style={{
+                  fontSize: '0.875rem',
+                  fontWeight: '500',
+                  color: '#d1d5db',
+                  padding: '0.25rem 0.5rem',
+                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                  borderRadius: '0.375rem'
+                }}>
+                  {token.symbol}
+                </div>
+                
+                {/* Max Button */}
+                {!disabled && parseFloat(balance) > 0 && (
+                  <button
+                    onClick={handleMaxClick}
+                    style={{
+                      height: '1.5rem',
+                      padding: '0 0.5rem',
+                      fontSize: '0.75rem',
+                      fontWeight: '600',
+                      backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                      color: '#3B82F6',
+                      border: '1px solid rgba(59, 130, 246, 0.3)',
+                      borderRadius: '0.375rem',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor = 'rgba(59, 130, 246, 0.3)';
+                      e.currentTarget.style.borderColor = 'rgba(59, 130, 246, 0.5)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = 'rgba(59, 130, 246, 0.2)';
+                      e.currentTarget.style.borderColor = 'rgba(59, 130, 246, 0.3)';
+                    }}
+                  >
+                    MAX
+                  </button>
+                )}
               </div>
-            )}
-            
-            {/* Max Button */}
-            {!disabled && parseFloat(balance) > 0 && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleMaxClick}
-                className="h-6 px-2 text-xs"
-              >
-                MAX
-              </Button>
             )}
           </div>
           
           {/* USD Value and Balance */}
-          <div className="flex items-center justify-between mt-2 text-xs text-muted-foreground">
-            <div>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginTop: '0.5rem',
+            fontSize: '0.75rem',
+            color: '#9ca3af'
+          }}>
+            <div style={{ fontWeight: '500' }}>
               {usdValue ? formatUSDAmount(usdValue) : '—'}
             </div>
             
             {token && (
-              <div className="flex items-center gap-1">
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.25rem'
+              }}>
                 Balance: {formatTokenAmount(balance)} {token.symbol}
               </div>
             )}
@@ -129,18 +197,43 @@ export function AmountInput({
         
         {/* Quick Percentage Buttons */}
         {!disabled && parseFloat(balance) > 0 && (
-          <div className="border-t p-2">
-            <div className="flex gap-1">
+          <div style={{
+            borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+            padding: '0.75rem'
+          }}>
+            <div style={{
+              display: 'flex',
+              gap: '0.5rem'
+            }}>
               {[25, 50, 75, 100].map((percentage) => (
-                <Button
+                <button
                   key={percentage}
-                  variant="ghost"
-                  size="sm"
                   onClick={() => handlePercentageClick(percentage)}
-                  className="flex-1 h-6 text-xs"
+                  style={{
+                    flex: 1,
+                    height: '2rem',
+                    fontSize: '0.75rem',
+                    fontWeight: '600',
+                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                    color: '#d1d5db',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    borderRadius: '0.5rem',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(59, 130, 246, 0.1)';
+                    e.currentTarget.style.borderColor = 'rgba(59, 130, 246, 0.3)';
+                    e.currentTarget.style.color = '#3B82F6';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+                    e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                    e.currentTarget.style.color = '#d1d5db';
+                  }}
                 >
                   {percentage}%
-                </Button>
+                </button>
               ))}
             </div>
           </div>
@@ -149,7 +242,11 @@ export function AmountInput({
       
       {/* Validation Message */}
       {value && parseFloat(value) > parseFloat(balance) && (
-        <div className="text-xs text-destructive">
+        <div style={{
+          fontSize: '0.75rem',
+          color: '#ef4444',
+          fontWeight: '500'
+        }}>
           Insufficient balance
         </div>
       )}

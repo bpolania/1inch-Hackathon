@@ -83,15 +83,35 @@ export function WalletButton({
   // Not connected state
   if (!isConnected || !accountId) {
     return (
-      <Button
-        variant={variant}
-        size={size}
+      <button
         onClick={handleConnect}
-        className={`${className}`}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '0.5rem',
+          padding: '0.75rem 1.5rem',
+          borderRadius: '0.75rem',
+          background: 'linear-gradient(45deg, #3B82F6, #06B6D4)',
+          color: 'white',
+          border: 'none',
+          fontWeight: '600',
+          cursor: 'pointer',
+          transition: 'all 0.2s',
+          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+          fontSize: '0.875rem'
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.2)';
+          e.currentTarget.style.transform = 'translateY(-1px)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+          e.currentTarget.style.transform = 'translateY(0)';
+        }}
       >
-        <Wallet className="h-4 w-4 mr-3" />
-        ..Connect Wallet
-      </Button>
+        <Wallet style={{ height: '1rem', width: '1rem' }} />
+        Connect Wallet
+      </button>
     )
   }
 
@@ -186,13 +206,15 @@ export function WalletButton({
 // Compact version for navigation/headers - 1inch style
 export function WalletButtonCompact({ className = '' }: { className?: string }) {
   return (
-    <WalletButton
-      variant="default"
-      size="default"
-      showBalance={false}
-      showNetwork={false}
-      className={cn("px-6 py-2 rounded-full bg-blue-500 hover:bg-blue-600 text-white font-medium transition-colors", className)}
-    />
+    <div style={{ position: 'relative' }}>
+      <WalletButton
+        variant="default"
+        size="default"
+        showBalance={false}
+        showNetwork={false}
+        className=""
+      />
+    </div>
   )
 }
 
