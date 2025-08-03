@@ -17,6 +17,7 @@ export interface ExecutableOrder {
     orderHash: string;
     order: any;
     executionParams?: any; // Bitcoin execution parameters (if destination is Bitcoin)
+    chainSpecificParams?: string; // Chain-specific execution parameters (JSON string)
     profitability: {
         estimatedProfit: bigint;
         gasEstimate: bigint;

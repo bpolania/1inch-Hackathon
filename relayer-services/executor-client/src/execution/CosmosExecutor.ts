@@ -182,9 +182,9 @@ export class CosmosExecutor extends EventEmitter {
             orderKeys: Object.keys(order),
             executableOrderKeys: Object.keys(executableOrder),
             orderChainSpecificParams: order.chainSpecificParams,
-            executableOrderChainSpecificParams: (executableOrder as any).chainSpecificParams,
+            executableOrderChainSpecificParams: executableOrder.chainSpecificParams,
             orderType: typeof order.chainSpecificParams,
-            executableOrderType: typeof (executableOrder as any).chainSpecificParams
+            executableOrderType: typeof executableOrder.chainSpecificParams
         });
 
         const result: CosmosExecutionResult = {
@@ -214,11 +214,11 @@ export class CosmosExecutor extends EventEmitter {
             const walletAddress = accounts[0].address;
 
             // Parse execution parameters from order - try both sources
-            const chainParams = (executableOrder as any).chainSpecificParams || order.chainSpecificParams || '';
+            const chainParams = executableOrder.chainSpecificParams || order.chainSpecificParams || '';
             logger.info('🔍 Using chainSpecificParams:', { 
                 chainParams, 
                 type: typeof chainParams,
-                fromExecutableOrder: !!(executableOrder as any).chainSpecificParams,
+                fromExecutableOrder: !!executableOrder.chainSpecificParams,
                 fromOrder: !!order.chainSpecificParams
             });
             const executionParams = this.parseExecutionParams(chainParams);
