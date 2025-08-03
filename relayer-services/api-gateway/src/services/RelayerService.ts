@@ -872,8 +872,22 @@ export class RelayerService extends EventEmitter {
           const executableOrder = {
             orderHash: fusionOrder.hashlock,
             order: fusionOrder.orderParams,
-            chainSpecificParams: JSON.stringify(cosmosParams)
+            chainSpecificParams: JSON.stringify(cosmosParams),
+            profitability: {
+              estimatedProfit: BigInt('50000000000000000'), // 0.05 ETH estimated profit
+              gasEstimate: BigInt('300000000000000'),      // Gas estimate  
+              safetyDeposit: BigInt('10000000000000000'),  // Safety deposit
+              isProfitable: true
+            },
+            priority: 1
           };
+          
+          logger.info('🔍 Created executableOrder:', {
+            orderHash: executableOrder.orderHash,
+            hasChainSpecificParams: !!executableOrder.chainSpecificParams,
+            chainSpecificParamsLength: executableOrder.chainSpecificParams?.length,
+            chainSpecificParamsPreview: executableOrder.chainSpecificParams?.substring(0, 100)
+          });
           
           // Execute directly via CosmosExecutor (skip Ethereum contract interaction)
           const cosmosResult = await this.crossChainExecutor.cosmosExecutor.executeOrder(executableOrder);
