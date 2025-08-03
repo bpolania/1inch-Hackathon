@@ -269,19 +269,6 @@ open http://localhost:3000
 npm test
 ```
 
-#### **UI Test Results**:
-```
-Test Suites: Multiple test suites with comprehensive coverage
-Tests: Comprehensive test coverage across all components
-
-✅ Wallet Store Tests: Comprehensive wallet integration
-✅ UI Component Tests: Complete component coverage
-✅ Service Integration Tests: OneInch, TEE, Relayer services
-✅ Backend Integration: All API Gateway connections working
-Overall: Production-ready with complete backend integration
-```
-
-
 ## Getting Started
 
 ### Prerequisites
@@ -329,33 +316,6 @@ npm test test/NearDestinationChain.test.js
 # Run registry tests  
 npm test test/CrossChainRegistry.test.js
 ```
-
-### Test Coverage
-
-**Comprehensive Test Suite across contracts and UI**
-
-#### Smart Contracts
-- **Ethereum Contracts**: Complete Hardhat test suite with multi-chain integration
-- **NEAR Contracts**: Full Rust test suite with integration tests
-- **Bitcoin Contracts**: HTLC implementation and cross-chain compatibility
-- **Cosmos Contracts**: CosmWasm contract testing with complete integration
-
-#### Key Test Categories
-- **CrossChainRegistry**: Chain management and validation
-- **NearDestinationChain**: NEAR-specific functionality
-- **BitcoinDestinationChain**: Bitcoin family blockchain support
-- **CosmosDestinationChain**: Cosmos ecosystem functionality
-- **1inch Integration**: Complete 1inch Fusion+ integration with multi-chain support
-- **ProductionEscrowFactory**: Production factory unit tests
-- **Production Integration**: Full local deployment testing
-- **EndToEnd Verification**: Integration tests for deployed contracts and complete atomic swaps
-
-**Complete coverage across all components**
-- **UI Tests**: Comprehensive frontend testing
-- **Contract Tests**: Ethereum, NEAR, Bitcoin, Cosmos
-- **Backend Tests**: API Gateway, executor services, TEE solver
-
-> 📋 **For detailed testing instructions, see [TESTING.md](./TESTING.md)**
 
 ### Verification System
 The project includes a comprehensive 8-point verification system that confirms complete atomic swap success:
@@ -579,29 +539,6 @@ address escrowAddress = escrowFactory.createDstEscrow(
     expiryTime
 );
 ```
-
-## Bounty Compliance
-
-This implementation satisfies **multiple ETHGlobal Unite bounty requirements**:
-
-### $32K NEAR Bounty Requirements Met
-- ✅ **True 1inch Extension**: Properly extends 1inch Fusion+ using official interfaces (`ITakerInteraction`, `IOneInchEscrowFactory`)
-- ✅ **NEAR Integration**: Complete bidirectional support (ETH ↔ NEAR) with live contracts on both chains
-- ✅ **Atomic Guarantees**: SHA-256 hashlock coordination ensures both chains succeed or both can refund
-- ✅ **Live Demonstration**: Real token transfers on Sepolia with verifiable transactions
-
-### $32K Bitcoin Bounty Requirements Met
-- ✅ **Preserve Hashlock/Timelock**: Real Bitcoin HTLC scripts with SHA-256 hashlock and CHECKLOCKTIMEVERIFY timelock
-- ✅ **Bidirectional Swaps**: Complete support for both Ethereum → Bitcoin and Bitcoin → Ethereum atomic swaps
-- ✅ **Bitcoin Family Support**: Compatible architecture for Bitcoin, Dogecoin, Litecoin, Bitcoin Cash
-- ✅ **Onchain Execution**: Real Bitcoin testnet transaction creation and broadcasting capability
-
-### What Makes This Special
-1. **Not a Fork**: This is a true extension that integrates with 1inch's existing infrastructure
-2. **Complete Flow**: Demonstrates actual token movement (wallet → escrow → settlement)
-3. **Multi-Chain Ready**: Both NEAR and Bitcoin implementations in a single project
-4. **Production Ready**: Comprehensive testing, proper error handling, and mainnet migration guide
-5. **Extensible**: Modular architecture allows adding any blockchain via `IDestinationChain`
 
 ## Security Considerations
 
