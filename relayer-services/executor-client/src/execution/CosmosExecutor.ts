@@ -467,14 +467,22 @@ export class CosmosExecutor extends EventEmitter {
     }
 
     private parseExecutionParams(chainSpecificParams: string): CosmosExecutionParams {
+        logger.info('🔍 CosmosExecutor receiving parameters:', {
+            chainSpecificParams,
+            type: typeof chainSpecificParams,
+            length: chainSpecificParams?.length || 0
+        });
+
         try {
             // Decode from hex if necessary
             let paramsStr = chainSpecificParams;
             if (chainSpecificParams.startsWith('0x')) {
                 paramsStr = Buffer.from(chainSpecificParams.slice(2), 'hex').toString('utf8');
+                logger.info('🔍 Decoded from hex:', { paramsStr });
             }
             
             const params = JSON.parse(paramsStr);
+            logger.info('🔍 Parsed parameters:', { params });
             return {
                 contractAddress: params.contractAddress || '',
                 amount: params.amount || '0',

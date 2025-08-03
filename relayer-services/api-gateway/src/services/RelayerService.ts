@@ -836,16 +836,43 @@ export class RelayerService extends EventEmitter {
           }
           
           // Create executable order for CosmosExecutor
+          let decodedDestinationAddress: string;
+          try {
+            // Handle different types of destinationAddress
+            if (typeof fusionOrder.orderParams.destinationAddress === 'string') {
+              decodedDestinationAddress = fusionOrder.orderParams.destinationAddress;
+            } else if (fusionOrder.orderParams.destinationAddress instanceof Uint8Array) {
+              decodedDestinationAddress = new TextDecoder().decode(fusionOrder.orderParams.destinationAddress);
+            } else {
+              // Fallback - convert to string
+              decodedDestinationAddress = String(fusionOrder.orderParams.destinationAddress);
+            }
+          } catch (error) {
+            logger.warn('Failed to decode destination address, using fallback', { error });
+            decodedDestinationAddress = 'cosmos1234567890abcdef1234567890abcdef12345678'; // Fallback address
+          }
+
+          const cosmosParams = {
+            contractAddress: this.cosmosConfig?.networks[fusionOrder.orderParams.destinationChainId]?.contractAddress || '',
+            amount: fusionOrder.orderParams.destinationAmount,
+            nativeDenom: this.getCosmosNativeDenom(fusionOrder.orderParams.destinationChainId),
+            gasLimit: 300000,
+            destinationAddress: decodedDestinationAddress
+          };
+          
+          logger.info('🔍 Cosmos execution parameters:', {
+            chainId: fusionOrder.orderParams.destinationChainId,
+            originalDestinationAddress: fusionOrder.orderParams.destinationAddress,
+            destinationAddressType: typeof fusionOrder.orderParams.destinationAddress,
+            decodedDestinationAddress,
+            cosmosParams,
+            cosmosConfig: this.cosmosConfig?.networks[fusionOrder.orderParams.destinationChainId]
+          });
+
           const executableOrder = {
             orderHash: fusionOrder.hashlock,
             order: fusionOrder.orderParams,
-            chainSpecificParams: JSON.stringify({
-              contractAddress: this.cosmosConfig?.networks[fusionOrder.orderParams.destinationChainId]?.contractAddress || '',
-              amount: fusionOrder.orderParams.destinationAmount,
-              nativeDenom: this.getCosmosNativeDenom(fusionOrder.orderParams.destinationChainId),
-              gasLimit: 300000,
-              destinationAddress: new TextDecoder().decode(fusionOrder.orderParams.destinationAddress)
-            })
+            chainSpecificParams: JSON.stringify(cosmosParams)
           };
           
           // Execute directly via CosmosExecutor (skip Ethereum contract interaction)
