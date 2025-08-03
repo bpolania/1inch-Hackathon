@@ -10,7 +10,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { useWalletStore } from '@/stores/walletStore'
 import { Wallet, LogOut, RefreshCw, AlertCircle } from 'lucide-react'
-import { formatTokenAmount } from '@/utils/utils'
+import { formatTokenAmount, cn } from '@/utils/utils'
 
 interface WalletButtonProps {
   variant?: 'default' | 'outline' | 'ghost'
@@ -89,8 +89,8 @@ export function WalletButton({
         onClick={handleConnect}
         className={`${className}`}
       >
-        <Wallet className="h-4 w-4 mr-2" />
-        Connect Wallet
+        <Wallet className="h-4 w-4 mr-3" />
+        ..Connect Wallet
       </Button>
     )
   }
@@ -183,15 +183,15 @@ export function WalletButton({
   )
 }
 
-// Compact version for navigation/headers
+// Compact version for navigation/headers - 1inch style
 export function WalletButtonCompact({ className = '' }: { className?: string }) {
   return (
     <WalletButton
-      variant="outline"
-      size="sm"
+      variant="default"
+      size="default"
       showBalance={false}
       showNetwork={false}
-      className={className}
+      className={cn("px-6 py-2 rounded-full bg-blue-500 hover:bg-blue-600 text-white font-medium transition-colors", className)}
     />
   )
 }

@@ -117,6 +117,160 @@
     font-feature-settings: "rlig" 1, "calt" 1;
   }
   
+  /* Reset button styles to ensure our components work */
+  button {
+    @apply border-0 bg-transparent p-0 m-0;
+    font: inherit;
+    cursor: pointer;
+    outline: inherit;
+  }
+
+  /* Hybrid CSS-Tailwind Button Fallbacks */
+  .btn-base {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+    cursor: pointer;
+    border: 1px solid transparent;
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+  }
+
+  .btn-base:focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+
+  .btn-base:disabled {
+    pointer-events: none;
+    opacity: 0.5;
+  }
+
+  /* Size variants */
+  .btn-size-default {
+    height: 2.5rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .btn-size-sm {
+    height: 2.25rem;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  .btn-size-lg {
+    height: 2.75rem;
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+
+  .btn-size-icon {
+    height: 2.5rem;
+    width: 2.5rem;
+  }
+
+  /* Color variants */
+  .btn-variant-default {
+    background-color: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+  }
+
+  .btn-variant-default:hover {
+    background-color: hsl(var(--primary) / 0.9);
+  }
+
+  .btn-variant-destructive {
+    background-color: hsl(var(--destructive));
+    color: hsl(var(--destructive-foreground));
+  }
+
+  .btn-variant-destructive:hover {
+    background-color: hsl(var(--destructive) / 0.9);
+  }
+
+  .btn-variant-outline {
+    border: 1px solid hsl(var(--border));
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+  }
+
+  .btn-variant-outline:hover {
+    background-color: hsl(var(--accent));
+    color: hsl(var(--accent-foreground));
+  }
+
+  .btn-variant-secondary {
+    background-color: hsl(var(--secondary));
+    color: hsl(var(--secondary-foreground));
+  }
+
+  .btn-variant-secondary:hover {
+    background-color: hsl(var(--secondary) / 0.8);
+  }
+
+  .btn-variant-ghost:hover {
+    background-color: hsl(var(--accent));
+    color: hsl(var(--accent-foreground));
+  }
+
+  .btn-variant-link {
+    color: hsl(var(--primary));
+    text-underline-offset: 4px;
+  }
+
+  .btn-variant-link:hover {
+    text-decoration: underline;
+  }
+
+  /* Brand-specific variants */
+  .btn-variant-near {
+    background-color: hsl(183 100% 56%);
+    color: white;
+  }
+
+  .btn-variant-near:hover {
+    background-color: hsl(183 100% 47%);
+  }
+
+  .btn-variant-bitcoin {
+    background-color: hsl(35 100% 56%);
+    color: white;
+  }
+
+  .btn-variant-bitcoin:hover {
+    background-color: hsl(35 100% 47%);
+  }
+
+  .btn-variant-tee {
+    background-color: hsl(142 76% 36%);
+    color: white;
+    animation: solver-pulse 2s infinite;
+  }
+
+  .btn-variant-tee:hover {
+    background-color: hsl(142 76% 30%);
+  }
+
+  /* Animation */
+  @keyframes solver-pulse {
+    0%, 100% { 
+      box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); 
+    }
+    50% { 
+      box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); 
+    }
+  }
+  
   /* Improved scrollbar styling */
   ::-webkit-scrollbar {
     width: 6px;
