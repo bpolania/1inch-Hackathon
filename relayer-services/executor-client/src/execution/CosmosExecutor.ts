@@ -171,6 +171,13 @@ export class CosmosExecutor extends EventEmitter {
     }
 
     async executeOrder(executableOrder: ExecutableOrder): Promise<CosmosExecutionResult> {
+        logger.info('🔍 CosmosExecutor.executeOrder called with:', {
+            type: typeof executableOrder,
+            keys: Object.keys(executableOrder || {}),
+            orderHash: executableOrder?.orderHash,
+            hasChainSpecificParams: !!executableOrder?.chainSpecificParams
+        });
+
         const startTime = Date.now();
         const orderHash = executableOrder.orderHash;
         const order = executableOrder.order;
