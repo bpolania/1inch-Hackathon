@@ -477,7 +477,6 @@ npm run test:sepolia
 │   ├── marketplace-api/                # Marketplace service
 │   └── tee-solver/                     # TEE solver service with NEAR Shade Agent
 ├── shared/                             # Shared libraries
-├── bitcoin-scripts/                    # Bitcoin utilities
 ├── docs/                               # Documentation
 │   ├── architecture/                   # Architecture documentation
 │   └── research/                       # Research and analysis

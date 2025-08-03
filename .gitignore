@@ -49,7 +49,6 @@ contracts/near/out/
 contracts/near/*.wasm
 
 # Bitcoin
-bitcoin-scripts/lib/
 
 # Testing
 coverage/
