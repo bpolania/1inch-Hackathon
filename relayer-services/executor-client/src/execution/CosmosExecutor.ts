@@ -176,6 +176,16 @@ export class CosmosExecutor extends EventEmitter {
         const order = executableOrder.order;
 
         logger.info(`🌌 Executing Cosmos order ${orderHash} on chain ${order.destinationChainId}`);
+        
+        logger.info('🔍 ExecutableOrder structure:', {
+            orderHash,
+            orderKeys: Object.keys(order),
+            executableOrderKeys: Object.keys(executableOrder),
+            orderChainSpecificParams: order.chainSpecificParams,
+            executableOrderChainSpecificParams: (executableOrder as any).chainSpecificParams,
+            orderType: typeof order.chainSpecificParams,
+            executableOrderType: typeof (executableOrder as any).chainSpecificParams
+        });
 
         const result: CosmosExecutionResult = {
             success: false,
@@ -203,8 +213,15 @@ export class CosmosExecutor extends EventEmitter {
             const accounts = await this.wallet!.getAccounts();
             const walletAddress = accounts[0].address;
 
-            // Parse execution parameters from order
-            const executionParams = this.parseExecutionParams(order.chainSpecificParams);
+            // Parse execution parameters from order - try both sources
+            const chainParams = (executableOrder as any).chainSpecificParams || order.chainSpecificParams || '';
+            logger.info('🔍 Using chainSpecificParams:', { 
+                chainParams, 
+                type: typeof chainParams,
+                fromExecutableOrder: !!(executableOrder as any).chainSpecificParams,
+                fromOrder: !!order.chainSpecificParams
+            });
+            const executionParams = this.parseExecutionParams(chainParams);
             const contractAddress = executionParams.contractAddress || networkConfig.contractAddress;
 
             // Handle Cosmos Hub (no CosmWasm support) differently
