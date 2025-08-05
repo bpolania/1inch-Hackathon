@@ -7,6 +7,7 @@
 
 import { EventEmitter } from 'events';
 import { logger } from '../utils/logger';
+import { NearSolverRegistry, SolverRegistryConfig, RegistrationParams } from '../registry/NearSolverRegistry';
 
 export interface TEEConfig {
   teeMode: boolean;
@@ -16,6 +17,10 @@ export interface TEEConfig {
   nearNetwork: 'testnet' | 'mainnet';
   nearAccountId: string;
   nearSecretKey: string;
+  // Official NEAR registry configuration
+  registryContractId: string;
+  intentsContractId: string;
+  targetPoolId?: number;
 }
 
 export interface AttestationData {
@@ -39,6 +44,7 @@ export class ShadeAgentManager extends EventEmitter {
   private attestationData?: AttestationData;
   private teeKeyPairs: Map<string, TEEKeyPair> = new Map();
   private registrationStatus: 'pending' | 'registered' | 'failed' = 'pending';
+  private nearRegistry: NearSolverRegistry;
 
   // TEE Statistics
   private stats = {
@@ -52,6 +58,18 @@ export class ShadeAgentManager extends EventEmitter {
   constructor(config: TEEConfig) {
     super();
     this.config = config;
+    
+    // Initialize official NEAR registry
+    const registryConfig: SolverRegistryConfig = {
+      nearNetwork: config.nearNetwork,
+      nearAccountId: config.nearAccountId,
+      nearSecretKey: config.nearSecretKey,
+      registryContractId: config.registryContractId,
+      intentsContractId: config.intentsContractId,
+      approvedCodehash: config.expectedCodeHash
+    };
+    
+    this.nearRegistry = new NearSolverRegistry(registryConfig);
     this.setupEventHandlers();
   }
 
@@ -67,13 +85,19 @@ export class ShadeAgentManager extends EventEmitter {
 
     try {
       if (this.config.teeMode) {
+        // Initialize official NEAR registry first
+        await this.nearRegistry.initialize();
+        
         // Initialize TEE environment
         await this.initializeTEE();
         
         // Perform remote attestation
         await this.performRemoteAttestation();
         
-        // Register with Shade Agent contract
+        // Register with official NEAR solver registry
+        await this.registerWithNearRegistry();
+        
+        // Also register with Shade Agent contract (for compatibility)
         await this.registerWithShadeAgent();
       } else {
         logger.warn('⚠️ TEE mode disabled - running without Shade Agent integration');
@@ -164,6 +188,46 @@ export class ShadeAgentManager extends EventEmitter {
     } catch (error) {
       logger.error('💥 Remote attestation failed:', error);
       this.emit('attestation_failed', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Register with official NEAR solver registry
+   */
+  private async registerWithNearRegistry(): Promise<void> {
+    if (!this.attestationData) {
+      throw new Error('Attestation data required for NEAR registry registration');
+    }
+
+    logger.info('📝 Registering with official NEAR solver registry...', {
+      registry: this.config.registryContractId,
+      poolId: this.config.targetPoolId || 1
+    });
+
+    try {
+      // Check if pools are available
+      const pools = await this.nearRegistry.getAvailablePools();
+      const targetPoolId = this.config.targetPoolId || (pools.length > 0 ? pools[0].id : 1);
+
+      // Generate attestation parameters
+      const attestationParams = await this.nearRegistry.generateAttestationParams(targetPoolId);
+
+      // Register with official registry
+      const success = await this.nearRegistry.registerSolver(attestationParams);
+
+      if (success) {
+        this.registrationStatus = 'registered';
+        logger.info('✅ Successfully registered with official NEAR solver registry');
+        this.emit('near_registry_registered', { poolId: targetPoolId });
+      } else {
+        throw new Error('Registration returned false');
+      }
+
+    } catch (error) {
+      this.registrationStatus = 'failed';
+      logger.error('💥 NEAR registry registration failed:', error);
+      this.emit('near_registry_failed', error);
       throw error;
     }
   }
