@@ -33,7 +33,7 @@ const baseLogger = winston.createLogger({
 // Extend logger with custom quote method
 export const logger = Object.assign(baseLogger, {
     quote: (message: string, meta?: any) => {
-        baseLogger.info(`💰 QUOTE: ${message}`, meta);
+        baseLogger.info(` QUOTE: ${message}`, meta);
     }
 });
 

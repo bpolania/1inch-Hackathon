@@ -26,15 +26,15 @@ async function generateBitcoinHTLC(options = {}) {
         hashlock = null              // Use existing hashlock or generate from secret
     } = options;
 
-    console.log('₿ Generate Bitcoin HTLC');
+    console.log(' Generate Bitcoin HTLC');
     console.log('=======================\n');
     
     try {
         // Setup network
         const btcNetwork = network === 'mainnet' ? bitcoin.networks.bitcoin : bitcoin.networks.testnet;
-        console.log(`🌐 Network: Bitcoin ${network}`);
-        console.log(`💰 Amount: ${amount} satoshis`);
-        console.log(`⏰ Timelock: ${timelock} blocks\n`);
+        console.log(` Network: Bitcoin ${network}`);
+        console.log(` Amount: ${amount} satoshis`);
+        console.log(` Timelock: ${timelock} blocks\n`);
         
         // Generate or use existing secret/hashlock
         let secretBuffer, hashlockHex;
@@ -42,15 +42,15 @@ async function generateBitcoinHTLC(options = {}) {
         if (secret && hashlock) {
             secretBuffer = Buffer.from(secret, 'hex');
             hashlockHex = hashlock;
-            console.log('🔐 Using provided secret/hashlock');
+            console.log(' Using provided secret/hashlock');
         } else if (secret) {
             secretBuffer = Buffer.from(secret, 'hex');
             hashlockHex = require('ethers').keccak256(secretBuffer);
-            console.log('🔐 Using provided secret, computed hashlock');
+            console.log(' Using provided secret, computed hashlock');
         } else {
             secretBuffer = crypto.randomBytes(32);
             hashlockHex = require('ethers').keccak256(secretBuffer);
-            console.log('🔐 Generated new secret/hashlock');
+            console.log(' Generated new secret/hashlock');
         }
         
         console.log(`   Secret: 0x${secretBuffer.toString('hex')}`);
@@ -62,7 +62,7 @@ async function generateBitcoinHTLC(options = {}) {
         
         if (fs.existsSync(walletFile)) {
             walletData = JSON.parse(fs.readFileSync(walletFile, 'utf8'));
-            console.log('✅ Loaded existing Bitcoin wallet');
+            console.log(' Loaded existing Bitcoin wallet');
         } else {
             // Generate new wallet
             const keyPair = ECPair.makeRandom({ network: btcNetwork });
@@ -80,7 +80,7 @@ async function generateBitcoinHTLC(options = {}) {
             };
             
             fs.writeFileSync(walletFile, JSON.stringify(walletData, null, 2));
-            console.log('✅ Generated new Bitcoin wallet');
+            console.log(' Generated new Bitcoin wallet');
         }
         
         console.log(`   Address: ${walletData.addresses.p2wpkh}\n`);
@@ -91,7 +91,7 @@ async function generateBitcoinHTLC(options = {}) {
         const refundKeyPair = keyPair;    // Refund (can claim after timelock)
         
         // Create HTLC script
-        console.log('🔨 Creating HTLC script...');
+        console.log(' Creating HTLC script...');
         
         // HTLC Script: 
         // OP_IF
@@ -126,8 +126,8 @@ async function generateBitcoinHTLC(options = {}) {
         });
         
         const htlcAddress = p2sh.address;
-        console.log(`✅ HTLC script created (${htlcScript.length} bytes)`);
-        console.log(`✅ HTLC address: ${htlcAddress}\n`);
+        console.log(` HTLC script created (${htlcScript.length} bytes)`);
+        console.log(` HTLC address: ${htlcAddress}\n`);
         
         // Save HTLC information
         const htlcInfo = {
@@ -153,26 +153,26 @@ async function generateBitcoinHTLC(options = {}) {
         const filename = `bitcoin-htlc-${amount}-${Date.now()}.json`;
         fs.writeFileSync(`./${filename}`, JSON.stringify(htlcInfo, null, 2));
         
-        console.log('🎉 BITCOIN HTLC GENERATED SUCCESSFULLY!');
+        console.log(' BITCOIN HTLC GENERATED SUCCESSFULLY!');
         console.log('======================================');
-        console.log(`₿ HTLC Address: ${htlcAddress}`);
-        console.log(`💰 Amount: ${amount} satoshis`);
-        console.log(`⏰ Timelock: ${timelock} blocks`);
-        console.log(`🔐 Secret: 0x${secretBuffer.toString('hex')}`);
-        console.log(`🔒 Hashlock: ${hashlockHex}`);
-        console.log(`💾 Details saved: ${filename}`);
+        console.log(` HTLC Address: ${htlcAddress}`);
+        console.log(` Amount: ${amount} satoshis`);
+        console.log(` Timelock: ${timelock} blocks`);
+        console.log(` Secret: 0x${secretBuffer.toString('hex')}`);
+        console.log(` Hashlock: ${hashlockHex}`);
+        console.log(` Details saved: ${filename}`);
         console.log('');
         console.log('Next steps:');
         console.log(`1. Send ${amount} satoshis to: ${htlcAddress}`);
         console.log('2. Wait for transaction confirmation');
         console.log('3. Execute atomic swap using the secret');
         console.log('');
-        console.log(`🔗 Monitor address: https://blockstream.info/${network === 'testnet' ? 'testnet/' : ''}address/${htlcAddress}`);
+        console.log(` Monitor address: https://blockstream.info/${network === 'testnet' ? 'testnet/' : ''}address/${htlcAddress}`);
         
         return htlcInfo;
         
     } catch (error) {
-        console.error(`❌ Failed to generate Bitcoin HTLC: ${error.message}`);
+        console.error(` Failed to generate Bitcoin HTLC: ${error.message}`);
         throw error;
     }
 }
@@ -195,10 +195,10 @@ if (require.main === module) {
     }
     
     generateBitcoinHTLC(options).then(htlcInfo => {
-        console.log('\n✅ Script completed successfully');
+        console.log('\n Script completed successfully');
         process.exit(0);
     }).catch(error => {
-        console.error('\n❌ Script failed:', error.message);
+        console.error('\n Script failed:', error.message);
         process.exit(1);
     });
 }

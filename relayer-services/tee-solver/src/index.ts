@@ -33,7 +33,7 @@ class ShadeAgentService {
      */
     async start(): Promise<void> {
         try {
-            logger.info('🤖 Starting NEAR Bitcoin Shade Agent Service');
+            logger.info(' Starting NEAR Bitcoin Shade Agent Service');
             
             // Initialize the agent
             await this.agent.initialize();
@@ -43,7 +43,7 @@ class ShadeAgentService {
             await this.runAutonomousLoop();
             
         } catch (error) {
-            logger.error('💥 Failed to start Shade Agent service:', error);
+            logger.error(' Failed to start Shade Agent service:', error);
             process.exit(1);
         }
     }
@@ -52,13 +52,13 @@ class ShadeAgentService {
      * Main autonomous operation loop
      */
     private async runAutonomousLoop(): Promise<void> {
-        logger.info('🔄 Starting autonomous operation loop');
+        logger.info(' Starting autonomous operation loop');
         
         while (this.running) {
             try {
                 // Check agent status
                 const status = this.agent.getStatus();
-                logger.debug('📊 Agent status:', status);
+                logger.debug(' Agent status:', status);
                 
                 // Look for swap opportunities
                 await this.scanForSwapOpportunities();
@@ -68,7 +68,7 @@ class ShadeAgentService {
                 await this.sleep(interval);
                 
             } catch (error) {
-                logger.error('💥 Error in autonomous loop:', error);
+                logger.error(' Error in autonomous loop:', error);
                 await this.sleep(5000); // Short delay on error
             }
         }
@@ -78,7 +78,7 @@ class ShadeAgentService {
      * Scan for available swap opportunities
      */
     private async scanForSwapOpportunities(): Promise<void> {
-        logger.debug('🔍 Scanning for swap opportunities...');
+        logger.debug(' Scanning for swap opportunities...');
         
         try {
             // In a real implementation, this would:
@@ -95,7 +95,7 @@ class ShadeAgentService {
             }
             
         } catch (error) {
-            logger.error('💥 Error scanning for opportunities:', error);
+            logger.error(' Error scanning for opportunities:', error);
         }
     }
 
@@ -117,29 +117,29 @@ class ShadeAgentService {
      * Process a single swap opportunity
      */
     private async processSwapOpportunity(intent: SwapIntent): Promise<void> {
-        logger.info('💡 Processing swap opportunity:', intent);
+        logger.info(' Processing swap opportunity:', intent);
         
         try {
             // Analyze the opportunity
             const decision = await this.agent.analyzeSwapIntent(intent);
-            logger.info('🧠 Analysis result:', decision);
+            logger.info(' Analysis result:', decision);
             
             // Execute if profitable and safe
             if (decision.shouldExecute) {
                 const result = await this.agent.executeSwap(intent, decision);
-                logger.info('✅ Swap execution result:', result);
+                logger.info(' Swap execution result:', result);
                 
                 if (result.success) {
-                    logger.info(`🎉 Successful autonomous swap! Profit: ${result.actualProfit}`);
+                    logger.info(` Successful autonomous swap! Profit: ${result.actualProfit}`);
                 } else {
-                    logger.warn(`⚠️ Swap execution failed: ${result.error}`);
+                    logger.warn(` Swap execution failed: ${result.error}`);
                 }
             } else {
-                logger.info(`❌ Swap rejected: ${decision.reason}`);
+                logger.info(` Swap rejected: ${decision.reason}`);
             }
             
         } catch (error) {
-            logger.error('💥 Error processing opportunity:', error);
+            logger.error(' Error processing opportunity:', error);
         }
     }
 
@@ -147,10 +147,10 @@ class ShadeAgentService {
      * Stop the Shade Agent service
      */
     async stop(): Promise<void> {
-        logger.info('🛑 Stopping Shade Agent service...');
+        logger.info(' Stopping Shade Agent service...');
         this.running = false;
         await this.agent.cleanup();
-        logger.info('✅ Shade Agent service stopped');
+        logger.info(' Shade Agent service stopped');
     }
 
     /**
@@ -165,13 +165,13 @@ class ShadeAgentService {
 const agentService = new ShadeAgentService();
 
 process.on('SIGINT', async () => {
-    logger.info('🛑 Received SIGINT, shutting down gracefully...');
+    logger.info(' Received SIGINT, shutting down gracefully...');
     await agentService.stop();
     process.exit(0);
 });
 
 process.on('SIGTERM', async () => {
-    logger.info('🛑 Received SIGTERM, shutting down gracefully...');
+    logger.info(' Received SIGTERM, shutting down gracefully...');
     await agentService.stop();
     process.exit(0);
 });
@@ -179,7 +179,7 @@ process.on('SIGTERM', async () => {
 // Start the service
 if (require.main === module) {
     agentService.start().catch((error) => {
-        logger.error('💥 Unhandled error in main:', error);
+        logger.error(' Unhandled error in main:', error);
         process.exit(1);
     });
 }

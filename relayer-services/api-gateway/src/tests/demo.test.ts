@@ -6,7 +6,7 @@
 
 describe('API Gateway Test Suite Demo', () => {
   
-  describe('✅ Transaction Lifecycle Management Tests', () => {
+  describe(' Transaction Lifecycle Management Tests', () => {
     it('should test transaction lifecycle endpoints', () => {
       const testCoverage = {
         'GET /api/transactions/lifecycle/:txId': 'Multi-step progress tracking',
@@ -25,7 +25,7 @@ describe('API Gateway Test Suite Demo', () => {
     });
   });
   
-  describe('✅ User & Wallet Integration Tests', () => {
+  describe(' User & Wallet Integration Tests', () => {
     it('should test user and wallet endpoints', () => {
       const testCoverage = {
         'POST /api/users/auth/nonce': 'Wallet authentication nonce',
@@ -45,7 +45,7 @@ describe('API Gateway Test Suite Demo', () => {
     });
   });
   
-  describe('✅ Chain Status Monitoring Tests', () => {
+  describe(' Chain Status Monitoring Tests', () => {
     it('should test chain monitoring endpoints', () => {
       const testCoverage = {
         'GET /api/chains/status': 'Real-time chain status overview',
@@ -60,7 +60,7 @@ describe('API Gateway Test Suite Demo', () => {
     });
   });
   
-  describe('✅ Batch Operations Tests', () => {
+  describe(' Batch Operations Tests', () => {
     it('should test batch processing functionality', () => {
       const batchFeatures = [
         'Parallel transaction processing',
@@ -78,7 +78,7 @@ describe('API Gateway Test Suite Demo', () => {
     });
   });
   
-  describe('✅ Enhanced WebSocket Tests', () => {
+  describe(' Enhanced WebSocket Tests', () => {
     it('should test real-time WebSocket functionality', () => {
       const wsChannels = [
         'transaction-update',
@@ -104,7 +104,7 @@ describe('API Gateway Test Suite Demo', () => {
     });
   });
   
-  describe('✅ Integration Test Coverage', () => {
+  describe(' Integration Test Coverage', () => {
     it('should cover complete user journeys', () => {
       const integrationScenarios = [
         'Complete cross-chain transaction lifecycle',
@@ -122,7 +122,7 @@ describe('API Gateway Test Suite Demo', () => {
     });
   });
   
-  describe('✅ Test Infrastructure', () => {
+  describe(' Test Infrastructure', () => {
     it('should have comprehensive test utilities', () => {
       const testUtils = [
         'TestDataGenerator - Mock data creation',
@@ -140,17 +140,17 @@ describe('API Gateway Test Suite Demo', () => {
     });
   });
   
-  describe('✅ Test File Coverage', () => {
+  describe(' Test File Coverage', () => {
     it('should demonstrate all test files created', () => {
       const testFiles = {
-        'transactions.test.ts': '✅ 102 test cases covering transaction lifecycle',
-        'users.test.ts': '✅ 85 test cases covering user/wallet management', 
-        'chains.test.ts': '✅ 67 test cases covering chain monitoring',
-        'batch.test.ts': '✅ 94 test cases covering batch operations',
-        'WebSocketService.enhanced.test.ts': '✅ 78 test cases covering real-time updates',
-        'full-api.test.ts': '✅ 45 integration test scenarios',
-        'test-runner.ts': '✅ Test infrastructure and utilities',
-        'setup.ts': '✅ Jest configuration and global utilities'
+        'transactions.test.ts': ' 102 test cases covering transaction lifecycle',
+        'users.test.ts': ' 85 test cases covering user/wallet management', 
+        'chains.test.ts': ' 67 test cases covering chain monitoring',
+        'batch.test.ts': ' 94 test cases covering batch operations',
+        'WebSocketService.enhanced.test.ts': ' 78 test cases covering real-time updates',
+        'full-api.test.ts': ' 45 integration test scenarios',
+        'test-runner.ts': ' Test infrastructure and utilities',
+        'setup.ts': ' Jest configuration and global utilities'
       };
       
       const totalTestCases = 102 + 85 + 67 + 94 + 78 + 45;
@@ -162,7 +162,7 @@ describe('API Gateway Test Suite Demo', () => {
     });
   });
 
-  describe('✅ Production Readiness Tests', () => {
+  describe(' Production Readiness Tests', () => {
     it('should validate production-ready features', () => {
       const productionFeatures = {
         authentication: 'Wallet signature verification',
@@ -184,7 +184,7 @@ describe('API Gateway Test Suite Demo', () => {
   });
 });
 
-describe('🎯 Test Summary', () => {
+describe(' Test Summary', () => {
   it('should demonstrate comprehensive API test coverage', () => {
     const summary = {
       totalEndpoints: 23,
@@ -210,14 +210,14 @@ describe('🎯 Test Summary', () => {
       ]
     };
     
-    console.log('\n🧪 API Gateway Test Suite Summary:');
-    console.log(`📊 Total Endpoints Tested: ${summary.totalEndpoints}`);
-    console.log(`📁 Total Test Files: ${summary.totalTestFiles}`);
-    console.log(`🔍 Total Test Cases: ${summary.totalTestCases}`);
-    console.log('\n📋 Coverage Areas:');
-    summary.coverageAreas.forEach(area => console.log(`  ✅ ${area}`));
-    console.log('\n🎯 Test Types:');
-    summary.testTypes.forEach(type => console.log(`  ✅ ${type}`));
+    console.log('\n API Gateway Test Suite Summary:');
+    console.log(` Total Endpoints Tested: ${summary.totalEndpoints}`);
+    console.log(` Total Test Files: ${summary.totalTestFiles}`);
+    console.log(` Total Test Cases: ${summary.totalTestCases}`);
+    console.log('\n Coverage Areas:');
+    summary.coverageAreas.forEach(area => console.log(`   ${area}`));
+    console.log('\n Test Types:');
+    summary.testTypes.forEach(type => console.log(`   ${type}`));
     
     expect(summary.totalEndpoints).toBe(23);
     expect(summary.totalTestCases).toBe(471);

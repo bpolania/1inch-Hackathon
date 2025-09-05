@@ -53,7 +53,7 @@ export class FusionQuoteGenerator extends EventEmitter {
    * Initialize both the base generator and fusion manager
    */
   async initialize(adapters: Map<ChainId, ChainAdapter>): Promise<void> {
-    logger.info('🔧 Initializing Fusion Quote Generator...');
+    logger.info(' Initializing Fusion Quote Generator...');
     
     try {
       // Initialize base quote generator
@@ -62,11 +62,11 @@ export class FusionQuoteGenerator extends EventEmitter {
       // Initialize fusion manager
       await this.fusionManager.initialize();
       
-      logger.info('✅ Fusion Quote Generator initialized');
+      logger.info(' Fusion Quote Generator initialized');
       this.emit('initialized');
       
     } catch (error) {
-      logger.error('💥 Failed to initialize Fusion Quote Generator:', error);
+      logger.error(' Failed to initialize Fusion Quote Generator:', error);
       throw error;
     }
   }
@@ -77,7 +77,7 @@ export class FusionQuoteGenerator extends EventEmitter {
   async generateQuote(request: QuoteRequest, createFusionOrder: boolean = false): Promise<Quote> {
     const startTime = Date.now();
     
-    logger.info(`💭 Generating Fusion+ quote for ${request.id}`, {
+    logger.info(` Generating Fusion+ quote for ${request.id}`, {
       sourceChain: request.sourceChain,
       destinationChain: request.destinationChain,
       createFusionOrder
@@ -99,7 +99,7 @@ export class FusionQuoteGenerator extends EventEmitter {
       this.updateStats(generationTime);
       this.stats.quotesGenerated++;
       
-      logger.info(`✅ Fusion+ quote generated in ${generationTime}ms`, {
+      logger.info(` Fusion+ quote generated in ${generationTime}ms`, {
         requestId: request.id,
         destinationAmount: enhancedQuote.destinationAmount.toString(),
         confidence: enhancedQuote.confidence,
@@ -109,7 +109,7 @@ export class FusionQuoteGenerator extends EventEmitter {
       return enhancedQuote;
 
     } catch (error) {
-      logger.error(`💥 Fusion+ quote generation failed for ${request.id}:`, error);
+      logger.error(` Fusion+ quote generation failed for ${request.id}:`, error);
       
       const solverError: SolverError = {
         type: SolverErrorType.QUOTE_GENERATION_ERROR,
@@ -129,7 +129,7 @@ export class FusionQuoteGenerator extends EventEmitter {
   async createFusionMetaOrder(quote: Quote, request: QuoteRequest): Promise<FusionMetaOrder> {
     const startTime = Date.now();
     
-    logger.info(`📋 Creating Fusion+ meta-order for ${quote.requestId}`);
+    logger.info(` Creating Fusion+ meta-order for ${quote.requestId}`);
     
     try {
       // Check if the request is compatible with 1inch Fusion+
@@ -144,7 +144,7 @@ export class FusionQuoteGenerator extends EventEmitter {
       this.updateOrderCreationStats(creationTime);
       this.stats.fusionOrdersCreated++;
       
-      logger.info(`✅ Fusion+ meta-order created in ${creationTime}ms`, {
+      logger.info(` Fusion+ meta-order created in ${creationTime}ms`, {
         requestId: quote.requestId,
         orderStatus: metaOrder.status,
         hasSecrets: !!metaOrder.secrets?.length
@@ -159,7 +159,7 @@ export class FusionQuoteGenerator extends EventEmitter {
       return metaOrder;
 
     } catch (error) {
-      logger.error(`💥 Fusion+ meta-order creation failed for ${quote.requestId}:`, error);
+      logger.error(` Fusion+ meta-order creation failed for ${quote.requestId}:`, error);
       throw error;
     }
   }
@@ -168,14 +168,14 @@ export class FusionQuoteGenerator extends EventEmitter {
    * Submit 1inch Fusion+ order to the network
    */
   async submitFusionOrder(metaOrder: FusionMetaOrder): Promise<string> {
-    logger.info(`📤 Submitting Fusion+ order for ${metaOrder.originalQuote.requestId}`);
+    logger.info(` Submitting Fusion+ order for ${metaOrder.originalQuote.requestId}`);
     
     try {
       const orderHash = await this.fusionManager.submitOrder(metaOrder.fusionOrder);
       
       this.stats.fusionOrdersSubmitted++;
       
-      logger.info(`✅ Fusion+ order submitted`, {
+      logger.info(` Fusion+ order submitted`, {
         requestId: metaOrder.originalQuote.requestId,
         orderHash: orderHash.substring(0, 10) + '...'
       });
@@ -189,7 +189,7 @@ export class FusionQuoteGenerator extends EventEmitter {
       return orderHash;
 
     } catch (error) {
-      logger.error(`💥 Fusion+ order submission failed:`, error);
+      logger.error(` Fusion+ order submission failed:`, error);
       throw error;
     }
   }
@@ -236,20 +236,20 @@ export class FusionQuoteGenerator extends EventEmitter {
     const dstNetwork = CHAIN_ID_TO_NETWORK[request.destinationChain];
     
     if (!srcNetwork || !dstNetwork) {
-      logger.debug(`❌ Chain not supported by 1inch Fusion+: ${request.sourceChain} -> ${request.destinationChain}`);
+      logger.debug(` Chain not supported by 1inch Fusion+: ${request.sourceChain} -> ${request.destinationChain}`);
       return false;
     }
     
     // Check minimum amount requirements
     const minAmount = BigInt('1000000000000000'); // 0.001 ETH equivalent
     if (request.sourceAmount < minAmount) {
-      logger.debug(`❌ Amount too small for Fusion+: ${request.sourceAmount}`);
+      logger.debug(` Amount too small for Fusion+: ${request.sourceAmount}`);
       return false;
     }
     
     // Check if tokens are supported (simplified check)
     if (!request.sourceToken.address || !request.destinationToken.address) {
-      logger.debug(`❌ Invalid token addresses for Fusion+`);
+      logger.debug(` Invalid token addresses for Fusion+`);
       return false;
     }
     
@@ -336,7 +336,7 @@ export class FusionQuoteGenerator extends EventEmitter {
     
     // Handle internal events
     this.on('fusion_order_created', (data) => {
-      logger.debug('📊 Fusion+ order created:', data.requestId);
+      logger.debug(' Fusion+ order created:', data.requestId);
     });
     
     // Add error event listeners to prevent unhandled errors in tests
@@ -386,7 +386,7 @@ export class FusionQuoteGenerator extends EventEmitter {
    * Stop the fusion quote generator
    */
   async stop(): Promise<void> {
-    logger.info('🛑 Stopping Fusion Quote Generator...');
+    logger.info(' Stopping Fusion Quote Generator...');
     
     try {
       await Promise.all([
@@ -401,6 +401,6 @@ export class FusionQuoteGenerator extends EventEmitter {
       logger.error('Error during stop:', error);
     }
     
-    logger.info('✅ Fusion Quote Generator stopped');
+    logger.info(' Fusion Quote Generator stopped');
   }
 }

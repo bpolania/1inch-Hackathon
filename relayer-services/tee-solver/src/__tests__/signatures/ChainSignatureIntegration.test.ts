@@ -270,7 +270,7 @@ describe('Chain Signature Integration', () => {
       const orderHash = await fusionManager.submitOrder(order);
       
       expect(orderHash).toBe('0xmockOrderHash123456789012345678901234567890123456789012345678901234');
-      expect(logger.warn).toHaveBeenCalledWith('⚠️ Falling back to private key signing for this order...');
+      expect(logger.warn).toHaveBeenCalledWith(' Falling back to private key signing for this order...');
 
       const stats = fusionManager.getStats();
       expect(stats.ordersSubmitted).toBe(1);
@@ -480,7 +480,7 @@ describe('Chain Signature Integration', () => {
       const orderHash = await fusionManager.submitOrder(order);
       
       expect(orderHash).toBeDefined();
-      expect(logger.warn).toHaveBeenCalledWith('⚠️ Falling back to private key signing for this order...');
+      expect(logger.warn).toHaveBeenCalledWith(' Falling back to private key signing for this order...');
     });
   });
 

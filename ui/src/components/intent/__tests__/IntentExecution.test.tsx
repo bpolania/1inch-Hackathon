@@ -101,7 +101,7 @@ describe('IntentExecution', () => {
 
       await waitFor(() => {
         expect(screen.getByText('Risk Factors')).toBeInTheDocument();
-        expect(screen.getByText('• Low liquidity')).toBeInTheDocument();
+        expect(screen.getByText(' Low liquidity')).toBeInTheDocument();
       });
     });
 

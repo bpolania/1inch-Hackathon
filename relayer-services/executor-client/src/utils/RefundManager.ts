@@ -80,7 +80,7 @@ export class RefundManager {
         refundAddress: string,
         keyPair: any
     ): Promise<RefundResult> {
-        logger.info(`🔄 Attempting to refund expired HTLC for order ${context.orderHash}`);
+        logger.info(` Attempting to refund expired HTLC for order ${context.orderHash}`);
 
         try {
             if (!context.bitcoin?.fundingTxId || !context.bitcoin?.htlcScript || !context.bitcoin?.htlcAddress) {
@@ -103,7 +103,7 @@ export class RefundManager {
                 throw new Error(`HTLC output not found: ${fundingTxId}:0 (may have been claimed already)`);
             }
 
-            logger.info(`📊 Found HTLC output: ${htlcOutput.value} satoshis`);
+            logger.info(` Found HTLC output: ${htlcOutput.value} satoshis`);
 
             // Create refund transaction
             const refundTx = await this.btcManager.createRefundTransaction(
@@ -115,13 +115,13 @@ export class RefundManager {
                 keyPair
             );
 
-            logger.info(`✍️ Refund transaction created, size: ${refundTx.txHex.length / 2} bytes`);
+            logger.info(` Refund transaction created, size: ${refundTx.txHex.length / 2} bytes`);
 
             // Broadcast refund transaction
             const txId = await this.btcManager.broadcastTransaction(refundTx.txHex);
 
-            logger.info(`🚀 Refund transaction broadcast: ${txId}`);
-            logger.info(`🔗 View on explorer: https://blockstream.info/${this.network === bitcoin.networks.testnet ? 'testnet/' : ''}tx/${txId}`);
+            logger.info(` Refund transaction broadcast: ${txId}`);
+            logger.info(` View on explorer: https://blockstream.info/${this.network === bitcoin.networks.testnet ? 'testnet/' : ''}tx/${txId}`);
 
             return {
                 success: true,
@@ -129,7 +129,7 @@ export class RefundManager {
             };
 
         } catch (error: any) {
-            logger.error(`💥 Failed to refund HTLC: ${error.message}`);
+            logger.error(` Failed to refund HTLC: ${error.message}`);
             return {
                 success: false,
                 error: error.message
@@ -156,7 +156,7 @@ export class RefundManager {
             try {
                 const canRefund = await this.canRefund(context);
                 if (canRefund) {
-                    logger.info(`⏰ HTLC for order ${context.orderHash} has expired, initiating refund`);
+                    logger.info(` HTLC for order ${context.orderHash} has expired, initiating refund`);
                     const result = await this.refundExpiredHTLC(context, refundAddress, keyPair);
                     results.set(context.orderHash, result);
                 }

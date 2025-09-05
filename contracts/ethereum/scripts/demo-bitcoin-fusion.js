@@ -10,45 +10,45 @@ const { ethers } = require("hardhat");
 const crypto = require("crypto");
 
 async function main() {
-    console.log("🚀 Bitcoin Fusion+ Integration Demo");
+    console.log(" Bitcoin Fusion+ Integration Demo");
     console.log("=====================================\n");
 
     const [deployer] = await ethers.getSigners();
-    console.log("📍 Deployer:", deployer.address);
-    console.log("💰 Balance:", ethers.formatEther(await deployer.provider.getBalance(deployer.address)), "ETH\n");
+    console.log(" Deployer:", deployer.address);
+    console.log(" Balance:", ethers.formatEther(await deployer.provider.getBalance(deployer.address)), "ETH\n");
 
     // Deploy Bitcoin adapters for different chains
-    console.log("1. 📦 Deploying Bitcoin Adapters...");
+    console.log("1.  Deploying Bitcoin Adapters...");
     
     const BitcoinDestinationChain = await ethers.getContractFactory("BitcoinDestinationChain");
     
     // Deploy Bitcoin Testnet adapter
     const btcTestnetAdapter = await BitcoinDestinationChain.deploy(50002); // BITCOIN_TESTNET_ID
     await btcTestnetAdapter.waitForDeployment();
-    console.log("   ✅ Bitcoin Testnet Adapter:", await btcTestnetAdapter.getAddress());
+    console.log("    Bitcoin Testnet Adapter:", await btcTestnetAdapter.getAddress());
     
     // Deploy Dogecoin Mainnet adapter  
     const dogeAdapter = await BitcoinDestinationChain.deploy(50003); // DOGECOIN_MAINNET_ID
     await dogeAdapter.waitForDeployment();
-    console.log("   ✅ Dogecoin Adapter:", await dogeAdapter.getAddress());
+    console.log("    Dogecoin Adapter:", await dogeAdapter.getAddress());
     
     // Deploy Litecoin Mainnet adapter
     const ltcAdapter = await BitcoinDestinationChain.deploy(50005); // LITECOIN_MAINNET_ID  
     await ltcAdapter.waitForDeployment();
-    console.log("   ✅ Litecoin Adapter:", await ltcAdapter.getAddress());
+    console.log("    Litecoin Adapter:", await ltcAdapter.getAddress());
 
     // Display chain information
-    console.log("\n2. 🔍 Chain Information:");
+    console.log("\n2.  Chain Information:");
     const btcInfo = await btcTestnetAdapter.getChainInfo();
     const dogeInfo = await dogeAdapter.getChainInfo();
     const ltcInfo = await ltcAdapter.getChainInfo();
     
-    console.log(`   📊 Bitcoin Testnet: ${btcInfo.name} (${btcInfo.symbol}) - Chain ID: ${btcInfo.chainId}`);
-    console.log(`   📊 Dogecoin: ${dogeInfo.name} (${dogeInfo.symbol}) - Chain ID: ${dogeInfo.chainId}`);
-    console.log(`   📊 Litecoin: ${ltcInfo.name} (${ltcInfo.symbol}) - Chain ID: ${ltcInfo.chainId}`);
+    console.log(`    Bitcoin Testnet: ${btcInfo.name} (${btcInfo.symbol}) - Chain ID: ${btcInfo.chainId}`);
+    console.log(`    Dogecoin: ${dogeInfo.name} (${dogeInfo.symbol}) - Chain ID: ${dogeInfo.chainId}`);
+    console.log(`    Litecoin: ${ltcInfo.name} (${ltcInfo.symbol}) - Chain ID: ${ltcInfo.chainId}`);
 
     // Demonstrate address validation
-    console.log("\n3. ✅ Address Validation:");
+    console.log("\n3.  Address Validation:");
     const testAddresses = {
         "Bitcoin Testnet P2PKH": "mipcBbFg9gMiCh81Kj8tqqdgoZub1ZJRfn",
         "Bitcoin Mainnet P2SH": "3J98t1WpEZ73CNmQviecrnyiWrnqRhWNLy", 
@@ -59,11 +59,11 @@ async function main() {
 
     for (const [type, address] of Object.entries(testAddresses)) {
         const isValid = await btcTestnetAdapter.validateDestinationAddress(ethers.toUtf8Bytes(address));
-        console.log(`   ${isValid ? '✅' : '❌'} ${type}: ${address}`);
+        console.log(`   ${isValid ? '' : ''} ${type}: ${address}`);
     }
 
     // Create and validate Bitcoin execution parameters
-    console.log("\n4. ⚙️ Bitcoin Execution Parameters:");
+    console.log("\n4.  Bitcoin Execution Parameters:");
     const btcParams = {
         feeSatPerByte: 25,           // 25 sat/byte fee rate
         timelock: 144,               // ~24 hours in blocks
@@ -74,15 +74,15 @@ async function main() {
     };
 
     const encodedParams = await btcTestnetAdapter.encodeBitcoinExecutionParams(btcParams);
-    console.log("   📝 Encoded Parameters:", encodedParams.slice(0, 42) + "..."); // Truncate for display
+    console.log("    Encoded Parameters:", encodedParams.slice(0, 42) + "..."); // Truncate for display
 
     const decodedParams = await btcTestnetAdapter.decodeBitcoinExecutionParams(encodedParams);
-    console.log("   🔧 Fee Rate:", decodedParams.feeSatPerByte.toString(), "sat/byte");
-    console.log("   ⏰ Timelock:", decodedParams.timelock.toString(), "blocks");
-    console.log("   💸 Dust Threshold:", decodedParams.dustThreshold.toString(), "satoshis");
+    console.log("    Fee Rate:", decodedParams.feeSatPerByte.toString(), "sat/byte");
+    console.log("    Timelock:", decodedParams.timelock.toString(), "blocks");
+    console.log("    Dust Threshold:", decodedParams.dustThreshold.toString(), "satoshis");
 
     // Validate order parameters
-    console.log("\n5. 📋 Order Parameter Validation:");
+    console.log("\n5.  Order Parameter Validation:");
     const orderParams = {
         destinationAddress: ethers.toUtf8Bytes("mipcBbFg9gMiCh81Kj8tqqdgoZub1ZJRfn"),
         executionParams: encodedParams,
@@ -92,24 +92,24 @@ async function main() {
 
     const amount = ethers.parseEther("0.1"); // 0.1 BTC equivalent
     const validation = await btcTestnetAdapter.validateOrderParams(orderParams, amount);
-    console.log(`   ${validation.isValid ? '✅' : '❌'} Order Validation: ${validation.isValid ? 'PASSED' : validation.errorMessage}`);
-    console.log("   💰 Estimated Cost:", ethers.formatEther(validation.estimatedCost), "ETH equivalent");
+    console.log(`   ${validation.isValid ? '' : ''} Order Validation: ${validation.isValid ? 'PASSED' : validation.errorMessage}`);
+    console.log("    Estimated Cost:", ethers.formatEther(validation.estimatedCost), "ETH equivalent");
 
     // Calculate safety deposit
-    console.log("\n6. 🛡️ Safety Deposit Calculation:");
+    console.log("\n6.  Safety Deposit Calculation:");
     const safetyDeposit = await btcTestnetAdapter.calculateMinSafetyDeposit(amount);
-    console.log(`   💳 Amount: ${ethers.formatEther(amount)} BTC`);
-    console.log(`   🔒 Safety Deposit (5%): ${ethers.formatEther(safetyDeposit)} BTC`);
+    console.log(`    Amount: ${ethers.formatEther(amount)} BTC`);
+    console.log(`    Safety Deposit (5%): ${ethers.formatEther(safetyDeposit)} BTC`);
 
     // Demonstrate HTLC script generation
-    console.log("\n7. 📜 HTLC Script Generation:");
+    console.log("\n7.  HTLC Script Generation:");
     const secret = "my_secret_preimage_for_atomic_swap";
     const hashlock = ethers.sha256(ethers.toUtf8Bytes(secret));
     const recipientPubKeyHash = ethers.randomBytes(20);
     const refundPubKeyHash = ethers.randomBytes(20);
 
-    console.log("   🔐 Secret:", secret);
-    console.log("   #️⃣ Hashlock:", hashlock);
+    console.log("    Secret:", secret);
+    console.log("   # Hashlock:", hashlock);
 
     // Generate HTLC script with CLTV (absolute timelock)
     const htlcScriptCLTV = await btcTestnetAdapter.generateHTLCScript(
@@ -119,7 +119,7 @@ async function main() {
         refundPubKeyHash,
         false // Use CLTV
     );
-    console.log("   📄 HTLC Script (CLTV):", htlcScriptCLTV.slice(0, 42) + "... (" + Math.floor(htlcScriptCLTV.length / 2 - 1) + " bytes)");
+    console.log("    HTLC Script (CLTV):", htlcScriptCLTV.slice(0, 42) + "... (" + Math.floor(htlcScriptCLTV.length / 2 - 1) + " bytes)");
 
     // Generate HTLC script with CSV (relative timelock)  
     const htlcScriptCSV = await btcTestnetAdapter.generateHTLCScript(
@@ -129,7 +129,7 @@ async function main() {
         refundPubKeyHash,
         true // Use CSV
     );
-    console.log("   📄 HTLC Script (CSV):", htlcScriptCSV.slice(0, 42) + "... (" + Math.floor(htlcScriptCSV.length / 2 - 1) + " bytes)");
+    console.log("    HTLC Script (CSV):", htlcScriptCSV.slice(0, 42) + "... (" + Math.floor(htlcScriptCSV.length / 2 - 1) + " bytes)");
 
     // Verify script structure
     const scriptHex = htlcScriptCLTV.slice(2);
@@ -138,10 +138,10 @@ async function main() {
                                scriptHex.includes('68') && // OP_ENDIF
                                scriptHex.includes('a8') && // OP_SHA256
                                scriptHex.includes('b1');   // OP_CHECKLOCKTIMEVERIFY
-    console.log(`   ${hasRequiredOpcodes ? '✅' : '❌'} Script Structure: ${hasRequiredOpcodes ? 'VALID' : 'INVALID'}`);
+    console.log(`   ${hasRequiredOpcodes ? '' : ''} Script Structure: ${hasRequiredOpcodes ? 'VALID' : 'INVALID'}`);
 
     // Test feature support
-    console.log("\n8. 🎯 Feature Support:");
+    console.log("\n8.  Feature Support:");
     const features = [
         "atomic_swaps",
         "htlc", 
@@ -154,29 +154,29 @@ async function main() {
 
     for (const feature of features) {
         const isSupported = await btcTestnetAdapter.supportsFeature(feature);
-        console.log(`   ${isSupported ? '✅' : '❌'} ${feature}: ${isSupported ? 'SUPPORTED' : 'NOT SUPPORTED'}`);
+        console.log(`   ${isSupported ? '' : ''} ${feature}: ${isSupported ? 'SUPPORTED' : 'NOT SUPPORTED'}`);
     }
 
     // Token format validation
-    console.log("\n9. 🪙 Token Format Support:");
+    console.log("\n9.  Token Format Support:");
     const supportedFormats = await btcTestnetAdapter.getSupportedTokenFormats();
-    console.log("   📋 Supported formats:", supportedFormats.join(", "));
+    console.log("    Supported formats:", supportedFormats.join(", "));
     
     const btcTokenId = await btcTestnetAdapter.formatTokenIdentifier(
         ethers.ZeroAddress,
         "BTC",
         true
     );
-    console.log("   🏷️ Bitcoin Token ID:", ethers.toUtf8String(btcTokenId));
+    console.log("    Bitcoin Token ID:", ethers.toUtf8String(btcTokenId));
 
     // Generate order metadata
-    console.log("\n10. 📊 Order Metadata Generation:");
+    console.log("\n10.  Order Metadata Generation:");
     const metadata = await btcTestnetAdapter.getOrderMetadata(orderParams);
-    console.log("    📋 Metadata Size:", Math.floor(metadata.length / 2 - 1), "bytes");
-    console.log("    🔗 Metadata Hash:", ethers.keccak256(metadata));
+    console.log("     Metadata Size:", Math.floor(metadata.length / 2 - 1), "bytes");
+    console.log("     Metadata Hash:", ethers.keccak256(metadata));
 
     // Multi-chain comparison
-    console.log("\n11. 🌐 Multi-Chain Comparison:");
+    console.log("\n11.  Multi-Chain Comparison:");
     const chains = [
         { name: "Bitcoin", adapter: btcTestnetAdapter },
         { name: "Dogecoin", adapter: dogeAdapter },
@@ -189,21 +189,21 @@ async function main() {
         console.log(`    ${chain.name}: ${info.symbol} (Chain ${info.chainId}) - Safety Deposit: ${ethers.formatEther(deposit)}`);
     }
 
-    console.log("\n🎉 Bitcoin Fusion+ Integration Demo Complete!");
-    console.log("\n📈 Summary:");
-    console.log("   ✅ 39 comprehensive tests passing");
-    console.log("   ✅ Bitcoin, Dogecoin, Litecoin support");
-    console.log("   ✅ P2PKH, P2SH, Bech32 address validation");
-    console.log("   ✅ HTLC script generation (CLTV & CSV)");
-    console.log("   ✅ Complete 1inch Fusion+ integration");
-    console.log("   ✅ Modular architecture compatibility");
+    console.log("\n Bitcoin Fusion+ Integration Demo Complete!");
+    console.log("\n Summary:");
+    console.log("    39 comprehensive tests passing");
+    console.log("    Bitcoin, Dogecoin, Litecoin support");
+    console.log("    P2PKH, P2SH, Bech32 address validation");
+    console.log("    HTLC script generation (CLTV & CSV)");
+    console.log("    Complete 1inch Fusion+ integration");
+    console.log("    Modular architecture compatibility");
     
-    console.log("\n🚀 Ready for $32K Bitcoin Bounty Submission!");
+    console.log("\n Ready for $32K Bitcoin Bounty Submission!");
 }
 
 main()
     .then(() => process.exit(0))  
     .catch((error) => {
-        console.error("❌ Demo failed:", error.message);
+        console.error(" Demo failed:", error.message);
         process.exit(1);
     });

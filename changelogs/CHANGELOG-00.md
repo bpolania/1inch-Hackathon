@@ -7,11 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### 🏆 **PERFECT TEST COVERAGE**: Achieved 100% Test Suite Success (v1.7.0)
+###  **PERFECT TEST COVERAGE**: Achieved 100% Test Suite Success (v1.7.0)
 
-#### ✅ **COMPLETE TEST SUITE MASTERY** - 366/366 Tests Passing (100% Success Rate)
+####  **COMPLETE TEST SUITE MASTERY** - 366/366 Tests Passing (100% Success Rate)
 - **Final Test Resolution**: Achieved perfect test coverage by fixing remaining 17 failing tests
-  - **TEEStatus Component**: Fixed attestation details regex, uptime calculation (ms→seconds), async routes display
+  - **TEEStatus Component**: Fixed attestation details regex, uptime calculation (msseconds), async routes display
   - **IntentStore**: Resolved wallet connection errors with proper zustand store mocking patterns
   - **IntentFlow Integration**: Fixed 1inch quote display and WAIT text expectations for service failures
   - **WalletStatus Component**: Fixed balance display text matching and account truncation logic
@@ -26,9 +26,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Form validation, wallet connection, and error handling thoroughly verified
   - Real-time status updates and state management completely validated
 
-### 🎨 **UI-BACKEND INTEGRATION**: Complete Frontend-Backend Integration with Comprehensive Test Suite Fixes (v1.6.0)
+###  **UI-BACKEND INTEGRATION**: Complete Frontend-Backend Integration with Comprehensive Test Suite Fixes (v1.6.0)
 
-#### 🚀 **COMPLETE UI-BACKEND INTEGRATION** - Production-Ready Full-Stack Application
+####  **COMPLETE UI-BACKEND INTEGRATION** - Production-Ready Full-Stack Application
 - **API Gateway Integration Complete**: UI successfully connected to production API Gateway backend
   - Updated all service implementations to use correct API Gateway routing patterns
   - OneInch service: Updated to use `/api/1inch/*` endpoints through API Gateway
@@ -40,13 +40,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Event-driven updates for intent execution progress and completion
   - Live transaction status monitoring across all supported chains
 - **Multi-Chain Service Integration**: Complete backend service connectivity
-  - **TEE Solver Service**: ✅ Connected for autonomous intent processing
-  - **Relayer Service**: ✅ Connected for automated order execution
-  - **Cross-Chain Executor**: ✅ Multi-chain execution capabilities operational
-  - **Bitcoin Integration**: ✅ HTLC and atomic swap functionality connected
-  - **NEAR Integration**: ✅ Chain Signatures and NEAR protocol support active
+  - **TEE Solver Service**:  Connected for autonomous intent processing
+  - **Relayer Service**:  Connected for automated order execution
+  - **Cross-Chain Executor**:  Multi-chain execution capabilities operational
+  - **Bitcoin Integration**:  HTLC and atomic swap functionality connected
+  - **NEAR Integration**:  Chain Signatures and NEAR protocol support active
 
-#### ✅ **COMPREHENSIVE TEST SUITE FIXES** (349/366 Tests Passing - 95.4% Success Rate)
+####  **COMPREHENSIVE TEST SUITE FIXES** (349/366 Tests Passing - 95.4% Success Rate)
 - **Complete Test Resolution**: Fixed all originally failing UI tests with systematic approach
   - Fixed NEAR Transactions Service tests: Added default parameter values for contractId
   - Fixed AutonomousExecution component tests: Resolved timing issues with startMonitoring callback
@@ -68,7 +68,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Fixed HTTP method usage in service implementations (DELETE for cancellation, not POST)
   - Enhanced mock setup patterns for complex multi-service integration scenarios
 
-#### 🔧 **TECHNICAL ACHIEVEMENTS**
+####  **TECHNICAL ACHIEVEMENTS**
 - **Service Architecture Alignment**: Fixed discrepancies between UI services and backend API structure
   - Updated constructor parameters to use correct environment variables (RELAYER_API_BASE_URL, TEE_API_BASE_URL)
   - Fixed URL construction patterns to match deployed API Gateway routing
@@ -85,7 +85,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Complete API coverage for all UI functionality through API Gateway endpoints
   - Error boundaries and fallback mechanisms for robust user experience
 
-#### 🎯 **PRODUCTION READINESS ACHIEVED**
+####  **PRODUCTION READINESS ACHIEVED**
 - **Complete Full-Stack Integration**: UI frontend seamlessly connected to production backend
   - All service layers operational: TEE solver, relayer, cross-chain executor, WebSocket service
   - Real blockchain connectivity: Ethereum Sepolia, NEAR testnet, Bitcoin testnet integration
@@ -102,7 +102,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Environment-based configuration supporting development, staging, and production deployments
   - Complete documentation of service integration patterns and test maintenance procedures
 
-#### 📱 **ENHANCED USER EXPERIENCE**
+####  **ENHANCED USER EXPERIENCE**
 - **Real-Time Order Tracking**: Complete visibility into cross-chain swap execution
   - Live progress indicators showing order creation, matching, execution, and completion phases
   - Real-time transaction status updates across all supported blockchain networks
@@ -114,7 +114,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Intelligent gas estimation and fee calculation for optimal transaction execution
   - Cross-chain intent creation with real-time validation and profitability analysis
 
-#### 🔄 **DEPLOYMENT READY**
+####  **DEPLOYMENT READY**
 - **Environment Configuration**: Complete setup for all deployment environments
   - Development: `NEXT_PUBLIC_API_GATEWAY_URL=http://localhost:3001` for local backend
   - Production: Environment variables configured for live API Gateway deployment
@@ -131,9 +131,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Bitcoin Testnet: HTLC functionality and atomic swap coordination operational
   - Cross-chain atomic swap coordination with cryptographic security guarantees
 
-### 🔧 **API GATEWAY**: Service Initialization and Configuration Resolution (v1.5.0)
+###  **API GATEWAY**: Service Initialization and Configuration Resolution (v1.5.0)
 
-#### 🚀 **PRODUCTION DEPLOYMENT COMPLETE** - All Services Operational
+####  **PRODUCTION DEPLOYMENT COMPLETE** - All Services Operational
 - **Service Integration Fixed**: Complete resolution of TEE Solver and Relayer service initialization
   - Fixed TEE Solver configuration with proper trusted measurements structure
   - Updated RelayerService to use correct Config interface matching executor-client
@@ -151,7 +151,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - WebSocket Service: Real-time updates and event coordination
   - API Gateway: Complete REST API with live service integration
 
-#### ⚡ **TECHNICAL ACHIEVEMENTS**
+####  **TECHNICAL ACHIEVEMENTS**
 - **Configuration Alignment**: Fixed Config interface mismatch between api-gateway and executor-client
   - Updated RelayerService to use proper networks, ethereum, near, bitcoin, wallet, execution structure
   - Added proper address derivation from Ethereum private keys for wallet initialization
@@ -168,14 +168,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Bitcoin network integration with testnet API endpoints
   - All wallet managers initialized with derived addresses
 
-#### 🎯 **SERVICE ORCHESTRATION SUCCESS**
+####  **SERVICE ORCHESTRATION SUCCESS**
 - **Complete Service Stack**: All 6 major services running in production mode
-  1. **TEE Solver Service**: ✅ Initialized with Shade Agent Fusion Manager
-  2. **Relayer Service**: ✅ All components operational (WalletManager, OrderMonitor, etc.)
-  3. **WebSocket Service**: ✅ Real-time event coordination active
-  4. **API Gateway**: ✅ Express server with full endpoint coverage
-  5. **Cross-Chain Executor**: ✅ Multi-chain execution capabilities ready
-  6. **Bitcoin Executor**: ✅ HTLC and UTXO management operational
+  1. **TEE Solver Service**:  Initialized with Shade Agent Fusion Manager
+  2. **Relayer Service**:  All components operational (WalletManager, OrderMonitor, etc.)
+  3. **WebSocket Service**:  Real-time event coordination active
+  4. **API Gateway**:  Express server with full endpoint coverage
+  5. **Cross-Chain Executor**:  Multi-chain execution capabilities ready
+  6. **Bitcoin Executor**:  HTLC and UTXO management operational
 - **Real-Time Monitoring**: Complete system status and health monitoring
   - Service health endpoints providing real status information
   - WebSocket connections for live order and transaction updates
@@ -185,15 +185,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Live blockchain connections established and validated
   - Complete error handling and recovery mechanisms in place
 
-#### 📚 **SWAGGER DOCUMENTATION OPERATIONAL**
+####  **SWAGGER DOCUMENTATION OPERATIONAL**
 - **Interactive API Documentation**: Complete Swagger UI implementation at `/api-docs`
 - **All Endpoints Documented**: 256 test cases covering complete API surface
 - **Live Testing Interface**: Interactive endpoint testing with real service connections
 - **Production API Server**: Running on port 3001 with full service integration
 
-### 🚀 **API GATEWAY**: Complete Order Management and Transaction Status APIs (v1.4.0)
+###  **API GATEWAY**: Complete Order Management and Transaction Status APIs (v1.4.0)
 
-#### 📡 **PRODUCTION-READY API GATEWAY** - Complete 1inch Fusion+ Extension API
+####  **PRODUCTION-READY API GATEWAY** - Complete 1inch Fusion+ Extension API
 - **Complete Order Management**: Full CRUD operations for 1inch Fusion+ orders
   - `GET /api/1inch/orders/:orderHash` - View detailed order information with execution status
   - `GET /api/1inch/orders` - List user orders with pagination and filtering by status/chain
@@ -205,11 +205,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `GET /api/transactions/multi-status/:txId` - Multi-chain transaction overview with coordination
 - **Real-time Order Lifecycle**: Comprehensive order execution tracking
   - Progress tracking (0-100% completion) with estimated completion times
-  - Stage breakdown (created → matched → executing → completed) with timestamps
+  - Stage breakdown (created  matched  executing  completed) with timestamps
   - Technical details including escrow addresses, gas estimates, and fees
   - Cancellation eligibility and expiry handling with automated refund capability
 
-#### ✅ **COMPREHENSIVE TEST COVERAGE** (256/256 Tests Passing - 100% Success Rate)
+####  **COMPREHENSIVE TEST COVERAGE** (256/256 Tests Passing - 100% Success Rate)
 - **Complete API Testing**: Production-ready test suite with comprehensive coverage
   - Order Management Tests (18/18): Full CRUD operations with validation and error handling
   - Transaction Status Tests (18/18): Cross-chain monitoring with atomic swap verification
@@ -223,7 +223,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Mock data consistency with real service integration
   - 100% test reliability with zero flaky tests
 
-#### 🔧 **TECHNICAL ACHIEVEMENTS**
+####  **TECHNICAL ACHIEVEMENTS**
 - **Route Architecture**: Fixed Express route conflicts with proper endpoint ordering
 - **Validation Standardization**: Consistent error response format across all APIs
 - **Cross-Chain Logic**: Enhanced transaction status calculation for pending/failed states
@@ -231,22 +231,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Error Handling**: Comprehensive error recovery with detailed error messages
 - **Performance**: Optimized API responses with ~5.5 second full test suite execution
 
-#### 📚 **COMPLETE DOCUMENTATION**
+####  **COMPLETE DOCUMENTATION**
 - **API Reference**: Comprehensive API documentation with request/response examples
 - **Integration Guide**: Complete setup and usage instructions for all endpoints
 - **Test Coverage**: Detailed testing guide covering all 256 test cases
 - **Developer Experience**: Clear error messages and troubleshooting guides
 
-#### 🎯 **PRODUCTION READINESS**
+####  **PRODUCTION READINESS**
 - **18 Test Suites**: All passing with comprehensive functional coverage
 - **256 Test Cases**: 100% success rate across entire API surface
 - **7 New Endpoints**: Production-ready order management and transaction status APIs
 - **Real Service Integration**: Connected to deployed 1inch Fusion+ contracts on Sepolia
 - **Complete Documentation**: API reference, testing guide, and integration examples
 
-### 🎨 **NEAR INTENTS UI**: Complete Wallet Integration and User Interface
+###  **NEAR INTENTS UI**: Complete Wallet Integration and User Interface
 
-#### 🚀 **PRODUCTION-READY WALLET INTEGRATION**
+####  **PRODUCTION-READY WALLET INTEGRATION**
 - **MyNearWallet Connection**: Complete wallet integration with secure connection flow
   - Fixed wallet selector configuration to work without hardcoded contract IDs
   - Resolved SHA256 errors and incorrect redirect URLs for MyNearWallet
@@ -261,7 +261,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Updated transaction methods to accept receiverId parameter for flexibility
   - Fixed hydration warnings from browser extensions (Grammarly)
 
-#### ✅ **COMPREHENSIVE TEST COVERAGE** (86/86 Tests Passing - 100% Success Rate)
+####  **COMPREHENSIVE TEST COVERAGE** (86/86 Tests Passing - 100% Success Rate)
 - **Wallet Integration Tests**: Complete test suite for wallet functionality
   - WalletStore tests: State management, connection flow, balance updates
   - WalletButton tests: UI interactions, connection states, error handling
@@ -273,7 +273,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Resolved BigInt conversion issues in transaction tests
   - All tests passing with proper error handling validation
 
-#### 🔧 **TECHNICAL IMPLEMENTATION**
+####  **TECHNICAL IMPLEMENTATION**
 - **Wallet Store Architecture**: Production-ready state management
   ```typescript
   // Removed hardcoded contract dependency
@@ -298,35 +298,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   })
   ```
 
-#### 🎯 **USER EXPERIENCE IMPROVEMENTS**
+####  **USER EXPERIENCE IMPROVEMENTS**
 - **Manual Balance Loading**: Prevents RPC overload with user-controlled balance refresh
 - **Error Handling**: Comprehensive error messages and troubleshooting guidance
 - **Debug Tools**: NetworkTester component for diagnosing connectivity issues
 - **Browser Compatibility**: Fixed hydration warnings from browser extensions
 - **Responsive Design**: Proper modal display across different screen sizes
 
-#### 📱 **CURRENT UI STATUS**
-- **Wallet Connection**: ✅ Fully operational MyNearWallet integration
-- **Balance Display**: ✅ Manual refresh to avoid RPC rate limiting
-- **Transaction Preparation**: ✅ NEAR transaction service ready for intent submission
-- **UI Components**: ✅ Complete intent creation interface implemented
-- **Test Coverage**: ✅ 86/86 tests passing (100% success rate)
+####  **CURRENT UI STATUS**
+- **Wallet Connection**:  Fully operational MyNearWallet integration
+- **Balance Display**:  Manual refresh to avoid RPC rate limiting
+- **Transaction Preparation**:  NEAR transaction service ready for intent submission
+- **UI Components**:  Complete intent creation interface implemented
+- **Test Coverage**:  86/86 tests passing (100% success rate)
 
-#### 🔄 **PENDING BACKEND INTEGRATION**
+####  **PENDING BACKEND INTEGRATION**
 - **API Layer Missing**: UI currently submits only to NEAR blockchain
 - **Relayer Integration**: Not yet connected to 1inch relayer services
 - **Real-time Updates**: Intent status polling and completion tracking needed
 - **Price Estimation**: 1inch quote API integration required for accurate pricing
 
-### 🧪 **COMPREHENSIVE TEST SUITE FIXES**: 510+ Tests Now Passing with 100% Success Rate
+###  **COMPREHENSIVE TEST SUITE FIXES**: 510+ Tests Now Passing with 100% Success Rate
 
-#### 🎯 **COMPLETE TEST VALIDATION ACROSS ALL COMPONENTS**
+####  **COMPLETE TEST VALIDATION ACROSS ALL COMPONENTS**
 - **Final Status**: All 510+ tests passing across 6 major components
 - **Success Rate**: 100% - Zero failing tests in entire codebase
 - **Coverage**: Complete testing from Bitcoin HTLC to NEAR Shade Agent
 - **Date Completed**: July 31, 2025
 
-#### ✅ **MAJOR TEST FIXES COMPLETED**
+####  **MAJOR TEST FIXES COMPLETED**
 
 ##### **1. Bitcoin Relayer Test Suite Restoration (113 tests)**
 - **Root Cause Identified**: Insufficient mocking in CrossChainExecutor.test.ts
@@ -363,25 +363,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   ```typescript
   export const logger = Object.assign(baseLogger, {
       quote: (message: string, meta?: any) => {
-          baseLogger.info(`💰 QUOTE: ${message}`, meta);
+          baseLogger.info(` QUOTE: ${message}`, meta);
       }
   });
   ```
 - **Result**: All TEE Solver tests now pass with resolved compilation issues
 
-#### 📊 **FINAL TEST SUITE STATUS**
+####  **FINAL TEST SUITE STATUS**
 
 | Component | Tests | Status | Key Fixes |
 |-----------|-------|---------|-----------|
-| Bitcoin Contracts | 13 | ✅ 100% | No issues |
-| Ethereum Contracts | 125 | ✅ 100% | Chain ID/method fixes |
-| NEAR Contracts | 26 | ✅ 100% | No issues |
-| Bitcoin Relayer | 113 | ✅ 100% | Mock setup enhancement |
-| TEE Solver | 185+ | ✅ 100% | Logger method addition |
-| Shared Libraries | 48 | ✅ 100% | No issues |
-| **TOTAL** | **510+** | **✅ 100%** | **All issues resolved** |
+| Bitcoin Contracts | 13 |  100% | No issues |
+| Ethereum Contracts | 125 |  100% | Chain ID/method fixes |
+| NEAR Contracts | 26 |  100% | No issues |
+| Bitcoin Relayer | 113 |  100% | Mock setup enhancement |
+| TEE Solver | 185+ |  100% | Logger method addition |
+| Shared Libraries | 48 |  100% | No issues |
+| **TOTAL** | **510+** | ** 100%** | **All issues resolved** |
 
-#### 🔧 **INFRASTRUCTURE IMPROVEMENTS**
+####  **INFRASTRUCTURE IMPROVEMENTS**
 
 ##### **Comprehensive Testing Documentation**
 - **Created TESTING.md**: Complete guide to all 510+ tests across the system
@@ -395,7 +395,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Clear Testing Reference**: Added link to TESTING.md for detailed instructions
 - **Accurate Status Reporting**: All documentation now reflects 100% test success
 
-#### 🎊 **PRODUCTION READINESS ACHIEVED**
+####  **PRODUCTION READINESS ACHIEVED**
 
 ##### **Zero Failing Tests**
 - **Complete Validation**: Every component tested and working
@@ -412,7 +412,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Easy Commands**: Simple npm/cargo commands for running all tests
 - **Troubleshooting**: Known issues and solutions documented
 
-#### 🏆 **TECHNICAL ACHIEVEMENTS**
+####  **TECHNICAL ACHIEVEMENTS**
 
 ##### **Mock System Expertise**
 - **Deep Jest Understanding**: Resolved complex mocking patterns for multi-contract systems
@@ -435,12 +435,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Compilation Resolution**: Extended logger interface with custom method implementation
 - **Documentation Creation**: Comprehensive testing guide covering all 510+ tests
 
-### 🤖 **NEAR SHADE AGENT**: TEE-Compatible Autonomous Multi-Chain Agent - COMPLETE
+###  **NEAR SHADE AGENT**: TEE-Compatible Autonomous Multi-Chain Agent - COMPLETE
 
-#### 🎯 **BOUNTY COMPLETION**: NEAR Shade Agent Framework Integration
+####  **BOUNTY COMPLETION**: NEAR Shade Agent Framework Integration
 Complete implementation of autonomous multi-chain atomic swap agent using NEAR's Shade Agent Framework.
 
-##### ✅ **CORE IMPLEMENTATION** (`/relayer-services/tee-solver/`)
+#####  **CORE IMPLEMENTATION** (`/relayer-services/tee-solver/`)
 - **`BitcoinNEARShadeAgent`**: Main autonomous agent with sophisticated decision-making capabilities
   - Real-time market analysis with profitability calculations
   - Risk assessment scoring (0.1-0.6) based on swap parameters  
@@ -459,7 +459,7 @@ Complete implementation of autonomous multi-chain atomic swap agent using NEAR's
   - Graceful shutdown handling (SIGINT/SIGTERM)
   - Error recovery and resilient operation
 
-##### 🔗 **MULTI-CHAIN INTEGRATION**
+#####  **MULTI-CHAIN INTEGRATION**
 - **Bitcoin Integration**: Leverages existing Bitcoin automation components
   - UTXO management and transaction building
   - HTLC script generation and execution
@@ -473,41 +473,41 @@ Complete implementation of autonomous multi-chain atomic swap agent using NEAR's
   - Smart contract interaction via ethers.js
   - Transaction broadcasting and confirmation
 
-##### 🧪 **COMPREHENSIVE TESTING** (100% Success Rate)
+#####  **COMPREHENSIVE TESTING** (100% Success Rate)
 - **Integration Test Suite**: `test-shade-agent.js` with 6 comprehensive tests
-  - ✅ Shade Agent Initialization (all connections established)
-  - ✅ NEAR Integration (testnet account: demo.cuteharbor3573.testnet, 7.91 NEAR balance)
-  - ✅ Bitcoin Integration (testnet network verified, block height tracking)
-  - ✅ Intent Processing (decision analysis and profitability calculations)
-  - ✅ Autonomous Decision Making (3 scenarios: profitable, expired, high-risk)
-  - ✅ Multi-Chain Swap Simulation (all swap directions analyzed)
+  -  Shade Agent Initialization (all connections established)
+  -  NEAR Integration (testnet account: demo.cuteharbor3573.testnet, 7.91 NEAR balance)
+  -  Bitcoin Integration (testnet network verified, block height tracking)
+  -  Intent Processing (decision analysis and profitability calculations)
+  -  Autonomous Decision Making (3 scenarios: profitable, expired, high-risk)
+  -  Multi-Chain Swap Simulation (all swap directions analyzed)
 
-##### 🚀 **PRODUCTION READINESS**
+#####  **PRODUCTION READINESS**
 - **TEE Compatible**: Stateless operation suitable for Trusted Execution Environments
 - **Environment Configuration**: Secure key management via environment variables
 - **Autonomous Operation**: Self-contained decision making without human intervention
 - **Real Network Connections**: Successfully connects to Bitcoin testnet, NEAR testnet, Ethereum Sepolia
 - **Error Handling**: Comprehensive error recovery and logging
 
-##### 📊 **PERFORMANCE METRICS**
+#####  **PERFORMANCE METRICS**
 - **Test Success Rate**: 100% (6/6 tests passing)
 - **Network Connections**: All 3 chains (Bitcoin, NEAR, Ethereum) verified
 - **Decision Engine**: Successfully analyzed multiple swap scenarios with proper risk assessment
 - **Real-Time Processing**: Sub-second intent analysis and decision making
 
-#### 🏆 **BOUNTY ALIGNMENT**
-- **1inch Fusion+ Extension**: ✅ Complete integration with existing 1inch infrastructure
-- **NEAR Shade Agent Framework**: ✅ Full autonomous agent implementation with TEE compatibility
-- **Multi-Chain Support**: ✅ Bitcoin + NEAR + Ethereum with extensible architecture
+####  **BOUNTY ALIGNMENT**
+- **1inch Fusion+ Extension**:  Complete integration with existing 1inch infrastructure
+- **NEAR Shade Agent Framework**:  Full autonomous agent implementation with TEE compatibility
+- **Multi-Chain Support**:  Bitcoin + NEAR + Ethereum with extensible architecture
 
-### 🧹 **CODEBASE CLEANUP**: Production-Ready Script Organization
+###  **CODEBASE CLEANUP**: Production-Ready Script Organization
 
-#### 📋 **SCRIPT CONSOLIDATION COMPLETED**
-- **Scripts Reduced**: 22 → 8 scripts (64% reduction) for better maintainability
+####  **SCRIPT CONSOLIDATION COMPLETED**
+- **Scripts Reduced**: 22  8 scripts (64% reduction) for better maintainability
 - **Production Focus**: Removed development/debug scripts, kept only user-facing functionality
 - **Improved UX**: Clear script names and consolidated functionality for easier usage
 
-#### ✅ **BITCOIN CONTRACT SCRIPTS CLEANUP**
+####  **BITCOIN CONTRACT SCRIPTS CLEANUP**
 
 ##### **Consolidated Scripts (2 new production scripts)**
 - **`create-bitcoin-order.js`**: Merged 3 duplicate order creation scripts (`create-clean-10k-order.js`, `final-bitcoin-order.js`, `corrected-bitcoin-order.js`)
@@ -542,7 +542,7 @@ Complete implementation of autonomous multi-chain atomic swap agent using NEAR's
 - `validate-addresses.js` - Bitcoin address validation utility
 - `verify-bounty-compliance.js` - ETHGlobal bounty verification
 
-#### 🔧 **RELAYER SERVICE CLEANUP**
+####  **RELAYER SERVICE CLEANUP**
 
 ##### **Consolidated Test Script (1 new comprehensive script)**
 - **`test-relayer-system.js`**: Merged 3 separate test scripts into comprehensive test suite
@@ -555,7 +555,7 @@ Complete implementation of autonomous multi-chain atomic swap agent using NEAR's
 - `test-config.js` - Configuration validation test (merged)
 - `test-live-contracts.js` - Live contract connectivity test (merged)
 
-#### 📦 **UPDATED PACKAGE.JSON SCRIPTS**
+####  **UPDATED PACKAGE.JSON SCRIPTS**
 
 ##### **Bitcoin Contract Scripts**
 ```json
@@ -578,7 +578,7 @@ Complete implementation of autonomous multi-chain atomic swap agent using NEAR's
 }
 ```
 
-#### 🎯 **FINAL SCRIPT STRUCTURE**
+####  **FINAL SCRIPT STRUCTURE**
 
 ##### **Bitcoin Contract Scripts (8 total)**
 **Setup & Creation (4)**
@@ -596,7 +596,7 @@ Complete implementation of autonomous multi-chain atomic swap agent using NEAR's
 ##### **Relayer Service Scripts (1 total)**
 1. `test-relayer-system.js` - Comprehensive system test suite
 
-#### 🏆 **CLEANUP BENEFITS**
+####  **CLEANUP BENEFITS**
 - **Reduced Complexity**: 64% fewer scripts for easier navigation
 - **Better UX**: Clear, purpose-driven script names
 - **Consolidated Functionality**: Related features merged into single scripts
@@ -612,46 +612,46 @@ Complete implementation of autonomous multi-chain atomic swap agent using NEAR's
 
 ## [2.1.0] - 2025-07-31
 
-### 🎉 **HISTORIC MILESTONE**: World's First Bitcoin Atomic Swap with 1inch Fusion+ COMPLETED
+###  **HISTORIC MILESTONE**: World's First Bitcoin Atomic Swap with 1inch Fusion+ COMPLETED
 
-#### 🚀 **LIVE BITCOIN ATOMIC SWAP SUCCESSFULLY EXECUTED**
+####  **LIVE BITCOIN ATOMIC SWAP SUCCESSFULLY EXECUTED**
 - **Achievement Date**: July 31, 2025 - Historic completion of first-ever Bitcoin integration with 1inch Fusion+
-- **Status**: ✅ **ATOMIC SWAP COMPLETE** - All phases successfully executed on live testnets
+- **Status**:  **ATOMIC SWAP COMPLETE** - All phases successfully executed on live testnets
 - **Significance**: **World's first Bitcoin atomic swap** integrated with 1inch's Fusion+ protocol infrastructure
 
-#### 🔗 **COMPLETE LIVE TRANSACTION PROOF**
+####  **COMPLETE LIVE TRANSACTION PROOF**
 
 ##### **Ethereum Order Creation (Sepolia Testnet)**
 - **Transaction Hash**: [`0x63f7b796a6dae46a456c72339093d2febd2785a626db0afe2ed3d695625eaaab`](https://sepolia.etherscan.io/tx/0x63f7b796a6dae46a456c72339093d2febd2785a626db0afe2ed3d695625eaaab)
 - **Block Number**: 8,884,462
 - **Factory Contract**: `0xbeEab741D2869404FcB747057f5AbdEffc3A138d` (Bitcoin-enabled factory)
-- **Order Amount**: 0.01 DT tokens → 10,000 satoshis
+- **Order Amount**: 0.01 DT tokens  10,000 satoshis
 - **Chain ID**: 40004 (Bitcoin Testnet)
-- **Status**: ✅ **CONFIRMED ON ETHEREUM**
+- **Status**:  **CONFIRMED ON ETHEREUM**
 
 ##### **Bitcoin HTLC Funding (Bitcoin Testnet)**
 - **Transaction Hash**: [`76b4b593aca78c47d83d8a78d949bbc49324b063f1682ddededa4bc7c17d928c`](https://blockstream.info/testnet/tx/76b4b593aca78c47d83d8a78d949bbc49324b063f1682ddededa4bc7c17d928c)
 - **HTLC Address**: [`2MyeQNiTnrDWMcc8xE1JP9v2w6AYUhGiUpy`](https://blockstream.info/testnet/address/2MyeQNiTnrDWMcc8xE1JP9v2w6AYUhGiUpy)
 - **Funding Amount**: 10,000 satoshis (0.0001 BTC)
 - **Script Type**: P2SH with real Bitcoin HTLC opcodes
-- **Status**: ✅ **CONFIRMED ON BITCOIN**
+- **Status**:  **CONFIRMED ON BITCOIN**
 
-#### 🔐 **ATOMIC COORDINATION COMPLETED**
+####  **ATOMIC COORDINATION COMPLETED**
 - **Secret**: `0xd471ef423dc30202c70cb93ab2efa024edca8a9ebf55babce6aec54647b743f2`
 - **Hashlock**: `0xab4dddaaff0c05e862238164dbffec23dddb0b76ed1bcf56a6c698ea9e815feb`
 - **Hash Algorithm**: Keccak256 (Ethereum-compatible, used across both chains)
-- **Verification**: ✅ **SECRET MATCHES HASHLOCK PERFECTLY**
+- **Verification**:  **SECRET MATCHES HASHLOCK PERFECTLY**
 - **Timelock**: 144 blocks (~24 hours) on Bitcoin testnet
 
-#### ✅ **ATOMIC SWAP COMPLETION VERIFICATION (6/6 COMPLETE)**
-1. ✅ **Ethereum order created** - 1inch escrow deployed with 0.01 DT tokens locked
-2. ✅ **Bitcoin HTLC funded** - Real Bitcoin script with exact matching 10,000 satoshis
-3. ✅ **Secret coordination verified** - Same secret unlocks both Ethereum and Bitcoin sides
-4. ✅ **Atomic guarantees proven** - Both sides can complete successfully or both can refund
-5. ✅ **Cross-chain execution demonstrated** - Secret revelation mechanism working perfectly
-6. ✅ **Real testnet transactions** - Not simulation, actual blockchain state changes recorded
+####  **ATOMIC SWAP COMPLETION VERIFICATION (6/6 COMPLETE)**
+1.  **Ethereum order created** - 1inch escrow deployed with 0.01 DT tokens locked
+2.  **Bitcoin HTLC funded** - Real Bitcoin script with exact matching 10,000 satoshis
+3.  **Secret coordination verified** - Same secret unlocks both Ethereum and Bitcoin sides
+4.  **Atomic guarantees proven** - Both sides can complete successfully or both can refund
+5.  **Cross-chain execution demonstrated** - Secret revelation mechanism working perfectly
+6.  **Real testnet transactions** - Not simulation, actual blockchain state changes recorded
 
-#### 🎯 **LIVE ATOMIC SWAP IMPLEMENTATION DETAILS**
+####  **LIVE ATOMIC SWAP IMPLEMENTATION DETAILS**
 
 ##### **Bitcoin Wallet Setup & Funding**
 - **Generated Bitcoin Testnet Wallet**: Multiple address formats (P2PKH, P2SH, Bech32)
@@ -683,7 +683,7 @@ Complete implementation of autonomous multi-chain atomic swap agent using NEAR's
 - **Cross-chain Coordination**: Verified same secret works on both blockchains
 - **Completion Proof**: Generated atomic swap completion certificate
 
-#### 🏆 **HISTORIC TECHNICAL ACHIEVEMENTS**
+####  **HISTORIC TECHNICAL ACHIEVEMENTS**
 
 ##### **First-Ever Bitcoin + 1inch Integration**
 - **Pioneering Implementation**: World's first Bitcoin atomic swap using 1inch Fusion+ infrastructure
@@ -703,19 +703,19 @@ Complete implementation of autonomous multi-chain atomic swap agent using NEAR's
 - **Real Bitcoin Funding**: Actual satoshis funded to real Bitcoin HTLC address
 - **Cross-chain Verification**: Cryptographic proof of atomic coordination
 
-#### 📋 **COMPLETION ARTIFACTS**
+####  **COMPLETION ARTIFACTS**
 - **Atomic Swap Certificate**: `atomic-swap-complete.json` with full transaction proof
 - **HTLC Information**: `clean-10k-htlc.json` with complete Bitcoin HTLC details
 - **Order Information**: `clean-10k-order.json` with Ethereum order transaction data
 - **Scripts Library**: Complete automation scripts for reproducible Bitcoin atomic swaps
 
-#### 🎊 **HACKATHON BOUNTY ACHIEVEMENT**
-- ✅ **$32K Bitcoin Bounty**: **100% COMPLETE** - All requirements exceeded
-- ✅ **Preserve hashlock/timelock**: Real Bitcoin HTLC with proper timelock implementation
-- ✅ **Bidirectional swaps**: Complete Ethereum ↔ Bitcoin atomic swap capability  
-- ✅ **Bitcoin family support**: Bitcoin, Dogecoin, Litecoin, Bitcoin Cash all integrated
-- ✅ **Onchain execution**: **LIVE DEMONSTRATED** with real Bitcoin testnet transactions
-- ✅ **Production ready**: Real contracts deployed on Sepolia with comprehensive testing
+####  **HACKATHON BOUNTY ACHIEVEMENT**
+-  **$32K Bitcoin Bounty**: **100% COMPLETE** - All requirements exceeded
+-  **Preserve hashlock/timelock**: Real Bitcoin HTLC with proper timelock implementation
+-  **Bidirectional swaps**: Complete Ethereum  Bitcoin atomic swap capability  
+-  **Bitcoin family support**: Bitcoin, Dogecoin, Litecoin, Bitcoin Cash all integrated
+-  **Onchain execution**: **LIVE DEMONSTRATED** with real Bitcoin testnet transactions
+-  **Production ready**: Real contracts deployed on Sepolia with comprehensive testing
 
 ### Added
 - **Live Bitcoin Atomic Swap Implementation**: Complete end-to-end Bitcoin atomic swap execution
@@ -789,47 +789,47 @@ Complete implementation of autonomous multi-chain atomic swap agent using NEAR's
 
 ## [2.0.0] - 2025-07-30
 
-### 🎉 **PRODUCTION COMPLETE**: Bitcoin Integration 100% Operational on Sepolia Testnet
+###  **PRODUCTION COMPLETE**: Bitcoin Integration 100% Operational on Sepolia Testnet
 
-#### 🚀 **FINAL DEPLOYMENT COMPLETE**
+####  **FINAL DEPLOYMENT COMPLETE**
 - **OneInchFusionPlusFactory Deployed**: `0xbeEab741D2869404FcB747057f5AbdEffc3A138d` on Sepolia testnet
 - **Bitcoin Integration Complete**: All 5 Bitcoin family chains (Bitcoin, Dogecoin, Litecoin, Bitcoin Cash) fully operational
 - **NEAR Integration Maintained**: 2 NEAR chains (mainnet/testnet) continue to function perfectly
 - **7-Chain Support Total**: Complete multi-chain ecosystem supporting 7 destination chains
 - **Deployment Date**: July 30, 2025 - Final production deployment
 
-#### ✅ **COMPREHENSIVE TESTING SUCCESS**
+####  **COMPREHENSIVE TESTING SUCCESS**
 - **113 Passing Tests**: Complete test coverage across entire system
-  - 27 BitcoinDestinationChain tests ✅
-  - 19 CrossChainRegistry tests ✅ 
-  - 19 NearDestinationChain tests ✅
-  - 17 OneInchIntegration tests ✅
-  - 26 ProductionEscrowFactory tests ✅
-  - 5 ProductionIntegration tests ✅
-  - All other integration tests ✅
+  - 27 BitcoinDestinationChain tests 
+  - 19 CrossChainRegistry tests  
+  - 19 NearDestinationChain tests 
+  - 17 OneInchIntegration tests 
+  - 26 ProductionEscrowFactory tests 
+  - 5 ProductionIntegration tests 
+  - All other integration tests 
 - **0 Failing Tests**: All test issues resolved including coverage mode gas testing
 - **Test Coverage**: 72.52% overall coverage with comprehensive functional testing
 
-#### 🔧 **PRODUCTION INFRASTRUCTURE OPERATIONAL**
+####  **PRODUCTION INFRASTRUCTURE OPERATIONAL**
 - **Bitcoin Adapters Registered**: All 5 Bitcoin family adapters connected to registry
 - **NEAR Adapters Registered**: Both mainnet and testnet adapters operational
 - **Resolver Authorization**: Complete authorization system for order execution
 - **Gas Testing Fixed**: Coverage mode detection and gas multiplier system implemented
 - **Cleanup Complete**: All temporary deployment scripts and redundant files removed
 
-#### 🎯 **100% BITCOIN BOUNTY COMPLIANCE**
-- ✅ **Preserve hashlock/timelock**: Full HTLC functionality maintained across Bitcoin family
-- ✅ **Bidirectional swaps**: Ethereum ↔ Bitcoin swaps fully supported
-- ✅ **Bitcoin family support**: Bitcoin, Dogecoin, Litecoin, Bitcoin Cash all integrated
-- ✅ **Production ready**: Live deployment on Sepolia testnet ready for mainnet migration
-- ✅ **Address validation**: Comprehensive support for P2PKH, P2SH, Bech32, Bitcoin Cash formats
+####  **100% BITCOIN BOUNTY COMPLIANCE**
+-  **Preserve hashlock/timelock**: Full HTLC functionality maintained across Bitcoin family
+-  **Bidirectional swaps**: Ethereum  Bitcoin swaps fully supported
+-  **Bitcoin family support**: Bitcoin, Dogecoin, Litecoin, Bitcoin Cash all integrated
+-  **Production ready**: Live deployment on Sepolia testnet ready for mainnet migration
+-  **Address validation**: Comprehensive support for P2PKH, P2SH, Bech32, Bitcoin Cash formats
 
-#### 📋 **FINAL SYSTEM STATUS**
-- **Deployment Status**: 100% COMPLETE ✅
-- **Testing Status**: All 113 tests passing ✅
-- **Documentation Status**: README updated to reflect completion ✅
-- **Production Readiness**: Ready for mainnet deployment ✅
-- **Multi-Chain Support**: 7 chains operational (5 Bitcoin + 2 NEAR) ✅
+####  **FINAL SYSTEM STATUS**
+- **Deployment Status**: 100% COMPLETE 
+- **Testing Status**: All 113 tests passing 
+- **Documentation Status**: README updated to reflect completion 
+- **Production Readiness**: Ready for mainnet deployment 
+- **Multi-Chain Support**: 7 chains operational (5 Bitcoin + 2 NEAR) 
 
 ### Added
 - **Complete Bitcoin Integration with Ethereum Contracts**: Full Bitcoin family blockchain support
@@ -865,13 +865,13 @@ Complete implementation of autonomous multi-chain atomic swap agent using NEAR's
 
 ### Technical Achievements
 - **Complete Test Suite Success**: All 113 tests passing across entire system
-  - 19 CrossChainRegistry tests ✅
-  - 19 NearDestinationChain tests ✅
-  - 27 BitcoinDestinationChain tests ✅
-  - 17 OneInchIntegration tests (with Bitcoin support) ✅
-  - 26 ProductionEscrowFactory tests ✅
-  - 5 ProductionIntegration tests ✅
-  - All other existing tests maintained ✅
+  - 19 CrossChainRegistry tests 
+  - 19 NearDestinationChain tests 
+  - 27 BitcoinDestinationChain tests 
+  - 17 OneInchIntegration tests (with Bitcoin support) 
+  - 26 ProductionEscrowFactory tests 
+  - 5 ProductionIntegration tests 
+  - All other existing tests maintained 
 
 - **Multi-Chain Architecture Complete**: Universal system supporting NEAR and Bitcoin
   - Modular adapter pattern proven with two distinct blockchain implementations
@@ -884,13 +884,13 @@ Complete implementation of autonomous multi-chain atomic swap agent using NEAR's
   - Transaction creation, signing, and broadcasting capability
   - Cross-chain compatible SHA-256 hashlock format matching Ethereum requirements
   - Bitcoin family blockchain support (Bitcoin, Dogecoin, Litecoin, Bitcoin Cash)
-  - Complete bidirectional swap demonstration (Ethereum ↔ Bitcoin and Bitcoin ↔ Ethereum)
+  - Complete bidirectional swap demonstration (Ethereum  Bitcoin and Bitcoin  Ethereum)
 
 - **ETHGlobal Unite Bitcoin Bounty Compliance**: Satisfies all $32K Bitcoin bounty requirements
-  - ✅ Preserve hashlock and timelock functionality for non-EVM implementation
-  - ✅ Bidirectional swaps (Ethereum ↔ Bitcoin) with complete atomic coordination
-  - ✅ Support for Bitcoin family (Bitcoin, Dogecoin, Litecoin, Bitcoin Cash)
-  - ✅ Ready for onchain execution during final demo with real Bitcoin testnet transactions
+  -  Preserve hashlock and timelock functionality for non-EVM implementation
+  -  Bidirectional swaps (Ethereum  Bitcoin) with complete atomic coordination
+  -  Support for Bitcoin family (Bitcoin, Dogecoin, Litecoin, Bitcoin Cash)
+  -  Ready for onchain execution during final demo with real Bitcoin testnet transactions
 
 - **Comprehensive Bitcoin Module**: Production-ready Bitcoin integration
   - `BitcoinHTLCManager.js` - Core Bitcoin HTLC functionality with 400+ lines
@@ -968,14 +968,14 @@ Complete implementation of autonomous multi-chain atomic swap agent using NEAR's
 
 ### Technical Achievements
 - **Complete Atomic Swap Success**: All 8 verification criteria passing
-  1. ✅ Order exists and is completed
-  2. ✅ Secret matches hashlock (SHA-256)
-  3. ✅ DT tokens moved to escrow (0.2 DT)
-  4. ✅ ETH safety deposit in destination escrow (0.01 ETH)
-  5. ✅ User DT balance appropriately decreased
-  6. ✅ ETH spent on transactions
-  7. ✅ NEAR tokens transferred (0.004 NEAR)
-  8. ✅ Cross-chain secret coordination successful
+  1.  Order exists and is completed
+  2.  Secret matches hashlock (SHA-256)
+  3.  DT tokens moved to escrow (0.2 DT)
+  4.  ETH safety deposit in destination escrow (0.01 ETH)
+  5.  User DT balance appropriately decreased
+  6.  ETH spent on transactions
+  7.  NEAR tokens transferred (0.004 NEAR)
+  8.  Cross-chain secret coordination successful
 
 - **Real Transaction History**: Verifiable on-chain proof
   - Ethereum transactions: Order creation, matching, completion, settlement
@@ -1004,9 +1004,9 @@ Complete implementation of autonomous multi-chain atomic swap agent using NEAR's
 
 ## [1.2.0] - 2025-07-27
 
-### 🎯 **PRODUCTION READY**: Complete Production-Ready EscrowFactory and Integration Tests
+###  **PRODUCTION READY**: Complete Production-Ready EscrowFactory and Integration Tests
 
-#### 🏭 **PRODUCTION ESCROWFACTORY IMPLEMENTATION**
+####  **PRODUCTION ESCROWFACTORY IMPLEMENTATION**
 - **ProductionOneInchEscrowFactory**: Complete production-ready implementation of IOneInchEscrowFactory
   - CREATE2-based deterministic escrow deployment using Clones pattern
   - Real EscrowSrc and EscrowDst implementation contracts
@@ -1014,7 +1014,7 @@ Complete implementation of autonomous multi-chain atomic swap agent using NEAR's
   - Emergency controls, pausability, and proper access management
   - Compatible with real 1inch contracts for seamless mainnet migration
 
-#### ✅ **COMPREHENSIVE TESTING COMPLETE**
+####  **COMPREHENSIVE TESTING COMPLETE**
 - **80 Total Tests Passing**: Complete test coverage across all components
   - 19 CrossChainRegistry tests - Chain management and validation
   - 19 NearDestinationChain tests - NEAR-specific functionality
@@ -1022,7 +1022,7 @@ Complete implementation of autonomous multi-chain atomic swap agent using NEAR's
   - 26 ProductionEscrowFactory tests - Production factory unit tests
   - 5 ProductionIntegration tests - Full local deployment testing
 
-#### 🔧 **PRODUCTION INTEGRATION TESTING**
+####  **PRODUCTION INTEGRATION TESTING**
 - **Full Local Deployment Tests**: Complete production infrastructure verification
   - End-to-end cross-chain swap flow with production components
   - Production escrow creation with proper validation
@@ -1030,7 +1030,7 @@ Complete implementation of autonomous multi-chain atomic swap agent using NEAR's
   - Contract connection and configuration verification
   - Implementation contract deployment and validation
 
-#### 📋 **DEPLOYMENT READINESS**
+####  **DEPLOYMENT READINESS**
 - **Sepolia Deployment Ready**: Production EscrowFactory ready for testnet deployment
 - **Live Test Infrastructure**: Complete foundation for live cross-chain testing
 - **Production Security**: Comprehensive validation, pausability, and emergency controls
@@ -1038,16 +1038,16 @@ Complete implementation of autonomous multi-chain atomic swap agent using NEAR's
 
 ## [1.1.0] - 2025-07-27
 
-### 🎯 **BOUNTY COMPLETION**: True 1inch Fusion+ Integration with Production-Ready NEAR Extension
+###  **BOUNTY COMPLETION**: True 1inch Fusion+ Integration with Production-Ready NEAR Extension
 
-#### 🚀 **TRUE 1inch INTEGRATION COMPLETE**
+####  **TRUE 1inch INTEGRATION COMPLETE**
 - **Real 1inch Integration**: Complete migration from custom implementation to true 1inch Fusion+ extension
 - **ITakerInteraction Implementation**: `NearTakerInteraction.sol` properly implements 1inch's ITakerInteraction interface
 - **1inch EscrowFactory Integration**: Uses real 1inch `EscrowSrc`/`EscrowDst` contracts via `IOneInchEscrowFactory`
 - **OneInchFusionPlusFactory**: Factory that extends 1inch's existing escrow system for NEAR support
 - **Address Type Compliance**: Proper handling of 1inch's custom Address type using AddressLib
 
-#### 🧹 **COMPREHENSIVE CLEANUP COMPLETED**
+####  **COMPREHENSIVE CLEANUP COMPLETED**
 - **Removed 6 Obsolete Contracts**: Cleaned up custom implementations replaced by 1inch integration
   - CrossChainEscrow.sol, CrossChainFactory.sol, FusionPlusFactory.sol
   - NearEscrowSrc.sol, NearFusionFactory.sol, NearFusionResolver.sol
@@ -1055,27 +1055,27 @@ Complete implementation of autonomous multi-chain atomic swap agent using NEAR's
 - **Complete README Rewrite**: Documentation now focuses entirely on 1inch integration
 - **All 49 Tests Passing**: 19 CrossChainRegistry + 19 NearDestinationChain + 11 OneInchIntegration tests
 
-#### ✅ **PRODUCTION-READY 1inch EXTENSION**
+####  **PRODUCTION-READY 1inch EXTENSION**
 - **Interface Compliance**: Full compliance with ITakerInteraction and IOneInchEscrowFactory
 - **Resolver Authorization**: Integration with 1inch's authorized resolver network
 - **Order Format Compatibility**: Uses 1inch order hashes and timelock structure
 - **Economic Security**: Proper safety deposit handling via 1inch escrow system
 - **Multi-stage Timelocks**: Secure execution windows between Ethereum and NEAR
 
-#### 🔧 **TECHNICAL IMPLEMENTATION DETAILS**
+####  **TECHNICAL IMPLEMENTATION DETAILS**
 - **Fixed ITakerInteraction Signature**: Removed payable modifier to comply with 1inch interface
 - **Address Type Conversion**: Proper use of AddressLib for 1inch's Address type handling
 - **ChainSpecificParams Structure**: Correct encoding for NEAR-specific execution parameters
 - **Escrow Deployment Integration**: Uses 1inch's createDstEscrow() method properly
 - **Debug Resolution**: Solved mysterious test failures through interface compliance
 
-#### 🎊 **BOUNTY REQUIREMENTS EXCEEDED**
-- ✅ **True 1inch Extension**: Properly extends existing protocol instead of replacing it
-- ✅ **NEAR Protocol Support**: Complete mainnet and testnet integration
-- ✅ **Atomic Swap Guarantees**: SHA-256 hashlock coordination maintained
-- ✅ **Live Integration**: Uses real 1inch contracts and interfaces
-- ✅ **Modular Architecture**: Universal IDestinationChain interface for any blockchain
-- ✅ **100% Test Coverage**: All 11 1inch integration tests passing
+####  **BOUNTY REQUIREMENTS EXCEEDED**
+-  **True 1inch Extension**: Properly extends existing protocol instead of replacing it
+-  **NEAR Protocol Support**: Complete mainnet and testnet integration
+-  **Atomic Swap Guarantees**: SHA-256 hashlock coordination maintained
+-  **Live Integration**: Uses real 1inch contracts and interfaces
+-  **Modular Architecture**: Universal IDestinationChain interface for any blockchain
+-  **100% Test Coverage**: All 11 1inch integration tests passing
 
 ### Added
 - True 1inch Fusion+ integration with ITakerInteraction implementation
@@ -1102,42 +1102,42 @@ Complete implementation of autonomous multi-chain atomic swap agent using NEAR's
 
 ## [1.0.0] - 2025-07-27
 
-### 🏆 **BOUNTY COMPLETION**: Live Cross-Chain Atomic Swaps Successfully Demonstrated
+###  **BOUNTY COMPLETION**: Live Cross-Chain Atomic Swaps Successfully Demonstrated
 
-#### 🎯 **BOUNTY REQUIREMENTS FULLY SATISFIED**
-- ✅ **Novel 1inch Fusion+ Extension**: Modular architecture properly extending 1inch Fusion+ protocol
-- ✅ **Ethereum ↔ NEAR Swaps**: Complete bidirectional atomic swap infrastructure operational
-- ✅ **Hashlock/Timelock Preservation**: SHA-256 cryptographic coordination maintained on both chains
-- ✅ **Onchain Execution**: **LIVE DEMONSTRATED** with real token transfers and gas costs
+####  **BOUNTY REQUIREMENTS FULLY SATISFIED**
+-  **Novel 1inch Fusion+ Extension**: Modular architecture properly extending 1inch Fusion+ protocol
+-  **Ethereum  NEAR Swaps**: Complete bidirectional atomic swap infrastructure operational
+-  **Hashlock/Timelock Preservation**: SHA-256 cryptographic coordination maintained on both chains
+-  **Onchain Execution**: **LIVE DEMONSTRATED** with real token transfers and gas costs
 
-#### 🚀 **LIVE CROSS-CHAIN SWAP DEMONSTRATION**
+####  **LIVE CROSS-CHAIN SWAP DEMONSTRATION**
 - **Demo Date**: July 27, 2025
-- **Swap Type**: Ethereum Sepolia → NEAR Testnet
+- **Swap Type**: Ethereum Sepolia  NEAR Testnet
 - **Demo Token**: `0xeB17922014545aeF282d1d13bf153e5c12C7F682` (1000 DT minted)
 - **Order Hash**: `0xc3fba67c40bc06f1ee49f19860330288801a0d9d467ac9e3489004b84d06e096`
-- **Swap Amount**: 100 DT → 2 NEAR tokens
+- **Swap Amount**: 100 DT  2 NEAR tokens
 - **Resolver Fee**: 1 DT + 5 DT safety deposit (5%)
 
-#### 📊 **Live Transaction Evidence**
+####  **Live Transaction Evidence**
 - **Order Creation**: [`0x64c1eeb8a438df2a526c5150772540d3e6db784d47d118fc5028915cfeb87e2c`](https://sepolia.etherscan.io/tx/0x64c1eeb8a438df2a526c5150772540d3e6db784d47d118fc5028915cfeb87e2c)
 - **Order Matching**: [`0x89d4eb84fc3cc1acbf077bf9ec5aecad660f77f8109942ac9a6a18b0cd7586dc`](https://sepolia.etherscan.io/tx/0x89d4eb84fc3cc1acbf077bf9ec5aecad660f77f8109942ac9a6a18b0cd7586dc)
 - **Total Gas Used**: 3,199,579 gas across both transactions
 - **Demo Token Contract**: [`0xeB17922014545aeF282d1d13bf153e5c12C7F682`](https://sepolia.etherscan.io/address/0xeB17922014545aeF282d1d13bf153e5c12C7F682)
 
-#### 🔐 **Atomic Swap Cryptography**
+####  **Atomic Swap Cryptography**
 - **Hashlock**: `0x2595efef2e47e28fdc375f36b467f4a9b7cc28f03c86f604d095a0c857ea4987`
 - **Secret**: `0x43732e51d07caeb256c5717532494f7307fd4c41b239150acea719fed401b49d`
 - **Escrow Contracts**: Live deployed with proper safety deposit mechanism
 - **Timelock System**: Multi-stage timelock coordination between chains
 
-#### 🎊 **Cross-Chain Infrastructure Operational**
+####  **Cross-Chain Infrastructure Operational**
 - **Ethereum Sepolia**: All contracts deployed and functional
 - **NEAR Testnet**: Contract `fusion-plus.demo.cuteharbor3573.testnet` verified
 - **Real Token Transfers**: ERC20 approvals, transfers, and escrow creation executed
 - **Gas Costs**: Real Sepolia ETH spent demonstrating production readiness
-- **Bidirectional Support**: Architecture enables both ETH→NEAR and NEAR→ETH swaps
+- **Bidirectional Support**: Architecture enables both ETHNEAR and NEARETH swaps
 
-#### 📋 **Demo Script Infrastructure**
+####  **Demo Script Infrastructure**
 - **Live Demo Script**: `scripts/demo-cross-chain-live.js` with comprehensive execution flow
 - **NPM Command**: `npm run demo:cross-chain` for easy reproduction
 - **Demo Results**: Automatically saved to `demo-results.json` with all transaction details
@@ -1157,9 +1157,9 @@ Complete implementation of autonomous multi-chain atomic swap agent using NEAR's
 
 ## [0.9.0] - 2025-07-27
 
-### 🚀 **SEPOLIA DEPLOYMENT**: Live Production-Ready 1inch Fusion+ Extension
+###  **SEPOLIA DEPLOYMENT**: Live Production-Ready 1inch Fusion+ Extension
 
-#### 🌐 **Live Sepolia Testnet Deployment**
+####  **Live Sepolia Testnet Deployment**
 - **Deployed Contracts**: Complete modular Fusion+ system deployed to Sepolia testnet
 - **CrossChainRegistry**: `0x59CE43Ea20892EC3Eff00fc7506cbfA9813FE0ca` - Universal chain adapter management
 - **FusionPlusFactory**: `0x065357440984Eb0BCC1b610A76b388B367D4e1f0` - Multi-chain order factory
@@ -1167,27 +1167,27 @@ Complete implementation of autonomous multi-chain atomic swap agent using NEAR's
 - **NEAR Testnet Adapter**: `0x3cF27b67e96CB3B21C98EF1C57E274A53f0ab014` - NEAR testnet integration
 - **Deployment Date**: July 27, 2025 by `0x04e7B48DD6D9f33ffD1A7Be63fF91e6F318492ed`
 
-#### 📋 **Infrastructure Enhancements**
+####  **Infrastructure Enhancements**
 - **Sepolia Integration Tests**: Comprehensive test suite verifying live deployment functionality
 - **Test Script**: Added `npm run test:sepolia` for testing against live contracts
 - **Documentation Updates**: Updated README with live deployment details and Etherscan links
 - **Configuration Management**: Enhanced environment configuration for multiple private keys
 
-#### ✅ **Live Deployment Verification**
+####  **Live Deployment Verification**
 - **16 Passing Tests**: Complete verification of deployed contract functionality
 - **Registry Functionality**: Confirmed NEAR mainnet/testnet chain registration and validation
 - **Adapter Functionality**: Verified NEAR address validation, parameter validation, and feature support
 - **Factory Functionality**: Confirmed order hash generation, cost estimation, and supported chains
 - **Security Verification**: Validated access controls and adapter isolation
 
-#### 🔧 **Technical Improvements**
+####  **Technical Improvements**
 - **Test Infrastructure**: Fixed failing integration tests with proper time handling
 - **Environment Configuration**: Added ETHEREUM_PRIVATE_KEY support for Sepolia deployment
 - **Hardhat Configuration**: Enhanced network configuration with private key precedence
 - **Documentation Accuracy**: Corrected architectural descriptions as true 1inch Fusion+ extension
 
-#### 🎯 **Cross-Chain Infrastructure Complete**
-- **Ethereum Sepolia** ↔️ **NEAR Testnet**: Complete bidirectional atomic swap infrastructure
+####  **Cross-Chain Infrastructure Complete**
+- **Ethereum Sepolia**  **NEAR Testnet**: Complete bidirectional atomic swap infrastructure
 - **Modular Extension**: Ready for additional chains (Cosmos, Bitcoin) through adapter pattern
 - **1inch Compatibility**: Full integration with 1inch resolver network and order format
 - **Production Ready**: Live contracts available for cross-chain order creation and execution
@@ -1211,66 +1211,66 @@ Complete implementation of autonomous multi-chain atomic swap agent using NEAR's
 
 ## [0.8.0] - 2025-07-24
 
-### 🔍 **ARCHITECTURAL REALIZATION**: Understanding True 1inch Fusion+ Extension Requirements
+###  **ARCHITECTURAL REALIZATION**: Understanding True 1inch Fusion+ Extension Requirements
 
-#### 🎯 **Critical Discovery**
+####  **Critical Discovery**
 - **Research Completed**: Deep analysis of actual 1inch Fusion+ architecture and contracts
 - **Extension Mechanism**: Discovered 160-bit extension hash in order `salt` field for chain-specific data
 - **ITakerInteraction Interface**: Identified key interface that resolvers must implement for custom logic
 - **Limit Order Protocol V4**: Found the base extensible order system that Fusion+ builds upon
 
-#### 📚 **Documentation of True Architecture**
+####  **Documentation of True Architecture**
 - **Added Comprehensive Section**: New "TRUE 1inch Fusion+ Extension Architecture" in README
 - **Order Structure Analysis**: Documented actual 1inch order format and key interfaces
 - **Extension Pattern**: Outlined proper way to extend Fusion+ without replacing core contracts
 - **NEAR Integration Blueprint**: Provided concrete code examples for proper NEAR extension
 
-#### 🚨 **Current Implementation Assessment**
+####  **Current Implementation Assessment**
 - **Architectural Gap Identified**: Current implementation is "Fusion+-inspired" not true extension
 - **Parallel System Issue**: Built separate factory/registry instead of extending 1inch contracts
 - **Integration Missing**: No use of actual 1inch order format or settlement contracts
 - **Decision Point**: Documented options for refactoring vs. presenting current work
 
-#### 🧹 **Housekeeping**
+####  **Housekeeping**
 - **Removed Outdated Docs**: Deleted SEPOLIA-DEPLOYMENT.md and LIVE_DEMO_GUIDE.md (based on incorrect architecture)
 - **Updated README**: Added comprehensive analysis of true Fusion+ requirements
 - **Test Coverage**: Maintained 100% pass rate (106/106 tests) for current implementation
 
-#### 🤔 **Next Steps Decision Required**
+####  **Next Steps Decision Required**
 - **Option 1**: Refactor completely to true 1inch extension (significant work, proper bounty qualification)
 - **Option 2**: Present current sophisticated work as-is (may not qualify for bounty)
 - **Option 3**: Build minimal true extension as proof-of-concept (quick validation)
 
 ## [0.7.1] - 2025-07-23
 
-### 🧹 **NEAR INTEGRATION FINALIZATION**: Production-Ready 1inch Fusion+ Extension Complete
+###  **NEAR INTEGRATION FINALIZATION**: Production-Ready 1inch Fusion+ Extension Complete
 
-#### 🔧 **Testing Infrastructure Improvements**
+####  **Testing Infrastructure Improvements**
 - **Fixed Rate Limiting**: Resolved NEAR testnet RPC 429 errors with proper 15-second delays between calls
 - **Optimized Test Performance**: Reduced long-running tests to prevent 60+ second execution warnings
 - **Enhanced Test Reliability**: All 9 testnet deployment tests now pass consistently
 - **Improved Error Handling**: Better retry logic with exponential backoff for RPC failures
 
-#### 🗂️ **Codebase Cleanup and Optimization**
+####  **Codebase Cleanup and Optimization**
 - **Removed Outdated Files**: Cleaned up 6 obsolete scripts and documentation files
   - Removed: `deploy.sh`, `deploy-fusion.sh`, `demo.js`, `live-demo-eth-to-near.js` 
   - Removed: `FUSION_PLUS_INTEGRATION.md`, `LIVE_DEMO_GUIDE.md`, `test-testnet.sh`
 - **Streamlined Build Process**: Retained only essential `build.sh` script
 - **Updated Documentation**: README.md now reflects current architecture accurately
 
-#### ✅ **Final NEAR Integration Status**
-- **Contract Verification**: All live testnet deployment tests passing ✅
-- **Rate Limiting Resolved**: Proper RPC throttling implemented ✅  
-- **Documentation Current**: All outdated references removed ✅
-- **Codebase Clean**: Only relevant, current files retained ✅
-- **Production Ready**: NEAR Fusion+ extension fully operational ✅
+####  **Final NEAR Integration Status**
+- **Contract Verification**: All live testnet deployment tests passing 
+- **Rate Limiting Resolved**: Proper RPC throttling implemented   
+- **Documentation Current**: All outdated references removed 
+- **Codebase Clean**: Only relevant, current files retained 
+- **Production Ready**: NEAR Fusion+ extension fully operational 
 
-#### 🎯 **Integration Milestones Achieved**
-- ✅ **Complete 1inch Fusion+ Extension**: Proper protocol extension (not standalone)
-- ✅ **Live NEAR Deployment**: Production contract operational on testnet
-- ✅ **Comprehensive Testing**: Both sandbox and live testnet validation
-- ✅ **Clean Codebase**: Removed all outdated/misleading files
-- ✅ **Rate Limit Compliance**: Respects NEAR's 60 calls/minute RPC limits
+####  **Integration Milestones Achieved**
+-  **Complete 1inch Fusion+ Extension**: Proper protocol extension (not standalone)
+-  **Live NEAR Deployment**: Production contract operational on testnet
+-  **Comprehensive Testing**: Both sandbox and live testnet validation
+-  **Clean Codebase**: Removed all outdated/misleading files
+-  **Rate Limit Compliance**: Respects NEAR's 60 calls/minute RPC limits
 
 ### Technical Details
 - **Testnet RPC Optimization**: 15-second delays between calls to respect rate limits
@@ -1279,13 +1279,13 @@ Complete implementation of autonomous multi-chain atomic swap agent using NEAR's
 - **Documentation Accuracy**: README now contains only current, verified information
 
 ### Next Phase
-- 🔄 **Ready for Ethereum Integration**: NEAR side complete, ready for Sepolia deployment
+-  **Ready for Ethereum Integration**: NEAR side complete, ready for Sepolia deployment
 
 ## [0.7.0] - 2025-07-23
 
-### 🚀 **PRODUCTION DEPLOYMENT**: 1inch Fusion+ NEAR Extension Live on Testnet
+###  **PRODUCTION DEPLOYMENT**: 1inch Fusion+ NEAR Extension Live on Testnet
 
-#### 🎉 **Live NEAR Fusion+ Deployment**: Production-Ready Contract
+####  **Live NEAR Fusion+ Deployment**: Production-Ready Contract
 - **Contract Address**: [`fusion-plus.demo.cuteharbor3573.testnet`](https://testnet.nearblocks.io/address/fusion-plus.demo.cuteharbor3573.testnet)
 - **Deployment Date**: July 23, 2025
 - **Deployed By**: `demo.cuteharbor3573.testnet`
@@ -1293,31 +1293,31 @@ Complete implementation of autonomous multi-chain atomic swap agent using NEAR's
 - **Min Safety Deposit**: 500 bps (5%) - aligned with 1inch requirements
 - **Authorized Resolvers**: 1inch resolver network integration complete
 
-#### 📋 **Complete Deployment Transaction History**
+####  **Complete Deployment Transaction History**
 - **Account Creation**: [98a3GNajLnZ8wzz3UNk9nrdfofLw2YbVZx2Xbo5CrNoR](https://testnet.nearblocks.io/txns/98a3GNajLnZ8wzz3UNk9nrdfofLw2YbVZx2Xbo5CrNoR)
 - **WASM Deployment**: [5zN5UpwE3KJMK4mVi1AKffdZL2kb6at9EPSdYSSbqUHq](https://testnet.nearblocks.io/txns/5zN5UpwE3KJMK4mVi1AKffdZL2kb6at9EPSdYSSbqUHq)
 - **Contract Initialization**: [yXTqDWx5xSW3mAqsejpPi2hni8zpkpo7QV3nqkYkhzM](https://testnet.nearblocks.io/txns/yXTqDWx5xSW3mAqsejpPi2hni8zpkpo7QV3nqkYkhzM)
 - **Resolver Authorization**: [666Z4krACmYb48mVszYseAATzGCL5vJsfoz3NYTFCEZZ](https://testnet.nearblocks.io/txns/666Z4krACmYb48mVszYseAATzGCL5vJsfoz3NYTFCEZZ)
 
-#### ✅ **Production Readiness Verification**
-- **Contract Owner**: `demo.cuteharbor3573.testnet` ✅
-- **Safety Deposit Configuration**: 500 bps (5%) ✅  
-- **Resolver Authorization**: `demo.cuteharbor3573.testnet` authorized ✅
-- **State Validation**: All initialization functions working correctly ✅
-- **1inch Compatibility**: Ready for Fusion+ cross-chain order execution ✅
+####  **Production Readiness Verification**
+- **Contract Owner**: `demo.cuteharbor3573.testnet` 
+- **Safety Deposit Configuration**: 500 bps (5%)   
+- **Resolver Authorization**: `demo.cuteharbor3573.testnet` authorized 
+- **State Validation**: All initialization functions working correctly 
+- **1inch Compatibility**: Ready for Fusion+ cross-chain order execution 
 
-#### 🔄 **Legacy Contract Management**
+####  **Legacy Contract Management**
 - **Previous Contract**: `cross-chain-htlc.demo.cuteharbor3573.testnet` marked as DEPRECATED
 - **Migration Reason**: Old standalone version incompatible with 1inch Fusion+ format
 - **State Incompatibility**: Cannot deploy Fusion+ WASM over old contract state
 - **Solution**: Created dedicated Fusion+ contract account for clean deployment
 
-#### 🎯 **Hackathon Deliverable Status**
-- ✅ **$32K NEAR Bounty**: Complete 1inch Fusion+ extension deployed live
-- ✅ **Protocol Extension**: Properly extends 1inch Fusion+ (not standalone)
-- ✅ **Live Deployment**: Production-ready contract on NEAR testnet
-- ✅ **Cross-Chain Ready**: Ethereum Sepolia ↔ NEAR Testnet integration
-- 🔄 **Next Phase**: Ethereum modular contracts deployment to Sepolia
+####  **Hackathon Deliverable Status**
+-  **$32K NEAR Bounty**: Complete 1inch Fusion+ extension deployed live
+-  **Protocol Extension**: Properly extends 1inch Fusion+ (not standalone)
+-  **Live Deployment**: Production-ready contract on NEAR testnet
+-  **Cross-Chain Ready**: Ethereum Sepolia  NEAR Testnet integration
+-  **Next Phase**: Ethereum modular contracts deployment to Sepolia
 
 ### Added
 - Live NEAR Fusion+ contract deployment with complete transaction history
@@ -1336,43 +1336,43 @@ Complete implementation of autonomous multi-chain atomic swap agent using NEAR's
 
 ## [0.6.0] - 2025-07-23
 
-### 🏗️ **REVOLUTIONARY MODULAR ARCHITECTURE**: Complete 1inch Fusion+ Extension System
+###  **REVOLUTIONARY MODULAR ARCHITECTURE**: Complete 1inch Fusion+ Extension System
 
-#### 🚀 **GAME-CHANGING BREAKTHROUGH**: Universal Modular Chain Integration
+####  **GAME-CHANGING BREAKTHROUGH**: Universal Modular Chain Integration
 - **Modular Architecture**: Built revolutionary `IDestinationChain` interface supporting ANY blockchain
 - **Universal Chain Support**: Single interface for NEAR, Cosmos, Bitcoin, or any future blockchain
 - **Dynamic Chain Registry**: Add/remove destination chains without factory updates
 - **Future-Proof Design**: Extensible architecture for unlimited blockchain support
 - **1inch Fusion+ Compatible**: Full integration with existing resolver network and order format
 
-#### 🌐 **Complete NEAR Implementation**: First Production-Ready Chain Adapter
+####  **Complete NEAR Implementation**: First Production-Ready Chain Adapter
 - **NearDestinationChain Contract**: Full implementation of `IDestinationChain` interface
 - **NEAR Address Validation**: Complete support for .near and .testnet addresses
 - **Parameter Encoding**: Native NEAR execution parameters (contract calls, gas, deposits)
 - **Chain-Specific Logic**: Mainnet (40001) and testnet (40002) support with proper configuration
 - **Cost Estimation**: Accurate NEAR gas and fee calculations
 
-#### 🏭 **Modular Factory System**: Complete Fusion+ Integration
+####  **Modular Factory System**: Complete Fusion+ Integration
 - **FusionPlusFactory**: Enhanced factory supporting any registered destination chain
 - **CrossChainRegistry**: Dynamic chain management with adapter pattern
 - **Universal Order Creation**: Single factory works with all destination chains
 - **1inch Order Format**: Full compatibility with existing Fusion+ orders
 - **Extensible Design**: Add new chains without changing core factory logic
 
-#### ✅ **Production Deployment & Demo**: Complete Working System
+####  **Production Deployment & Demo**: Complete Working System
 - **Live Demo System**: Full deployment and testing infrastructure
 - **Contract Deployment**: CrossChainRegistry, FusionPlusFactory, and NEAR adapters
 - **End-to-End Testing**: Complete order creation, validation, and execution flow
 - **Cost Estimation**: Working NEAR gas calculations (1000.448 NEAR execution cost)
 - **Address Validation**: Live validation of alice.near, test-contract.testnet addresses
 
-#### 🎯 **Hackathon Success Metrics**: All Requirements Exceeded
-- ✅ **Extended 1inch Fusion+**: Revolutionary modular architecture extending core protocol
-- ✅ **NEAR Integration**: Complete production-ready implementation
-- ✅ **Atomic Guarantees**: HTLC security preserved across all chains
-- ✅ **Resolver Network**: Full integration with 1inch authorized resolvers
-- ✅ **Modular Design**: Universal interface supporting unlimited blockchain additions
-- ✅ **Demo & Testing**: Complete working demonstration with live deployment
+####  **Hackathon Success Metrics**: All Requirements Exceeded
+-  **Extended 1inch Fusion+**: Revolutionary modular architecture extending core protocol
+-  **NEAR Integration**: Complete production-ready implementation
+-  **Atomic Guarantees**: HTLC security preserved across all chains
+-  **Resolver Network**: Full integration with 1inch authorized resolvers
+-  **Modular Design**: Universal interface supporting unlimited blockchain additions
+-  **Demo & Testing**: Complete working demonstration with live deployment
 
 ### Technical Architecture
 - **IDestinationChain Interface**: Universal blockchain abstraction layer
@@ -1392,13 +1392,13 @@ Complete implementation of autonomous multi-chain atomic swap agent using NEAR's
 
 ### Major Architectural Redesign: 1inch Fusion+ Integration
 
-#### 🚀 **CRITICAL BREAKTHROUGH**: Migrated from Standalone to 1inch Fusion+ Extension
+####  **CRITICAL BREAKTHROUGH**: Migrated from Standalone to 1inch Fusion+ Extension
 - **Complete Architecture Overhaul**: Redesigned entire NEAR integration to properly extend 1inch Fusion+ protocol instead of building parallel infrastructure
 - **1inch Compatibility**: Now fully compatible with 1inch's order format, resolver network, and auction system
 - **Protocol Extension**: NEAR successfully added as a destination chain for 1inch Fusion+ atomic swaps
-- **Hackathon Requirement Compliance**: ✅ **"The MAIN requirement of the hackathon is to extend fusion+"** - Successfully achieved!
+- **Hackathon Requirement Compliance**:  **"The MAIN requirement of the hackathon is to extend fusion+"** - Successfully achieved!
 
-#### 🔧 **1inch Fusion+ NEAR Contract**: Complete rewrite for protocol compatibility
+####  **1inch Fusion+ NEAR Contract**: Complete rewrite for protocol compatibility
 - **Contract Name**: `FusionPlusNear` (renamed from `CrossChainHTLC`)
 - **1inch Order Format**: Uses 1inch order hash, packed timelocks, and immutables structure
 - **Resolver Network Integration**: Only authorized 1inch resolvers can execute orders
@@ -1406,13 +1406,13 @@ Complete implementation of autonomous multi-chain atomic swap agent using NEAR's
 - **Event System**: Comprehensive logging for 1inch monitoring integration
 - **Three-Step Claiming**: Separated claim, transfer, and payment to avoid NEAR promise limitations
 
-#### 📋 **Shared Types Enhancement**: Extended for 1inch compatibility
+####  **Shared Types Enhancement**: Extended for 1inch compatibility
 - **NEAR Chain Support**: Added NEAR_MAINNET (40001) and NEAR_TESTNET (40002) to chain definitions
 - **FusionPlusIntent Extension**: Added NEAR-specific execution parameters to existing 1inch intent format
 - **Utility Functions**: Created `createFusionPlusNearIntent()` and helper functions for NEAR integration
 - **Format Compatibility**: Token formatting and chain handling for NEAR destinations
 
-#### ✅ **Comprehensive Testing**: 17 passing tests across unit and integration suites
+####  **Comprehensive Testing**: 17 passing tests across unit and integration suites
 - **Unit Tests (11/11)**: Contract initialization, resolver management, order execution, security validation
 - **Integration Tests (6/6)**: Full end-to-end Fusion+ workflow testing
   - `test_fusion_contract_deployment` - Contract deploys and initializes correctly
@@ -1424,13 +1424,13 @@ Complete implementation of autonomous multi-chain atomic swap agent using NEAR's
 - **Promise Handling**: Resolved NEAR "joint promise" limitations with optimized architecture
 - **Test Cleanup**: Removed outdated standalone integration tests
 
-#### 🎯 **Hackathon Success Metrics**
-- ✅ **Extended 1inch Fusion+**: Core requirement achieved with proper protocol extension
-- ✅ **NEAR Integration**: Successfully added NEAR as destination chain for 1inch swaps
-- ✅ **Atomic Guarantees**: Maintained HTLC security with SHA-256 hashlock coordination
-- ✅ **Resolver Network**: Integrated with existing 1inch authorized resolver infrastructure
-- ✅ **Economic Security**: Compatible safety deposit and fee mechanism
-- ✅ **Production Ready**: Full test coverage and deployment infrastructure
+####  **Hackathon Success Metrics**
+-  **Extended 1inch Fusion+**: Core requirement achieved with proper protocol extension
+-  **NEAR Integration**: Successfully added NEAR as destination chain for 1inch swaps
+-  **Atomic Guarantees**: Maintained HTLC security with SHA-256 hashlock coordination
+-  **Resolver Network**: Integrated with existing 1inch authorized resolver infrastructure
+-  **Economic Security**: Compatible safety deposit and fee mechanism
+-  **Production Ready**: Full test coverage and deployment infrastructure
 
 ### Technical Architecture
 - **1inch Order Hash**: Compatible order identification system
@@ -1451,22 +1451,22 @@ Complete implementation of autonomous multi-chain atomic swap agent using NEAR's
 ### Added
 
 #### Live Onchain Demo System
-- 🎬 **ETH→NEAR Live Demo Script**: Production-ready atomic swap demonstration (`contracts/near/live-demo-eth-to-near.js`)
+-  **ETHNEAR Live Demo Script**: Production-ready atomic swap demonstration (`contracts/near/live-demo-eth-to-near.js`)
   - Real testnet integration with Ethereum Sepolia and NEAR testnet
-  - Actual token transfers: 10 USDC → 2 NEAR atomic swap execution
-  - Complete workflow: Intent creation → Order matching → Atomic completion
+  - Actual token transfers: 10 USDC  2 NEAR atomic swap execution
+  - Complete workflow: Intent creation  Order matching  Atomic completion
   - Explorer integration with transaction links for verification
   - Comprehensive error handling and logging
-- 🌐 **Live Testnet Deployment**: Production deployment on NEAR testnet
+-  **Live Testnet Deployment**: Production deployment on NEAR testnet
   - Contract address: `cross-chain-htlc.demo.cuteharbor3573.testnet`
   - Fully operational with authorized resolvers
   - Integration with existing Ethereum Sepolia factory at `0x98c35dA70f839F1B7965b8b8BA17654Da11f4486`
-- 📋 **Demo Infrastructure**: Complete setup and execution framework
+-  **Demo Infrastructure**: Complete setup and execution framework
   - Environment configuration templates (`.env.example`)
   - npm scripts for automated demo execution
   - Dependencies: ethers.js 6.8.0, near-api-js 2.1.4
   - Both automated and manual execution modes
-- 📖 **Live Demo Guide**: Comprehensive documentation (`LIVE_DEMO_GUIDE.md`)
+-  **Live Demo Guide**: Comprehensive documentation (`LIVE_DEMO_GUIDE.md`)
   - Step-by-step setup instructions
   - Prerequisites and account requirements  
   - Architecture diagrams and security model
@@ -1474,10 +1474,10 @@ Complete implementation of autonomous multi-chain atomic swap agent using NEAR's
   - **Bounty compliance verification**: Satisfies critical onchain demo requirement
 
 #### Bounty Requirement Compliance
-- ✅ **Onchain Token Transfers**: Real testnet execution with actual token movements
-- ✅ **Bidirectional Support**: Both ETH→NEAR and NEAR→ETH swap capabilities
-- ✅ **Hashlock/Timelock Preservation**: SHA-256 cryptographic coordination maintained
-- ✅ **Live Demonstration**: Ready for final bounty submission demo
+-  **Onchain Token Transfers**: Real testnet execution with actual token movements
+-  **Bidirectional Support**: Both ETHNEAR and NEARETH swap capabilities
+-  **Hashlock/Timelock Preservation**: SHA-256 cryptographic coordination maintained
+-  **Live Demonstration**: Ready for final bounty submission demo
 
 ### Technical Implementation
 - **Cross-Chain Coordination**: Shared hashlock between Ethereum Sepolia and NEAR testnet
@@ -1491,15 +1491,15 @@ Complete implementation of autonomous multi-chain atomic swap agent using NEAR's
 ### Fixed
 
 #### NEAR Testing Infrastructure
-- ✅ **Fixed WASM Compilation**: Resolved `CompilationError(PrepareError(Deserialization))` in integration tests
+-  **Fixed WASM Compilation**: Resolved `CompilationError(PrepareError(Deserialization))` in integration tests
   - Added `cargo near build` support with proper JsonSchema annotations
   - Fixed near-sdk 5.1.0 compatibility with schemars 0.8
   - Implemented proper WASM compilation pipeline for near-workspaces
-- ✅ **Fixed Integration Tests**: All 9 integration tests now passing
+-  **Fixed Integration Tests**: All 9 integration tests now passing
   - Resolved JSON deserialization issues with U64/U128 types
   - Fixed timelock parameter serialization (integers to strings)
   - Updated near-workspaces from 0.12 to 0.11 for compatibility
-- ✅ **Improved Test Coverage**: Comprehensive testing with near-workspaces sandbox
+-  **Improved Test Coverage**: Comprehensive testing with near-workspaces sandbox
   - Real contract deployment and execution testing
   - Multi-account interactions with proper balance verification
   - Event logging and cryptographic preimage verification
@@ -1516,34 +1516,34 @@ Complete implementation of autonomous multi-chain atomic swap agent using NEAR's
 ### Added
 
 #### NEAR Protocol Integration
-- ✅ **NEAR Smart Contract**: Complete Rust-based HTLC implementation (`contracts/near/src/lib.rs`)
+-  **NEAR Smart Contract**: Complete Rust-based HTLC implementation (`contracts/near/src/lib.rs`)
   - Hash Time Locked Contract with SHA-256 hashlock verification
   - Multi-stage timelock system with block height expiry
   - Native NEAR token support with resolver fee mechanism
   - Safety deposit requirements for authorized resolvers (10% of swap amount)
   - Comprehensive event emission for cross-chain monitoring
-- ✅ **Bidirectional Swap Support**: Full Ethereum ↔ NEAR atomic swap capabilities
-  - Ethereum → NEAR: Lock USDC/ETH, claim NEAR with preimage revelation
-  - NEAR → Ethereum: Lock NEAR tokens, claim Ethereum tokens atomically
+-  **Bidirectional Swap Support**: Full Ethereum  NEAR atomic swap capabilities
+  - Ethereum  NEAR: Lock USDC/ETH, claim NEAR with preimage revelation
+  - NEAR  Ethereum: Lock NEAR tokens, claim Ethereum tokens atomically
   - Shared hashlock coordination between both chains
-- ✅ **Demo System**: Complete demonstration of both swap directions (`contracts/near/demo.js`)
+-  **Demo System**: Complete demonstration of both swap directions (`contracts/near/demo.js`)
   - Interactive examples showing full cross-chain flow
   - Real hashlock generation and verification simulation
   - Integration with deployed Sepolia Ethereum contracts
-- ✅ **Deployment Infrastructure**: Production-ready deployment scripts
+-  **Deployment Infrastructure**: Production-ready deployment scripts
   - Automated NEAR testnet deployment (`contracts/near/deploy.sh`)
   - Contract initialization and resolver authorization
   - Build system with optimized WASM compilation
-- ✅ **Documentation**: Comprehensive integration guides (`contracts/near/README.md`)
+-  **Documentation**: Comprehensive integration guides (`contracts/near/README.md`)
   - API reference for all contract functions
   - Usage examples and testing instructions
   - Integration patterns with Ethereum contracts
 
 #### Cross-Chain Architecture Enhancements
-- 🔗 **Contract Compatibility**: NEAR contract designed for seamless integration with Ethereum factory
-- 🔐 **Shared Security Model**: Consistent hashlock/timelock mechanisms across chains
-- 📊 **Event Coordination**: Structured logging for cross-chain relayer monitoring
-- ⚡ **Gas Optimization**: Efficient NEAR contract with minimal storage costs
+-  **Contract Compatibility**: NEAR contract designed for seamless integration with Ethereum factory
+-  **Shared Security Model**: Consistent hashlock/timelock mechanisms across chains
+-  **Event Coordination**: Structured logging for cross-chain relayer monitoring
+-  **Gas Optimization**: Efficient NEAR contract with minimal storage costs
 
 ### Technical Specifications
 - **NEAR Contract**: `cross_chain_htlc.wasm` targeting NEAR Protocol testnet
@@ -1554,46 +1554,46 @@ Complete implementation of autonomous multi-chain atomic swap agent using NEAR's
 - **Security Features**: 10% safety deposits, atomic execution, timeout-based cancellation
 
 ### Target Achievement
-- 🎯 **$32,000 NEAR Bounty**: Full implementation ready for submission
-- 🚀 **Next Target**: Cosmos integration for additional $32K bounty
-- 💰 **Total Progress**: $32K of $96K possible bounty rewards
+-  **$32,000 NEAR Bounty**: Full implementation ready for submission
+-  **Next Target**: Cosmos integration for additional $32K bounty
+-  **Total Progress**: $32K of $96K possible bounty rewards
 
 ## [0.2.0] - 2025-01-22
 
 ### Added
 
 #### Ethereum Contracts Implementation
-- ✅ **CrossChainFactory**: Complete factory contract for managing cross-chain atomic swaps
+-  **CrossChainFactory**: Complete factory contract for managing cross-chain atomic swaps
   - Intent creation and matching functionality
   - Resolver authorization system
   - Dynamic escrow contract deployment
   - Event emission for off-chain monitoring
-- ✅ **CrossChainEscrow**: Full HTLC implementation with multi-stage timelocks
+-  **CrossChainEscrow**: Full HTLC implementation with multi-stage timelocks
   - Token locking and claiming with hashlock verification
   - Safety deposit mechanism for resolvers
   - Cancellation and refund functionality
-- ✅ **MockERC20**: Test token for local development and testing
+-  **MockERC20**: Test token for local development and testing
 
 #### Demo System
-- ✅ **Complete atomic swap demo** showing full cross-chain flow:
-  1. Intent creation (100 USDC → 0.025 BTC)
+-  **Complete atomic swap demo** showing full cross-chain flow:
+  1. Intent creation (100 USDC  0.025 BTC)
   2. Resolver matching with safety deposits
   3. Token locking in Ethereum escrow
   4. Bitcoin HTLC simulation
   5. Secret revelation and atomic completion
-- ✅ **Sepolia testnet deployment** at `0x98c35dA70f839F1B7965b8b8BA17654Da11f4486`
+-  **Sepolia testnet deployment** at `0x98c35dA70f839F1B7965b8b8BA17654Da11f4486`
 
 #### Development Infrastructure
-- ✅ **Environment configuration** with dotenv support
-- ✅ **Hardhat setup** with Sepolia network configuration
-- ✅ **Alchemy integration** for reliable RPC connectivity
-- ✅ **Deployment scripts** for both local and testnet environments
+-  **Environment configuration** with dotenv support
+-  **Hardhat setup** with Sepolia network configuration
+-  **Alchemy integration** for reliable RPC connectivity
+-  **Deployment scripts** for both local and testnet environments
 
 ### Fixed
-- 🔧 **Contract deployment issues** resolved with proper environment loading
-- 🔧 **Event parsing** for dynamic escrow address extraction
-- 🔧 **Balance verification** and token transfer validation
-- 🔧 **RPC timeout issues** with increased timeout configurations
+-  **Contract deployment issues** resolved with proper environment loading
+-  **Event parsing** for dynamic escrow address extraction
+-  **Balance verification** and token transfer validation
+-  **RPC timeout issues** with increased timeout configurations
 
 ### Technical Details
 - **Gas Usage**: ~3M gas for complete matchIntent operation (escrow creation)

@@ -52,14 +52,14 @@ export class QuoteGenerator extends EventEmitter {
    * Initialize quote generator with chain adapters
    */
   async initialize(adapters: Map<ChainId, ChainAdapter>): Promise<void> {
-    logger.info('🔧 Initializing Quote Generator...');
+    logger.info(' Initializing Quote Generator...');
     
     this.chainAdapters = adapters;
     
     // Warm up price caches
     await this.warmupCaches();
     
-    logger.info('✅ Quote Generator initialized');
+    logger.info(' Quote Generator initialized');
   }
 
   /**
@@ -123,7 +123,7 @@ export class QuoteGenerator extends EventEmitter {
       return quote;
 
     } catch (error) {
-      logger.error(`💥 Quote generation failed for ${request.id}:`, error);
+      logger.error(` Quote generation failed for ${request.id}:`, error);
       
       const solverError: SolverError = {
         type: SolverErrorType.QUOTE_GENERATION_ERROR,
@@ -155,7 +155,7 @@ export class QuoteGenerator extends EventEmitter {
       return route;
     }
 
-    // Cross-chain swap: Source swap → Bridge → Destination swap
+    // Cross-chain swap: Source swap  Bridge  Destination swap
     
     // 1. Source chain swap (if needed)
     if (request.sourceToken.address !== this.getNativeToken(request.sourceChain)) {
@@ -537,7 +537,7 @@ export class QuoteGenerator extends EventEmitter {
   }
 
   private async warmupCaches(): Promise<void> {
-    logger.info('🔥 Warming up price caches...');
+    logger.info(' Warming up price caches...');
     
     // Warm up token prices for each chain
     for (const [chainId, adapter] of this.chainAdapters) {
@@ -548,7 +548,7 @@ export class QuoteGenerator extends EventEmitter {
       }
     }
     
-    logger.info('✅ Caches warmed up');
+    logger.info(' Caches warmed up');
   }
 
   /**
@@ -562,9 +562,9 @@ export class QuoteGenerator extends EventEmitter {
    * Stop quote generator
    */
   async stop(): Promise<void> {
-    logger.info('🛑 Stopping Quote Generator...');
+    logger.info(' Stopping Quote Generator...');
     this.liquidityCache.clear();
     this.priceCache.clear();
-    logger.info('✅ Quote Generator stopped');
+    logger.info(' Quote Generator stopped');
   }
 }

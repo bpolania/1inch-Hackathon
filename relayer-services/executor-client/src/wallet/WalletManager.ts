@@ -22,7 +22,7 @@ export class WalletManager {
     }
 
     async initialize(): Promise<void> {
-        logger.info('🔧 Initializing Wallet Manager...');
+        logger.info(' Initializing Wallet Manager...');
 
         // Initialize Ethereum wallet
         await this.initializeEthereumWallet();
@@ -31,13 +31,13 @@ export class WalletManager {
         await this.initializeNearWallet();
 
         this.isInitialized = true;
-        logger.info('✅ Wallet Manager initialized');
+        logger.info(' Wallet Manager initialized');
 
         // Log wallet info
         const ethBalance = await this.getEthereumBalance();
         const nearBalance = await this.getNearBalance();
 
-        logger.info('💼 Wallet Status:', {
+        logger.info(' Wallet Status:', {
             ethereum: {
                 address: this.config.wallet.ethereum.address,
                 balance: `${ethers.formatEther(ethBalance)} ETH`,
@@ -70,10 +70,10 @@ export class WalletManager {
                 throw new Error(`Chain ID mismatch. Expected ${this.config.ethereum.chainId}, got ${network.chainId}`);
             }
 
-            logger.info(`🔗 Connected to Ethereum: ${this.config.ethereum.name} (Chain ID: ${network.chainId})`);
+            logger.info(` Connected to Ethereum: ${this.config.ethereum.name} (Chain ID: ${network.chainId})`);
 
         } catch (error) {
-            logger.error('💥 Failed to initialize Ethereum wallet:', error);
+            logger.error(' Failed to initialize Ethereum wallet:', error);
             throw error;
         }
     }
@@ -83,7 +83,7 @@ export class WalletManager {
             // For now, we'll simulate NEAR wallet initialization
             // In a production implementation, this would use near-api-js
             
-            logger.info(`🔗 NEAR wallet configured for ${this.config.wallet.near.accountId}`);
+            logger.info(` NEAR wallet configured for ${this.config.wallet.near.accountId}`);
             
             // Mock NEAR account object
             this.nearAccount = {
@@ -93,7 +93,7 @@ export class WalletManager {
             };
 
         } catch (error) {
-            logger.error('💥 Failed to initialize NEAR wallet:', error);
+            logger.error(' Failed to initialize NEAR wallet:', error);
             throw error;
         }
     }

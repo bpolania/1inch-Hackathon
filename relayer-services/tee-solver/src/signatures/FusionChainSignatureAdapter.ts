@@ -55,7 +55,7 @@ export class FusionChainSignatureAdapter extends EventEmitter {
    * Initialize the adapter
    */
   async initialize(): Promise<void> {
-    logger.info('🔧 Initializing Fusion Chain Signature Adapter...');
+    logger.info(' Initializing Fusion Chain Signature Adapter...');
     
     try {
       // Ensure Chain Signature Manager is initialized
@@ -72,12 +72,12 @@ export class FusionChainSignatureAdapter extends EventEmitter {
       );
       
       if (unsupportedChains.length > 0) {
-        logger.warn('⚠️ Some enabled chains are not supported by Chain Signatures:', unsupportedChains);
+        logger.warn(' Some enabled chains are not supported by Chain Signatures:', unsupportedChains);
       }
       
       this.isInitialized = true;
       
-      logger.info('✅ Fusion Chain Signature Adapter initialized', {
+      logger.info(' Fusion Chain Signature Adapter initialized', {
         enabledChains: this.config.enabledChains,
         derivationPath: this.config.derivationPath
       });
@@ -85,7 +85,7 @@ export class FusionChainSignatureAdapter extends EventEmitter {
       this.emit('initialized');
       
     } catch (error) {
-      logger.error('💥 Failed to initialize Fusion Chain Signature Adapter:', error);
+      logger.error(' Failed to initialize Fusion Chain Signature Adapter:', error);
       throw error;
     }
   }
@@ -107,7 +107,7 @@ export class FusionChainSignatureAdapter extends EventEmitter {
     
     this.stats.ordersSignedTotal++;
 
-    logger.info(`🔏 Signing Fusion+ order using Chain Signatures`, {
+    logger.info(` Signing Fusion+ order using Chain Signatures`, {
       orderId,
       targetChain,
       orderType: 'fusion-plus'
@@ -148,7 +148,7 @@ export class FusionChainSignatureAdapter extends EventEmitter {
       const signingTime = Date.now() - startTime;
       this.updateSigningStats(signingTime, true);
 
-      logger.info(`✅ Fusion+ order signed in ${signingTime}ms`, {
+      logger.info(` Fusion+ order signed in ${signingTime}ms`, {
         orderId,
         targetChain,
         solverAddress: solverAddress.substring(0, 10) + '...'
@@ -171,7 +171,7 @@ export class FusionChainSignatureAdapter extends EventEmitter {
       const signingTime = Date.now() - startTime;
       this.updateSigningStats(signingTime, false);
 
-      logger.error(`💥 Failed to sign Fusion+ order:`, error);
+      logger.error(` Failed to sign Fusion+ order:`, error);
       
       this.emit('signing_failed', {
         orderId,
@@ -190,7 +190,7 @@ export class FusionChainSignatureAdapter extends EventEmitter {
     orders: Array<{ order: FusionPlusOrder; targetChain: string }>
   ): Promise<Array<{ signedOrder: any; signature: string; solverAddress: string }>> {
     
-    logger.info(`🔏 Signing ${orders.length} Fusion+ orders concurrently`);
+    logger.info(` Signing ${orders.length} Fusion+ orders concurrently`);
 
     try {
       const signingPromises = orders.map(({ order, targetChain }) =>
@@ -199,11 +199,11 @@ export class FusionChainSignatureAdapter extends EventEmitter {
 
       const results = await Promise.all(signingPromises);
       
-      logger.info(`✅ Successfully signed ${results.length} Fusion+ orders`);
+      logger.info(` Successfully signed ${results.length} Fusion+ orders`);
       return results;
 
     } catch (error) {
-      logger.error('💥 Failed to sign multiple Fusion+ orders:', error);
+      logger.error(' Failed to sign multiple Fusion+ orders:', error);
       throw error;
     }
   }
@@ -220,19 +220,19 @@ export class FusionChainSignatureAdapter extends EventEmitter {
       return { isValid: true };
     }
 
-    logger.info(`🔍 Verifying order signature for ${targetChain}`);
+    logger.info(` Verifying order signature for ${targetChain}`);
 
     try {
       // Chain-specific signature verification
       const chainId = this.convertToChainSignatureChain(targetChain);
       const verification = await this.performSignatureVerification(signedOrder, chainId);
       
-      logger.info(`${verification.isValid ? '✅' : '❌'} Signature verification result: ${verification.isValid}`);
+      logger.info(`${verification.isValid ? '' : ''} Signature verification result: ${verification.isValid}`);
       
       return verification;
 
     } catch (error) {
-      logger.error('💥 Signature verification failed:', error);
+      logger.error(' Signature verification failed:', error);
       return { isValid: false };
     }
   }
@@ -407,8 +407,8 @@ export class FusionChainSignatureAdapter extends EventEmitter {
    * Stop the adapter
    */
   async stop(): Promise<void> {
-    logger.info('🛑 Stopping Fusion Chain Signature Adapter...');
+    logger.info(' Stopping Fusion Chain Signature Adapter...');
     this.isInitialized = false;
-    logger.info('✅ Fusion Chain Signature Adapter stopped');
+    logger.info(' Fusion Chain Signature Adapter stopped');
   }
 }

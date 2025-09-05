@@ -7,6 +7,7 @@
 
 import { EventEmitter } from 'events';
 import { logger } from '../utils/logger';
+import { NearSolverRegistry, SolverRegistryConfig, RegistrationParams } from '../registry/NearSolverRegistry';
 
 export interface TEEConfig {
   teeMode: boolean;
@@ -16,6 +17,10 @@ export interface TEEConfig {
   nearNetwork: 'testnet' | 'mainnet';
   nearAccountId: string;
   nearSecretKey: string;
+  // Official NEAR registry configuration
+  registryContractId: string;
+  intentsContractId: string;
+  targetPoolId?: number;
 }
 
 export interface AttestationData {
@@ -39,6 +44,7 @@ export class ShadeAgentManager extends EventEmitter {
   private attestationData?: AttestationData;
   private teeKeyPairs: Map<string, TEEKeyPair> = new Map();
   private registrationStatus: 'pending' | 'registered' | 'failed' = 'pending';
+  private nearRegistry: NearSolverRegistry;
 
   // TEE Statistics
   private stats = {
@@ -52,6 +58,18 @@ export class ShadeAgentManager extends EventEmitter {
   constructor(config: TEEConfig) {
     super();
     this.config = config;
+    
+    // Initialize official NEAR registry
+    const registryConfig: SolverRegistryConfig = {
+      nearNetwork: config.nearNetwork,
+      nearAccountId: config.nearAccountId,
+      nearSecretKey: config.nearSecretKey,
+      registryContractId: config.registryContractId,
+      intentsContractId: config.intentsContractId,
+      approvedCodehash: config.expectedCodeHash
+    };
+    
+    this.nearRegistry = new NearSolverRegistry(registryConfig);
     this.setupEventHandlers();
   }
 
@@ -59,7 +77,7 @@ export class ShadeAgentManager extends EventEmitter {
    * Initialize Shade Agent TEE Manager
    */
   async initialize(): Promise<void> {
-    logger.info('🛡️ Initializing NEAR Shade Agent TEE Manager...', {
+    logger.info(' Initializing NEAR Shade Agent TEE Manager...', {
       teeMode: this.config.teeMode,
       network: this.config.nearNetwork,
       contract: this.config.shadeAgentContract
@@ -67,24 +85,30 @@ export class ShadeAgentManager extends EventEmitter {
 
     try {
       if (this.config.teeMode) {
+        // Initialize official NEAR registry first
+        await this.nearRegistry.initialize();
+        
         // Initialize TEE environment
         await this.initializeTEE();
         
         // Perform remote attestation
         await this.performRemoteAttestation();
         
-        // Register with Shade Agent contract
+        // Register with official NEAR solver registry
+        await this.registerWithNearRegistry();
+        
+        // Also register with Shade Agent contract (for compatibility)
         await this.registerWithShadeAgent();
       } else {
-        logger.warn('⚠️ TEE mode disabled - running without Shade Agent integration');
+        logger.warn(' TEE mode disabled - running without Shade Agent integration');
       }
 
       this.isInitialized = true;
-      logger.info('✅ Shade Agent TEE Manager initialized successfully');
+      logger.info(' Shade Agent TEE Manager initialized successfully');
       this.emit('initialized');
 
     } catch (error) {
-      logger.error('💥 Failed to initialize Shade Agent TEE Manager:', error);
+      logger.error(' Failed to initialize Shade Agent TEE Manager:', error);
       this.emit('initialization_failed', error);
       throw error;
     }
@@ -94,7 +118,7 @@ export class ShadeAgentManager extends EventEmitter {
    * Initialize TEE environment and validate security
    */
   private async initializeTEE(): Promise<void> {
-    logger.info('🔒 Initializing TEE environment...');
+    logger.info(' Initializing TEE environment...');
 
     try {
       // Validate TEE environment
@@ -107,14 +131,14 @@ export class ShadeAgentManager extends EventEmitter {
       // Check security level
       this.stats.teeSecurityLevel = this.evaluateSecurityLevel(teeInfo);
       
-      logger.info('✅ TEE environment validated', {
+      logger.info(' TEE environment validated', {
         securityLevel: this.stats.teeSecurityLevel,
         platform: teeInfo.platform,
         version: teeInfo.version
       });
 
     } catch (error) {
-      logger.error('💥 TEE initialization failed:', error);
+      logger.error(' TEE initialization failed:', error);
       throw error;
     }
   }
@@ -123,7 +147,7 @@ export class ShadeAgentManager extends EventEmitter {
    * Perform remote attestation using Intel TDX
    */
   private async performRemoteAttestation(): Promise<AttestationData> {
-    logger.info('🔐 Performing remote attestation...');
+    logger.info(' Performing remote attestation...');
 
     try {
       const startTime = Date.now();
@@ -152,7 +176,7 @@ export class ShadeAgentManager extends EventEmitter {
       this.stats.attestationsPerformed++;
       this.stats.lastAttestationTime = attestationTime;
 
-      logger.info('✅ Remote attestation completed', {
+      logger.info(' Remote attestation completed', {
         attestationTime,
         codeHash: codehash.substring(0, 16) + '...',
         quoteLength: quote.length
@@ -162,8 +186,48 @@ export class ShadeAgentManager extends EventEmitter {
       return this.attestationData;
 
     } catch (error) {
-      logger.error('💥 Remote attestation failed:', error);
+      logger.error(' Remote attestation failed:', error);
       this.emit('attestation_failed', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Register with official NEAR solver registry
+   */
+  private async registerWithNearRegistry(): Promise<void> {
+    if (!this.attestationData) {
+      throw new Error('Attestation data required for NEAR registry registration');
+    }
+
+    logger.info(' Registering with official NEAR solver registry...', {
+      registry: this.config.registryContractId,
+      poolId: this.config.targetPoolId || 1
+    });
+
+    try {
+      // Check if pools are available
+      const pools = await this.nearRegistry.getAvailablePools();
+      const targetPoolId = this.config.targetPoolId || (pools.length > 0 ? pools[0].id : 1);
+
+      // Generate attestation parameters
+      const attestationParams = await this.nearRegistry.generateAttestationParams(targetPoolId);
+
+      // Register with official registry
+      const success = await this.nearRegistry.registerSolver(attestationParams);
+
+      if (success) {
+        this.registrationStatus = 'registered';
+        logger.info(' Successfully registered with official NEAR solver registry');
+        this.emit('near_registry_registered', { poolId: targetPoolId });
+      } else {
+        throw new Error('Registration returned false');
+      }
+
+    } catch (error) {
+      this.registrationStatus = 'failed';
+      logger.error(' NEAR registry registration failed:', error);
+      this.emit('near_registry_failed', error);
       throw error;
     }
   }
@@ -176,7 +240,7 @@ export class ShadeAgentManager extends EventEmitter {
       throw new Error('Attestation data required for registration');
     }
 
-    logger.info('📝 Registering with Shade Agent contract...', {
+    logger.info(' Registering with Shade Agent contract...', {
       contract: this.config.shadeAgentContract,
       account: this.config.nearAccountId
     });
@@ -193,7 +257,7 @@ export class ShadeAgentManager extends EventEmitter {
 
       if (registrationResult.success) {
         this.registrationStatus = 'registered';
-        logger.info('✅ Successfully registered with Shade Agent contract');
+        logger.info(' Successfully registered with Shade Agent contract');
         this.emit('registration_completed', registrationResult);
       } else {
         throw new Error(`Registration failed: ${registrationResult.error}`);
@@ -201,7 +265,7 @@ export class ShadeAgentManager extends EventEmitter {
 
     } catch (error) {
       this.registrationStatus = 'failed';
-      logger.error('💥 Shade Agent registration failed:', error);
+      logger.error(' Shade Agent registration failed:', error);
       this.emit('registration_failed', error);
       throw error;
     }
@@ -211,7 +275,7 @@ export class ShadeAgentManager extends EventEmitter {
    * Generate cryptographically secure key pair using TEE hardware entropy
    */
   async generateTEEKeyPair(chainType: 'secp256k1' | 'ed25519' = 'secp256k1'): Promise<TEEKeyPair> {
-    logger.info('🔑 Generating TEE key pair', { chainType });
+    logger.info(' Generating TEE key pair', { chainType });
 
     try {
       // Use TEE hardware entropy for secure key generation
@@ -229,7 +293,7 @@ export class ShadeAgentManager extends EventEmitter {
       this.teeKeyPairs.set(keyPair.address, keyPair);
       this.stats.keysGenerated++;
 
-      logger.info('✅ TEE key pair generated', {
+      logger.info(' TEE key pair generated', {
         address: keyPair.address,
         publicKey: keyPair.publicKey.substring(0, 16) + '...',
         chainType
@@ -239,7 +303,7 @@ export class ShadeAgentManager extends EventEmitter {
       return keyPair;
 
     } catch (error) {
-      logger.error('💥 TEE key pair generation failed:', error);
+      logger.error(' TEE key pair generation failed:', error);
       throw error;
     }
   }
@@ -253,7 +317,7 @@ export class ShadeAgentManager extends EventEmitter {
       throw new Error(`No TEE key pair found for address: ${signerAddress}`);
     }
 
-    logger.info('✍️ Signing transaction with TEE key', {
+    logger.info(' Signing transaction with TEE key', {
       address: signerAddress.substring(0, 10) + '...',
       chain: targetChain
     });
@@ -262,13 +326,13 @@ export class ShadeAgentManager extends EventEmitter {
       // Use TEE-secured private key for signing
       const signature = await this.performTEESigning(transaction, keyPair.privateKey, targetChain);
       
-      logger.info('✅ Transaction signed successfully with TEE');
+      logger.info(' Transaction signed successfully with TEE');
       this.emit('transaction_signed', { address: signerAddress, chain: targetChain });
       
       return signature;
 
     } catch (error) {
-      logger.error('💥 TEE transaction signing failed:', error);
+      logger.error(' TEE transaction signing failed:', error);
       this.emit('signing_failed', { address: signerAddress, error });
       throw error;
     }
@@ -329,7 +393,7 @@ export class ShadeAgentManager extends EventEmitter {
 
   private async callNEARContract(method: string, args: any): Promise<any> {
     // Mock NEAR contract call - would use actual NEAR API
-    logger.info(`📞 Calling NEAR contract method: ${method}`, args);
+    logger.info(` Calling NEAR contract method: ${method}`, args);
     
     // Simulate successful registration
     return {
@@ -399,15 +463,15 @@ export class ShadeAgentManager extends EventEmitter {
 
   private setupEventHandlers(): void {
     this.on('initialized', () => {
-      logger.info('📊 Shade Agent TEE Manager initialized');
+      logger.info(' Shade Agent TEE Manager initialized');
     });
 
     this.on('attestation_completed', (data) => {
-      logger.info('🔐 Remote attestation completed successfully');
+      logger.info(' Remote attestation completed successfully');
     });
 
     this.on('registration_completed', (data) => {
-      logger.info('📝 Shade Agent registration completed successfully');
+      logger.info(' Shade Agent registration completed successfully');
     });
   }
 
@@ -436,13 +500,13 @@ export class ShadeAgentManager extends EventEmitter {
    * Stop Shade Agent manager
    */
   async stop(): Promise<void> {
-    logger.info('🛑 Stopping Shade Agent TEE Manager...');
+    logger.info(' Stopping Shade Agent TEE Manager...');
     
     // Clear sensitive data from memory
     this.teeKeyPairs.clear();
     this.attestationData = undefined;
     this.isInitialized = false;
     
-    logger.info('✅ Shade Agent TEE Manager stopped');
+    logger.info(' Shade Agent TEE Manager stopped');
   }
 }

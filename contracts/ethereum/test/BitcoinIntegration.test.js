@@ -16,11 +16,11 @@ describe("Bitcoin Integration - Local Deployment Test", function () {
     const LITECOIN_MAINNET_ID = 40006;
 
     before(async function () {
-        console.log("\n🚀 Starting Bitcoin Integration Test Suite");
+        console.log("\n Starting Bitcoin Integration Test Suite");
         console.log("===========================================");
         
         [owner, addr1, addr2] = await ethers.getSigners();
-        console.log("📍 Test accounts:");
+        console.log(" Test accounts:");
         console.log("   Owner:", owner.address);
         console.log("   User1:", addr1.address);
         console.log("   User2:", addr2.address);
@@ -28,43 +28,43 @@ describe("Bitcoin Integration - Local Deployment Test", function () {
 
     describe("Full Bitcoin Integration Deployment", function () {
         it("Should deploy CrossChainRegistry", async function () {
-            console.log("\n📋 Step 1: Deploy CrossChainRegistry");
+            console.log("\n Step 1: Deploy CrossChainRegistry");
             
             const CrossChainRegistry = await ethers.getContractFactory("CrossChainRegistry");
             registry = await CrossChainRegistry.deploy();
             await registry.waitForDeployment();
             
             const registryAddress = await registry.getAddress();
-            console.log("   ✅ CrossChainRegistry deployed to:", registryAddress);
+            console.log("    CrossChainRegistry deployed to:", registryAddress);
             
             expect(await registry.owner()).to.equal(owner.address);
         });
 
         it("Should deploy Bitcoin family adapters", async function () {
-            console.log("\n📋 Step 2: Deploy Bitcoin Adapters");
+            console.log("\n Step 2: Deploy Bitcoin Adapters");
             
             const BitcoinDestinationChain = await ethers.getContractFactory("BitcoinDestinationChain");
             
             // Deploy Bitcoin Testnet adapter
-            console.log("   🔄 Deploying Bitcoin Testnet adapter...");
+            console.log("    Deploying Bitcoin Testnet adapter...");
             btcAdapter = await BitcoinDestinationChain.deploy(BITCOIN_TESTNET_ID);
             await btcAdapter.waitForDeployment();
             const btcAddress = await btcAdapter.getAddress();
-            console.log("   ✅ Bitcoin Testnet Adapter:", btcAddress);
+            console.log("    Bitcoin Testnet Adapter:", btcAddress);
             
             // Deploy Dogecoin adapter
-            console.log("   🔄 Deploying Dogecoin adapter...");
+            console.log("    Deploying Dogecoin adapter...");
             dogeAdapter = await BitcoinDestinationChain.deploy(DOGECOIN_MAINNET_ID);
             await dogeAdapter.waitForDeployment();
             const dogeAddress = await dogeAdapter.getAddress();
-            console.log("   ✅ Dogecoin Adapter:", dogeAddress);
+            console.log("    Dogecoin Adapter:", dogeAddress);
             
             // Deploy Litecoin adapter
-            console.log("   🔄 Deploying Litecoin adapter...");
+            console.log("    Deploying Litecoin adapter...");
             ltcAdapter = await BitcoinDestinationChain.deploy(LITECOIN_MAINNET_ID);
             await ltcAdapter.waitForDeployment();
             const ltcAddress = await ltcAdapter.getAddress();
-            console.log("   ✅ Litecoin Adapter:", ltcAddress);
+            console.log("    Litecoin Adapter:", ltcAddress);
 
             // Verify chain information
             const btcInfo = await btcAdapter.getChainInfo();
@@ -85,26 +85,26 @@ describe("Bitcoin Integration - Local Deployment Test", function () {
         });
 
         it("Should register Bitcoin adapters with registry", async function () {
-            console.log("\n📋 Step 3: Register Bitcoin Adapters");
+            console.log("\n Step 3: Register Bitcoin Adapters");
             
             const btcAddress = await btcAdapter.getAddress();
             const dogeAddress = await dogeAdapter.getAddress();
             const ltcAddress = await ltcAdapter.getAddress();
             
             // Register Bitcoin Testnet
-            console.log("   🔄 Registering Bitcoin Testnet...");
+            console.log("    Registering Bitcoin Testnet...");
             await registry.registerChainAdapter(BITCOIN_TESTNET_ID, btcAddress);
-            console.log("   ✅ Bitcoin Testnet registered");
+            console.log("    Bitcoin Testnet registered");
             
             // Register Dogecoin
-            console.log("   🔄 Registering Dogecoin...");
+            console.log("    Registering Dogecoin...");
             await registry.registerChainAdapter(DOGECOIN_MAINNET_ID, dogeAddress);
-            console.log("   ✅ Dogecoin registered");
+            console.log("    Dogecoin registered");
             
             // Register Litecoin
-            console.log("   🔄 Registering Litecoin...");
+            console.log("    Registering Litecoin...");
             await registry.registerChainAdapter(LITECOIN_MAINNET_ID, ltcAddress);
-            console.log("   ✅ Litecoin registered");
+            console.log("    Litecoin registered");
 
             // Verify registration
             const supportedChains = await registry.getSupportedChainIds();
@@ -117,7 +117,7 @@ describe("Bitcoin Integration - Local Deployment Test", function () {
 
     describe("Bitcoin Adapter Functionality Tests", function () {
         it("Should validate Bitcoin addresses correctly", async function () {
-            console.log("\n📋 Step 4: Test Address Validation");
+            console.log("\n Step 4: Test Address Validation");
             
             const testAddresses = {
                 "Bitcoin Testnet P2PKH": "mipcBbFg9gMiCh81Kj8tqqdgoZub1ZJRfn",
@@ -129,13 +129,13 @@ describe("Bitcoin Integration - Local Deployment Test", function () {
 
             for (const [type, address] of Object.entries(testAddresses)) {
                 const isValid = await btcAdapter.validateDestinationAddress(ethers.toUtf8Bytes(address));
-                console.log(`   ${isValid ? '✅' : '❌'} ${type}: ${address}`);
+                console.log(`   ${isValid ? '' : ''} ${type}: ${address}`);
                 expect(isValid).to.be.true;
             }
         });
 
         it("Should create and validate Bitcoin execution parameters", async function () {
-            console.log("\n📋 Step 5: Test Bitcoin Parameters");
+            console.log("\n Step 5: Test Bitcoin Parameters");
             
             // Test encoding/decoding
             const btcAddress = "mipcBbFg9gMiCh81Kj8tqqdgoZub1ZJRfn";
@@ -149,13 +149,13 @@ describe("Bitcoin Integration - Local Deployment Test", function () {
             expect(decoded.htlcTimelock).to.equal(htlcTimelock);
             expect(decoded.feeRate).to.equal(feeRate);
             
-            console.log("   ✅ Parameter encoding/decoding successful");
-            console.log("   🔧 Fee Rate:", decoded.feeRate.toString(), "sat/byte");
-            console.log("   ⏰ Timelock:", decoded.htlcTimelock.toString(), "blocks");
+            console.log("    Parameter encoding/decoding successful");
+            console.log("    Fee Rate:", decoded.feeRate.toString(), "sat/byte");
+            console.log("    Timelock:", decoded.htlcTimelock.toString(), "blocks");
         });
 
         it("Should validate order parameters correctly", async function () {
-            console.log("\n📋 Step 6: Test Order Validation");
+            console.log("\n Step 6: Test Order Validation");
             
             const btcAddress = "mipcBbFg9gMiCh81Kj8tqqdgoZub1ZJRfn";
             const htlcTimelock = 144;
@@ -175,12 +175,12 @@ describe("Bitcoin Integration - Local Deployment Test", function () {
             expect(validation.isValid).to.be.true;
             expect(validation.estimatedCost).to.be.greaterThan(0);
             
-            console.log(`   ✅ Order Validation: ${validation.isValid ? 'PASSED' : 'FAILED'}`);
-            console.log("   💰 Estimated Cost:", ethers.formatEther(validation.estimatedCost), "ETH equivalent");
+            console.log(`    Order Validation: ${validation.isValid ? 'PASSED' : 'FAILED'}`);
+            console.log("    Estimated Cost:", ethers.formatEther(validation.estimatedCost), "ETH equivalent");
         });
 
         it("Should calculate safety deposits correctly", async function () {
-            console.log("\n📋 Step 7: Test Safety Deposits");
+            console.log("\n Step 7: Test Safety Deposits");
             
             const amounts = [
                 ethers.parseEther("0.01"), // 0.01 BTC
@@ -194,18 +194,18 @@ describe("Bitcoin Integration - Local Deployment Test", function () {
                 
                 expect(safetyDeposit).to.equal(expectedDeposit);
                 
-                console.log(`   💳 Amount: ${ethers.formatEther(amount)} BTC → Safety Deposit: ${ethers.formatEther(safetyDeposit)} BTC (5%)`);
+                console.log(`    Amount: ${ethers.formatEther(amount)} BTC  Safety Deposit: ${ethers.formatEther(safetyDeposit)} BTC (5%)`);
             }
         });
 
         it("Should validate execution parameters and metadata", async function () {
-            console.log("\n📋 Step 8: Test Bitcoin Parameter Validation");
+            console.log("\n Step 8: Test Bitcoin Parameter Validation");
             
             const secret = "my_secret_preimage_for_atomic_swap";
             const hashlock = ethers.sha256(ethers.toUtf8Bytes(secret));
 
-            console.log("   🔐 Secret:", secret);
-            console.log("   #️⃣ Hashlock:", hashlock);
+            console.log("    Secret:", secret);
+            console.log("   # Hashlock:", hashlock);
 
             // Test parameter encoding/decoding
             const btcAddress = "mipcBbFg9gMiCh81Kj8tqqdgoZub1ZJRfn";
@@ -219,13 +219,13 @@ describe("Bitcoin Integration - Local Deployment Test", function () {
             expect(decoded.htlcTimelock).to.equal(htlcTimelock);
             expect(decoded.feeRate).to.equal(feeRate);
 
-            console.log("   ✅ Parameter validation successful");
-            console.log("   📊 Fee Rate:", decoded.feeRate, "sat/byte");
-            console.log("   ⏰ Timelock:", decoded.htlcTimelock, "blocks");
+            console.log("    Parameter validation successful");
+            console.log("    Fee Rate:", decoded.feeRate, "sat/byte");
+            console.log("    Timelock:", decoded.htlcTimelock, "blocks");
         });
 
         it("Should support correct features", async function () {
-            console.log("\n📋 Step 9: Test Feature Support");
+            console.log("\n Step 9: Test Feature Support");
             
             const features = [
                 "atomic_swap",
@@ -239,20 +239,20 @@ describe("Bitcoin Integration - Local Deployment Test", function () {
                 const isSupported = await btcAdapter.supportsFeature(feature);
                 expect(isSupported).to.be.true;
                 
-                console.log(`   ✅ ${feature}: SUPPORTED`);
+                console.log(`    ${feature}: SUPPORTED`);
             }
             
             // Test unsupported feature
             const unsupportedFeature = "partial_fills";
             const isUnsupported = await btcAdapter.supportsFeature(unsupportedFeature);
             expect(isUnsupported).to.be.false;
-            console.log(`   ❌ ${unsupportedFeature}: NOT SUPPORTED`);
+            console.log(`    ${unsupportedFeature}: NOT SUPPORTED`);
         });
     });
 
     describe("Registry Integration Tests", function () {
         it("Should work with registry for all Bitcoin chains", async function () {
-            console.log("\n📋 Step 10: Test Registry Integration");
+            console.log("\n Step 10: Test Registry Integration");
             
             const chains = [
                 { id: BITCOIN_TESTNET_ID, name: "Bitcoin Testnet", adapter: btcAdapter },
@@ -285,12 +285,12 @@ describe("Bitcoin Integration - Local Deployment Test", function () {
                 const cost = await registry.estimateExecutionCost(chain.id, orderParams, amount);
                 expect(cost).to.be.greaterThan(0);
                 
-                console.log(`   ✅ ${chain.name}: Chain ${chain.id} - Cost: ${ethers.formatEther(cost)} ETH`);
+                console.log(`    ${chain.name}: Chain ${chain.id} - Cost: ${ethers.formatEther(cost)} ETH`);
             }
         });
 
         it("Should handle safety deposit calculations through registry", async function () {
-            console.log("\n📋 Step 11: Test Registry Safety Deposits");
+            console.log("\n Step 11: Test Registry Safety Deposits");
             
             const amount = ethers.parseEther("1.0");
             
@@ -301,14 +301,14 @@ describe("Bitcoin Integration - Local Deployment Test", function () {
                 expect(safetyDeposit).to.equal(expectedDeposit);
                 
                 const chainInfo = await registry.getChainInfo(chainId);
-                console.log(`   💰 ${chainInfo.symbol}: ${ethers.formatEther(safetyDeposit)} safety deposit for 1.0 token`);
+                console.log(`    ${chainInfo.symbol}: ${ethers.formatEther(safetyDeposit)} safety deposit for 1.0 token`);
             }
         });
     });
 
     describe("Multi-Chain Comparison Tests", function () {
         it("Should demonstrate multi-chain capabilities", async function () {
-            console.log("\n📋 Step 12: Multi-Chain Comparison");
+            console.log("\n Step 12: Multi-Chain Comparison");
             
             const testData = {
                 amount: ethers.parseEther("0.5"),
@@ -321,7 +321,7 @@ describe("Bitcoin Integration - Local Deployment Test", function () {
                 { adapter: ltcAdapter, name: "Litecoin" }
             ];
 
-            console.log("   🌐 Multi-Chain Feature Comparison:");
+            console.log("    Multi-Chain Feature Comparison:");
             console.log("   =====================================");
             
             for (const chain of chains) {
@@ -331,31 +331,31 @@ describe("Bitcoin Integration - Local Deployment Test", function () {
                 const supportsHTLC = await chain.adapter.supportsFeature("htlc");
                 const supportsUTXO = await chain.adapter.supportsFeature("utxo_model");
                 
-                console.log(`   📊 ${chain.name}:`);
+                console.log(`    ${chain.name}:`);
                 console.log(`       Chain ID: ${info.chainId}`);
                 console.log(`       Symbol: ${info.symbol}`);
                 console.log(`       Safety Deposit: ${ethers.formatEther(safetyDeposit)} (5%)`);
-                console.log(`       Address Valid: ${isValidAddress ? '✅' : '❌'}`);
-                console.log(`       HTLC Support: ${supportsHTLC ? '✅' : '❌'}`);
-                console.log(`       UTXO Model: ${supportsUTXO ? '✅' : '❌'}`);
+                console.log(`       Address Valid: ${isValidAddress ? '' : ''}`);
+                console.log(`       HTLC Support: ${supportsHTLC ? '' : ''}`);
+                console.log(`       UTXO Model: ${supportsUTXO ? '' : ''}`);
                 console.log("");
             }
         });
     });
 
     after(function () {
-        console.log("🎉 Bitcoin Integration Test Suite Complete!");
+        console.log(" Bitcoin Integration Test Suite Complete!");
         console.log("============================================");
         console.log("");
-        console.log("📈 Summary:");
-        console.log("   ✅ 3 Bitcoin family adapters deployed locally");
-        console.log("   ✅ Full registry integration working");
-        console.log("   ✅ Address validation across all formats");
-        console.log("   ✅ HTLC script generation (CLTV & CSV)");
-        console.log("   ✅ Parameter encoding/decoding functional");
-        console.log("   ✅ Safety deposit calculations accurate");
-        console.log("   ✅ Multi-chain comparison successful");
+        console.log(" Summary:");
+        console.log("    3 Bitcoin family adapters deployed locally");
+        console.log("    Full registry integration working");
+        console.log("    Address validation across all formats");
+        console.log("    HTLC script generation (CLTV & CSV)");
+        console.log("    Parameter encoding/decoding functional");
+        console.log("    Safety deposit calculations accurate");
+        console.log("    Multi-chain comparison successful");
         console.log("");
-        console.log("🚀 Ready for Sepolia testnet deployment!");
+        console.log(" Ready for Sepolia testnet deployment!");
     });
 });

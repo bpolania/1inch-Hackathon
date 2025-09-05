@@ -96,7 +96,7 @@ export class BitcoinNEARShadeAgent {
             return;
         }
 
-        logger.info('🤖 Initializing NEAR Bitcoin Shade Agent...');
+        logger.info(' Initializing NEAR Bitcoin Shade Agent...');
 
         try {
             // Initialize NEAR connection
@@ -109,12 +109,12 @@ export class BitcoinNEARShadeAgent {
             await this.verifyConnections();
             
             this.initialized = true;
-            logger.info('✅ Shade Agent initialized successfully');
-            logger.info(`📍 NEAR Account: ${this.config.nearAccountId}`);
-            logger.info(`🏠 Bitcoin Network: ${this.config.bitcoinNetwork}`);
+            logger.info(' Shade Agent initialized successfully');
+            logger.info(` NEAR Account: ${this.config.nearAccountId}`);
+            logger.info(` Bitcoin Network: ${this.config.bitcoinNetwork}`);
             
         } catch (error) {
-            logger.error('💥 Failed to initialize Shade Agent:', error);
+            logger.error(' Failed to initialize Shade Agent:', error);
             throw error;
         }
     }
@@ -139,7 +139,7 @@ export class BitcoinNEARShadeAgent {
         });
 
         this.nearAccount = await this.nearConnection.account(this.config.nearAccountId);
-        logger.info(`🔗 Connected to NEAR ${this.config.nearNetworkId}`);
+        logger.info(` Connected to NEAR ${this.config.nearNetworkId}`);
     }
 
     /**
@@ -163,7 +163,7 @@ export class BitcoinNEARShadeAgent {
         // Load Bitcoin key pair if provided
         if (this.config.bitcoinPrivateKey) {
             this.keyPair = ECPair.fromWIF(this.config.bitcoinPrivateKey, network);
-            logger.info('🔑 Bitcoin key pair loaded');
+            logger.info(' Bitcoin key pair loaded');
         }
     }
 
@@ -174,23 +174,23 @@ export class BitcoinNEARShadeAgent {
         // Test NEAR connection
         if (this.nearAccount) {
             const state = await this.nearAccount.state();
-            logger.info(`💰 NEAR Balance: ${ethers.formatUnits(state.amount, 24)} NEAR`);
+            logger.info(` NEAR Balance: ${ethers.formatUnits(state.amount, 24)} NEAR`);
         }
 
         // Test Bitcoin connection
         const blockHeight = await this.btcManager.getCurrentBlockHeight();
-        logger.info(`⛓️ Bitcoin Block Height: ${blockHeight}`);
+        logger.info(` Bitcoin Block Height: ${blockHeight}`);
 
         // Test Ethereum connection
         const ethBlockNumber = await this.ethereumProvider.getBlockNumber();
-        logger.info(`⛓️ Ethereum Block Number: ${ethBlockNumber}`);
+        logger.info(` Ethereum Block Number: ${ethBlockNumber}`);
     }
 
     /**
      * Analyze a swap intent and make autonomous decision
      */
     async analyzeSwapIntent(intent: SwapIntent): Promise<SwapDecision> {
-        logger.info('🧠 Analyzing swap intent:', intent);
+        logger.info(' Analyzing swap intent:', intent);
 
         try {
             // Market analysis
@@ -211,11 +211,11 @@ export class BitcoinNEARShadeAgent {
                 reason: this.generateDecisionReason(profitAnalysis, riskScore, marketConditions)
             };
 
-            logger.info('🎯 Swap decision made:', decision);
+            logger.info(' Swap decision made:', decision);
             return decision;
 
         } catch (error) {
-            logger.error('💥 Error analyzing swap intent:', error);
+            logger.error(' Error analyzing swap intent:', error);
             return {
                 shouldExecute: false,
                 expectedProfit: '0',
@@ -240,7 +240,7 @@ export class BitcoinNEARShadeAgent {
         }
 
         const startTime = Date.now();
-        logger.info('🚀 Executing autonomous swap:', intent);
+        logger.info(' Executing autonomous swap:', intent);
 
         try {
             let result: SwapExecution;
@@ -254,15 +254,15 @@ export class BitcoinNEARShadeAgent {
             } else if (intent.fromChain === 'bitcoin' && intent.toChain === 'ethereum') {
                 result = await this.executeBitcoinToEthereum(intent);
             } else {
-                throw new Error(`Unsupported swap direction: ${intent.fromChain} → ${intent.toChain}`);
+                throw new Error(`Unsupported swap direction: ${intent.fromChain}  ${intent.toChain}`);
             }
 
             result.executionTime = Date.now() - startTime;
-            logger.info('✅ Swap execution completed:', result);
+            logger.info(' Swap execution completed:', result);
             return result;
 
         } catch (error) {
-            logger.error('💥 Swap execution failed:', error);
+            logger.error(' Swap execution failed:', error);
             return {
                 success: false,
                 transactionHashes: [],
@@ -273,10 +273,10 @@ export class BitcoinNEARShadeAgent {
     }
 
     /**
-     * Execute Bitcoin → NEAR atomic swap
+     * Execute Bitcoin  NEAR atomic swap
      */
     private async executeBitcoinToNEAR(intent: SwapIntent): Promise<SwapExecution> {
-        logger.info('🔄 Executing Bitcoin → NEAR swap');
+        logger.info(' Executing Bitcoin  NEAR swap');
         
         // Implementation using existing Bitcoin automation + NEAR Chain Signatures
         const txHashes: string[] = [];
@@ -294,11 +294,11 @@ export class BitcoinNEARShadeAgent {
             );
             
             const htlcAddress = this.btcManager.createHTLCAddress(htlcScript);
-            logger.info(`📜 Created Bitcoin HTLC: ${htlcAddress}`);
+            logger.info(` Created Bitcoin HTLC: ${htlcAddress}`);
             
             // Step 2: Fund Bitcoin HTLC
             // Note: In real scenario, this would be funded by user or handled via intent
-            logger.info('💰 Bitcoin HTLC funding would happen here (user-initiated)');
+            logger.info(' Bitcoin HTLC funding would happen here (user-initiated)');
             
             // Step 3: Execute NEAR side using Chain Signatures
             const nearTxHash = await this.executeNEARChainSignature({
@@ -323,15 +323,15 @@ export class BitcoinNEARShadeAgent {
             };
 
         } catch (error) {
-            throw new Error(`Bitcoin → NEAR swap failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            throw new Error(`Bitcoin  NEAR swap failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
         }
     }
 
     /**
-     * Execute NEAR → Bitcoin atomic swap
+     * Execute NEAR  Bitcoin atomic swap
      */
     private async executeNEARToBitcoin(intent: SwapIntent): Promise<SwapExecution> {
-        logger.info('🔄 Executing NEAR → Bitcoin swap');
+        logger.info(' Executing NEAR  Bitcoin swap');
         
         // This would use our existing 1inch Fusion+ integration
         // Combined with Bitcoin HTLC claiming via Chain Signatures
@@ -345,10 +345,10 @@ export class BitcoinNEARShadeAgent {
     }
 
     /**
-     * Execute Ethereum → Bitcoin swap via 1inch Fusion+
+     * Execute Ethereum  Bitcoin swap via 1inch Fusion+
      */
     private async executeEthereumToBitcoin(intent: SwapIntent): Promise<SwapExecution> {
-        logger.info('🔄 Executing Ethereum → Bitcoin swap via 1inch Fusion+');
+        logger.info(' Executing Ethereum  Bitcoin swap via 1inch Fusion+');
         
         // Use existing relayer automation but triggered by Shade Agent
         return {
@@ -360,10 +360,10 @@ export class BitcoinNEARShadeAgent {
     }
 
     /**
-     * Execute Bitcoin → Ethereum swap via 1inch Fusion+
+     * Execute Bitcoin  Ethereum swap via 1inch Fusion+
      */
     private async executeBitcoinToEthereum(intent: SwapIntent): Promise<SwapExecution> {
-        logger.info('🔄 Executing Bitcoin → Ethereum swap via 1inch Fusion+');
+        logger.info(' Executing Bitcoin  Ethereum swap via 1inch Fusion+');
         
         // Use existing relayer automation but triggered by Shade Agent
         return {
@@ -499,7 +499,7 @@ export class BitcoinNEARShadeAgent {
      * Cleanup resources
      */
     async cleanup(): Promise<void> {
-        logger.info('🧹 Cleaning up Shade Agent...');
+        logger.info(' Cleaning up Shade Agent...');
         this.initialized = false;
     }
 }

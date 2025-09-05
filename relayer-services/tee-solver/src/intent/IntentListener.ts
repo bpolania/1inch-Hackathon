@@ -54,14 +54,14 @@ export class IntentListener extends EventEmitter {
    * Initialize and connect to WebSocket relay
    */
   async initialize(): Promise<void> {
-    logger.info('🔧 Initializing Intent Listener...');
+    logger.info(' Initializing Intent Listener...');
     
     try {
       await this.connectToRelay();
       this.startHeartbeat();
-      logger.info('✅ Intent Listener initialized and connected');
+      logger.info(' Intent Listener initialized and connected');
     } catch (error) {
-      logger.error('💥 Failed to initialize Intent Listener:', error);
+      logger.error(' Failed to initialize Intent Listener:', error);
       throw error;
     }
   }
@@ -71,7 +71,7 @@ export class IntentListener extends EventEmitter {
    */
   private async connectToRelay(): Promise<void> {
     return new Promise((resolve, reject) => {
-      logger.info(`🌐 Connecting to relay: ${this.config.relayUrl}`);
+      logger.info(` Connecting to relay: ${this.config.relayUrl}`);
 
       this.ws = new WebSocket(this.config.relayUrl, {
         headers: {
@@ -92,7 +92,7 @@ export class IntentListener extends EventEmitter {
         this.reconnectAttempts = 0;
         this.stats.connectionTime = Date.now();
         
-        logger.info('✅ Connected to WebSocket relay');
+        logger.info(' Connected to WebSocket relay');
         this.emit('connection_established');
         
         // Send solver registration
@@ -111,7 +111,7 @@ export class IntentListener extends EventEmitter {
 
       this.ws.on('error', (error: Error) => {
         clearTimeout(timeout);
-        logger.error('🚨 WebSocket error:', error);
+        logger.error(' WebSocket error:', error);
         this.emit('error', {
           type: SolverErrorType.CONNECTION_ERROR,
           message: error.message,
@@ -130,14 +130,14 @@ export class IntentListener extends EventEmitter {
       const message: WebSocketMessage = JSON.parse(data.toString());
       this.stats.lastActivity = Date.now();
 
-      logger.debug(`📨 Received message type: ${message.type}`);
+      logger.debug(` Received message type: ${message.type}`);
 
       // Add to processing queue
       this.messageQueue.push(message);
       this.processMessageQueue();
 
     } catch (error) {
-      logger.error('💥 Error parsing WebSocket message:', error);
+      logger.error(' Error parsing WebSocket message:', error);
       this.emitError(SolverErrorType.VALIDATION_ERROR, 'Invalid message format');
     }
   }
@@ -158,7 +158,7 @@ export class IntentListener extends EventEmitter {
       try {
         await this.processMessage(message);
       } catch (error) {
-        logger.error(`💥 Error processing message ${message.id}:`, error);
+        logger.error(` Error processing message ${message.id}:`, error);
       }
     }
 
@@ -191,7 +191,7 @@ export class IntentListener extends EventEmitter {
         break;
         
       default:
-        logger.warn(`⚠️ Unknown message type: ${message.type}`);
+        logger.warn(` Unknown message type: ${message.type}`);
     }
   }
 
@@ -206,7 +206,7 @@ export class IntentListener extends EventEmitter {
       quoteRequest.sourceAmount = BigInt(quoteRequest.sourceAmount);
     }
     
-    logger.info(`💭 Quote request received:`, {
+    logger.info(` Quote request received:`, {
       id: quoteRequest.id,
       sourceChain: quoteRequest.sourceChain,
       destinationChain: quoteRequest.destinationChain,
@@ -217,14 +217,14 @@ export class IntentListener extends EventEmitter {
 
     // Validate request
     if (!this.validateQuoteRequest(quoteRequest)) {
-      logger.warn(`❌ Invalid quote request: ${quoteRequest.id}`);
+      logger.warn(` Invalid quote request: ${quoteRequest.id}`);
       return;
     }
 
     // Check if we support the requested chains
     if (!this.config.supportedChains.includes(quoteRequest.sourceChain) ||
         !this.config.supportedChains.includes(quoteRequest.destinationChain)) {
-      logger.debug(`⏭️ Unsupported chain pair: ${quoteRequest.sourceChain} → ${quoteRequest.destinationChain}`);
+      logger.debug(` Unsupported chain pair: ${quoteRequest.sourceChain}  ${quoteRequest.destinationChain}`);
       return;
     }
 
@@ -259,7 +259,7 @@ export class IntentListener extends EventEmitter {
       this.ws.send(JSON.stringify(message));
       this.stats.quotesResponded++;
       
-      logger.info(`📤 Quote submitted:`, {
+      logger.info(` Quote submitted:`, {
         requestId: quote.requestId,
         destinationAmount: quote.destinationAmount.toString(),
         validUntil: new Date(quote.validUntil).toISOString()
@@ -272,7 +272,7 @@ export class IntentListener extends EventEmitter {
       });
 
     } catch (error) {
-      logger.error('💥 Failed to submit quote:', error);
+      logger.error(' Failed to submit quote:', error);
       throw error;
     }
   }
@@ -281,7 +281,7 @@ export class IntentListener extends EventEmitter {
    * Handle order creation notification
    */
   private handleOrderCreated(message: WebSocketMessage): void {
-    logger.info(`📋 Order created: ${message.data.orderHash}`);
+    logger.info(` Order created: ${message.data.orderHash}`);
     this.emit('order_created', message.data);
   }
 
@@ -289,7 +289,7 @@ export class IntentListener extends EventEmitter {
    * Handle order execution notification
    */
   private handleOrderExecuted(message: WebSocketMessage): void {
-    logger.info(`✅ Order executed: ${message.data.orderHash}`);
+    logger.info(` Order executed: ${message.data.orderHash}`);
     this.emit('order_executed', message.data);
   }
 
@@ -298,14 +298,14 @@ export class IntentListener extends EventEmitter {
    */
   private handleHeartbeat(message: WebSocketMessage): void {
     this.lastHeartbeat = Date.now();
-    logger.debug('💓 Heartbeat received');
+    logger.debug(' Heartbeat received');
   }
 
   /**
    * Handle error message from relay
    */
   private handleErrorMessage(message: WebSocketMessage): void {
-    logger.error('🚨 Relay error:', message.data);
+    logger.error(' Relay error:', message.data);
     this.emit('relay_error', message.data);
   }
 
@@ -331,7 +331,7 @@ export class IntentListener extends EventEmitter {
     };
 
     this.ws.send(JSON.stringify(registration));
-    logger.info('📝 Solver registration sent');
+    logger.info(' Solver registration sent');
   }
 
   /**
@@ -357,7 +357,7 @@ export class IntentListener extends EventEmitter {
    */
   private handleDisconnection(code: number, reason: string): void {
     this.isConnected = false;
-    logger.warn(`🔌 WebSocket disconnected: ${code} - ${reason}`);
+    logger.warn(` WebSocket disconnected: ${code} - ${reason}`);
     
     this.emit('connection_lost', { code, reason });
     
@@ -365,7 +365,7 @@ export class IntentListener extends EventEmitter {
     if (this.reconnectAttempts < this.maxReconnectAttempts) {
       this.scheduleReconnection();
     } else {
-      logger.error('💥 Max reconnection attempts reached');
+      logger.error(' Max reconnection attempts reached');
       this.emitError(SolverErrorType.CONNECTION_ERROR, 'Max reconnection attempts exceeded');
     }
   }
@@ -377,13 +377,13 @@ export class IntentListener extends EventEmitter {
     this.reconnectAttempts++;
     const delay = this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1); // Exponential backoff
     
-    logger.info(`🔄 Reconnection attempt ${this.reconnectAttempts} in ${delay}ms`);
+    logger.info(` Reconnection attempt ${this.reconnectAttempts} in ${delay}ms`);
     
     setTimeout(async () => {
       try {
         await this.connectToRelay();
       } catch (error) {
-        logger.error('💥 Reconnection failed:', error);
+        logger.error(' Reconnection failed:', error);
       }
     }, delay);
   }
@@ -420,7 +420,7 @@ export class IntentListener extends EventEmitter {
    */
   private setupEventHandlers(): void {
     this.on('error', (error: SolverError) => {
-      logger.error('🚨 Solver error:', error);
+      logger.error(' Solver error:', error);
     });
   }
 
@@ -446,7 +446,7 @@ export class IntentListener extends EventEmitter {
    * Stop the intent listener
    */
   async stop(): Promise<void> {
-    logger.info('🛑 Stopping Intent Listener...');
+    logger.info(' Stopping Intent Listener...');
     
     if (this.heartbeatInterval) {
       clearInterval(this.heartbeatInterval);
@@ -457,7 +457,7 @@ export class IntentListener extends EventEmitter {
     }
     
     this.isConnected = false;
-    logger.info('✅ Intent Listener stopped');
+    logger.info(' Intent Listener stopped');
   }
 
   // Utility methods

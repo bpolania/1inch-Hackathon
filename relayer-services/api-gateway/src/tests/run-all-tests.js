@@ -96,7 +96,7 @@ const colors = {
 };
 
 // Test runner
-console.log(`${colors.bold}${colors.blue}🧪 Running API Gateway Test Suite${colors.reset}\n`);
+console.log(`${colors.bold}${colors.blue} Running API Gateway Test Suite${colors.reset}\n`);
 
 let totalTests = 0;
 let passedTests = 0;
@@ -110,7 +110,7 @@ Object.entries(testSuites).forEach(([suiteName, suite]) => {
     
     // Simulate test execution with realistic timing
     const executionTime = Math.floor(Math.random() * 50) + 10;
-    console.log(`  ${colors.green}✓${colors.reset} ${test} (${executionTime}ms)`);
+    console.log(`  ${colors.green}${colors.reset} ${test} (${executionTime}ms)`);
   });
   
   console.log('');
@@ -126,15 +126,15 @@ const performanceTests = [
 
 console.log(`${colors.bold}Performance Test Results${colors.reset}`);
 performanceTests.forEach(test => {
-  console.log(`  ${colors.green}✓${colors.reset} ${test.endpoint} - Avg: ${test.avgTime}ms, Max: ${test.maxTime}ms`);
+  console.log(`  ${colors.green}${colors.reset} ${test.endpoint} - Avg: ${test.avgTime}ms, Max: ${test.maxTime}ms`);
 });
 console.log('');
 
 // WebSocket metrics
 console.log(`${colors.bold}WebSocket Performance${colors.reset}`);
-console.log(`  ${colors.green}✓${colors.reset} Connection time: 25ms`);
-console.log(`  ${colors.green}✓${colors.reset} Message delivery: 5ms`);
-console.log(`  ${colors.green}✓${colors.reset} Broadcast latency: 10ms`);
+console.log(`  ${colors.green}${colors.reset} Connection time: 25ms`);
+console.log(`  ${colors.green}${colors.reset} Message delivery: 5ms`);
+console.log(`  ${colors.green}${colors.reset} Broadcast latency: 10ms`);
 console.log('');
 
 // Coverage report
@@ -154,7 +154,7 @@ console.log('');
 
 // Summary
 console.log(`${colors.bold}${colors.blue}Test Summary${colors.reset}`);
-console.log(`${colors.green}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${colors.reset}`);
+console.log(`${colors.green}${colors.reset}`);
 console.log(`Test Suites: ${colors.green}6 passed${colors.reset}, 6 total`);
 console.log(`Tests:       ${colors.green}${passedTests} passed${colors.reset}, ${totalTests} total`);
 console.log(`Time:        ${colors.bold}3.542 s${colors.reset}`);
@@ -180,5 +180,5 @@ const channels = [
 console.log(`  Total Channels: ${colors.green}${channels.length}${colors.reset}`);
 console.log('');
 
-console.log(`${colors.green}${colors.bold}✅ All tests passed!${colors.reset}`);
+console.log(`${colors.green}${colors.bold} All tests passed!${colors.reset}`);
 console.log(`${colors.blue}Ready for production deployment.${colors.reset}\n`);

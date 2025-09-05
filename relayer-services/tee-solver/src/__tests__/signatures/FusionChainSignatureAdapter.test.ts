@@ -82,7 +82,7 @@ describe('FusionChainSignatureAdapter', () => {
       await adapter.initialize();
 
       expect(mockChainSignatureManager.getSupportedChains).toHaveBeenCalled();
-      expect(logger.info).toHaveBeenCalledWith('✅ Fusion Chain Signature Adapter initialized', expect.any(Object));
+      expect(logger.info).toHaveBeenCalledWith(' Fusion Chain Signature Adapter initialized', expect.any(Object));
     });
 
     it('should initialize ChainSignatureManager if not already initialized', async () => {
@@ -104,7 +104,7 @@ describe('FusionChainSignatureAdapter', () => {
       await adapter.initialize();
 
       expect(logger.warn).toHaveBeenCalledWith(
-        '⚠️ Some enabled chains are not supported by Chain Signatures:', 
+        ' Some enabled chains are not supported by Chain Signatures:', 
         ['polygon', 'bsc']
       );
     });
@@ -184,7 +184,7 @@ describe('FusionChainSignatureAdapter', () => {
       mockChainSignatureManager.requestSignature.mockRejectedValue(new Error('Signing failed'));
 
       await expect(adapter.signFusionOrder(mockFusionOrder, 'ethereum')).rejects.toThrow('Signing failed');
-      expect(logger.error).toHaveBeenCalledWith('💥 Failed to sign Fusion+ order:', expect.any(Error));
+      expect(logger.error).toHaveBeenCalledWith(' Failed to sign Fusion+ order:', expect.any(Error));
     });
 
     it('should emit events on successful signing', async () => {
@@ -260,7 +260,7 @@ describe('FusionChainSignatureAdapter', () => {
 
       expect(results).toHaveLength(3);
       expect(mockChainSignatureManager.requestSignature).toHaveBeenCalledTimes(3);
-      expect(logger.info).toHaveBeenCalledWith('✅ Successfully signed 3 Fusion+ orders');
+      expect(logger.info).toHaveBeenCalledWith(' Successfully signed 3 Fusion+ orders');
     });
 
     it('should handle partial failures in concurrent signing', async () => {
@@ -441,7 +441,7 @@ describe('FusionChainSignatureAdapter', () => {
 
       await adapter.stop();
 
-      expect(logger.info).toHaveBeenCalledWith('✅ Fusion Chain Signature Adapter stopped');
+      expect(logger.info).toHaveBeenCalledWith(' Fusion Chain Signature Adapter stopped');
     });
   });
 });

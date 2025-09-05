@@ -96,7 +96,7 @@ export class FusionManagerWithChainSignatures extends EventEmitter implements Fu
    * Initialize 1inch SDK instances and Chain Signatures
    */
   async initialize(): Promise<void> {
-    logger.info('🔧 Initializing Enhanced Fusion Manager...', {
+    logger.info(' Initializing Enhanced Fusion Manager...', {
       chainSignatures: this.useChainSignatures,
       fallback: this.config.fallbackToPrivateKey
     });
@@ -111,19 +111,19 @@ export class FusionManagerWithChainSignatures extends EventEmitter implements Fu
       await this.initializeTraditionalComponents();
       
       this.isInitialized = true;
-      logger.info('✅ Enhanced Fusion Manager initialized successfully');
+      logger.info(' Enhanced Fusion Manager initialized successfully');
       this.emit('initialized');
       
     } catch (error) {
-      logger.error('💥 Failed to initialize Enhanced Fusion Manager:', error);
+      logger.error(' Failed to initialize Enhanced Fusion Manager:', error);
       
       // Try fallback if enabled
       if (this.useChainSignatures && this.config.fallbackToPrivateKey) {
-        logger.warn('⚠️ Falling back to private key signing...');
+        logger.warn(' Falling back to private key signing...');
         this.useChainSignatures = false;
         await this.initializeTraditionalComponents();
         this.isInitialized = true;
-        logger.info('✅ Enhanced Fusion Manager initialized successfully');
+        logger.info(' Enhanced Fusion Manager initialized successfully');
         this.emit('initialized');
       } else {
         this.emitError(FusionErrorType.SDK_INITIALIZATION_FAILED, 
@@ -143,7 +143,7 @@ export class FusionManagerWithChainSignatures extends EventEmitter implements Fu
       throw new Error('Chain Signature configuration is required when enableChainSignatures is true');
     }
 
-    logger.info('🔗 Initializing NEAR Chain Signatures...');
+    logger.info(' Initializing NEAR Chain Signatures...');
 
     // Initialize Chain Signature Manager
     this.chainSignatureManager = new ChainSignatureManager({
@@ -169,7 +169,7 @@ export class FusionManagerWithChainSignatures extends EventEmitter implements Fu
 
     await this.chainSignatureAdapter.initialize();
 
-    logger.info('✅ NEAR Chain Signatures initialized');
+    logger.info(' NEAR Chain Signatures initialized');
   }
 
   /**
@@ -241,7 +241,7 @@ export class FusionManagerWithChainSignatures extends EventEmitter implements Fu
       throw new Error('FusionManager not initialized');
     }
     
-    logger.info(`🔍 Getting 1inch quote for ${request.requestId}`, {
+    logger.info(` Getting 1inch quote for ${request.requestId}`, {
       srcChainId: request.srcChainId,
       dstChainId: request.dstChainId,
       amount: request.amount,
@@ -266,7 +266,7 @@ export class FusionManagerWithChainSignatures extends EventEmitter implements Fu
       
       const quote = await this.crossChainSDK.getQuote(quoteParams as any);
       
-      logger.info(`✅ 1inch quote received`, {
+      logger.info(` 1inch quote received`, {
         requestId: request.requestId,
         dstAmount: quote.dstTokenAmount,
         quoteId: quote.quoteId
@@ -275,7 +275,7 @@ export class FusionManagerWithChainSignatures extends EventEmitter implements Fu
       return quote;
       
     } catch (error) {
-      logger.error(`💥 1inch quote failed for ${request.requestId}:`, error);
+      logger.error(` 1inch quote failed for ${request.requestId}:`, error);
       this.emitError(FusionErrorType.INVALID_QUOTE_REQUEST,
         `Quote request failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
         { requestId: request.requestId, request }
@@ -288,7 +288,7 @@ export class FusionManagerWithChainSignatures extends EventEmitter implements Fu
    * Create 1inch Fusion+ order with Chain Signatures or private key
    */
   async createOrder(quote: any, request: FusionQuoteRequest): Promise<any> {
-    logger.info(`📋 Creating Fusion+ order for ${request.requestId}`, {
+    logger.info(` Creating Fusion+ order for ${request.requestId}`, {
       signingMethod: this.useChainSignatures ? 'chain-signatures' : 'private-key'
     });
     
@@ -308,11 +308,11 @@ export class FusionManagerWithChainSignatures extends EventEmitter implements Fu
         const addresses = await this.chainSignatureAdapter.getSolverAddresses();
         solverAddress = addresses[targetChain] || this.config.solverAddress;
         
-        logger.info(`🔗 Using Chain Signatures solver address: ${solverAddress}`);
+        logger.info(` Using Chain Signatures solver address: ${solverAddress}`);
       } else {
         // Use configured solver address for private key signing
         solverAddress = this.config.solverAddress;
-        logger.info(`🔑 Using private key solver address: ${solverAddress}`);
+        logger.info(` Using private key solver address: ${solverAddress}`);
       }
       
       // Create order parameters
@@ -330,7 +330,7 @@ export class FusionManagerWithChainSignatures extends EventEmitter implements Fu
       
       this.stats.ordersCreated++;
       
-      logger.info(`✅ Fusion+ order created`, {
+      logger.info(` Fusion+ order created`, {
         requestId: request.requestId,
         preset: orderParams.preset,
         secretsCount: secrets.length,
@@ -351,7 +351,7 @@ export class FusionManagerWithChainSignatures extends EventEmitter implements Fu
       };
       
     } catch (error) {
-      logger.error(`💥 Order creation failed for ${request.requestId}:`, error);
+      logger.error(` Order creation failed for ${request.requestId}:`, error);
       this.emitError(FusionErrorType.ORDER_CREATION_FAILED,
         `Order creation failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
         { requestId: request.requestId }
@@ -366,7 +366,7 @@ export class FusionManagerWithChainSignatures extends EventEmitter implements Fu
   async submitOrder(orderData: any): Promise<string> {
     const startTime = Date.now();
     
-    logger.info(`📤 Submitting Fusion+ order ${orderData.requestId}`, {
+    logger.info(` Submitting Fusion+ order ${orderData.requestId}`, {
       signingMethod: orderData.signingMethod || 'private-key'
     });
     
@@ -401,7 +401,7 @@ export class FusionManagerWithChainSignatures extends EventEmitter implements Fu
       this.activeOrders.set(orderHash, metaOrder);
       this.orderHistory.push(metaOrder);
       
-      logger.info(`✅ Order submitted successfully in ${submissionTime}ms`, {
+      logger.info(` Order submitted successfully in ${submissionTime}ms`, {
         requestId: orderData.requestId,
         orderHash: orderHash.substring(0, 10) + '...',
         signingMethod: orderData.signingMethod || 'private-key'
@@ -420,7 +420,7 @@ export class FusionManagerWithChainSignatures extends EventEmitter implements Fu
       this.stats.signatureFailures++;
       this.updateSigningStats(submissionTime);
       
-      logger.error(`💥 Order submission failed for ${orderData.requestId}:`, error);
+      logger.error(` Order submission failed for ${orderData.requestId}:`, error);
       this.emitError(FusionErrorType.ORDER_SUBMISSION_FAILED,
         `Order submission failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
         { requestId: orderData.requestId }
@@ -437,7 +437,7 @@ export class FusionManagerWithChainSignatures extends EventEmitter implements Fu
       throw new Error('Chain Signature Adapter not initialized');
     }
 
-    logger.info('🔗 Submitting order with Chain Signatures');
+    logger.info(' Submitting order with Chain Signatures');
 
     try {
       // Sign the order using Chain Signatures
@@ -458,11 +458,11 @@ export class FusionManagerWithChainSignatures extends EventEmitter implements Fu
       return orderInfo.orderHash;
 
     } catch (error) {
-      logger.error('💥 Chain Signatures order submission failed:', error);
+      logger.error(' Chain Signatures order submission failed:', error);
       
       // Try fallback if enabled
       if (this.config.fallbackToPrivateKey) {
-        logger.warn('⚠️ Falling back to private key signing for this order...');
+        logger.warn(' Falling back to private key signing for this order...');
         return await this.submitOrderWithPrivateKey(orderData);
       }
       
@@ -474,7 +474,7 @@ export class FusionManagerWithChainSignatures extends EventEmitter implements Fu
    * Submit order using traditional private key signing
    */
   private async submitOrderWithPrivateKey(orderData: any): Promise<string> {
-    logger.info('🔑 Submitting order with private key signing');
+    logger.info(' Submitting order with private key signing');
 
     // Extract data from our order structure
     const { preparedOrder, quote, secretHashes } = orderData;
@@ -527,7 +527,7 @@ export class FusionManagerWithChainSignatures extends EventEmitter implements Fu
    * Convert our Quote to 1inch Fusion+ meta-order
    */
   async convertToMetaOrder(quote: Quote): Promise<FusionMetaOrder> {
-    logger.info(`🔄 Converting quote ${quote.requestId} to Fusion+ meta-order`);
+    logger.info(` Converting quote ${quote.requestId} to Fusion+ meta-order`);
     
     try {
       // Create quote request from our quote
@@ -548,12 +548,12 @@ export class FusionManagerWithChainSignatures extends EventEmitter implements Fu
         status: 'pending'
       };
       
-      logger.info(`✅ Meta-order created for ${quote.requestId}`);
+      logger.info(` Meta-order created for ${quote.requestId}`);
       
       return metaOrder;
       
     } catch (error) {
-      logger.error(`💥 Meta-order conversion failed for ${quote.requestId}:`, error);
+      logger.error(` Meta-order conversion failed for ${quote.requestId}:`, error);
       throw error;
     }
   }
@@ -624,17 +624,17 @@ export class FusionManagerWithChainSignatures extends EventEmitter implements Fu
   private setupEventHandlers(): void {
     // Handle internal events
     this.on('order_submitted', (data) => {
-      logger.info('📊 Order submitted event:', data);
+      logger.info(' Order submitted event:', data);
     });
 
     // Handle Chain Signature events
     if (this.chainSignatureAdapter) {
       this.chainSignatureAdapter.on('order_signed', (data) => {
-        logger.info('🔗 Chain Signature order signed:', data);
+        logger.info(' Chain Signature order signed:', data);
       });
 
       this.chainSignatureAdapter.on('signing_failed', (data) => {
-        logger.error('💥 Chain Signature signing failed:', data);
+        logger.error(' Chain Signature signing failed:', data);
       });
     }
   }
@@ -694,7 +694,7 @@ export class FusionManagerWithChainSignatures extends EventEmitter implements Fu
    * Stop the enhanced fusion manager
    */
   async stop(): Promise<void> {
-    logger.info('🛑 Stopping Enhanced Fusion Manager...');
+    logger.info(' Stopping Enhanced Fusion Manager...');
     
     try {
       if (this.chainSignatureAdapter) {
@@ -708,7 +708,7 @@ export class FusionManagerWithChainSignatures extends EventEmitter implements Fu
       this.activeOrders.clear();
       this.isInitialized = false;
       
-      logger.info('✅ Enhanced Fusion Manager stopped');
+      logger.info(' Enhanced Fusion Manager stopped');
     } catch (error) {
       logger.error('Error stopping Enhanced Fusion Manager:', error);
     }

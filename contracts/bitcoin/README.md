@@ -2,43 +2,43 @@
 
 This module provides the Bitcoin-side implementation for atomic swaps with Ethereum using 1inch Fusion+ compatible hashlock/timelock mechanisms.
 
-## 🎯 **ETHGlobal Unite Bitcoin Bounty Implementation**
+##  **ETHGlobal Unite Bitcoin Bounty Implementation**
 
 This implementation satisfies the **$32K Bitcoin bounty** requirements:
 
-### ✅ **Core Requirements Met**
-- **✅ Preserve hashlock and timelock functionality** - Real Bitcoin HTLC scripts with SHA-256 hashlock and CLTV timelock
-- **✅ Bidirectional swaps** - Support for both Ethereum → Bitcoin and Bitcoin → Ethereum atomic swaps
-- **✅ Onchain execution** - Complete Bitcoin testnet transaction creation and broadcasting
-- **✅ Multi-chain support** - Architecture supports Bitcoin, Dogecoin, Litecoin, Bitcoin Cash
+###  **Core Requirements Met**
+- ** Preserve hashlock and timelock functionality** - Real Bitcoin HTLC scripts with SHA-256 hashlock and CLTV timelock
+- ** Bidirectional swaps** - Support for both Ethereum  Bitcoin and Bitcoin  Ethereum atomic swaps
+- ** Onchain execution** - Complete Bitcoin testnet transaction creation and broadcasting
+- ** Multi-chain support** - Architecture supports Bitcoin, Dogecoin, Litecoin, Bitcoin Cash
 
-## 🏗️ **Architecture Overview**
+##  **Architecture Overview**
 
 ```
 Ethereum Side (1inch Fusion+)          Bitcoin Side (This Module)
-┌─────────────────────────┐            ┌─────────────────────────┐
-│ EscrowSrc Contract      │◄──────────►│ BitcoinHTLCManager      │
-│ • Lock ERC20 tokens     │  SHA-256   │ • Generate HTLC scripts │
-│ • SHA-256 hashlock      │  hashlock  │ • Create P2SH addresses │
-│ • Timelock coordination │  shared    │ • Manage transactions   │
-└─────────────────────────┘            └─────────────────────────┘
-           │                                        │
-           ▼                                        ▼
-┌─────────────────────────┐            ┌─────────────────────────┐
-│ Resolver reveals secret │◄──────────►│ Bitcoin HTLC claiming   │
-│ Claims Ethereum tokens  │  Secret    │ Reveals same secret     │
-│ Atomic swap completes   │  preimage  │ Claims Bitcoin funds    │
-└─────────────────────────┘            └─────────────────────────┘
+            
+ EscrowSrc Contract       BitcoinHTLCManager      
+  Lock ERC20 tokens       SHA-256     Generate HTLC scripts 
+  SHA-256 hashlock        hashlock    Create P2SH addresses 
+  Timelock coordination   shared      Manage transactions   
+            
+                                                   
+                                                   
+            
+ Resolver reveals secret  Bitcoin HTLC claiming   
+ Claims Ethereum tokens    Secret     Reveals same secret     
+ Atomic swap completes     preimage   Claims Bitcoin funds    
+            
 ```
 
-## 🔧 **Installation**
+##  **Installation**
 
 ```bash
 cd contracts/bitcoin
 npm install
 ```
 
-## 🚀 **Quick Demo**
+##  **Quick Demo**
 
 ```bash
 # Run Bitcoin HTLC demonstration
@@ -51,7 +51,7 @@ npm test
 npm test -- --testNamePattern="HTLC Script"
 ```
 
-## 💡 **Key Features**
+##  **Key Features**
 
 ### **1. Bitcoin HTLC Script Generation**
 - **Real Bitcoin Scripts**: Uses actual Bitcoin opcodes (OP_IF, OP_SHA256, OP_CHECKSIG, OP_CHECKLOCKTIMEVERIFY)
@@ -68,7 +68,7 @@ npm test -- --testNamePattern="HTLC Script"
 - **Bitcoin Mainnet**: Production-ready configuration
 - **Altcoin Support**: Architecture supports Dogecoin, Litecoin, Bitcoin Cash
 
-## 📋 **Core Components**
+##  **Core Components**
 
 ### **BitcoinHTLCManager** (`src/BitcoinHTLCManager.js`)
 
@@ -114,7 +114,7 @@ const htlcAddress = btcManager.createHTLCAddress(htlcScript);
 - `generateSecret()` - Generate secret and SHA-256 hashlock
 - `storeOrder()` / `getOrder()` - Order management
 
-## 🧪 **Testing**
+##  **Testing**
 
 ### **Comprehensive Test Suite**
 
@@ -123,32 +123,32 @@ npm test
 ```
 
 **Test Coverage:**
-- ✅ Key generation and secret creation
-- ✅ HTLC script generation and validation
-- ✅ P2SH address creation
-- ✅ Order management and storage
-- ✅ Cross-chain hashlock compatibility
-- ✅ Network configuration
-- ✅ Script structure verification
+-  Key generation and secret creation
+-  HTLC script generation and validation
+-  P2SH address creation
+-  Order management and storage
+-  Cross-chain hashlock compatibility
+-  Network configuration
+-  Script structure verification
 
 ### **Test Results**
 ```
  PASS  tests/BitcoinHTLC.test.js
   Bitcoin HTLC Manager
-    ✓ Key Generation and Secrets
-    ✓ HTLC Script Generation  
-    ✓ Order Management
-    ✓ Configuration
-    ✓ Script Structure
-    ✓ Cross-chain Compatibility
+     Key Generation and Secrets
+     HTLC Script Generation  
+     Order Management
+     Configuration
+     Script Structure
+     Cross-chain Compatibility
 
 Test Suites: 1 passed
 Tests: 15+ passed
 ```
 
-## 🌐 **Cross-Chain Integration**
+##  **Cross-Chain Integration**
 
-### **Ethereum ↔ Bitcoin Atomic Swap Flow**
+### **Ethereum  Bitcoin Atomic Swap Flow**
 
 1. **Order Creation (Ethereum)**
    - User creates 1inch Fusion+ order
@@ -177,7 +177,7 @@ Tests: 15+ passed
 - **Order Format**: Bitcoin parameters encoded in 1inch order extension data
 - **Economic Security**: Same safety deposit mechanisms apply
 
-## 🔗 **Bitcoin Script Structure**
+##  **Bitcoin Script Structure**
 
 ### **HTLC Script Template**
 
@@ -201,7 +201,7 @@ OP_ENDIF
 - Original sender can refund with their signature
 - No secret required for refund
 
-## 🎯 **Production Deployment**
+##  **Production Deployment**
 
 ### **Testnet Configuration**
 ```javascript
@@ -223,25 +223,25 @@ const btcManager = new BitcoinHTLCManager({
 });
 ```
 
-## 🏆 **Bounty Compliance**
+##  **Bounty Compliance**
 
 ### **Bitcoin Family Support**
-- ✅ **Bitcoin**: Complete HTLC implementation
-- ✅ **Dogecoin**: Network parameter support
-- ✅ **Litecoin**: Compatible script structure  
-- ✅ **Bitcoin Cash**: UTXO model compatibility
+-  **Bitcoin**: Complete HTLC implementation
+-  **Dogecoin**: Network parameter support
+-  **Litecoin**: Compatible script structure  
+-  **Bitcoin Cash**: UTXO model compatibility
 
 ### **Technical Requirements**
-- ✅ **Hashlock Preservation**: SHA-256 hashlock maintained
-- ✅ **Timelock Preservation**: CHECKLOCKTIMEVERIFY implementation
-- ✅ **Bidirectional Swaps**: Both directions supported
-- ✅ **Onchain Execution**: Real Bitcoin testnet transactions
+-  **Hashlock Preservation**: SHA-256 hashlock maintained
+-  **Timelock Preservation**: CHECKLOCKTIMEVERIFY implementation
+-  **Bidirectional Swaps**: Both directions supported
+-  **Onchain Execution**: Real Bitcoin testnet transactions
 
 ### **Integration Ready**
-- ✅ **1inch Compatible**: Works with existing Ethereum adapters
-- ✅ **Production Quality**: Comprehensive testing and error handling
-- ✅ **Extensible**: Easy to add more Bitcoin-family chains
+-  **1inch Compatible**: Works with existing Ethereum adapters
+-  **Production Quality**: Comprehensive testing and error handling
+-  **Extensible**: Easy to add more Bitcoin-family chains
 
-## 📄 **License**
+##  **License**
 
 MIT License - Part of 1inch Fusion+ Bitcoin Extension

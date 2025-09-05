@@ -56,8 +56,8 @@ export class TestRunner {
    */
   static async runSuite(suiteName: keyof typeof testSuites) {
     const suite = testSuites[suiteName];
-    console.log(`🧪 Running ${suite.name}...`);
-    console.log(`📝 ${suite.description}`);
+    console.log(` Running ${suite.name}...`);
+    console.log(` ${suite.description}`);
     
     // In a real implementation, this would use Jest programmatically
     // For now, we'll just log the configuration
@@ -72,7 +72,7 @@ export class TestRunner {
    * Run all test suites
    */
   static async runAll() {
-    console.log('🚀 Running all test suites...\n');
+    console.log(' Running all test suites...\n');
     
     const results = [];
     for (const [key, suite] of Object.entries(testSuites)) {
@@ -87,7 +87,7 @@ export class TestRunner {
    * Generate test coverage report
    */
   static generateCoverageReport() {
-    console.log('📊 Generating coverage report...');
+    console.log(' Generating coverage report...');
     
     const expectedCoverage = {
       statements: 85,

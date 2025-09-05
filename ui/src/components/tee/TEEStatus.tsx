@@ -285,7 +285,7 @@ export function TEEStatus({ className, compact = false }: TEEStatusProps) {
                     route.enabled ? 'bg-green-500' : 'bg-gray-400'
                   )} />
                   <span className="text-sm font-medium text-card-foreground">
-                    {route.fromChain.charAt(0).toUpperCase() + route.fromChain.slice(1)} → {route.toChain.charAt(0).toUpperCase() + route.toChain.slice(1)}
+                    {route.fromChain.charAt(0).toUpperCase() + route.fromChain.slice(1)}  {route.toChain.charAt(0).toUpperCase() + route.toChain.slice(1)}
                   </span>
                 </div>
                 <div className="text-xs text-muted-foreground">

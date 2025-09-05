@@ -20,7 +20,7 @@ async function createBitcoinOrder(options = {}) {
         timeoutHours = 24            // Order expiry
     } = options;
 
-    console.log('₿ Create Bitcoin Order');
+    console.log(' Create Bitcoin Order');
     console.log('====================\n');
     
     try {
@@ -55,7 +55,7 @@ async function createBitcoinOrder(options = {}) {
         const factory = new ethers.Contract(FACTORY_ADDRESS, FACTORY_ABI, signer);
         const token = new ethers.Contract(TOKEN_ADDRESS, ERC20_ABI, signer);
         
-        console.log('✅ Connected to Ethereum Sepolia');
+        console.log(' Connected to Ethereum Sepolia');
         console.log(`   Factory: ${FACTORY_ADDRESS}`);
         console.log(`   Token: ${TOKEN_ADDRESS}`);
         console.log(`   Wallet: ${signer.address}\n`);
@@ -63,7 +63,7 @@ async function createBitcoinOrder(options = {}) {
         // Check balance
         const tokenBalance = await token.balanceOf(signer.address);
         const symbol = await token.symbol();
-        console.log(`💰 ${symbol} balance: ${ethers.formatEther(tokenBalance)} ${symbol}`);
+        console.log(` ${symbol} balance: ${ethers.formatEther(tokenBalance)} ${symbol}`);
         
         const sourceAmountWei = ethers.parseEther(sourceAmount);
         if (tokenBalance < sourceAmountWei) {
@@ -76,7 +76,7 @@ async function createBitcoinOrder(options = {}) {
         const nonce = crypto.randomBytes(8);
         const expiryTime = Math.floor(Date.now() / 1000) + (timeoutHours * 3600);
         
-        console.log('\n🔐 Order Parameters:');
+        console.log('\n Order Parameters:');
         console.log(`   Source: ${sourceAmount} ${symbol}`);
         console.log(`   Destination: ${destinationAmount} satoshis`);
         console.log(`   Chain ID: ${chainId} (Bitcoin ${chainId === 40003 ? 'Mainnet' : 'Testnet'})`);
@@ -85,10 +85,10 @@ async function createBitcoinOrder(options = {}) {
         console.log(`   Hashlock: ${hashlock}\n`);
         
         // Token approval
-        console.log('🔐 Approving tokens...');
+        console.log(' Approving tokens...');
         const approveTx = await token.approve(FACTORY_ADDRESS, sourceAmountWei);
         await approveTx.wait();
-        console.log(`✅ Token approval: ${approveTx.hash}\n`);
+        console.log(` Token approval: ${approveTx.hash}\n`);
         
         // Create order structure
         const orderParams = [
@@ -110,21 +110,21 @@ async function createBitcoinOrder(options = {}) {
         ];
         
         // Estimate gas
-        console.log('⛽ Estimating gas...');
+        console.log(' Estimating gas...');
         const gasEstimate = await factory.createFusionOrder.estimateGas(orderParams);
         console.log(`   Gas estimate: ${gasEstimate.toString()}`);
         
         // Create order
-        console.log('🚀 Creating Bitcoin order...');
+        console.log(' Creating Bitcoin order...');
         const createTx = await factory.createFusionOrder(orderParams, {
             gasLimit: gasEstimate * 12n / 10n // 20% buffer
         });
         
-        console.log(`📝 Transaction hash: ${createTx.hash}`);
-        console.log('⏳ Waiting for confirmation...');
+        console.log(` Transaction hash: ${createTx.hash}`);
+        console.log(' Waiting for confirmation...');
         
         const receipt = await createTx.wait();
-        console.log(`✅ Order created! Block: ${receipt.blockNumber}`);
+        console.log(` Order created! Block: ${receipt.blockNumber}`);
         
         // Extract order hash from events
         let orderHash = null;
@@ -162,13 +162,13 @@ async function createBitcoinOrder(options = {}) {
         const filename = `bitcoin-order-${Date.now()}.json`;
         fs.writeFileSync(`./${filename}`, JSON.stringify(orderInfo, null, 2));
         
-        console.log('\n🎉 BITCOIN ORDER CREATED SUCCESSFULLY!');
+        console.log('\n BITCOIN ORDER CREATED SUCCESSFULLY!');
         console.log('=====================================');
-        console.log(`📋 Order Hash: ${orderHash}`);
-        console.log(`🔗 Transaction: https://sepolia.etherscan.io/tx/${createTx.hash}`);
-        console.log(`💾 Details saved: ${filename}`);
-        console.log(`🔐 Secret: 0x${secret.toString('hex')}`);
-        console.log(`🔒 Hashlock: ${hashlock}`);
+        console.log(` Order Hash: ${orderHash}`);
+        console.log(` Transaction: https://sepolia.etherscan.io/tx/${createTx.hash}`);
+        console.log(` Details saved: ${filename}`);
+        console.log(` Secret: 0x${secret.toString('hex')}`);
+        console.log(` Hashlock: ${hashlock}`);
         console.log('');
         console.log('Next steps:');
         console.log('1. Generate Bitcoin HTLC using the secret/hashlock');
@@ -178,7 +178,7 @@ async function createBitcoinOrder(options = {}) {
         return orderInfo;
         
     } catch (error) {
-        console.error(`❌ Failed to create Bitcoin order: ${error.message}`);
+        console.error(` Failed to create Bitcoin order: ${error.message}`);
         throw error;
     }
 }
@@ -200,10 +200,10 @@ if (require.main === module) {
     }
     
     createBitcoinOrder(options).then(orderInfo => {
-        console.log('\n✅ Script completed successfully');
+        console.log('\n Script completed successfully');
         process.exit(0);
     }).catch(error => {
-        console.error('\n❌ Script failed:', error.message);
+        console.error('\n Script failed:', error.message);
         process.exit(1);
     });
 }

@@ -68,7 +68,7 @@ describe('Fusion+ Integration Tests', () => {
     });
   });
 
-  describe('Cross-Chain Swap Flow: Ethereum → NEAR', () => {
+  describe('Cross-Chain Swap Flow: Ethereum  NEAR', () => {
     const crossChainIntent = {
       chainId: 11155111,
       fromToken: '0xaa86ed59bcf10c838F2abDa08D1Ca8C6D1609d43',
@@ -176,7 +176,7 @@ describe('Fusion+ Integration Tests', () => {
     });
   });
 
-  describe('Same-Chain Swap Flow: Ethereum → Ethereum', () => {
+  describe('Same-Chain Swap Flow: Ethereum  Ethereum', () => {
     const sameChainIntent = {
       chainId: 11155111,
       fromToken: '0xaa86ed59bcf10c838F2abDa08D1Ca8C6D1609d43',
@@ -256,7 +256,7 @@ describe('Fusion+ Integration Tests', () => {
     });
   });
 
-  describe('Bitcoin Integration Flow: Ethereum → Bitcoin', () => {
+  describe('Bitcoin Integration Flow: Ethereum  Bitcoin', () => {
     const bitcoinIntent = {
       chainId: 11155111,
       fromToken: '0xaa86ed59bcf10c838F2abDa08D1Ca8C6D1609d43',

@@ -116,7 +116,7 @@ export function AmountInput({
           {/* USD Value and Balance */}
           <div className="flex items-center justify-between mt-2 text-xs text-muted-foreground">
             <div>
-              {usdValue ? formatUSDAmount(usdValue) : '—'}
+              {usdValue ? formatUSDAmount(usdValue) : ''}
             </div>
             
             {token && (

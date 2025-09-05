@@ -81,7 +81,7 @@ export class AttestationVerifier extends EventEmitter {
     const startTime = Date.now();
     const cacheKey = this.generateCacheKey(quote, codehash);
 
-    logger.info('🔍 Verifying TEE attestation quote...', {
+    logger.info(' Verifying TEE attestation quote...', {
       quoteLength: quote.length,
       codeHashPrefix: codehash.substring(0, 16) + '...'
     });
@@ -89,7 +89,7 @@ export class AttestationVerifier extends EventEmitter {
     // Check cache first
     if (this.verificationCache.has(cacheKey)) {
       this.stats.cacheHits++;
-      logger.info('📋 Using cached verification result');
+      logger.info(' Using cached verification result');
       return this.verificationCache.get(cacheKey)!;
     }
 
@@ -109,7 +109,7 @@ export class AttestationVerifier extends EventEmitter {
       // Cache the result
       this.verificationCache.set(cacheKey, result);
 
-      logger.info('✅ Attestation verification completed', {
+      logger.info(' Attestation verification completed', {
         isValid: result.isValid,
         trustLevel: result.trustLevel,
         verificationTime,
@@ -135,7 +135,7 @@ export class AttestationVerifier extends EventEmitter {
         timestamp: Date.now()
       };
 
-      logger.error('💥 Attestation verification failed:', error);
+      logger.error(' Attestation verification failed:', error);
       this.emit('verification_failed', { error, quote: cacheKey });
       
       return errorResult;
@@ -146,7 +146,7 @@ export class AttestationVerifier extends EventEmitter {
    * Parse Intel TDX attestation quote
    */
   private async parseAttestationQuote(quote: string): Promise<AttestationQuote> {
-    logger.info('📋 Parsing Intel TDX attestation quote...');
+    logger.info(' Parsing Intel TDX attestation quote...');
 
     try {
       // Remove 0x prefix if present
@@ -185,7 +185,7 @@ export class AttestationVerifier extends EventEmitter {
         rtmr3: quoteBuffer.slice(472, 504).toString('hex')
       };
 
-      logger.info('✅ TDX quote parsed successfully', {
+      logger.info(' TDX quote parsed successfully', {
         version: parsedQuote.version,
         teeType: parsedQuote.teeType,
         mrSeamPrefix: parsedQuote.mrSeam.substring(0, 16) + '...',
@@ -195,7 +195,7 @@ export class AttestationVerifier extends EventEmitter {
       return parsedQuote;
 
     } catch (error) {
-      logger.error('💥 Failed to parse TDX attestation quote:', error);
+      logger.error(' Failed to parse TDX attestation quote:', error);
       throw new Error(`Quote parsing failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
@@ -256,7 +256,7 @@ export class AttestationVerifier extends EventEmitter {
    * Verify SEAM (TDX module) measurements
    */
   private async verifySeamMeasurements(quote: AttestationQuote, issues: string[]): Promise<boolean> {
-    logger.info('🔍 Verifying SEAM measurements...');
+    logger.info(' Verifying SEAM measurements...');
 
     try {
       // Verify MR_SEAM against expected value
@@ -278,7 +278,7 @@ export class AttestationVerifier extends EventEmitter {
         return false;
       }
 
-      logger.info('✅ SEAM measurements verified successfully');
+      logger.info(' SEAM measurements verified successfully');
       return true;
 
     } catch (error) {
@@ -291,7 +291,7 @@ export class AttestationVerifier extends EventEmitter {
    * Verify Trust Domain measurements
    */
   private async verifyTrustDomainMeasurements(quote: AttestationQuote, issues: string[]): Promise<boolean> {
-    logger.info('🔍 Verifying Trust Domain measurements...');
+    logger.info(' Verifying Trust Domain measurements...');
 
     try {
       // Verify MR_TD against expected value
@@ -315,7 +315,7 @@ export class AttestationVerifier extends EventEmitter {
         issues.push('Invalid XFAM - no extended features available');
       }
 
-      logger.info('✅ Trust Domain measurements verified successfully');
+      logger.info(' Trust Domain measurements verified successfully');
       return true;
 
     } catch (error) {
@@ -328,7 +328,7 @@ export class AttestationVerifier extends EventEmitter {
    * Verify runtime measurements against expected code hash
    */
   private async verifyRuntimeMeasurements(quote: AttestationQuote, codehash: string, issues: string[]): Promise<boolean> {
-    logger.info('🔍 Verifying runtime measurements...');
+    logger.info(' Verifying runtime measurements...');
 
     try {
       // RTMR0 typically contains boot measurements
@@ -351,7 +351,7 @@ export class AttestationVerifier extends EventEmitter {
         return false;
       }
 
-      logger.info('✅ Runtime measurements verified successfully');
+      logger.info(' Runtime measurements verified successfully');
       return true;
 
     } catch (error) {
@@ -364,7 +364,7 @@ export class AttestationVerifier extends EventEmitter {
    * Verify platform security level using collateral
    */
   private async verifyPlatformSecurity(quote: AttestationQuote, collateral: any, issues: string[]): Promise<boolean> {
-    logger.info('🔍 Verifying platform security level...');
+    logger.info(' Verifying platform security level...');
 
     try {
       // Check minimum TCB (Trusted Computing Base) level
@@ -393,7 +393,7 @@ export class AttestationVerifier extends EventEmitter {
         }
       }
 
-      logger.info('✅ Platform security verified successfully');
+      logger.info(' Platform security verified successfully');
       return true;
 
     } catch (error) {
@@ -448,14 +448,14 @@ export class AttestationVerifier extends EventEmitter {
    */
   private setupEventHandlers(): void {
     this.on('verification_completed', (result) => {
-      logger.info('📊 Attestation verification completed', {
+      logger.info(' Attestation verification completed', {
         trustLevel: result.trustLevel,
         issues: result.issues.length
       });
     });
 
     this.on('verification_failed', (data) => {
-      logger.error('💥 Attestation verification failed', data);
+      logger.error(' Attestation verification failed', data);
     });
   }
 
@@ -477,7 +477,7 @@ export class AttestationVerifier extends EventEmitter {
    */
   clearCache(): void {
     this.verificationCache.clear();
-    logger.info('🧹 Verification cache cleared');
+    logger.info(' Verification cache cleared');
   }
 
   /**

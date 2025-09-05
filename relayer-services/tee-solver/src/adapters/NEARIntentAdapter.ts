@@ -44,7 +44,7 @@ export class NEARIntentAdapter {
      * Listen for new NEAR intents
      */
     async *listenForIntents(): AsyncGenerator<NEARIntent, void, unknown> {
-        logger.info('👂 Starting to listen for NEAR intents...');
+        logger.info(' Starting to listen for NEAR intents...');
         
         while (true) {
             try {
@@ -60,7 +60,7 @@ export class NEARIntentAdapter {
                 await new Promise(resolve => setTimeout(resolve, 10000));
                 
             } catch (error) {
-                logger.error('💥 Error listening for intents:', error);
+                logger.error(' Error listening for intents:', error);
                 await new Promise(resolve => setTimeout(resolve, 5000));
             }
         }
@@ -93,7 +93,7 @@ export class NEARIntentAdapter {
             return [];
 
         } catch (error) {
-            logger.error('💥 Error fetching pending intents:', error);
+            logger.error(' Error fetching pending intents:', error);
             return [];
         }
     }
@@ -183,10 +183,10 @@ export class NEARIntentAdapter {
                 }
             });
 
-            logger.info(`📝 Marked intent ${intentId} as processing`);
+            logger.info(` Marked intent ${intentId} as processing`);
 
         } catch (error) {
-            logger.error(`💥 Error marking intent ${intentId} as processing:`, error);
+            logger.error(` Error marking intent ${intentId} as processing:`, error);
         }
     }
 
@@ -205,10 +205,10 @@ export class NEARIntentAdapter {
                 }
             });
 
-            logger.info(`✅ Marked intent ${intentId} as completed`);
+            logger.info(` Marked intent ${intentId} as completed`);
 
         } catch (error) {
-            logger.error(`💥 Error marking intent ${intentId} as completed:`, error);
+            logger.error(` Error marking intent ${intentId} as completed:`, error);
         }
     }
 

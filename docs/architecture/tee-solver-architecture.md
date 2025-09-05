@@ -1,32 +1,32 @@
 # 1inch Fusion+ TEE Solver Architecture Design
 
-## 🏗️ System Architecture
+##  System Architecture
 
 ### High-Level Overview
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                     1inch Fusion+ TEE Solver                     │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐ │
-│  │ Intent Listener  │  │ Quote Generator  │  │ Meta-Order      │ │
-│  │ (WebSocket)      │──│ (Price Engine)   │──│ Creator         │ │
-│  └────────┬────────┘  └────────┬────────┘  └────────┬────────┘ │
-│           │                     │                     │          │
-│  ┌────────▼─────────────────────▼─────────────────────▼────────┐│
-│  │              Chain Signature Manager (MPC)                   ││
-│  │  - No private keys    - Multi-chain addresses               ││
-│  │  - Secure signing     - Delegation support                  ││
-│  └──────────────────────────────────────────────────────────────┘│
-│                                                                  │
-│  ┌──────────────────────────────────────────────────────────────┐│
-│  │                    TEE Execution Layer                        ││
-│  │  - Docker container   - Attestation    - Secure execution    ││
-│  └──────────────────────────────────────────────────────────────┘│
-└─────────────────────────────────────────────────────────────────┘
+
+                     1inch Fusion+ TEE Solver                     
+
+                                                                  
+       
+   Intent Listener     Quote Generator     Meta-Order       
+   (WebSocket)       (Price Engine)    Creator          
+       
+                                                               
+  
+                Chain Signature Manager (MPC)                   
+    - No private keys    - Multi-chain addresses               
+    - Secure signing     - Delegation support                  
+  
+                                                                  
+  
+                      TEE Execution Layer                        
+    - Docker container   - Attestation    - Secure execution    
+  
+
 ```
 
-## 📦 Component Evolution
+##  Component Evolution
 
 ### 1. **Intent Listener** (Evolution of OrderMonitor)
 ```typescript
@@ -158,32 +158,32 @@ class ChainSignatureManager {
 }
 ```
 
-## 🔄 Data Flow
+##  Data Flow
 
-### Quote Request → Meta-Order Flow
+### Quote Request  Meta-Order Flow
 ```
 1. WebSocket Intent Request
-   ↓
+   
 2. Quote Generator analyzes:
    - Cross-chain routes
    - Liquidity sources
    - Gas costs
    - Profit margins
-   ↓
+   
 3. Meta-Order Creator builds:
    - Execution plan
    - Solver constraints
    - Deadline/validity
-   ↓
+   
 4. Chain Signatures signs:
    - No private keys
    - MPC network
    - Secure execution
-   ↓
+   
 5. Submit Meta-Order via WebSocket
 ```
 
-## 🌐 Multi-Chain Architecture (Bonus Points!)
+##  Multi-Chain Architecture (Bonus Points!)
 
 ### Modular Chain Adapters
 ```typescript
@@ -210,7 +210,7 @@ class CosmosAdapter implements ChainAdapter { }  // Bonus!
 class BitcoinAdapter implements ChainAdapter { } // Extra bonus!
 ```
 
-## 🛡️ TEE Deployment Architecture
+##  TEE Deployment Architecture
 
 ### Docker Container Structure
 ```dockerfile
@@ -236,26 +236,26 @@ CMD ["node", "dist/tee-solver.js"]
 
 ### TEE Security Model
 ```
-┌─────────────────────────────────────┐
-│         User Intent Request          │
-└────────────────┬────────────────────┘
-                 │
-┌────────────────▼────────────────────┐
-│      TEE Secure Enclave              │
-│  ┌────────────────────────────────┐ │
-│  │   Solver Logic (Isolated)      │ │
-│  │   - No external access         │ │
-│  │   - Verified code only         │ │
-│  │   - Attestation proof          │ │
-│  └────────────────────────────────┘ │
-└────────────────┬────────────────────┘
-                 │
-┌────────────────▼────────────────────┐
-│    Chain Signatures (MPC Network)    │
-└─────────────────────────────────────┘
+
+         User Intent Request          
+
+                 
+
+      TEE Secure Enclave              
+   
+     Solver Logic (Isolated)       
+     - No external access          
+     - Verified code only          
+     - Attestation proof           
+   
+
+                 
+
+    Chain Signatures (MPC Network)    
+
 ```
 
-## 📊 Competitive Features
+##  Competitive Features
 
 ### 1. **Multi-Protocol Support** (Bonus Points!)
 ```typescript
@@ -326,7 +326,7 @@ interface PricingStrategy {
 }
 ```
 
-## 🚀 Implementation Phases
+##  Implementation Phases
 
 ### Phase 1: Core Components (Current)
 - [x] Research completed
@@ -350,7 +350,7 @@ interface PricingStrategy {
 - [ ] Bitcoin adapter
 - [ ] Cross-chain testing
 
-## 📈 Performance Targets
+##  Performance Targets
 
 - **Quote Generation**: < 100ms
 - **Signature Time**: < 2 seconds (MPC network)
@@ -358,7 +358,7 @@ interface PricingStrategy {
 - **Uptime**: 99.9% availability
 - **Competitiveness**: Top 3 quotes for 80%+ requests
 
-## 🔐 Security Considerations
+##  Security Considerations
 
 1. **No Private Keys**: All signing via Chain Signatures
 2. **TEE Isolation**: Solver logic in secure enclave
@@ -366,7 +366,7 @@ interface PricingStrategy {
 4. **Rate Limiting**: Prevent spam/DoS attacks
 5. **Audit Trail**: All operations logged
 
-## 🎯 Success Metrics
+##  Success Metrics
 
 - **Technical**: Working TEE solver with Chain Signatures
 - **Performance**: Competitive quotes winning executions
@@ -376,4 +376,4 @@ interface PricingStrategy {
 
 ---
 
-**Ready to implement! Next: Start building the Intent Listener component. 🚀**
+**Ready to implement! Next: Start building the Intent Listener component. **

@@ -457,10 +457,10 @@ function IntentHistoryCard({ intent, onViewCompetition }: IntentHistoryCardProps
             </div>
             <div>
               <div className="font-medium">
-                {formatTokenAmount(intent.fromAmount)} {intent.fromToken.symbol} → {intent.toToken.symbol}
+                {formatTokenAmount(intent.fromAmount)} {intent.fromToken.symbol}  {intent.toToken.symbol}
               </div>
               <div className="text-xs text-muted-foreground">
-                {truncateAddress(intent.id)} • {new Date(intent.createdAt).toLocaleDateString()}
+                {truncateAddress(intent.id)}  {new Date(intent.createdAt).toLocaleDateString()}
               </div>
             </div>
           </div>

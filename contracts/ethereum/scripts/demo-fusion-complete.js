@@ -15,7 +15,7 @@ const crypto = require("crypto");
  */
 
 async function main() {
-    console.log("🔄 1inch Fusion+ Complete Order Lifecycle Demo");
+    console.log(" 1inch Fusion+ Complete Order Lifecycle Demo");
     console.log("=============================================");
     console.log("");
 
@@ -35,7 +35,7 @@ async function main() {
     let orderHash, secret, hashlock;
 
     if (!hasExistingOrder) {
-        console.log("📝 Step 1: Create New Cross-Chain Order");
+        console.log(" Step 1: Create New Cross-Chain Order");
         console.log("======================================");
         
         // Generate atomic swap credentials
@@ -43,19 +43,19 @@ async function main() {
         secret = "0x" + secretBytes.toString("hex");
         hashlock = ethers.keccak256(secret);
         
-        console.log("🔑 Generated atomic swap credentials:");
+        console.log(" Generated atomic swap credentials:");
         console.log("   Hashlock:", hashlock);
         console.log("");
 
         // Check balance and mint if needed
         const currentBalance = await demoToken.balanceOf(signer.address);
-        console.log("💰 Current DT balance:", ethers.formatEther(currentBalance), "DT");
+        console.log(" Current DT balance:", ethers.formatEther(currentBalance), "DT");
         
         const requiredAmount = ethers.parseEther("1"); // 1 DT for demo
         if (currentBalance < requiredAmount) {
-            console.log("🪙 Minting tokens...");
+            console.log(" Minting tokens...");
             await demoToken.mint(signer.address, requiredAmount - currentBalance);
-            console.log("✅ Minted tokens");
+            console.log(" Minted tokens");
         }
 
         // Create order
@@ -99,7 +99,7 @@ async function main() {
             } catch (e) {}
         }
 
-        console.log("✅ Order created!");
+        console.log(" Order created!");
         console.log("   Order Hash:", orderHash);
         console.log("   Transaction:", createReceipt.hash);
         console.log("");
@@ -120,7 +120,7 @@ async function main() {
         fs.writeFileSync(demoResultsPath, JSON.stringify(demoResults, null, 2));
 
     } else {
-        console.log("📋 Step 1: Loading Existing Order");
+        console.log(" Step 1: Loading Existing Order");
         console.log("================================");
         
         const demoResults = JSON.parse(fs.readFileSync(demoResultsPath, "utf8"));
@@ -134,7 +134,7 @@ async function main() {
     }
 
     // Step 2: Complete the order
-    console.log("🔐 Step 2: Complete Order with Secret");
+    console.log(" Step 2: Complete Order with Secret");
     console.log("====================================");
     
     const order = await factory.getOrder(orderHash);
@@ -144,23 +144,23 @@ async function main() {
         try {
             const completeTx = await factory.completeFusionOrder(orderHash, secret);
             await completeTx.wait();
-            console.log("✅ Order marked as completed");
+            console.log(" Order marked as completed");
             console.log("   Transaction:", completeTx.hash);
         } catch (error) {
-            console.log("⚠️  Order already completed or error:", error.message);
+            console.log("  Order already completed or error:", error.message);
         }
     } else {
-        console.log("ℹ️  Order already completed");
+        console.log("  Order already completed");
     }
     console.log("");
 
     // Step 3: Transfer tokens
-    console.log("💸 Step 3: Transfer Tokens to Escrow");
+    console.log(" Step 3: Transfer Tokens to Escrow");
     console.log("===================================");
     
     const [sourceEscrow, destEscrow] = await factory.getEscrowAddresses(orderHash);
-    console.log("📍 Source Escrow:", sourceEscrow);
-    console.log("📍 Destination Escrow:", destEscrow);
+    console.log(" Source Escrow:", sourceEscrow);
+    console.log(" Destination Escrow:", destEscrow);
     
     if (sourceEscrow !== ethers.ZeroAddress) {
         const escrowBalance = await demoToken.balanceOf(sourceEscrow);
@@ -175,7 +175,7 @@ async function main() {
                 const transferTx = await demoToken.transfer(sourceEscrow, transferAmount);
                 const receipt = await transferTx.wait();
                 
-                console.log("✅ Tokens transferred!");
+                console.log(" Tokens transferred!");
                 console.log("   Amount:", ethers.formatEther(transferAmount), "DT");
                 console.log("   Transaction:", receipt.hash);
                 console.log("   Gas Used:", receipt.gasUsed.toString());
@@ -185,37 +185,37 @@ async function main() {
                 const finalEscrowBalance = await demoToken.balanceOf(sourceEscrow);
                 
                 console.log("");
-                console.log("💰 Final Balances:");
+                console.log(" Final Balances:");
                 console.log("   Your Balance:", ethers.formatEther(finalUserBalance), "DT");
                 console.log("   Escrow Balance:", ethers.formatEther(finalEscrowBalance), "DT");
             } else {
-                console.log("❌ Insufficient balance for transfer");
+                console.log(" Insufficient balance for transfer");
             }
         } else {
-            console.log("ℹ️  Escrow already has tokens:", ethers.formatEther(escrowBalance), "DT");
+            console.log("  Escrow already has tokens:", ethers.formatEther(escrowBalance), "DT");
         }
     } else {
-        console.log("⚠️  No escrow found - order may need to be matched first");
+        console.log("  No escrow found - order may need to be matched first");
     }
 
     console.log("");
-    console.log("🎊 Demo Complete!");
+    console.log(" Demo Complete!");
     console.log("=================");
-    console.log("✅ Order created with hashlock coordination");
-    console.log("✅ Order completed with secret revelation");
-    console.log("✅ Tokens transferred to escrow for settlement");
+    console.log(" Order created with hashlock coordination");
+    console.log(" Order completed with secret revelation");
+    console.log(" Tokens transferred to escrow for settlement");
     console.log("");
-    console.log("🔄 Next in Production:");
-    console.log("• Resolver executes on NEAR side");
-    console.log("• Atomic swap completes on both chains");
-    console.log("• User receives NEAR tokens");
+    console.log(" Next in Production:");
+    console.log(" Resolver executes on NEAR side");
+    console.log(" Atomic swap completes on both chains");
+    console.log(" User receives NEAR tokens");
 }
 
 if (require.main === module) {
     main()
         .then(() => process.exit(0))
         .catch((error) => {
-            console.error("❌ Demo failed:", error);
+            console.error(" Demo failed:", error);
             process.exit(1);
         });
 }

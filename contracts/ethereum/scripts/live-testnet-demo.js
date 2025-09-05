@@ -8,7 +8,7 @@
  * 
  * 1. Deploy modular Fusion+ system to Ethereum Sepolia
  * 2. Register NEAR as destination chain through CrossChainRegistry  
- * 3. Create real Fusion+ order with USDC → NEAR swap
+ * 3. Create real Fusion+ order with USDC  NEAR swap
  * 4. Execute atomic completion with real token transfers
  * 
  * Requirements:
@@ -65,7 +65,7 @@ class LiveTestnetDemo {
     }
 
     async initialize() {
-        console.log('🚀 Initializing Live Testnet Demo for Modular 1inch Fusion+ Extension');
+        console.log(' Initializing Live Testnet Demo for Modular 1inch Fusion+ Extension');
         console.log('=====================================================================');
         
         // Initialize Ethereum connection
@@ -74,11 +74,11 @@ class LiveTestnetDemo {
         // Initialize NEAR connection  
         await this.initializeNEAR();
         
-        console.log('✅ Connections established to both testnets');
+        console.log(' Connections established to both testnets');
     }
 
     async initializeEthereum() {
-        console.log('🔗 Connecting to Ethereum Sepolia...');
+        console.log(' Connecting to Ethereum Sepolia...');
         
         if (!process.env.ETH_PRIVATE_KEY) {
             throw new Error('ETH_PRIVATE_KEY environment variable not set');
@@ -88,16 +88,16 @@ class LiveTestnetDemo {
         this.wallet = new ethers.Wallet(process.env.ETH_PRIVATE_KEY, this.provider);
         
         const balance = await this.provider.getBalance(this.wallet.address);
-        console.log(`📊 Ethereum Account: ${this.wallet.address}`);
-        console.log(`💰 ETH Balance: ${ethers.formatEther(balance)} ETH`);
+        console.log(` Ethereum Account: ${this.wallet.address}`);
+        console.log(` ETH Balance: ${ethers.formatEther(balance)} ETH`);
         
         if (balance < ethers.parseEther('0.1')) {
-            console.log('⚠️  Warning: Low ETH balance. Get Sepolia ETH from https://sepoliafaucet.com/');
+            console.log('  Warning: Low ETH balance. Get Sepolia ETH from https://sepoliafaucet.com/');
         }
     }
 
     async initializeNEAR() {
-        console.log('🌐 Connecting to NEAR testnet...');
+        console.log(' Connecting to NEAR testnet...');
         
         if (!fs.existsSync(CONFIG.near.keyPath)) {
             throw new Error(`NEAR key file not found at ${CONFIG.near.keyPath}`);
@@ -114,23 +114,23 @@ class LiveTestnetDemo {
         const account = await this.nearConnection.account(CONFIG.near.accountId);
         const balance = await account.getAccountBalance();
         
-        console.log(`📊 NEAR Account: ${CONFIG.near.accountId}`);
-        console.log(`💰 NEAR Balance: ${utils.format.formatNearAmount(balance.available)} NEAR`);
+        console.log(` NEAR Account: ${CONFIG.near.accountId}`);
+        console.log(` NEAR Balance: ${utils.format.formatNearAmount(balance.available)} NEAR`);
     }
 
     async deployOrLoadContracts() {
-        console.log('\\n📦 Setting up Modular Fusion+ Contracts');
+        console.log('\\n Setting up Modular Fusion+ Contracts');
         console.log('==========================================');
         
         const deploymentPath = path.join(__dirname, '..', 'testnet-deployment.json');
         
         // Check if contracts already deployed
         if (fs.existsSync(deploymentPath)) {
-            console.log('📋 Loading existing deployment...');
+            console.log(' Loading existing deployment...');
             this.deploymentInfo = JSON.parse(fs.readFileSync(deploymentPath, 'utf8'));
             await this.loadContracts();
         } else {
-            console.log('🏗️  Deploying new modular contracts...');
+            console.log('  Deploying new modular contracts...');
             await this.deployContracts();
             
             // Save deployment info
@@ -139,10 +139,10 @@ class LiveTestnetDemo {
             this.deploymentInfo.deployer = this.wallet.address;
             
             fs.writeFileSync(deploymentPath, JSON.stringify(this.deploymentInfo, null, 2));
-            console.log('💾 Deployment info saved to:', deploymentPath);
+            console.log(' Deployment info saved to:', deploymentPath);
         }
         
-        console.log('\\n📊 Deployed Contract Addresses:');
+        console.log('\\n Deployed Contract Addresses:');
         console.log(`   CrossChainRegistry: ${this.deploymentInfo.contracts.CrossChainRegistry}`);
         console.log(`   FusionPlusFactory: ${this.deploymentInfo.contracts.FusionPlusFactory}`);
         console.log(`   NEAR Testnet Adapter: ${this.deploymentInfo.contracts.NearTestnetAdapter}`);
@@ -152,44 +152,44 @@ class LiveTestnetDemo {
         const contracts = {};
         
         // Deploy CrossChainRegistry
-        console.log('📋 Deploying CrossChainRegistry...');
+        console.log(' Deploying CrossChainRegistry...');
         const RegistryFactory = await hardhat.ethers.getContractFactory('CrossChainRegistry');
         const registry = await RegistryFactory.connect(this.wallet).deploy();
         await registry.waitForDeployment();
         contracts.CrossChainRegistry = await registry.getAddress();
-        console.log(`✅ CrossChainRegistry deployed: ${contracts.CrossChainRegistry}`);
+        console.log(` CrossChainRegistry deployed: ${contracts.CrossChainRegistry}`);
         
         // Deploy NEAR Testnet Adapter
-        console.log('🌐 Deploying NEAR Testnet Adapter...');
+        console.log(' Deploying NEAR Testnet Adapter...');
         const NearAdapterFactory = await hardhat.ethers.getContractFactory('NearDestinationChain');
         const nearAdapter = await NearAdapterFactory.connect(this.wallet).deploy(40002); // NEAR Testnet ID
         await nearAdapter.waitForDeployment();
         contracts.NearTestnetAdapter = await nearAdapter.getAddress();
-        console.log(`✅ NEAR Testnet Adapter deployed: ${contracts.NearTestnetAdapter}`);
+        console.log(` NEAR Testnet Adapter deployed: ${contracts.NearTestnetAdapter}`);
         
         // Deploy FusionPlusFactory
-        console.log('🏭 Deploying FusionPlusFactory...');
+        console.log(' Deploying FusionPlusFactory...');
         const FactoryFactory = await hardhat.ethers.getContractFactory('FusionPlusFactory');
         const factory = await FactoryFactory.connect(this.wallet).deploy(contracts.CrossChainRegistry);
         await factory.waitForDeployment();
         contracts.FusionPlusFactory = await factory.getAddress();
-        console.log(`✅ FusionPlusFactory deployed: ${contracts.FusionPlusFactory}`);
+        console.log(` FusionPlusFactory deployed: ${contracts.FusionPlusFactory}`);
         
         // Register NEAR adapter
-        console.log('🔧 Registering NEAR adapter...');
+        console.log(' Registering NEAR adapter...');
         const registryContract = new ethers.Contract(contracts.CrossChainRegistry, 
             (await hardhat.ethers.getContractFactory('CrossChainRegistry')).interface, this.wallet);
         const registerTx = await registryContract.registerChainAdapter(40002, contracts.NearTestnetAdapter);
         await registerTx.wait();
-        console.log('✅ NEAR adapter registered');
+        console.log(' NEAR adapter registered');
         
         // Authorize deployer as resolver
-        console.log('👥 Authorizing resolver...');
+        console.log(' Authorizing resolver...');
         const factoryContract = new ethers.Contract(contracts.FusionPlusFactory,
             (await hardhat.ethers.getContractFactory('FusionPlusFactory')).interface, this.wallet);
         const authTx = await factoryContract.authorizeResolver(this.wallet.address);
         await authTx.wait();
-        console.log('✅ Resolver authorized');
+        console.log(' Resolver authorized');
         
         this.deploymentInfo = {
             contracts,
@@ -222,7 +222,7 @@ class LiveTestnetDemo {
     }
 
     async deployMockUSDC() {
-        console.log('\\n🪙 Setting up Mock USDC for Demo');
+        console.log('\\n Setting up Mock USDC for Demo');
         console.log('===================================');
         
         const MockERC20Factory = await hardhat.ethers.getContractFactory('MockERC20');
@@ -230,20 +230,20 @@ class LiveTestnetDemo {
         await mockUSDC.waitForDeployment();
         
         const usdcAddress = await mockUSDC.getAddress();
-        console.log(`✅ Mock USDC deployed: ${usdcAddress}`);
+        console.log(` Mock USDC deployed: ${usdcAddress}`);
         
         // Mint tokens for demo
         const mintAmount = ethers.parseUnits('1000', 6); // 1000 USDC
         const mintTx = await mockUSDC.mint(this.wallet.address, mintAmount);
         await mintTx.wait();
         
-        console.log(`💰 Minted ${ethers.formatUnits(mintAmount, 6)} USDC for demo`);
+        console.log(` Minted ${ethers.formatUnits(mintAmount, 6)} USDC for demo`);
         
         return { mockUSDC, usdcAddress };
     }
 
     async createFusionOrder() {
-        console.log('\\n📝 Creating Fusion+ Cross-Chain Order');
+        console.log('\\n Creating Fusion+ Cross-Chain Order');
         console.log('=====================================');
         
         // Deploy mock USDC for this demo
@@ -283,7 +283,7 @@ class LiveTestnetDemo {
             chainParams: chainParams
         };
         
-        console.log('📋 Order Details:');
+        console.log(' Order Details:');
         console.log(`   Source: ${ethers.formatUnits(CONFIG.swap.sourceAmount, 6)} USDC`);
         console.log(`   Destination: ${ethers.formatEther(CONFIG.swap.destinationAmount)} NEAR`);
         console.log(`   Resolver Fee: ${ethers.formatUnits(CONFIG.swap.resolverFee, 6)} USDC`);
@@ -296,17 +296,17 @@ class LiveTestnetDemo {
             CONFIG.swap.sourceAmount
         );
         
-        console.log('\\n💰 Cost Estimates:');
+        console.log('\\n Cost Estimates:');
         console.log(`   Execution Cost: ${ethers.formatEther(estimatedCost)} NEAR`);
         console.log(`   Safety Deposit: ${ethers.formatUnits(safetyDeposit, 6)} USDC`);
         
         // Create the order
-        console.log('\\n🚀 Creating Fusion+ order...');
+        console.log('\\n Creating Fusion+ order...');
         const createTx = await this.contracts.factory.createFusionOrder(orderParams);
         const receipt = await createTx.wait();
         
-        console.log(`✅ Order created! Gas used: ${receipt.gasUsed.toString()}`);
-        console.log(`🔗 Transaction: https://sepolia.etherscan.io/tx/${createTx.hash}`);
+        console.log(` Order created! Gas used: ${receipt.gasUsed.toString()}`);
+        console.log(` Transaction: https://sepolia.etherscan.io/tx/${createTx.hash}`);
         
         // Parse order hash from events
         let orderHash = null;
@@ -315,7 +315,7 @@ class LiveTestnetDemo {
                 const parsed = this.contracts.factory.interface.parseLog(log);
                 if (parsed && parsed.name === 'FusionOrderCreated') {
                     orderHash = parsed.args.orderHash;
-                    console.log(`📋 Order Hash: ${orderHash}`);
+                    console.log(` Order Hash: ${orderHash}`);
                     break;
                 }
             } catch (e) {
@@ -331,39 +331,39 @@ class LiveTestnetDemo {
     }
 
     async executeAtomicSwap(orderHash, mockUSDC) {
-        console.log('\\n⚡ Executing Atomic Cross-Chain Swap');
+        console.log('\\n Executing Atomic Cross-Chain Swap');
         console.log('====================================');
         
         // Generate hashlock for atomic coordination
         const secret = crypto.randomBytes(32);
         const hashlock = ethers.keccak256(secret);
         
-        console.log(`🔐 Generated hashlock: ${hashlock}`);
-        console.log(`🗝️  Secret (keep safe): 0x${secret.toString('hex')}`);
+        console.log(` Generated hashlock: ${hashlock}`);
+        console.log(`  Secret (keep safe): 0x${secret.toString('hex')}`);
         
         // Step 1: Match order on Ethereum (as authorized resolver)
-        console.log('\\n📍 Step 1: Matching order on Ethereum...');
+        console.log('\\n Step 1: Matching order on Ethereum...');
         const matchTx = await this.contracts.factory.matchFusionOrder(orderHash, hashlock);
         const matchReceipt = await matchTx.wait();
         
-        console.log(`✅ Order matched! Gas used: ${matchReceipt.gasUsed.toString()}`);
-        console.log(`🔗 Transaction: https://sepolia.etherscan.io/tx/${matchTx.hash}`);
+        console.log(` Order matched! Gas used: ${matchReceipt.gasUsed.toString()}`);
+        console.log(` Transaction: https://sepolia.etherscan.io/tx/${matchTx.hash}`);
         
         // Get escrow addresses
         const [sourceEscrow, destinationEscrow] = await this.contracts.factory.getEscrowAddresses(orderHash);
-        console.log(`📦 Source Escrow: ${sourceEscrow}`);
-        console.log(`📦 Destination Escrow: ${destinationEscrow}`);
+        console.log(` Source Escrow: ${sourceEscrow}`);
+        console.log(` Destination Escrow: ${destinationEscrow}`);
         
         // Step 2: Fund source escrow with USDC
-        console.log('\\n💰 Step 2: Funding source escrow...');
+        console.log('\\n Step 2: Funding source escrow...');
         const approveTx = await mockUSDC.approve(sourceEscrow, CONFIG.swap.sourceAmount);
         await approveTx.wait();
-        console.log('✅ USDC approval granted');
+        console.log(' USDC approval granted');
         
         // The escrow will automatically pull funds when needed
         // For demo purposes, we'll simulate the complete flow
         
-        console.log('\\n🎯 Step 3: Simulating atomic completion...');
+        console.log('\\n Step 3: Simulating atomic completion...');
         console.log('   In production:');
         console.log('   1. Resolver would execute order on NEAR with hashlock');
         console.log('   2. NEAR contract would lock destination tokens');
@@ -381,17 +381,17 @@ class LiveTestnetDemo {
     }
 
     async verifySwapCompletion(swapResult) {
-        console.log('\\n✅ Atomic Swap Execution Complete!');
+        console.log('\\n Atomic Swap Execution Complete!');
         console.log('===================================');
         
-        console.log('🎉 Successfully demonstrated:');
-        console.log('   ✅ Modular 1inch Fusion+ extension architecture');
-        console.log('   ✅ Dynamic NEAR chain registration via CrossChainRegistry');
-        console.log('   ✅ Real Fusion+ order creation with USDC → NEAR swap');
-        console.log('   ✅ Atomic coordination with cryptographic hashlock');
-        console.log('   ✅ Live testnet deployment and execution');
+        console.log(' Successfully demonstrated:');
+        console.log('    Modular 1inch Fusion+ extension architecture');
+        console.log('    Dynamic NEAR chain registration via CrossChainRegistry');
+        console.log('    Real Fusion+ order creation with USDC  NEAR swap');
+        console.log('    Atomic coordination with cryptographic hashlock');
+        console.log('    Live testnet deployment and execution');
         
-        console.log('\\n📊 Transaction Results:');
+        console.log('\\n Transaction Results:');
         console.log(`   Order Hash: ${swapResult.orderHash}`);
         console.log(`   Hashlock: ${swapResult.hashlock}`);
         console.log(`   Secret: ${swapResult.secret}`);
@@ -399,11 +399,11 @@ class LiveTestnetDemo {
         console.log(`   Source Escrow: ${swapResult.sourceEscrow}`);
         console.log(`   Destination Escrow: ${swapResult.destinationEscrow}`);
         
-        console.log('\\n🌐 Blockchain Explorer Links:');
-        console.log(`   📍 Ethereum: https://sepolia.etherscan.io/address/${this.deploymentInfo.contracts.FusionPlusFactory}`);
-        console.log(`   📍 NEAR: https://explorer.testnet.near.org/accounts/${CONFIG.near.contractId}`);
+        console.log('\\n Blockchain Explorer Links:');
+        console.log(`    Ethereum: https://sepolia.etherscan.io/address/${this.deploymentInfo.contracts.FusionPlusFactory}`);
+        console.log(`    NEAR: https://explorer.testnet.near.org/accounts/${CONFIG.near.contractId}`);
         
-        console.log('\\n🚀 Next Steps for Production:');
+        console.log('\\n Next Steps for Production:');
         console.log('   1. Deploy NEAR contract for complete cross-chain execution');
         console.log('   2. Implement resolver infrastructure for automatic matching');
         console.log('   3. Add Cosmos and Bitcoin adapters using same modular interface');
@@ -421,11 +421,11 @@ class LiveTestnetDemo {
             const swapResult = await this.executeAtomicSwap(orderHash, mockUSDC);
             await this.verifySwapCompletion(swapResult);
             
-            console.log('\\n🎯 Live Testnet Demo Complete!');
+            console.log('\\n Live Testnet Demo Complete!');
             console.log('Ready for $32K NEAR bounty submission with production-ready modular architecture.');
             
         } catch (error) {
-            console.error('❌ Demo failed:', error.message);
+            console.error(' Demo failed:', error.message);
             console.error('\\nTroubleshooting:');
             console.error('   1. Ensure ETH_PRIVATE_KEY is set in .env file');
             console.error('   2. Get Sepolia ETH from https://sepoliafaucet.com/');

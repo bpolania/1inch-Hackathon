@@ -1,19 +1,19 @@
-# 🌐 1inch Cross-Chain Intents UI - Bitcoin TEE Integration
+#  1inch Cross-Chain Intents UI - Bitcoin TEE Integration
 
 A comprehensive user interface for 1inch Fusion+ cross-chain atomic swaps with Bitcoin integration via TEE (Trusted Execution Environment) autonomous solvers.
 
-## 🎯 Overview
+##  Overview
 
 This UI demonstrates advanced cross-chain intent processing with full Bitcoin integration, showcasing:
 
-- **Intent Expression**: Users express swap desires across Ethereum ↔ NEAR ↔ Bitcoin chains
+- **Intent Expression**: Users express swap desires across Ethereum  NEAR  Bitcoin chains
 - **1inch Integration**: Real-time price quotes and optimal routing via 1inch Fusion+ Protocol
 - **Autonomous TEE Solvers**: Trustless execution with NEAR Chain Signatures MPC
 - **Bitcoin TEE Integration**: Secure Bitcoin handling via Trusted Execution Environment
 - **Real-time Monitoring**: Live execution tracking with WebSocket updates
 - **Dual Execution Paths**: Choice between manual relayer and autonomous TEE execution
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### Prerequisites
 - Node.js 18+
@@ -36,7 +36,7 @@ npm run dev
 open http://localhost:3000
 ```
 
-## 🏗️ Architecture
+##  Architecture
 
 ### Core Components
 
@@ -58,7 +58,7 @@ open http://localhost:3000
 - **Testing**: Jest + React Testing Library (54 comprehensive tests)
 - **TEE Integration**: Autonomous solver with attestation verification
 
-## 📊 Key Features
+##  Key Features
 
 ### 1. 1inch Fusion+ Integration
 Real-time price quotes and optimal routing with:
@@ -76,7 +76,7 @@ Choose between execution methods:
 Secure Bitcoin integration featuring:
 - NEAR Chain Signatures MPC for Bitcoin transactions
 - TEE-verified Bitcoin transaction signing
-- Cross-chain atomic swaps: Ethereum ↔ NEAR ↔ Bitcoin
+- Cross-chain atomic swaps: Ethereum  NEAR  Bitcoin
 - Real-time attestation verification and health monitoring
 
 ### 4. Comprehensive Monitoring
@@ -93,36 +93,36 @@ Live execution tracking with:
 - Real-time monitoring and error scenarios
 - End-to-end integration flows
 
-## 🎮 Demo Scenarios
+##  Demo Scenarios
 
-### Scenario 1: Ethereum → NEAR Swap via Relayer
+### Scenario 1: Ethereum  NEAR Swap via Relayer
 ```
 Intent: "Swap 1 ETH for NEAR tokens"
-→ 1inch API provides optimal routing and pricing
-→ Relayer analyzes profitability and execution cost
-→ Manual execution with real-time monitoring
-→ Settlement via NEAR Chain Signatures in ~2 minutes
+ 1inch API provides optimal routing and pricing
+ Relayer analyzes profitability and execution cost
+ Manual execution with real-time monitoring
+ Settlement via NEAR Chain Signatures in ~2 minutes
 ```
 
-### Scenario 2: Bitcoin → Ethereum via TEE Autonomous Solver
+### Scenario 2: Bitcoin  Ethereum via TEE Autonomous Solver
 ```
 Intent: "Swap 0.1 BTC for USDC on Ethereum"
-→ TEE solver analyzes cross-chain opportunity autonomously
-→ Bitcoin Chain Signatures integration for secure BTC handling
-→ Autonomous execution with attestation verification
-→ Complete atomic swap execution in ~5 minutes
+ TEE solver analyzes cross-chain opportunity autonomously
+ Bitcoin Chain Signatures integration for secure BTC handling
+ Autonomous execution with attestation verification
+ Complete atomic swap execution in ~5 minutes
 ```
 
 ### Scenario 3: Multi-Chain Route Optimization
 ```
-Intent: "Best route for 100 USDC → BTC"
-→ 1inch aggregation finds optimal path via multiple DEXs
-→ TEE solver evaluates Ethereum → NEAR → Bitcoin routing
-→ Real-time execution monitoring across all three chains
-→ Final Bitcoin delivery with full audit trail
+Intent: "Best route for 100 USDC  BTC"
+ 1inch aggregation finds optimal path via multiple DEXs
+ TEE solver evaluates Ethereum  NEAR  Bitcoin routing
+ Real-time execution monitoring across all three chains
+ Final Bitcoin delivery with full audit trail
 ```
 
-## 🔧 Configuration
+##  Configuration
 
 ### Environment Variables
 
@@ -152,14 +152,14 @@ NEXT_PUBLIC_ANALYTICS_ENABLED=true
 NEXT_PUBLIC_MOCK_DATA_MODE=false
 ```
 
-## 📱 Mobile Support
+##  Mobile Support
 
 The UI is fully responsive and works seamlessly on:
 - Desktop (1024px+)
 - Tablet (768px - 1023px)
 - Mobile (320px - 767px)
 
-## 🧪 Testing
+##  Testing
 
 Comprehensive test suite with 54 tests covering all integration features:
 
@@ -190,29 +190,29 @@ npm run test:coverage
 - **Component Tests**: UI components with user interaction scenarios
 - **Integration Tests**: End-to-end flows with mocked services
 
-## 📖 Development Guide
+##  Development Guide
 
 ### Component Structure
 
 ```
 src/
-├── components/
-│   ├── ui/              # Base UI components (buttons, inputs, etc.)
-│   ├── intent/          # Intent expression and execution components
-│   ├── relayer/         # Manual relayer execution components
-│   ├── tee/             # TEE autonomous solver components
-│   ├── wallet/          # NEAR wallet integration components
-│   └── layout/          # Page layout components
-├── services/
-│   ├── oneinch.ts       # 1inch API integration service
-│   ├── relayerIntegration.ts  # Manual relayer service
-│   ├── teeIntegration.ts      # TEE autonomous solver service
-│   └── __tests__/       # Comprehensive service tests
-├── stores/
-│   ├── intentStore.ts   # Intent state management
-│   └── walletStore.ts   # NEAR wallet state management
-└── types/
-    └── intent.ts        # TypeScript definitions
+ components/
+    ui/              # Base UI components (buttons, inputs, etc.)
+    intent/          # Intent expression and execution components
+    relayer/         # Manual relayer execution components
+    tee/             # TEE autonomous solver components
+    wallet/          # NEAR wallet integration components
+    layout/          # Page layout components
+ services/
+    oneinch.ts       # 1inch API integration service
+    relayerIntegration.ts  # Manual relayer service
+    teeIntegration.ts      # TEE autonomous solver service
+    __tests__/       # Comprehensive service tests
+ stores/
+    intentStore.ts   # Intent state management
+    walletStore.ts   # NEAR wallet state management
+ types/
+     intent.ts        # TypeScript definitions
 ```
 
 ### State Management
@@ -230,17 +230,17 @@ We use Zustand for state management with separate stores for:
 - Maintain consistent spacing and typography
 - Ensure accessibility compliance (WCAG 2.1)
 
-## 🎯 1inch Hackathon Compliance
+##  1inch Hackathon Compliance
 
 This UI satisfies advanced cross-chain integration requirements:
 
-✅ **1inch Fusion+ Protocol Integration**: Real-time quotes, optimal routing, multi-DEX aggregation  
-✅ **Bitcoin Chain Signatures**: Secure BTC handling via NEAR Chain Signatures MPC  
-✅ **TEE Autonomous Solvers**: Trustless execution with attestation verification  
-✅ **Comprehensive Testing**: 54 tests covering all integration scenarios  
-✅ **Production-Ready Architecture**: Modular services with error handling and monitoring  
+ **1inch Fusion+ Protocol Integration**: Real-time quotes, optimal routing, multi-DEX aggregation  
+ **Bitcoin Chain Signatures**: Secure BTC handling via NEAR Chain Signatures MPC  
+ **TEE Autonomous Solvers**: Trustless execution with attestation verification  
+ **Comprehensive Testing**: 54 tests covering all integration scenarios  
+ **Production-Ready Architecture**: Modular services with error handling and monitoring  
 
-## 🚀 Deployment
+##  Deployment
 
 ### Development
 ```bash
@@ -259,13 +259,13 @@ docker build -t near-intents-ui .
 docker run -p 3000:3000 near-intents-ui
 ```
 
-## 📄 License
+##  License
 
 MIT License - see LICENSE file for details.
 
 ---
 
-**Built for the 1inch Cross-Chain Hackathon - Advanced Bitcoin TEE Integration** 🏆
+**Built for the 1inch Cross-Chain Hackathon - Advanced Bitcoin TEE Integration** 
 
 ### API Integration Services
 
@@ -289,4 +289,4 @@ This project includes three comprehensive API integration services:
    - TEE health monitoring and route analysis
    - 16 comprehensive tests
 
-**Total: 54 tests ensuring production-ready reliability** ✅
+**Total: 54 tests ensuring production-ready reliability** 

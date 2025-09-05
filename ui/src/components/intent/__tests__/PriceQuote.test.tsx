@@ -40,7 +40,7 @@ describe('PriceQuote', () => {
     outputAmount: '1000000000',
     formattedOutput: '1000.000000',
     priceImpact: 0.5,
-    route: 'Uniswap → SushiSwap',
+    route: 'Uniswap  SushiSwap',
     gasEstimate: '150000',
     gasPrice: '20000000000',
     protocols: ['Uniswap', 'SushiSwap'],
@@ -112,7 +112,7 @@ describe('PriceQuote', () => {
         expect(screen.getByText('1inch Best Quote')).toBeInTheDocument();
         expect(screen.getByText('1000.000000 USDC')).toBeInTheDocument();
         expect(screen.getByText('0.50%')).toBeInTheDocument();
-        expect(screen.getByText('Uniswap → SushiSwap')).toBeInTheDocument();
+        expect(screen.getByText('Uniswap  SushiSwap')).toBeInTheDocument();
       });
     });
 

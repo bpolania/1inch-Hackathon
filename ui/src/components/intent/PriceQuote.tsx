@@ -136,7 +136,7 @@ export function PriceQuote({
                   {parseFloat(quote.formattedOutput).toFixed(6)} {toToken.symbol}
                 </div>
                 <div className="text-xs text-muted-foreground">
-                  ≈ ${(parseFloat(quote.formattedOutput) * 1).toFixed(2)} USD
+                   ${(parseFloat(quote.formattedOutput) * 1).toFixed(2)} USD
                 </div>
               </div>
             </div>
@@ -172,7 +172,7 @@ export function PriceQuote({
               <span className="text-sm text-muted-foreground">Est. Gas</span>
               <div className="text-sm text-muted-foreground">
                 {parseInt(quote.gasEstimate) > 0 ? 
-                  `≈ ${(parseInt(quote.gasEstimate) / 1000000).toFixed(1)}M` : 
+                  ` ${(parseInt(quote.gasEstimate) / 1000000).toFixed(1)}M` : 
                   'N/A'
                 }
               </div>

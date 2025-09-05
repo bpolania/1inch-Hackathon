@@ -153,10 +153,10 @@ describe('TEEStatus', () => {
 
       await waitFor(() => {
         expect(screen.getByText('Supported Swap Routes')).toBeInTheDocument();
-        expect(screen.getByText('Ethereum → Near')).toBeInTheDocument();
+        expect(screen.getByText('Ethereum  Near')).toBeInTheDocument();
       });
-      expect(screen.getByText('Bitcoin → Ethereum')).toBeInTheDocument();
-      expect(screen.getByText('Near → Bitcoin')).toBeInTheDocument();
+      expect(screen.getByText('Bitcoin  Ethereum')).toBeInTheDocument();
+      expect(screen.getByText('Near  Bitcoin')).toBeInTheDocument();
       expect(screen.getByText('~5min')).toBeInTheDocument();
       expect(screen.getByText('~30min')).toBeInTheDocument();
     });
@@ -256,7 +256,7 @@ describe('TEEStatus', () => {
       render(<TEEStatus />);
 
       await waitFor(() => {
-        const enabledRoutes = screen.getAllByText(/Ethereum → Near|Bitcoin → Ethereum/);
+        const enabledRoutes = screen.getAllByText(/Ethereum  Near|Bitcoin  Ethereum/);
         enabledRoutes.forEach(route => {
           const indicator = route.previousElementSibling;
           expect(indicator).toHaveClass('bg-green-500');
@@ -270,7 +270,7 @@ describe('TEEStatus', () => {
       render(<TEEStatus />);
 
       await waitFor(() => {
-        const disabledRoute = screen.getByText('Near → Bitcoin');
+        const disabledRoute = screen.getByText('Near  Bitcoin');
         const indicator = disabledRoute.previousElementSibling;
         expect(indicator).toHaveClass('bg-gray-400');
       });

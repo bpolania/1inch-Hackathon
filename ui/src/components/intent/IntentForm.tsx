@@ -112,8 +112,8 @@ export function IntentForm({ onSubmit, className }: IntentFormProps) {
     setIsSubmitting(true);
     try {
       const intentId = await submitIntent();
-      console.log('✅ Intent submitted successfully to real solver network!', intentId);
-      alert(`✅ Intent ${intentId} submitted successfully to solver network!`);
+      console.log(' Intent submitted successfully to real solver network!', intentId);
+      alert(` Intent ${intentId} submitted successfully to solver network!`);
       setShowPreview(false);
       setFromToken(null);
       setToToken(null);
@@ -123,7 +123,7 @@ export function IntentForm({ onSubmit, className }: IntentFormProps) {
       onSubmit?.(intentId);
     } catch (error) {
       console.error('Failed to submit intent:', error);
-      alert(`❌ Failed to submit intent: ${error.message}`);
+      alert(` Failed to submit intent: ${error.message}`);
     } finally {
       setIsSubmitting(false);
     }

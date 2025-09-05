@@ -20,24 +20,24 @@ const TESTNET = bitcoin.networks.testnet;
 const API_BASE = 'https://blockstream.info/testnet/api';
 
 async function setupLiveTestnet() {
-    console.log('₿ Bitcoin Testnet Live Setup');
+    console.log(' Bitcoin Testnet Live Setup');
     console.log('=============================\n');
     
     try {
         // 1. Generate or load Bitcoin testnet keypair
-        console.log('🔑 Step 1: Generate Bitcoin Testnet Wallet');
+        console.log(' Step 1: Generate Bitcoin Testnet Wallet');
         console.log('------------------------------------------');
         
         let keyPair;
         const walletFile = './bitcoin-testnet-wallet.json';
         
         if (fs.existsSync(walletFile)) {
-            console.log('📁 Loading existing wallet...');
+            console.log(' Loading existing wallet...');
             const walletData = JSON.parse(fs.readFileSync(walletFile, 'utf8'));
             keyPair = ECPair.fromWIF(walletData.privateKey, TESTNET);
-            console.log(`✅ Loaded existing wallet`);
+            console.log(` Loaded existing wallet`);
         } else {
-            console.log('🆕 Creating new wallet...');
+            console.log(' Creating new wallet...');
             keyPair = ECPair.makeRandom({ network: TESTNET });
             
             const walletData = {
@@ -48,11 +48,11 @@ async function setupLiveTestnet() {
             };
             
             fs.writeFileSync(walletFile, JSON.stringify(walletData, null, 2));
-            console.log(`✅ New wallet created and saved to ${walletFile}`);
+            console.log(` New wallet created and saved to ${walletFile}`);
         }
         
         // 2. Generate addresses
-        console.log('\n📍 Step 2: Generate Bitcoin Addresses');
+        console.log('\n Step 2: Generate Bitcoin Addresses');
         console.log('------------------------------------');
         
         // P2PKH address (legacy)
@@ -67,11 +67,11 @@ async function setupLiveTestnet() {
             network: TESTNET 
         });
         
-        console.log(`🏠 P2PKH Address (Legacy): ${p2pkh.address}`);
-        console.log(`🏠 P2WPKH Address (Segwit): ${p2wpkh.address}`);
+        console.log(` P2PKH Address (Legacy): ${p2pkh.address}`);
+        console.log(` P2WPKH Address (Segwit): ${p2wpkh.address}`);
         
         // 3. Check current balance
-        console.log('\n💰 Step 3: Check Current Balance');
+        console.log('\n Step 3: Check Current Balance');
         console.log('--------------------------------');
         
         const addresses = [p2pkh.address, p2wpkh.address];
@@ -83,7 +83,7 @@ async function setupLiveTestnet() {
                 const response = await axios.get(`${API_BASE}/address/${address}`);
                 const addressInfo = response.data;
                 
-                console.log(`📊 ${address}:`);
+                console.log(` ${address}:`);
                 console.log(`   Balance: ${addressInfo.chain_stats.funded_txo_sum / 100000000} BTC`);
                 console.log(`   Transactions: ${addressInfo.chain_stats.tx_count}`);
                 
@@ -104,33 +104,33 @@ async function setupLiveTestnet() {
             }
         }
         
-        console.log(`\n💎 Total Balance: ${totalBalance / 100000000} BTC`);
-        console.log(`🪙 Available UTXOs: ${utxos.length}`);
+        console.log(`\n Total Balance: ${totalBalance / 100000000} BTC`);
+        console.log(` Available UTXOs: ${utxos.length}`);
         
         // 4. Request testnet coins if needed
         if (totalBalance < 10000) { // Less than 0.0001 BTC
-            console.log('\n🚰 Step 4: Request Testnet Coins');
+            console.log('\n Step 4: Request Testnet Coins');
             console.log('--------------------------------');
-            console.log('💡 You need testnet Bitcoin to proceed. Here are testnet faucets:');
+            console.log(' You need testnet Bitcoin to proceed. Here are testnet faucets:');
             console.log('');
-            console.log('🌐 Testnet Faucets:');
-            console.log('   • https://coinfaucet.eu/en/btc-testnet/');
-            console.log('   • https://testnet-faucet.mempool.co/');
-            console.log('   • https://bitcoinfaucet.uo1.net/');
+            console.log(' Testnet Faucets:');
+            console.log('    https://coinfaucet.eu/en/btc-testnet/');
+            console.log('    https://testnet-faucet.mempool.co/');
+            console.log('    https://bitcoinfaucet.uo1.net/');
             console.log('');
-            console.log('📋 Use these addresses to request testnet coins:');
+            console.log(' Use these addresses to request testnet coins:');
             console.log(`   P2PKH: ${p2pkh.address}`);
             console.log(`   P2WPKH: ${p2wpkh.address}`);
             console.log('');
-            console.log('⏰ Wait 5-10 minutes after requesting, then run this script again.');
+            console.log(' Wait 5-10 minutes after requesting, then run this script again.');
         } else {
-            console.log('\n✅ Step 4: Sufficient Balance Available');
+            console.log('\n Step 4: Sufficient Balance Available');
             console.log('--------------------------------------');
-            console.log('🎉 Ready for atomic swap testing!');
+            console.log(' Ready for atomic swap testing!');
         }
         
         // 5. Save wallet info for relayer service
-        console.log('\n⚙️ Step 5: Update Relayer Configuration');
+        console.log('\n Step 5: Update Relayer Configuration');
         console.log('---------------------------------------');
         
         const relayerEnvPath = '../../relayer-services/executor-client/.env';
@@ -146,20 +146,20 @@ async function setupLiveTestnet() {
             }
             
             fs.writeFileSync(relayerEnvPath, envContent);
-            console.log('✅ Updated relayer service configuration');
+            console.log(' Updated relayer service configuration');
         }
         
         // 6. Summary
-        console.log('\n🎯 Setup Summary');
+        console.log('\n Setup Summary');
         console.log('================');
-        console.log(`💳 Wallet file: ${walletFile}`);
-        console.log(`🔑 Private key: ${keyPair.toWIF()}`);
-        console.log(`🏠 Primary address: ${p2wpkh.address}`);
-        console.log(`💰 Current balance: ${totalBalance / 100000000} BTC`);
-        console.log(`🪙 UTXOs available: ${utxos.length}`);
+        console.log(` Wallet file: ${walletFile}`);
+        console.log(` Private key: ${keyPair.toWIF()}`);
+        console.log(` Primary address: ${p2wpkh.address}`);
+        console.log(` Current balance: ${totalBalance / 100000000} BTC`);
+        console.log(` UTXOs available: ${utxos.length}`);
         
         if (totalBalance >= 10000) {
-            console.log('\n🚀 Ready to proceed with live Bitcoin atomic swap testing!');
+            console.log('\n Ready to proceed with live Bitcoin atomic swap testing!');
             return {
                 keyPair,
                 addresses: { p2pkh: p2pkh.address, p2wpkh: p2wpkh.address },
@@ -168,7 +168,7 @@ async function setupLiveTestnet() {
                 ready: true
             };
         } else {
-            console.log('\n⏳ Waiting for testnet funding before proceeding...');
+            console.log('\n Waiting for testnet funding before proceeding...');
             return {
                 keyPair,
                 addresses: { p2pkh: p2pkh.address, p2wpkh: p2wpkh.address },
@@ -179,7 +179,7 @@ async function setupLiveTestnet() {
         }
         
     } catch (error) {
-        console.error('❌ Setup failed:', error.message);
+        console.error(' Setup failed:', error.message);
         return null;
     }
 }

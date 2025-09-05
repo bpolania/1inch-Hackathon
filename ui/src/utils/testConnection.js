@@ -6,14 +6,14 @@
 const API_GATEWAY_URL = process.env.NEXT_PUBLIC_API_GATEWAY_URL || 'http://localhost:3001';
 
 async function testAPIGatewayConnection() {
-  console.log('🔧 Testing API Gateway connection...');
+  console.log(' Testing API Gateway connection...');
   
   try {
     // Test root endpoint
     const response = await fetch(`${API_GATEWAY_URL}/`);
     const data = await response.json();
     
-    console.log('✅ API Gateway root endpoint:', {
+    console.log(' API Gateway root endpoint:', {
       status: response.status,
       name: data.name,
       version: data.version,
@@ -24,7 +24,7 @@ async function testAPIGatewayConnection() {
     const healthResponse = await fetch(`${API_GATEWAY_URL}/api/health`);
     const healthData = await healthResponse.json();
     
-    console.log('✅ Health endpoint:', {
+    console.log(' Health endpoint:', {
       status: healthResponse.status,
       health: healthData.status,
       uptime: healthData.uptime
@@ -34,7 +34,7 @@ async function testAPIGatewayConnection() {
     const teeResponse = await fetch(`${API_GATEWAY_URL}/api/tee/status`);
     const teeData = await teeResponse.json();
     
-    console.log('✅ TEE status:', {
+    console.log(' TEE status:', {
       status: teeResponse.status,
       isHealthy: teeData.isHealthy,
       attestation: teeData.attestation
@@ -44,7 +44,7 @@ async function testAPIGatewayConnection() {
     const relayerResponse = await fetch(`${API_GATEWAY_URL}/api/relayer/status`);
     const relayerData = await relayerResponse.json();
     
-    console.log('✅ Relayer status:', {
+    console.log(' Relayer status:', {
       status: relayerResponse.status,
       isHealthy: relayerData.isHealthy,
       services: relayerData.status
@@ -52,7 +52,7 @@ async function testAPIGatewayConnection() {
 
     return true;
   } catch (error) {
-    console.error('💥 API Gateway connection failed:', error);
+    console.error(' API Gateway connection failed:', error);
     return false;
   }
 }

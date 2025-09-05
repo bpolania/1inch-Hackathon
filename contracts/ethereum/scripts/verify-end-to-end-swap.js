@@ -10,7 +10,7 @@ const fs = require("fs");
  */
 
 async function main() {
-    console.log("🔍 END-TO-END ATOMIC SWAP VERIFICATION");
+    console.log(" END-TO-END ATOMIC SWAP VERIFICATION");
     console.log("=====================================");
     console.log();
 
@@ -22,7 +22,7 @@ async function main() {
     const expectedSecret = process.argv[3] || "a9aab023149fea18759fd15443bd11bfca388dfe7f0813e372a75ce8a37dd7bc";
     const expectedHashlock = process.argv[4] || "dc10e49df5552b2daadb1864d6f38c59764669b67ac9bcc81a03f292ffed1515";
 
-    console.log("📋 VERIFYING SWAP:");
+    console.log(" VERIFYING SWAP:");
     console.log(`Account: ${signer.address}`);
     console.log(`Order Hash: ${orderHash}`);
     console.log(`Expected Secret: ${expectedSecret}`);
@@ -35,7 +35,7 @@ async function main() {
     const tokenAddress = deploymentInfo.productionDeployment.contracts.DemoToken;
     const demoToken = await ethers.getContractAt("MockERC20", tokenAddress, signer);
 
-    console.log("💰 CURRENT BALANCE CHECK");
+    console.log(" CURRENT BALANCE CHECK");
     console.log("========================");
     
     const currentDTBalance = await demoToken.balanceOf(signer.address);
@@ -45,14 +45,14 @@ async function main() {
     console.log(`ETH Balance: ${ethers.formatEther(currentETHBalance)} ETH`);
     console.log();
 
-    console.log("📊 ORDER STATUS VERIFICATION");
+    console.log(" ORDER STATUS VERIFICATION");
     console.log("============================");
     
     let order;
     try {
         order = await factory.getOrder(orderHash);
-        console.log(`Order Exists: ✅ Yes`);
-        console.log(`Order Active: ${order.isActive ? "🟡 Active" : "✅ Completed"}`);
+        console.log(`Order Exists:  Yes`);
+        console.log(`Order Active: ${order.isActive ? " Active" : " Completed"}`);
         console.log(`Source Token: ${order.sourceToken}`);
         console.log(`Source Amount: ${ethers.formatEther(order.sourceAmount)} DT`);
         console.log(`Resolver Fee: ${ethers.formatEther(order.resolverFeeAmount)} DT`);
@@ -60,12 +60,12 @@ async function main() {
         console.log(`Expiry Time: ${new Date(Number(order.expiryTime) * 1000).toISOString()}`);
         
     } catch (error) {
-        console.log(`❌ Order not found: ${error.message}`);
+        console.log(` Order not found: ${error.message}`);
         return { success: false, error: "Order not found" };
     }
     console.log();
 
-    console.log("🏦 ESCROW VERIFICATION");
+    console.log(" ESCROW VERIFICATION");
     console.log("=====================");
     
     let sourceEscrowBalance = 0n;
@@ -88,11 +88,11 @@ async function main() {
             console.log(`Destination Escrow ETH: ${ethers.formatEther(destinationEscrowBalance)} ETH`);
         }
     } catch (error) {
-        console.log(`⚠️  Error checking escrows: ${error.message}`);
+        console.log(`  Error checking escrows: ${error.message}`);
     }
     console.log();
 
-    console.log("🔐 CRYPTOGRAPHIC VERIFICATION");
+    console.log(" CRYPTOGRAPHIC VERIFICATION");
     console.log("=============================");
     
     const crypto = require('crypto');
@@ -102,27 +102,27 @@ async function main() {
     console.log(`Expected Hashlock: ${expectedHashlock}`);
     console.log(`Computed Hash:     ${computedHash}`);
     const hashMatch = computedHash === expectedHashlock;
-    console.log(`Hash Match: ${hashMatch ? "✅ VERIFIED" : "❌ MISMATCH"}`);
+    console.log(`Hash Match: ${hashMatch ? " VERIFIED" : " MISMATCH"}`);
     console.log();
 
-    console.log("📈 TRANSACTION HISTORY");
+    console.log(" TRANSACTION HISTORY");
     console.log("=====================");
     
     console.log("Known Ethereum Transactions:");
-    console.log("• Order Creation: https://sepolia.etherscan.io/tx/0xf45e3f29a382dbb79df313a9382923898105915f48b610ab605cb13861c9b029");
-    console.log("• Order Matching: https://sepolia.etherscan.io/tx/0x8eea5557477e7ddf34c47380c01dbae3262639c7d35fc3b94dcb37cfc7101421");
-    console.log("• Order Completion: https://sepolia.etherscan.io/tx/0x89ad2ece9ee5dd8e2de1c949a72ecbd9087139a5411d79ec1f9eb75cb0b5a018");
-    console.log("• Token Settlement: https://sepolia.etherscan.io/tx/0x2acb4a06f215004f797769582264970310ff4d77bb11dd7b2f2971ad2d911bc3");
+    console.log(" Order Creation: https://sepolia.etherscan.io/tx/0xf45e3f29a382dbb79df313a9382923898105915f48b610ab605cb13861c9b029");
+    console.log(" Order Matching: https://sepolia.etherscan.io/tx/0x8eea5557477e7ddf34c47380c01dbae3262639c7d35fc3b94dcb37cfc7101421");
+    console.log(" Order Completion: https://sepolia.etherscan.io/tx/0x89ad2ece9ee5dd8e2de1c949a72ecbd9087139a5411d79ec1f9eb75cb0b5a018");
+    console.log(" Token Settlement: https://sepolia.etherscan.io/tx/0x2acb4a06f215004f797769582264970310ff4d77bb11dd7b2f2971ad2d911bc3");
     console.log();
     
     console.log("Known NEAR Transactions:");
-    console.log("• Order Execution: https://testnet.nearblocks.io/txns/GnAior7Pg1SowKAtNTNaEHNAcPQDCsDPdKqScYuV3Fb8");
-    console.log("• Secret Revelation: https://testnet.nearblocks.io/txns/AUsg7W6AYNUmTHsunNipLAq3JsoY6jadPNNKbM1XL9rE");
-    console.log("• NEAR Transfer: https://testnet.nearblocks.io/txns/8tvsy3NmSDEz7gUt14pspbDm8BRojV9Lr29nyigES8m7");
+    console.log(" Order Execution: https://testnet.nearblocks.io/txns/GnAior7Pg1SowKAtNTNaEHNAcPQDCsDPdKqScYuV3Fb8");
+    console.log(" Secret Revelation: https://testnet.nearblocks.io/txns/AUsg7W6AYNUmTHsunNipLAq3JsoY6jadPNNKbM1XL9rE");
+    console.log(" NEAR Transfer: https://testnet.nearblocks.io/txns/8tvsy3NmSDEz7gUt14pspbDm8BRojV9Lr29nyigES8m7");
     console.log();
 
     console.log("=".repeat(60));
-    console.log("🏆 ATOMIC SWAP VERIFICATION RESULTS");
+    console.log(" ATOMIC SWAP VERIFICATION RESULTS");
     console.log("=".repeat(60));
     console.log();
     
@@ -165,12 +165,12 @@ async function main() {
         }
     ];
 
-    console.log("✅ VERIFICATION CHECKLIST:");
+    console.log(" VERIFICATION CHECKLIST:");
     console.log();
 
     let passedChecks = 0;
     verifications.forEach((verification, index) => {
-        const status = verification.result ? "✅ PASS" : "❌ FAIL";
+        const status = verification.result ? " PASS" : " FAIL";
         console.log(`${index + 1}. ${verification.check}: ${status}`);
         console.log(`   ${verification.details}`);
         console.log();
@@ -178,32 +178,32 @@ async function main() {
     });
 
     const totalChecks = verifications.length;
-    console.log(`📊 VERIFICATION SCORE: ${passedChecks}/${totalChecks}`);
+    console.log(` VERIFICATION SCORE: ${passedChecks}/${totalChecks}`);
     console.log();
 
     const isCompleteSuccess = passedChecks === totalChecks;
     
     if (isCompleteSuccess) {
-        console.log("🎉 VERDICT: COMPLETE ATOMIC SWAP SUCCESS!");
-        console.log("🏆 This is a REAL, VERIFIED, END-TO-END atomic swap");
-        console.log("✨ All criteria met with real token movements on both chains");
+        console.log(" VERDICT: COMPLETE ATOMIC SWAP SUCCESS!");
+        console.log(" This is a REAL, VERIFIED, END-TO-END atomic swap");
+        console.log(" All criteria met with real token movements on both chains");
     } else {
-        console.log("⚠️  VERDICT: PARTIAL SUCCESS OR ISSUES DETECTED");
-        console.log(`❌ ${totalChecks - passedChecks} verification(s) failed`);
+        console.log("  VERDICT: PARTIAL SUCCESS OR ISSUES DETECTED");
+        console.log(` ${totalChecks - passedChecks} verification(s) failed`);
     }
 
     console.log();
-    console.log("🚀 SUMMARY:");
+    console.log(" SUMMARY:");
     console.log("===========");
     if (sourceEscrowBalance > 0) {
-        console.log(`• ✅ DT Tokens Moved: ${ethers.formatEther(sourceEscrowBalance)} DT in escrow`);
+        console.log(`  DT Tokens Moved: ${ethers.formatEther(sourceEscrowBalance)} DT in escrow`);
     }
     if (destinationEscrowBalance > 0) {
-        console.log(`• ✅ ETH Safety Deposit: ${ethers.formatEther(destinationEscrowBalance)} ETH locked`);
+        console.log(`  ETH Safety Deposit: ${ethers.formatEther(destinationEscrowBalance)} ETH locked`);
     }
-    console.log("• ✅ NEAR Tokens Moved: 0.004 NEAR transferred (verified externally)");
-    console.log("• ✅ Cross-Chain Coordination: SHA-256 secret coordination successful");
-    console.log("• ✅ 1inch Integration: Complete Fusion+ order lifecycle");
+    console.log("  NEAR Tokens Moved: 0.004 NEAR transferred (verified externally)");
+    console.log("  Cross-Chain Coordination: SHA-256 secret coordination successful");
+    console.log("  1inch Integration: Complete Fusion+ order lifecycle");
     console.log();
     
     if (isCompleteSuccess) {
@@ -242,11 +242,11 @@ module.exports = { main };
 if (require.main === module) {
     main()
         .then((result) => {
-            console.log(`\n🎯 Verification completed with ${result.success ? "SUCCESS" : "ISSUES"}`);
+            console.log(`\n Verification completed with ${result.success ? "SUCCESS" : "ISSUES"}`);
             process.exit(result.success ? 0 : 1);
         })
         .catch((error) => {
-            console.error("\n💥 Verification failed:", error.message);
+            console.error("\n Verification failed:", error.message);
             process.exit(1);
         });
 }

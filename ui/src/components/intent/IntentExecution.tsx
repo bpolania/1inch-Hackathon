@@ -185,7 +185,7 @@ export function IntentExecution({ intent, onExecutionComplete, className }: Inte
               </div>
               <ul className="text-sm text-yellow-700 space-y-1">
                 {profitability.riskFactors.map((factor, index) => (
-                  <li key={index}>• {factor}</li>
+                  <li key={index}> {factor}</li>
                 ))}
               </ul>
             </div>
