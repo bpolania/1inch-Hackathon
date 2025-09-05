@@ -75,7 +75,7 @@ export class BitcoinExecutor extends EventEmitter {
             return;
         }
 
-        logger.info('🔧 Initializing Bitcoin Executor...');
+        logger.info(' Initializing Bitcoin Executor...');
 
         try {
             // Require Bitcoin private key for production mode
@@ -111,10 +111,10 @@ export class BitcoinExecutor extends EventEmitter {
 
             // Check Bitcoin wallet balance
             const balance = await this.utxoManager.getAvailableBalance(this.changeAddress);
-            logger.info(`💰 Bitcoin wallet balance: ${balance} satoshis`);
+            logger.info(` Bitcoin wallet balance: ${balance} satoshis`);
             
             if (balance < this.config.bitcoin.dustThreshold) {
-                logger.warn(`⚠️ Low Bitcoin balance: ${balance} satoshis. May not be able to execute swaps.`);
+                logger.warn(` Low Bitcoin balance: ${balance} satoshis. May not be able to execute swaps.`);
             }
 
             // Initialize Ethereum event monitoring
@@ -130,14 +130,14 @@ export class BitcoinExecutor extends EventEmitter {
             this.startPeriodicMonitoring();
 
             this.initialized = true;
-            logger.info('✅ Bitcoin Executor initialized successfully');
-            logger.info(`📍 Network: ${this.config.bitcoin.network}`);
-            logger.info(`⚡ Fee Rate: ${this.config.bitcoin.feeRate} sat/byte`);
-            logger.info(`🏠 Resolver Address: ${this.changeAddress}`);
-            logger.info(`💼 Pending Orders: ${this.orderStore.getPending().length}`);
+            logger.info(' Bitcoin Executor initialized successfully');
+            logger.info(` Network: ${this.config.bitcoin.network}`);
+            logger.info(` Fee Rate: ${this.config.bitcoin.feeRate} sat/byte`);
+            logger.info(` Resolver Address: ${this.changeAddress}`);
+            logger.info(` Pending Orders: ${this.orderStore.getPending().length}`);
 
         } catch (error) {
-            logger.error('💥 Failed to initialize Bitcoin Executor:', error);
+            logger.error(' Failed to initialize Bitcoin Executor:', error);
             throw error;
         }
     }
@@ -149,7 +149,7 @@ export class BitcoinExecutor extends EventEmitter {
         const pendingOrders = this.orderStore.getPending();
         
         for (const context of pendingOrders) {
-            logger.info(`🔄 Recovering pending order ${context.orderHash} (status: ${context.status})`);
+            logger.info(` Recovering pending order ${context.orderHash} (status: ${context.status})`);
             
             // Re-register for monitoring if we're waiting for secret
             if (context.status === 'htlc_funded' && context.bitcoin?.fundingTxId) {
@@ -159,7 +159,7 @@ export class BitcoinExecutor extends EventEmitter {
             // Check if order has expired
             const now = Math.floor(Date.now() / 1000);
             if (context.expiryTime && context.expiryTime < now) {
-                logger.warn(`⏰ Order ${context.orderHash} has expired`);
+                logger.warn(` Order ${context.orderHash} has expired`);
                 this.orderStore.updateStatus(context.orderHash, 'expired');
                 
                 // Handle expired orders with refund logic
@@ -175,14 +175,14 @@ export class BitcoinExecutor extends EventEmitter {
      */
     async executeOrder(order: ExecutableOrder): Promise<BitcoinExecutionResult> {
         const startTime = Date.now();
-        logger.info(`🚀 Executing Bitcoin side for order ${order.orderHash}`);
+        logger.info(` Executing Bitcoin side for order ${order.orderHash}`);
 
         try {
             // Check if order already exists
             if (this.orderStore.has(order.orderHash)) {
                 const existing = this.orderStore.get(order.orderHash);
                 if (existing?.status === 'claimed' || existing?.status === 'failed') {
-                    logger.warn(`⚠️ Order ${order.orderHash} already processed (status: ${existing.status})`);
+                    logger.warn(` Order ${order.orderHash} already processed (status: ${existing.status})`);
                     return {
                         success: false,
                         orderHash: order.orderHash,
@@ -209,7 +209,7 @@ export class BitcoinExecutor extends EventEmitter {
 
             // Decode Bitcoin execution parameters
             const params = this.decodeExecutionParams(order.order.dstExecutionParams);
-            logger.info(`📋 Bitcoin Parameters:`, {
+            logger.info(` Bitcoin Parameters:`, {
                 address: params.btcAddress,
                 timelock: params.htlcTimelock,
                 feeRate: params.feeRate
@@ -232,7 +232,7 @@ export class BitcoinExecutor extends EventEmitter {
 
             const htlcAddress = this.btcManager.createHTLCAddress(htlcScript);
             
-            logger.info(`📜 HTLC Created:`, {
+            logger.info(` HTLC Created:`, {
                 address: htlcAddress,
                 scriptLength: htlcScript.length,
                 timelockHeight
@@ -253,7 +253,7 @@ export class BitcoinExecutor extends EventEmitter {
                 params.feeRate
             );
 
-            logger.info(`💰 HTLC Funded: ${fundingTxId}`);
+            logger.info(` HTLC Funded: ${fundingTxId}`);
 
             // Update order context with funding info
             this.orderStore.updateBitcoinInfo(order.orderHash, {
@@ -278,7 +278,7 @@ export class BitcoinExecutor extends EventEmitter {
             };
 
         } catch (error) {
-            logger.error(`💥 Bitcoin execution failed for order ${order.orderHash}:`, error);
+            logger.error(` Bitcoin execution failed for order ${order.orderHash}:`, error);
             
             // Update order status to failed
             this.orderStore.updateStatus(
@@ -334,7 +334,7 @@ export class BitcoinExecutor extends EventEmitter {
         amount: number,
         feeRate: number
     ): Promise<string> {
-        logger.info(`💸 Funding HTLC ${htlcAddress} with ${amount} satoshis`);
+        logger.info(` Funding HTLC ${htlcAddress} with ${amount} satoshis`);
 
         let utxos: any[] = [];
         try {
@@ -353,7 +353,7 @@ export class BitcoinExecutor extends EventEmitter {
             utxos = result.utxos;
             const { total, change } = result;
 
-            logger.info(`📊 Selected ${utxos.length} UTXOs: total=${total}, change=${change}`);
+            logger.info(` Selected ${utxos.length} UTXOs: total=${total}, change=${change}`);
 
             // Create funding transaction
             const fundingTx = await this.btcManager.createFundingTransaction(
@@ -364,7 +364,7 @@ export class BitcoinExecutor extends EventEmitter {
                 this.keyPair
             );
             
-            logger.info(`✍️ Funding transaction created, size: ${fundingTx.txHex.length / 2} bytes`);
+            logger.info(` Funding transaction created, size: ${fundingTx.txHex.length / 2} bytes`);
             
             // Mark UTXOs as spent (optimistically)
             this.utxoManager.markUTXOsAsSpent(utxos);
@@ -377,8 +377,8 @@ export class BitcoinExecutor extends EventEmitter {
                 this.config.execution.retryDelay
             );
             
-            logger.info(`🚀 Bitcoin funding transaction broadcast: ${txId}`);
-            logger.info(`🔗 View on explorer: https://blockstream.info/${this.config.bitcoin.network === 'testnet' ? 'testnet/' : ''}tx/${txId}`);
+            logger.info(` Bitcoin funding transaction broadcast: ${txId}`);
+            logger.info(` View on explorer: https://blockstream.info/${this.config.bitcoin.network === 'testnet' ? 'testnet/' : ''}tx/${txId}`);
             
             // Wait for at least 1 confirmation (optional, can be done async)
             if (this.config.bitcoin.minConfirmations > 0) {
@@ -388,12 +388,12 @@ export class BitcoinExecutor extends EventEmitter {
             return txId;
             
         } catch (error) {
-            logger.error('💥 Failed to fund Bitcoin HTLC:', error);
+            logger.error(' Failed to fund Bitcoin HTLC:', error);
             
             // Clear spent UTXOs if transaction failed
             if (utxos && utxos.length > 0) {
                 utxos.forEach((utxo: any) => this.utxoManager.clearSpent(utxo.txid, utxo.vout));
-                logger.info('🔄 Cleared spent status for UTXOs due to transaction failure');
+                logger.info(' Cleared spent status for UTXOs due to transaction failure');
             }
             
             throw new Error(`Bitcoin funding failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -407,13 +407,13 @@ export class BitcoinExecutor extends EventEmitter {
         this.utxoManager.waitForConfirmation(txId, confirmations)
             .then(confirmed => {
                 if (confirmed) {
-                    logger.info(`✅ Transaction ${txId} confirmed with ${confirmations} confirmations`);
+                    logger.info(` Transaction ${txId} confirmed with ${confirmations} confirmations`);
                 } else {
-                    logger.warn(`⚠️ Transaction ${txId} confirmation timeout`);
+                    logger.warn(` Transaction ${txId} confirmation timeout`);
                 }
             })
             .catch(error => {
-                logger.error(`💥 Error waiting for confirmation: ${error.message}`);
+                logger.error(` Error waiting for confirmation: ${error.message}`);
             });
     }
 
@@ -423,7 +423,7 @@ export class BitcoinExecutor extends EventEmitter {
     private async handleSecretRevealed(event: any): Promise<void> {
         const { orderHash, secret, transactionHash } = event;
         
-        logger.info(`🔐 Secret revealed for order ${orderHash}:`, {
+        logger.info(` Secret revealed for order ${orderHash}:`, {
             secret: secret.slice(0, 10) + '...',
             ethTxHash: transactionHash
         });
@@ -432,7 +432,7 @@ export class BitcoinExecutor extends EventEmitter {
             // Get stored context for this order
             const context = this.orderStore.get(orderHash);
             if (!context) {
-                logger.error(`💥 No context found for order ${orderHash}`);
+                logger.error(` No context found for order ${orderHash}`);
                 return;
             }
 
@@ -442,7 +442,7 @@ export class BitcoinExecutor extends EventEmitter {
 
             // Check if we have all required information
             if (!context.bitcoin?.htlcScript || !context.bitcoin?.htlcAddress || !context.bitcoin?.fundingTxId) {
-                logger.error(`💥 Missing Bitcoin information for order ${orderHash}`);
+                logger.error(` Missing Bitcoin information for order ${orderHash}`);
                 return;
             }
 
@@ -455,7 +455,7 @@ export class BitcoinExecutor extends EventEmitter {
                 context.bitcoin.fundingTxId
             );
 
-            logger.info(`🎯 Bitcoin claimed successfully: ${claimingTxId}`);
+            logger.info(` Bitcoin claimed successfully: ${claimingTxId}`);
             
             // Update order context
             this.orderStore.updateBitcoinInfo(orderHash, { claimingTxId });
@@ -469,7 +469,7 @@ export class BitcoinExecutor extends EventEmitter {
             });
 
         } catch (error) {
-            logger.error(`💥 Failed to claim Bitcoin for order ${orderHash}:`, error);
+            logger.error(` Failed to claim Bitcoin for order ${orderHash}:`, error);
             
             this.orderStore.updateStatus(
                 orderHash, 
@@ -494,7 +494,7 @@ export class BitcoinExecutor extends EventEmitter {
         secret: string,
         fundingTxId: string
     ): Promise<string> {
-        logger.info(`💎 Claiming Bitcoin from HTLC ${htlcAddress}`);
+        logger.info(` Claiming Bitcoin from HTLC ${htlcAddress}`);
 
         try {
             // Get HTLC output info
@@ -503,7 +503,7 @@ export class BitcoinExecutor extends EventEmitter {
                 throw new Error(`HTLC output not found: ${fundingTxId}:0`);
             }
 
-            logger.info(`📊 HTLC output found: ${htlcOutput.value} satoshis`);
+            logger.info(` HTLC output found: ${htlcOutput.value} satoshis`);
 
             // Create claiming transaction
             const claimingTx = await this.btcManager.createClaimingTransaction(
@@ -516,7 +516,7 @@ export class BitcoinExecutor extends EventEmitter {
                 this.keyPair
             );
             
-            logger.info(`✍️ Claiming transaction created, size: ${claimingTx.txHex.length / 2} bytes`);
+            logger.info(` Claiming transaction created, size: ${claimingTx.txHex.length / 2} bytes`);
             
             // Broadcast claiming transaction with retry
             const txId = await this.retryOperation<string>(
@@ -526,13 +526,13 @@ export class BitcoinExecutor extends EventEmitter {
                 this.config.execution.retryDelay
             );
             
-            logger.info(`🚀 Bitcoin claiming transaction broadcast: ${txId}`);
-            logger.info(`🔗 View on explorer: https://blockstream.info/${this.config.bitcoin.network === 'testnet' ? 'testnet/' : ''}tx/${txId}`);
+            logger.info(` Bitcoin claiming transaction broadcast: ${txId}`);
+            logger.info(` View on explorer: https://blockstream.info/${this.config.bitcoin.network === 'testnet' ? 'testnet/' : ''}tx/${txId}`);
             
             return txId;
 
         } catch (error) {
-            logger.error('💥 Failed to claim Bitcoin:', error);
+            logger.error(' Failed to claim Bitcoin:', error);
             throw new Error(`Bitcoin claiming failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
         }
     }
@@ -541,12 +541,12 @@ export class BitcoinExecutor extends EventEmitter {
      * Handle expired order by attempting refund
      */
     private async handleExpiredOrder(context: OrderContext): Promise<void> {
-        logger.info(`🔄 Handling expired order ${context.orderHash}`);
+        logger.info(` Handling expired order ${context.orderHash}`);
         
         try {
             const canRefund = await this.refundManager.canRefund(context);
             if (canRefund) {
-                logger.info(`💰 Attempting refund for expired order ${context.orderHash}`);
+                logger.info(` Attempting refund for expired order ${context.orderHash}`);
                 
                 const result = await this.refundManager.refundExpiredHTLC(
                     context,
@@ -555,7 +555,7 @@ export class BitcoinExecutor extends EventEmitter {
                 );
                 
                 if (result.success) {
-                    logger.info(`✅ Successfully refunded order ${context.orderHash}: ${result.txId}`);
+                    logger.info(` Successfully refunded order ${context.orderHash}: ${result.txId}`);
                     this.orderStore.updateBitcoinInfo(context.orderHash, {
                         refundTxId: result.txId
                     });
@@ -567,14 +567,14 @@ export class BitcoinExecutor extends EventEmitter {
                         htlcAddress: context.bitcoin?.htlcAddress
                     });
                 } else {
-                    logger.error(`💥 Failed to refund order ${context.orderHash}: ${result.error}`);
+                    logger.error(` Failed to refund order ${context.orderHash}: ${result.error}`);
                     this.orderStore.updateStatus(context.orderHash, 'failed', `Refund failed: ${result.error}`);
                 }
             } else {
-                logger.info(`⏳ Order ${context.orderHash} cannot be refunded yet (timelock not expired)`);
+                logger.info(` Order ${context.orderHash} cannot be refunded yet (timelock not expired)`);
             }
         } catch (error: any) {
-            logger.error(`💥 Error handling expired order ${context.orderHash}: ${error.message}`);
+            logger.error(` Error handling expired order ${context.orderHash}: ${error.message}`);
             this.orderStore.updateStatus(context.orderHash, 'failed', `Refund error: ${error.message}`);
         }
     }
@@ -593,17 +593,17 @@ export class BitcoinExecutor extends EventEmitter {
                     // Check if order has expired
                     if (context.expiryTime && context.expiryTime < now) {
                         if (context.status === 'htlc_funded') {
-                            logger.info(`⏰ Found expired funded HTLC: ${context.orderHash}`);
+                            logger.info(` Found expired funded HTLC: ${context.orderHash}`);
                             await this.handleExpiredOrder(context);
                         }
                     }
                 }
             } catch (error: any) {
-                logger.error(`💥 Error in periodic monitoring: ${error.message}`);
+                logger.error(` Error in periodic monitoring: ${error.message}`);
             }
         }, 5 * 60 * 1000); // 5 minutes
         
-        logger.info('🔄 Started periodic monitoring for expired orders');
+        logger.info(' Started periodic monitoring for expired orders');
     }
 
     /**
@@ -619,15 +619,15 @@ export class BitcoinExecutor extends EventEmitter {
             // Validate parameters
             const validation = validateBitcoinParams(params);
             if (!validation.valid) {
-                logger.warn('⚠️ Invalid Bitcoin parameters:', validation.errors);
+                logger.warn(' Invalid Bitcoin parameters:', validation.errors);
                 // Continue with decoded params, but log warnings
             }
             
-            logger.info('✅ Decoded Bitcoin execution parameters:', params);
+            logger.info(' Decoded Bitcoin execution parameters:', params);
             return params;
             
         } catch (error) {
-            logger.warn('⚠️ Failed to decode execution parameters, using defaults:', error);
+            logger.warn(' Failed to decode execution parameters, using defaults:', error);
             return {
                 btcAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
                 htlcTimelock: this.config.bitcoin.htlcTimelock || 144,
@@ -659,7 +659,7 @@ export class BitcoinExecutor extends EventEmitter {
                 connected: true
             };
         } catch (error) {
-            logger.error('💥 Failed to get Bitcoin network status:', error);
+            logger.error(' Failed to get Bitcoin network status:', error);
             return {
                 network: this.config.bitcoin.network,
                 blockHeight: 0,
@@ -691,7 +691,7 @@ export class BitcoinExecutor extends EventEmitter {
      * Cleanup resources
      */
     async cleanup(): Promise<void> {
-        logger.info('🧹 Cleaning up Bitcoin Executor...');
+        logger.info(' Cleaning up Bitcoin Executor...');
         
         // Save any pending order contexts
         await this.orderStore.flush();

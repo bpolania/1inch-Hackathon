@@ -147,10 +147,10 @@ export function SolverCompetition({ intent, className }: SolverCompetitionProps)
 
   const generateMockRoute = (intent: IntentRequest) => {
     const routes = [
-      `${intent.fromToken.symbol} → DEX A → ${intent.toToken.symbol}`,
-      `${intent.fromToken.symbol} → Bridge → DEX B → ${intent.toToken.symbol}`,
-      `${intent.fromToken.symbol} → AMM → ${intent.toToken.symbol}`,
-      `${intent.fromToken.symbol} → Aggregator → ${intent.toToken.symbol}`
+      `${intent.fromToken.symbol}  DEX A  ${intent.toToken.symbol}`,
+      `${intent.fromToken.symbol}  Bridge  DEX B  ${intent.toToken.symbol}`,
+      `${intent.fromToken.symbol}  AMM  ${intent.toToken.symbol}`,
+      `${intent.fromToken.symbol}  Aggregator  ${intent.toToken.symbol}`
     ];
     return routes[Math.floor(Math.random() * routes.length)];
   };

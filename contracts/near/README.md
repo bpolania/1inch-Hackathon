@@ -4,11 +4,11 @@ A Rust smart contract for NEAR Protocol that implements Hash Time Locked Contrac
 
 ## Features
 
-- ✅ **Hash Time Locked Contracts**: Secure atomic swap mechanism using hashlock/timelock
-- ✅ **Resolver Network**: Authorized resolvers with safety deposit requirements
-- ✅ **Native NEAR Support**: Direct integration with NEAR native token
-- ✅ **Event Emission**: Comprehensive logging for off-chain monitoring
-- ✅ **Safety Mechanisms**: Multi-stage timelock and economic security deposits
+-  **Hash Time Locked Contracts**: Secure atomic swap mechanism using hashlock/timelock
+-  **Resolver Network**: Authorized resolvers with safety deposit requirements
+-  **Native NEAR Support**: Direct integration with NEAR native token
+-  **Event Emission**: Comprehensive logging for off-chain monitoring
+-  **Safety Mechanisms**: Multi-stage timelock and economic security deposits
 
 ## Smart Contract Functions
 
@@ -103,7 +103,7 @@ near call cross-chain-htlc.YOUR_ACCOUNT.testnet new '{}' \\
 ### Create Cross-Chain Swap Order
 
 ```bash
-# Create order: 5 NEAR → 0.001 ETH
+# Create order: 5 NEAR  0.001 ETH
 near call cross-chain-htlc.YOUR_ACCOUNT.testnet create_order '{
   "order_id": "swap-001", 
   "hashlock": "abcd1234...", 
@@ -183,49 +183,49 @@ cargo test --test testnet_deployment_tests -- --nocapture
 ### Test Coverage
 
 **Unit Tests (8 tests):**
-- ✅ Contract initialization
-- ✅ Resolver management (add/remove)
-- ✅ Order creation validation
-- ✅ Order matching authorization
-- ✅ View functions
+-  Contract initialization
+-  Resolver management (add/remove)
+-  Order creation validation
+-  Order matching authorization
+-  View functions
 
 **Integration Tests (9 tests):**
-- ✅ Contract deployment & initialization
-- ✅ Resolver management workflow
-- ✅ HTLC order creation
-- ✅ Order matching with safety deposits
-- ✅ Claim order with preimage verification
-- ✅ Cancel expired orders with refunds
-- ✅ Unauthorized resolver protection
-- ✅ **Full cross-chain swap simulation**
-- ✅ Event logging verification
-- ✅ Balance transfer verification
+-  Contract deployment & initialization
+-  Resolver management workflow
+-  HTLC order creation
+-  Order matching with safety deposits
+-  Claim order with preimage verification
+-  Cancel expired orders with refunds
+-  Unauthorized resolver protection
+-  **Full cross-chain swap simulation**
+-  Event logging verification
+-  Balance transfer verification
 
 ### Advanced Testing Features
 
 **near-workspaces provides:**
-- 🏗️ **Real contract deployment** in sandbox environment
-- 💰 **Real token transfers** and balance verification
-- ⏰ **Block advancement** for timelock testing
-- 🔗 **Multi-account interactions** (users, resolvers, contracts)
-- 📝 **Event log inspection** for monitoring integration
-- 🔐 **Cryptographic hash verification** with real preimages
+-  **Real contract deployment** in sandbox environment
+-  **Real token transfers** and balance verification
+-  **Block advancement** for timelock testing
+-  **Multi-account interactions** (users, resolvers, contracts)
+-  **Event log inspection** for monitoring integration
+-  **Cryptographic hash verification** with real preimages
 
 ## Live Deployment Summary
 
 ### NEAR - 1inch Fusion+ Extension
 
-🎉 **1inch Fusion+ NEAR Extension - Production Deployment**
+ **1inch Fusion+ NEAR Extension - Production Deployment**
 
 #### Latest Deployment (July 23, 2025)
 - **Contract Address**: [`fusion-plus.demo.cuteharbor3573.testnet`](https://testnet.nearblocks.io/address/fusion-plus.demo.cuteharbor3573.testnet)
 - **Deployed By**: `demo.cuteharbor3573.testnet`
 - **Deployment Date**: July 23, 2025 
 - **Integration Type**: **1inch Fusion+ Extension** (not standalone)
-- **Owner**: `demo.cuteharbor3573.testnet` ✅
-- **Min Safety Deposit**: 500 bps (5%) ✅
-- **Authorized 1inch Resolvers**: 1 ✅  
-- **Resolver Status**: `demo.cuteharbor3573.testnet` is authorized ✅
+- **Owner**: `demo.cuteharbor3573.testnet` 
+- **Min Safety Deposit**: 500 bps (5%) 
+- **Authorized 1inch Resolvers**: 1   
+- **Resolver Status**: `demo.cuteharbor3573.testnet` is authorized 
 
 #### Deployment Transaction History
 - **Account Creation**: [98a3GNajLnZ8wzz3UNk9nrdfofLw2YbVZx2Xbo5CrNoR](https://testnet.nearblocks.io/txns/98a3GNajLnZ8wzz3UNk9nrdfofLw2YbVZx2Xbo5CrNoR)
@@ -241,8 +241,8 @@ cargo test --test testnet_deployment_tests -- --nocapture
 #### 1inch Fusion+ Integration
 - **NEAR Fusion+ Extension**: `fusion-plus.demo.cuteharbor3573.testnet`
 - **Ethereum Modular Factory**: [`0x98c35dA70f839F1B7965b8b8BA17654Da11f4486`](https://sepolia.etherscan.io/address/0x98c35dA70f839F1B7965b8b8BA17654Da11f4486)
-- **Cross-Chain Network**: Sepolia ↔ NEAR Testnet
-- **Status**: **Ready for 1inch Fusion+ cross-chain swaps!** 🚀
+- **Cross-Chain Network**: Sepolia  NEAR Testnet
+- **Status**: **Ready for 1inch Fusion+ cross-chain swaps!** 
 
 #### Live Demo Commands (Fusion+ Version)
 ```bash

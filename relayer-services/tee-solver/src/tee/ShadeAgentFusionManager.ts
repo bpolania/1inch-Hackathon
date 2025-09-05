@@ -75,7 +75,7 @@ export class ShadeAgentFusionManager extends EventEmitter {
    * Initialize all Shade Agent components
    */
   async initialize(): Promise<void> {
-    logger.info('🛡️ Initializing Shade Agent Fusion Manager...', {
+    logger.info(' Initializing Shade Agent Fusion Manager...', {
       teeMode: this.config.teeConfig.teeMode,
       attestationRequired: this.config.requireAttestation,
       trustLevel: this.config.minimumTrustLevel
@@ -99,14 +99,14 @@ export class ShadeAgentFusionManager extends EventEmitter {
       }
 
       this.isInitialized = true;
-      logger.info('✅ Shade Agent Fusion Manager initialized successfully');
+      logger.info(' Shade Agent Fusion Manager initialized successfully');
       this.emit('initialized');
 
     } catch (error) {
-      logger.error('💥 Failed to initialize Shade Agent Fusion Manager:', error);
+      logger.error(' Failed to initialize Shade Agent Fusion Manager:', error);
       
       if (this.config.allowFallbackSigning) {
-        logger.warn('⚠️ Falling back to non-TEE mode...');
+        logger.warn(' Falling back to non-TEE mode...');
         await this.initializeFallbackMode();
       } else {
         throw error;
@@ -122,7 +122,7 @@ export class ShadeAgentFusionManager extends EventEmitter {
       throw new Error('Shade Agent Fusion Manager not initialized');
     }
 
-    logger.info('🔍 Processing quote request with TEE verification', {
+    logger.info(' Processing quote request with TEE verification', {
       requestId: request.id,
       sourceChain: request.sourceChain,
       destinationChain: request.destinationChain,
@@ -148,7 +148,7 @@ export class ShadeAgentFusionManager extends EventEmitter {
       const processingTime = Date.now() - startTime;
       this.updateProcessingStats(processingTime);
 
-      logger.info('✅ Quote request processed with TEE verification', {
+      logger.info(' Quote request processed with TEE verification', {
         requestId: request.id,
         orderHash: orderHash.substring(0, 10) + '...',
         processingTime,
@@ -158,7 +158,7 @@ export class ShadeAgentFusionManager extends EventEmitter {
       return solverQuote;
 
     } catch (error) {
-      logger.error('💥 TEE quote processing failed:', error);
+      logger.error(' TEE quote processing failed:', error);
       this.stats.securityEvents++;
       this.emit('processing_failed', { requestId: request.id, error });
       throw error;
@@ -169,7 +169,7 @@ export class ShadeAgentFusionManager extends EventEmitter {
    * Get quote with TEE attestation proof
    */
   private async getVerifiedQuote(request: FusionQuoteRequest): Promise<any> {
-    logger.info('🔐 Getting verified quote with TEE attestation...');
+    logger.info(' Getting verified quote with TEE attestation...');
 
     try {
       // Get standard quote
@@ -190,7 +190,7 @@ export class ShadeAgentFusionManager extends EventEmitter {
       return quote;
 
     } catch (error) {
-      logger.error('💥 Verified quote generation failed:', error);
+      logger.error(' Verified quote generation failed:', error);
       throw error;
     }
   }
@@ -199,7 +199,7 @@ export class ShadeAgentFusionManager extends EventEmitter {
    * Create order with TEE verification
    */
   private async createVerifiedOrder(quote: any, request: FusionQuoteRequest): Promise<any> {
-    logger.info('📋 Creating verified order with TEE signatures...');
+    logger.info(' Creating verified order with TEE signatures...');
 
     try {
       // Create standard order
@@ -220,7 +220,7 @@ export class ShadeAgentFusionManager extends EventEmitter {
       return orderData;
 
     } catch (error) {
-      logger.error('💥 Verified order creation failed:', error);
+      logger.error(' Verified order creation failed:', error);
       throw error;
     }
   }
@@ -231,7 +231,7 @@ export class ShadeAgentFusionManager extends EventEmitter {
   private async submitVerifiedOrder(orderData: any): Promise<string> {
     const startTime = Date.now();
     
-    logger.info('📤 Submitting verified order with TEE signing...', {
+    logger.info(' Submitting verified order with TEE signing...', {
       requestId: orderData.requestId,
       teeMode: this.config.teeConfig.teeMode
     });
@@ -274,7 +274,7 @@ export class ShadeAgentFusionManager extends EventEmitter {
       const submissionTime = Date.now() - startTime;
       this.updateSubmissionStats(submissionTime);
 
-      logger.info('✅ Verified order submitted successfully', {
+      logger.info(' Verified order submitted successfully', {
         requestId: orderData.requestId,
         orderHash: orderHash.substring(0, 10) + '...',
         signingMethod,
@@ -292,7 +292,7 @@ export class ShadeAgentFusionManager extends EventEmitter {
       return orderHash;
 
     } catch (error) {
-      logger.error('💥 Verified order submission failed:', error);
+      logger.error(' Verified order submission failed:', error);
       this.stats.securityEvents++;
       throw error;
     }
@@ -302,7 +302,7 @@ export class ShadeAgentFusionManager extends EventEmitter {
    * Submit order using TEE hardware signing
    */
   private async submitWithTEESigning(orderData: any): Promise<string> {
-    logger.info('🔐 Submitting order with TEE hardware signing...');
+    logger.info(' Submitting order with TEE hardware signing...');
 
     try {
       // Generate TEE key pair for signing
@@ -333,10 +333,10 @@ export class ShadeAgentFusionManager extends EventEmitter {
       return orderInfo.orderHash;
 
     } catch (error) {
-      logger.error('💥 TEE signing failed:', error);
+      logger.error(' TEE signing failed:', error);
       
       if (this.config.allowFallbackSigning) {
-        logger.warn('⚠️ Falling back to Chain Signatures for this order...');
+        logger.warn(' Falling back to Chain Signatures for this order...');
         return await this.fusionManager.submitOrder(orderData);
       }
       
@@ -348,7 +348,7 @@ export class ShadeAgentFusionManager extends EventEmitter {
    * Verify TEE attestation
    */
   private async verifyTEEAttestation(): Promise<void> {
-    logger.info('🔍 Verifying TEE attestation...');
+    logger.info(' Verifying TEE attestation...');
 
     try {
       const attestationData = this.shadeAgentManager.getAttestationData();
@@ -377,13 +377,13 @@ export class ShadeAgentFusionManager extends EventEmitter {
         }
       }
 
-      logger.info('✅ TEE attestation verified successfully', {
+      logger.info(' TEE attestation verified successfully', {
         trustLevel: verificationResult.trustLevel,
         issues: verificationResult.issues.length
       });
 
     } catch (error) {
-      logger.error('💥 TEE attestation verification failed:', error);
+      logger.error(' TEE attestation verification failed:', error);
       throw error;
     }
   }
@@ -392,16 +392,16 @@ export class ShadeAgentFusionManager extends EventEmitter {
    * Initialize fallback mode without TEE
    */
   private async initializeFallbackMode(): Promise<void> {
-    logger.warn('⚠️ Initializing fallback mode without TEE...');
+    logger.warn(' Initializing fallback mode without TEE...');
     
     try {
       await this.fusionManager.initialize();
       this.isInitialized = true;
       
-      logger.info('✅ Fallback mode initialized successfully');
+      logger.info(' Fallback mode initialized successfully');
       this.emit('fallback_initialized');
     } catch (error) {
-      logger.error('💥 Fallback mode initialization failed:', error);
+      logger.error(' Fallback mode initialization failed:', error);
       throw error;
     }
   }
@@ -425,22 +425,22 @@ export class ShadeAgentFusionManager extends EventEmitter {
    */
   private setupEventHandlers(): void {
     this.shadeAgentManager.on('attestation_completed', (data) => {
-      logger.info('🔐 TEE attestation completed');
+      logger.info(' TEE attestation completed');
       this.emit('tee_attestation_completed', data);
     });
 
     this.shadeAgentManager.on('registration_completed', (data) => {
-      logger.info('📝 Shade Agent registration completed');
+      logger.info(' Shade Agent registration completed');
       this.emit('shade_agent_registered', data);
     });
 
     this.fusionManager.on('order_submitted', (data) => {
-      logger.info('📤 Order submitted via Fusion Manager');
+      logger.info(' Order submitted via Fusion Manager');
       this.emit('fusion_order_submitted', data);
     });
 
     this.attestationVerifier.on('verification_completed', (result) => {
-      logger.info('✅ Attestation verification completed', {
+      logger.info(' Attestation verification completed', {
         trustLevel: result.trustLevel
       });
     });
@@ -473,7 +473,7 @@ export class ShadeAgentFusionManager extends EventEmitter {
       this.orderAuditLog = this.orderAuditLog.slice(-500);
     }
 
-    logger.info('📋 Audit log entry created', {
+    logger.info(' Audit log entry created', {
       orderId: orderHash.substring(0, 10) + '...',
       signingMethod,
       trustLevel
@@ -535,7 +535,7 @@ export class ShadeAgentFusionManager extends EventEmitter {
    */
   private updateSubmissionStats(submissionTime: number): void {
     // Additional submission-specific statistics could be tracked here
-    logger.info('📊 Submission statistics updated', { submissionTime });
+    logger.info(' Submission statistics updated', { submissionTime });
   }
 
   /**
@@ -571,7 +571,7 @@ export class ShadeAgentFusionManager extends EventEmitter {
    * Stop all components
    */
   async stop(): Promise<void> {
-    logger.info('🛑 Stopping Shade Agent Fusion Manager...');
+    logger.info(' Stopping Shade Agent Fusion Manager...');
     
     try {
       await Promise.all([
@@ -582,7 +582,7 @@ export class ShadeAgentFusionManager extends EventEmitter {
       this.orderAuditLog = [];
       this.isInitialized = false;
       
-      logger.info('✅ Shade Agent Fusion Manager stopped');
+      logger.info(' Shade Agent Fusion Manager stopped');
     } catch (error) {
       logger.error('Error stopping Shade Agent Fusion Manager:', error);
     }

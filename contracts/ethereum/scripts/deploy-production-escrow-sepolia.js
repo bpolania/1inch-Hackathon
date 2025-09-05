@@ -11,24 +11,24 @@ const path = require("path");
  */
 
 async function main() {
-    console.log("🚀 Deploying Production 1inch EscrowFactory to Sepolia");
+    console.log(" Deploying Production 1inch EscrowFactory to Sepolia");
     console.log("====================================================");
 
     // Get signer
     const [deployer] = await ethers.getSigners();
-    console.log("👤 Deploying with account:", deployer.address);
-    console.log("💰 Account balance:", ethers.formatEther(await ethers.provider.getBalance(deployer.address)), "ETH");
+    console.log(" Deploying with account:", deployer.address);
+    console.log(" Account balance:", ethers.formatEther(await ethers.provider.getBalance(deployer.address)), "ETH");
 
     // Check we're on Sepolia
     const network = await ethers.provider.getNetwork();
-    console.log("🌐 Network:", network.name, "| Chain ID:", network.chainId.toString());
+    console.log(" Network:", network.name, "| Chain ID:", network.chainId.toString());
     
     if (network.chainId !== 11155111n) {
         throw new Error("This script is only for Sepolia testnet (Chain ID: 11155111)");
     }
 
     console.log("");
-    console.log("📋 Step 1: Deploy Production EscrowFactory");
+    console.log(" Step 1: Deploy Production EscrowFactory");
     console.log("==========================================");
 
     // Deploy the production escrow factory
@@ -38,19 +38,19 @@ async function main() {
     await productionEscrowFactory.waitForDeployment();
     const escrowFactoryAddress = await productionEscrowFactory.getAddress();
 
-    console.log("✅ ProductionOneInchEscrowFactory deployed to:", escrowFactoryAddress);
+    console.log(" ProductionOneInchEscrowFactory deployed to:", escrowFactoryAddress);
     console.log("   View on Etherscan: https://sepolia.etherscan.io/address/" + escrowFactoryAddress);
 
     // Verify implementation addresses
     const srcImpl = await productionEscrowFactory.escrowSrcImplementation();
     const dstImpl = await productionEscrowFactory.escrowDstImplementation();
     
-    console.log("📋 Implementation Contracts:");
+    console.log(" Implementation Contracts:");
     console.log("   EscrowSrc Implementation:", srcImpl);
     console.log("   EscrowDst Implementation:", dstImpl);
 
     console.log("");
-    console.log("📋 Step 2: Load Existing Deployment Info");
+    console.log(" Step 2: Load Existing Deployment Info");
     console.log("========================================");
 
     // Load existing deployment info
@@ -59,9 +59,9 @@ async function main() {
     
     try {
         deploymentInfo = JSON.parse(fs.readFileSync(deploymentPath, "utf8"));
-        console.log("✅ Loaded existing deployment info");
+        console.log(" Loaded existing deployment info");
     } catch (error) {
-        console.log("⚠️  No existing deployment found, creating new deployment info");
+        console.log("  No existing deployment found, creating new deployment info");
         deploymentInfo = {
             network: {
                 name: "sepolia",
@@ -74,7 +74,7 @@ async function main() {
     }
 
     console.log("");
-    console.log("📋 Step 3: Update NearTakerInteraction with New Factory");
+    console.log(" Step 3: Update NearTakerInteraction with New Factory");
     console.log("======================================================");
 
     // Deploy new NearTakerInteraction with production escrow factory
@@ -87,11 +87,11 @@ async function main() {
     await nearTakerInteraction.waitForDeployment();
     const nearTakerAddress = await nearTakerInteraction.getAddress();
 
-    console.log("✅ NearTakerInteraction deployed to:", nearTakerAddress);
+    console.log(" NearTakerInteraction deployed to:", nearTakerAddress);
     console.log("   View on Etherscan: https://sepolia.etherscan.io/address/" + nearTakerAddress);
 
     console.log("");
-    console.log("📋 Step 4: Deploy New OneInchFusionPlusFactory");
+    console.log(" Step 4: Deploy New OneInchFusionPlusFactory");
     console.log("==============================================");
 
     // Deploy new factory with production escrow
@@ -105,11 +105,11 @@ async function main() {
     await oneInchFactory.waitForDeployment();
     const factoryAddress = await oneInchFactory.getAddress();
 
-    console.log("✅ OneInchFusionPlusFactory deployed to:", factoryAddress);
+    console.log(" OneInchFusionPlusFactory deployed to:", factoryAddress);
     console.log("   View on Etherscan: https://sepolia.etherscan.io/address/" + factoryAddress);
 
     console.log("");
-    console.log("📋 Step 5: Configure Authorization");
+    console.log(" Step 5: Configure Authorization");
     console.log("==================================");
 
     // Authorize deployer as resolver for testing
@@ -120,10 +120,10 @@ async function main() {
     const authTx2 = await nearTakerInteraction.authorizeResolver(deployer.address);
     await authTx2.wait();
     
-    console.log("✅ Deployer authorized as resolver in both contracts");
+    console.log(" Deployer authorized as resolver in both contracts");
 
     console.log("");
-    console.log("📋 Step 6: Update Deployment Info");
+    console.log(" Step 6: Update Deployment Info");
     console.log("=================================");
 
     // Update deployment info
@@ -146,31 +146,31 @@ async function main() {
 
     // Save updated deployment info
     fs.writeFileSync(deploymentPath, JSON.stringify(deploymentInfo, null, 2));
-    console.log("✅ Updated deployment info saved to:", deploymentPath);
+    console.log(" Updated deployment info saved to:", deploymentPath);
 
     console.log("");
-    console.log("🎊 Production Deployment Complete!");
+    console.log(" Production Deployment Complete!");
     console.log("==================================");
     console.log("");
-    console.log("✅ **Production-Ready Infrastructure**:");
-    console.log(`   • EscrowFactory: ${escrowFactoryAddress}`);
-    console.log(`   • NearTakerInteraction: ${nearTakerAddress}`);
-    console.log(`   • OneInchFusionPlusFactory: ${factoryAddress}`);
+    console.log(" **Production-Ready Infrastructure**:");
+    console.log(`    EscrowFactory: ${escrowFactoryAddress}`);
+    console.log(`    NearTakerInteraction: ${nearTakerAddress}`);
+    console.log(`    OneInchFusionPlusFactory: ${factoryAddress}`);
     console.log("");
-    console.log("✅ **1inch Compatible**:");
-    console.log("   • Same IOneInchEscrowFactory interface");
-    console.log("   • Real escrow contract deployment");
-    console.log("   • Production-level security and validation");
+    console.log(" **1inch Compatible**:");
+    console.log("    Same IOneInchEscrowFactory interface");
+    console.log("    Real escrow contract deployment");
+    console.log("    Production-level security and validation");
     console.log("");
-    console.log("✅ **Ready for Live Testing**:");
-    console.log("   • Run: npm run demo:cross-chain");
-    console.log("   • Complete atomic swap demonstration");
-    console.log("   • Full escrow deployment functionality");
+    console.log(" **Ready for Live Testing**:");
+    console.log("    Run: npm run demo:cross-chain");
+    console.log("    Complete atomic swap demonstration");
+    console.log("    Full escrow deployment functionality");
     console.log("");
-    console.log("🚀 **Mainnet Migration Path**:");
-    console.log("   • Same contract code");
-    console.log("   • Switch EscrowFactory address to real 1inch");
-    console.log("   • Zero code changes required");
+    console.log(" **Mainnet Migration Path**:");
+    console.log("    Same contract code");
+    console.log("    Switch EscrowFactory address to real 1inch");
+    console.log("    Zero code changes required");
 
     // Return deployment info for potential use by other scripts
     return {
@@ -189,7 +189,7 @@ if (require.main === module) {
     main()
         .then(() => process.exit(0))
         .catch((error) => {
-            console.error("❌ Deployment failed:", error);
+            console.error(" Deployment failed:", error);
             process.exit(1);
         });
 }

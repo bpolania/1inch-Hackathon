@@ -20,7 +20,7 @@ import {
   isNearDestination
 } from '../utils/fusion-plus';
 
-// Example: ETH → NEAR swap via 1inch Fusion+
+// Example: ETH  NEAR swap via 1inch Fusion+
 export function createEthToNearFusionOrder(): FusionPlusIntent {
   // Step 1: Create base swap intent
   const baseIntent: SwapIntent = {
@@ -81,7 +81,7 @@ export function createEthToNearFusionOrder(): FusionPlusIntent {
   return fusionIntent;
 }
 
-// Example: NEAR → ETH swap via 1inch Fusion+
+// Example: NEAR  ETH swap via 1inch Fusion+
 export function createNearToEthFusionOrder(): FusionPlusIntent {
   const baseIntent: SwapIntent = {
     intentId: 'fusion-eth-' + Date.now(),
@@ -163,32 +163,32 @@ export function validateNearFusionOrder(order: FusionPlusIntent): boolean {
 
 // Usage example
 export function demonstrateFusionPlusNearExtension() {
-  console.log('🎬 Demonstrating 1inch Fusion+ Extension for NEAR');
+  console.log(' Demonstrating 1inch Fusion+ Extension for NEAR');
   console.log('===============================================\n');
 
-  // Create ETH → NEAR Fusion+ order
+  // Create ETH  NEAR Fusion+ order
   const ethToNearOrder = createEthToNearFusionOrder();
-  console.log('📋 ETH → NEAR Fusion+ Order:');
-  console.log(`├── Intent ID: ${ethToNearOrder.intentId}`);
-  console.log(`├── Source: ${ethToNearOrder.sourceAmount} USDC on Ethereum`);
-  console.log(`├── Destination: ${ethToNearOrder.destinationAmount} yoctoNEAR on NEAR`);
-  console.log(`├── 1inch Order Hash: ${ethToNearOrder.oneInchOrderHash}`);
-  console.log(`├── Safety Deposit: ${ethToNearOrder.safetyDeposit} USDC`);
-  console.log(`└── NEAR Contract: ${ethToNearOrder.nearParams?.contractId}\n`);
+  console.log(' ETH  NEAR Fusion+ Order:');
+  console.log(` Intent ID: ${ethToNearOrder.intentId}`);
+  console.log(` Source: ${ethToNearOrder.sourceAmount} USDC on Ethereum`);
+  console.log(` Destination: ${ethToNearOrder.destinationAmount} yoctoNEAR on NEAR`);
+  console.log(` 1inch Order Hash: ${ethToNearOrder.oneInchOrderHash}`);
+  console.log(` Safety Deposit: ${ethToNearOrder.safetyDeposit} USDC`);
+  console.log(` NEAR Contract: ${ethToNearOrder.nearParams?.contractId}\n`);
 
   // Validate the order
   const isValid = validateNearFusionOrder(ethToNearOrder);
-  console.log(`✅ Order validation: ${isValid ? 'PASSED' : 'FAILED'}\n`);
+  console.log(` Order validation: ${isValid ? 'PASSED' : 'FAILED'}\n`);
 
   // Create reverse order
   const nearToEthOrder = createNearToEthFusionOrder();
-  console.log('📋 NEAR → ETH Fusion+ Order:');
-  console.log(`├── Intent ID: ${nearToEthOrder.intentId}`);
-  console.log(`├── Source: ${nearToEthOrder.sourceAmount} yoctoNEAR on NEAR`);
-  console.log(`├── Destination: ${nearToEthOrder.destinationAmount} USDC on Ethereum`);
-  console.log(`└── 1inch Order Hash: ${nearToEthOrder.oneInchOrderHash}\n`);
+  console.log(' NEAR  ETH Fusion+ Order:');
+  console.log(` Intent ID: ${nearToEthOrder.intentId}`);
+  console.log(` Source: ${nearToEthOrder.sourceAmount} yoctoNEAR on NEAR`);
+  console.log(` Destination: ${nearToEthOrder.destinationAmount} USDC on Ethereum`);
+  console.log(` 1inch Order Hash: ${nearToEthOrder.oneInchOrderHash}\n`);
 
-  console.log('🎉 Fusion+ NEAR extension demonstrated successfully!');
+  console.log(' Fusion+ NEAR extension demonstrated successfully!');
   
   return { ethToNearOrder, nearToEthOrder };
 }

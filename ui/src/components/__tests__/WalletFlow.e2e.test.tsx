@@ -65,7 +65,7 @@ describe('Complete Wallet Flow E2E Tests', () => {
     outputAmount: '2000000000',
     formattedOutput: '2000.000000',
     priceImpact: 0.25,
-    route: 'Uniswap → Curve',
+    route: 'Uniswap  Curve',
     gasEstimate: '150000',
     gasPrice: '20000000000',
     protocols: ['Uniswap', 'Curve'],

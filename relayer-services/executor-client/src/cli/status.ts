@@ -11,12 +11,12 @@ import { logger } from '../utils/logger';
 
 async function main() {
     try {
-        console.log('🔍 1inch Fusion+ NEAR Relayer - Status Check');
+        console.log(' 1inch Fusion+ NEAR Relayer - Status Check');
         console.log('===========================================\n');
 
         // Load configuration
         const config = await loadConfig();
-        console.log(`📋 Configuration loaded for networks: ${config.networks.join(', ')}\n`);
+        console.log(` Configuration loaded for networks: ${config.networks.join(', ')}\n`);
 
         // Initialize wallet manager
         const walletManager = new WalletManager(config);
@@ -25,19 +25,19 @@ async function main() {
         // Get detailed status
         const status = await walletManager.getDetailedStatus();
         
-        console.log('💼 Wallet Status:');
+        console.log(' Wallet Status:');
         console.log('================');
         console.log(`Ethereum Address: ${(status as any).ethereum.address}`);
         console.log(`Ethereum Network: ${(status as any).ethereum.network} (Chain ID: ${(status as any).ethereum.chainId})`);
-        console.log(`Ethereum Balance: ${(status as any).balances.ethereum.balance} (${(status as any).balances.ethereum.sufficient ? '✅ Sufficient' : '❌ Insufficient'})`);
+        console.log(`Ethereum Balance: ${(status as any).balances.ethereum.balance} (${(status as any).balances.ethereum.sufficient ? ' Sufficient' : ' Insufficient'})`);
         console.log();
         console.log(`NEAR Account: ${(status as any).near.accountId}`);
         console.log(`NEAR Network: ${(status as any).near.networkId}`);
-        console.log(`NEAR Balance: ${(status as any).balances.near.balance} NEAR (${(status as any).balances.near.sufficient ? '✅ Sufficient' : '❌ Insufficient'})`);
+        console.log(`NEAR Balance: ${(status as any).balances.near.balance} NEAR (${(status as any).balances.near.sufficient ? ' Sufficient' : ' Insufficient'})`);
         console.log();
 
         // Contract status
-        console.log('📄 Contract Configuration:');
+        console.log(' Contract Configuration:');
         console.log('=========================');
         console.log(`Factory Contract: ${config.ethereum.contracts.factory}`);
         console.log(`Registry Contract: ${config.ethereum.contracts.registry}`);
@@ -46,7 +46,7 @@ async function main() {
         console.log();
 
         // Execution configuration
-        console.log('⚙️  Execution Configuration:');
+        console.log('  Execution Configuration:');
         console.log('===========================');
         console.log(`Loop Interval: ${config.execution.loopInterval}ms`);
         console.log(`Min Profit Threshold: ${config.execution.minProfitThreshold} ETH`);
@@ -55,29 +55,29 @@ async function main() {
         console.log();
 
         // Ready status
-        console.log('🚀 Readiness Status:');
+        console.log(' Readiness Status:');
         console.log('===================');
         if ((status as any).readyForExecution) {
-            console.log('✅ Ready for automated execution');
+            console.log(' Ready for automated execution');
             console.log('   All wallets have sufficient balances');
             console.log('   Configuration is valid');
             console.log();
-            console.log('💡 To start the automated relayer:');
+            console.log(' To start the automated relayer:');
             console.log('   npm run dev');
         } else {
-            console.log('❌ Not ready for execution');
+            console.log(' Not ready for execution');
             if (!(status as any).balances.ethereum.sufficient) {
-                console.log('   ⚠️  Insufficient Ethereum balance for gas fees');
+                console.log('     Insufficient Ethereum balance for gas fees');
             }
             if (!(status as any).balances.near.sufficient) {
-                console.log('   ⚠️  Insufficient NEAR balance for operations');
+                console.log('     Insufficient NEAR balance for operations');
             }
             console.log();
-            console.log('💡 Please fund your wallets before starting the relayer');
+            console.log(' Please fund your wallets before starting the relayer');
         }
 
     } catch (error) {
-        console.error('💥 Status check failed:', error);
+        console.error(' Status check failed:', error);
         process.exit(1);
     }
 }

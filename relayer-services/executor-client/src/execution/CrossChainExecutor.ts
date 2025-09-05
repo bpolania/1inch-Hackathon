@@ -52,7 +52,7 @@ export class CrossChainExecutor extends EventEmitter {
     }
 
     async initialize(): Promise<void> {
-        logger.info('🔧 Initializing Cross-Chain Executor...');
+        logger.info(' Initializing Cross-Chain Executor...');
 
         // Get Ethereum provider and signer
         this.ethereumProvider = this.walletManager.getEthereumProvider();
@@ -67,7 +67,7 @@ export class CrossChainExecutor extends EventEmitter {
         // Initialize Cosmos executor
         await this.cosmosExecutor.initialize();
 
-        logger.info('✅ Cross-Chain Executor initialized');
+        logger.info(' Cross-Chain Executor initialized');
     }
 
     private async initializeContracts(): Promise<void> {
@@ -116,7 +116,7 @@ export class CrossChainExecutor extends EventEmitter {
             this.ethereumSigner
         );
 
-        logger.info('📝 Contracts initialized', {
+        logger.info(' Contracts initialized', {
             factory: this.config.ethereum.contracts.factory,
             registry: registryAddress,
             token: this.config.ethereum.contracts.token
@@ -210,7 +210,7 @@ export class CrossChainExecutor extends EventEmitter {
             }
 
         } catch (error) {
-            logger.error(`💥 Execution failed for order ${orderHash}:`, error);
+            logger.error(` Execution failed for order ${orderHash}:`, error);
             result.error = error instanceof Error ? error.message : String(error);
         }
 
@@ -229,12 +229,12 @@ export class CrossChainExecutor extends EventEmitter {
         error?: string;
     }> {
         try {
-            logger.info(`🤝 Matching Ethereum order ${orderHash}`);
+            logger.info(` Matching Ethereum order ${orderHash}`);
 
             // Check if we are authorized as a resolver
             const resolverAddress = await this.ethereumSigner!.getAddress();
             const isAuthorized = await this.factoryContract!.authorizedResolvers(resolverAddress);
-            logger.debug(`🔐 Resolver authorization status:`, { 
+            logger.debug(` Resolver authorization status:`, { 
                 resolverAddress, 
                 isAuthorized 
             });
@@ -251,12 +251,12 @@ export class CrossChainExecutor extends EventEmitter {
             // Check if already matched
             const sourceEscrow = await this.factoryContract!.sourceEscrows(orderHash);
             if (sourceEscrow !== ethers.ZeroAddress) {
-                logger.info(`✅ Order ${orderHash} already matched`);
+                logger.info(` Order ${orderHash} already matched`);
                 return { success: true, transactions: [], gasUsed: 0n };
             }
 
             // Calculate required safety deposit
-            logger.debug(`📊 Safety deposit calculation inputs:`, {
+            logger.debug(` Safety deposit calculation inputs:`, {
                 destinationChainId: order.destinationChainId,
                 sourceAmount: order.sourceAmount.toString(),
                 sourceAmountInEther: ethers.formatEther(order.sourceAmount)
@@ -272,7 +272,7 @@ export class CrossChainExecutor extends EventEmitter {
             if (order.sourceAmount > ethers.parseEther("1000")) {
                 // If source amount > 1000 tokens, assume it's inflated and scale it down
                 adjustedSourceAmount = order.sourceAmount / BigInt(1000000); // Divide by 1M to get reasonable amount
-                logger.warn(`⚠️ Large source amount detected, scaling down for safety deposit: ${ethers.formatEther(order.sourceAmount)} → ${ethers.formatEther(adjustedSourceAmount)}`);
+                logger.warn(` Large source amount detected, scaling down for safety deposit: ${ethers.formatEther(order.sourceAmount)}  ${ethers.formatEther(adjustedSourceAmount)}`);
                 
                 // Recalculate safety deposit with adjusted amount
                 safetyDeposit = await this.registryContract!.calculateMinSafetyDeposit(
@@ -286,15 +286,15 @@ export class CrossChainExecutor extends EventEmitter {
             const minSafetyDeposit = ethers.parseEther("0.01"); // 0.01 ETH min
             
             if (safetyDeposit > maxSafetyDeposit) {
-                logger.warn(`⚠️ Safety deposit ${ethers.formatEther(safetyDeposit)} ETH exceeds maximum, capping at ${ethers.formatEther(maxSafetyDeposit)} ETH`);
+                logger.warn(` Safety deposit ${ethers.formatEther(safetyDeposit)} ETH exceeds maximum, capping at ${ethers.formatEther(maxSafetyDeposit)} ETH`);
                 safetyDeposit = maxSafetyDeposit;
             } else if (safetyDeposit < minSafetyDeposit) {
-                logger.warn(`⚠️ Safety deposit ${ethers.formatEther(safetyDeposit)} ETH below minimum, setting to ${ethers.formatEther(minSafetyDeposit)} ETH`);
+                logger.warn(` Safety deposit ${ethers.formatEther(safetyDeposit)} ETH below minimum, setting to ${ethers.formatEther(minSafetyDeposit)} ETH`);
                 safetyDeposit = minSafetyDeposit;
             }
 
-            logger.info(`💰 Safety deposit required: ${ethers.formatEther(safetyDeposit)} ETH`);
-            logger.debug(`💰 Safety deposit raw value: ${safetyDeposit.toString()}`);
+            logger.info(` Safety deposit required: ${ethers.formatEther(safetyDeposit)} ETH`);
+            logger.debug(` Safety deposit raw value: ${safetyDeposit.toString()}`);
 
             // Check if we have enough ETH
             const balance = await this.ethereumProvider.getBalance(this.config.wallet.ethereum.address);
@@ -313,7 +313,7 @@ export class CrossChainExecutor extends EventEmitter {
             const expiryTime = Number(orderDetails.expiryTime);
             const timeUntilExpiry = expiryTime - currentTime;
             
-            logger.debug(`📋 Order details:`, {
+            logger.debug(` Order details:`, {
                 orderHash: orderDetails.orderHash,
                 maker: orderDetails.maker,
                 sourceToken: orderDetails.sourceToken,
@@ -351,13 +351,13 @@ export class CrossChainExecutor extends EventEmitter {
 
             // Get hashlock from the original order data (passed from event)
             // Debug what's available in the order object
-            logger.debug(`🔍 Available order data:`, {
+            logger.debug(` Available order data:`, {
                 orderKeys: Object.keys(order),
                 order: order
             });
             
             const hashlock = order.hashlock; // Get hashlock from order event data
-            logger.debug(`🔐 Using hashlock for matching: ${hashlock}`);
+            logger.debug(` Using hashlock for matching: ${hashlock}`);
             
             if (!hashlock) {
                 return {
@@ -384,7 +384,7 @@ export class CrossChainExecutor extends EventEmitter {
             };
 
         } catch (error) {
-            logger.error(`💥 Error matching Ethereum order:`, error);
+            logger.error(` Error matching Ethereum order:`, error);
             return {
                 success: false,
                 transactions: [],
@@ -401,7 +401,7 @@ export class CrossChainExecutor extends EventEmitter {
         error?: string;
     }> {
         try {
-            logger.info(`🌐 Executing NEAR side for order ${orderHash}`);
+            logger.info(` Executing NEAR side for order ${orderHash}`);
 
             // This would integrate with our NEAR execution logic
             // For now, we'll simulate the NEAR execution using the logic from
@@ -420,7 +420,7 @@ export class CrossChainExecutor extends EventEmitter {
             };
 
         } catch (error) {
-            logger.error(`💥 Error executing NEAR side:`, error);
+            logger.error(` Error executing NEAR side:`, error);
             return {
                 success: false,
                 transactions: [],
@@ -439,7 +439,7 @@ export class CrossChainExecutor extends EventEmitter {
         secret?: string;
         error?: string;
     }> {
-        logger.info(`🌐 Executing Bitcoin side for order ${executableOrder.orderHash}`);
+        logger.info(` Executing Bitcoin side for order ${executableOrder.orderHash}`);
 
         try {
             // Execute Bitcoin HTLC using our BitcoinExecutor
@@ -453,7 +453,7 @@ export class CrossChainExecutor extends EventEmitter {
                 };
             }
 
-            logger.info(`✅ Bitcoin side executed successfully`);
+            logger.info(` Bitcoin side executed successfully`);
             logger.info(`   HTLC Address: ${bitcoinResult.htlcAddress}`);
             logger.info(`   Funding TX: ${bitcoinResult.fundingTxId}`);
 
@@ -464,7 +464,7 @@ export class CrossChainExecutor extends EventEmitter {
             };
 
         } catch (error) {
-            logger.error(`💥 Error executing Bitcoin side:`, error);
+            logger.error(` Error executing Bitcoin side:`, error);
             return {
                 success: false,
                 transactions: [],
@@ -477,7 +477,7 @@ export class CrossChainExecutor extends EventEmitter {
         // This method would implement the actual NEAR contract execution
         // For the MVP, we'll simulate the process and return mock transaction hashes
         
-        logger.info(`📝 Simulating NEAR contract execution...`);
+        logger.info(` Simulating NEAR contract execution...`);
         
         // In a real implementation, this would:
         // 1. Connect to NEAR wallet
@@ -492,7 +492,7 @@ export class CrossChainExecutor extends EventEmitter {
             '8tvsy3NmSDEz7gUt14pspbDm8BRojV9Lr29nyigES8m7'  // transfer
         ];
 
-        logger.info(`✅ NEAR execution completed with ${mockTransactions.length} transactions`);
+        logger.info(` NEAR execution completed with ${mockTransactions.length} transactions`);
         return mockTransactions;
     }
 
@@ -503,7 +503,7 @@ export class CrossChainExecutor extends EventEmitter {
         error?: string;
     }> {
         try {
-            logger.info(`🏁 Completing Ethereum order ${orderHash} with revealed secret`);
+            logger.info(` Completing Ethereum order ${orderHash} with revealed secret`);
 
             // Convert secret to bytes32 format
             const secretBytes32 = '0x' + secret;
@@ -523,7 +523,7 @@ export class CrossChainExecutor extends EventEmitter {
             };
 
         } catch (error) {
-            logger.error(`💥 Error completing Ethereum order:`, error);
+            logger.error(` Error completing Ethereum order:`, error);
             return {
                 success: false,
                 transactions: [],
@@ -540,7 +540,7 @@ export class CrossChainExecutor extends EventEmitter {
         error?: string;
     }> {
         try {
-            logger.info(`💸 Settling tokens for order ${orderHash}`);
+            logger.info(` Settling tokens for order ${orderHash}`);
 
             // Get source escrow address
             const sourceEscrow = await this.factoryContract!.sourceEscrows(orderHash);
@@ -556,7 +556,7 @@ export class CrossChainExecutor extends EventEmitter {
             // Transfer tokens to escrow (this completes the settlement)
             const settlementAmount = order.sourceAmount;
             
-            logger.info(`📤 Transferring ${ethers.formatEther(settlementAmount)} DT to escrow ${sourceEscrow}`);
+            logger.info(` Transferring ${ethers.formatEther(settlementAmount)} DT to escrow ${sourceEscrow}`);
 
             const tx = await this.tokenContract!.transfer(sourceEscrow, settlementAmount);
             
@@ -572,7 +572,7 @@ export class CrossChainExecutor extends EventEmitter {
             };
 
         } catch (error) {
-            logger.error(`💥 Error settling tokens:`, error);
+            logger.error(` Error settling tokens:`, error);
             return {
                 success: false,
                 transactions: [],
@@ -626,7 +626,7 @@ export class CrossChainExecutor extends EventEmitter {
         secret?: string;
         error?: string;
     }> {
-        logger.info(`🌌 Executing Cosmos side for order ${executableOrder.orderHash}`);
+        logger.info(` Executing Cosmos side for order ${executableOrder.orderHash}`);
 
         try {
             // Execute Cosmos order using our CosmosExecutor
@@ -640,7 +640,7 @@ export class CrossChainExecutor extends EventEmitter {
                 };
             }
 
-            logger.info(`✅ Cosmos side executed successfully`);
+            logger.info(` Cosmos side executed successfully`);
             logger.info(`   Transactions: ${cosmosResult.transactions?.length || 0}`);
 
             return {
@@ -650,7 +650,7 @@ export class CrossChainExecutor extends EventEmitter {
             };
 
         } catch (error) {
-            logger.error(`💥 Error executing Cosmos side:`, error);
+            logger.error(` Error executing Cosmos side:`, error);
             return {
                 success: false,
                 transactions: [],

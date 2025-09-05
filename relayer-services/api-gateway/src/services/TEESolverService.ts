@@ -113,7 +113,7 @@ export class TEESolverService extends EventEmitter {
   }
 
   async initialize(): Promise<void> {
-    logger.info('🛡️ Initializing TEE Solver Service...');
+    logger.info(' Initializing TEE Solver Service...');
 
     try {
       // Create configuration for ShadeAgentFusionManager
@@ -173,10 +173,10 @@ export class TEESolverService extends EventEmitter {
       this.setupEventHandlers();
 
       this.isInitialized = true;
-      logger.info('✅ TEE Solver Service initialized successfully');
+      logger.info(' TEE Solver Service initialized successfully');
 
     } catch (error) {
-      logger.error('💥 Failed to initialize TEE Solver Service:', error);
+      logger.error(' Failed to initialize TEE Solver Service:', error);
       throw error;
     }
   }
@@ -189,7 +189,7 @@ export class TEESolverService extends EventEmitter {
       throw new Error('TEE Solver Service not initialized');
     }
 
-    logger.info('🤖 Analyzing intent for autonomous execution', {
+    logger.info(' Analyzing intent for autonomous execution', {
       intentId: intent.id,
       sourceToken: intent.fromToken?.symbol,
       destToken: intent.toToken?.symbol,
@@ -206,7 +206,7 @@ export class TEESolverService extends EventEmitter {
       // Analyze profitability and risk
       const analysis = this.analyzeQuote(quote, intent);
 
-      logger.info('✅ Intent analysis completed', {
+      logger.info(' Intent analysis completed', {
         intentId: intent.id,
         shouldExecute: analysis.shouldExecute,
         expectedProfit: analysis.expectedProfit,
@@ -216,7 +216,7 @@ export class TEESolverService extends EventEmitter {
       return analysis;
 
     } catch (error) {
-      logger.error('💥 Intent analysis failed:', error);
+      logger.error(' Intent analysis failed:', error);
       throw error;
     }
   }
@@ -231,7 +231,7 @@ export class TEESolverService extends EventEmitter {
 
     const requestId = `tee-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     
-    logger.info('📤 Submitting intent to TEE for execution', {
+    logger.info(' Submitting intent to TEE for execution', {
       requestId,
       intentId: intent.id
     });
@@ -251,7 +251,7 @@ export class TEESolverService extends EventEmitter {
 
       // Submit to Shade Agent in background
       this.executeInTEE(requestId, intent).catch((error) => {
-        logger.error('💥 TEE execution failed:', error);
+        logger.error(' TEE execution failed:', error);
         this.updateExecutionStatus(requestId, 'failed', error.message);
       });
 
@@ -261,7 +261,7 @@ export class TEESolverService extends EventEmitter {
       };
 
     } catch (error) {
-      logger.error('💥 TEE submission failed:', error);
+      logger.error(' TEE submission failed:', error);
       throw error;
     }
   }
@@ -337,7 +337,7 @@ export class TEESolverService extends EventEmitter {
    * Stop the TEE service
    */
   async stop(): Promise<void> {
-    logger.info('🛑 Stopping TEE Solver Service...');
+    logger.info(' Stopping TEE Solver Service...');
     
     if (this.shadeAgentManager) {
       await this.shadeAgentManager.stop();
@@ -346,7 +346,7 @@ export class TEESolverService extends EventEmitter {
     this.executionStatus.clear();
     this.isInitialized = false;
     
-    logger.info('✅ TEE Solver Service stopped');
+    logger.info(' TEE Solver Service stopped');
   }
 
   // Private methods
@@ -355,12 +355,12 @@ export class TEESolverService extends EventEmitter {
     if (!this.shadeAgentManager) return;
 
     this.shadeAgentManager.on('order_verified_and_submitted', (data: any) => {
-      logger.info('📤 TEE order submitted:', data);
+      logger.info(' TEE order submitted:', data);
       this.emit('orderSubmitted', data);
     });
 
     this.shadeAgentManager.on('processing_failed', (data: any) => {
-      logger.error('💥 TEE processing failed:', data);
+      logger.error(' TEE processing failed:', data);
       this.emit('processingFailed', data);
     });
   }

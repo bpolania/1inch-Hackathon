@@ -21,11 +21,11 @@ const RPC_ENDPOINTS = {
 export async function testNearRpcConnectivity(network: 'testnet' | 'mainnet' = 'testnet') {
   const endpoints = RPC_ENDPOINTS[network]
   
-  console.log(`🧪 Testing NEAR ${network} RPC connectivity...`)
+  console.log(` Testing NEAR ${network} RPC connectivity...`)
   
   for (const endpoint of endpoints) {
     try {
-      console.log(`🔍 Testing ${endpoint}...`)
+      console.log(` Testing ${endpoint}...`)
       
       const response = await fetch(endpoint, {
         method: 'POST',
@@ -42,19 +42,19 @@ export async function testNearRpcConnectivity(network: 'testnet' | 'mainnet' = '
       
       if (response.ok) {
         const data = await response.json()
-        console.log(`✅ ${endpoint} is working!`)
-        console.log(`📊 Chain ID: ${data.result?.chain_id}`)
+        console.log(` ${endpoint} is working!`)
+        console.log(` Chain ID: ${data.result?.chain_id}`)
         return endpoint
       } else {
-        console.log(`❌ ${endpoint} returned ${response.status}`)
+        console.log(` ${endpoint} returned ${response.status}`)
       }
       
     } catch (error) {
-      console.log(`❌ ${endpoint} failed:`, error)
+      console.log(` ${endpoint} failed:`, error)
     }
   }
   
-  console.log('🚨 All RPC endpoints failed!')
+  console.log(' All RPC endpoints failed!')
   return null
 }
 
@@ -69,6 +69,6 @@ export async function getBestRpcEndpoint(network: 'testnet' | 'mainnet' = 'testn
   }
   
   // Fallback to default
-  console.log('⚠️ No working RPC found, using default')
+  console.log(' No working RPC found, using default')
   return RPC_ENDPOINTS[network][0]
 }

@@ -1,7 +1,7 @@
 const { ethers } = require("hardhat");
 
 async function main() {
-    console.log("🔍 Verifying Bitcoin Integration on Sepolia Testnet");
+    console.log(" Verifying Bitcoin Integration on Sepolia Testnet");
     console.log("==================================================");
 
     // Contract addresses from deployment
@@ -11,20 +11,20 @@ async function main() {
     const LTC_ADAPTER = "0x7654E486068D112F51c09D83B9ce17E780AEee05";
 
     const [signer] = await ethers.getSigners();
-    console.log("📍 Verifier:", signer.address);
-    console.log("🌐 Network: sepolia");
+    console.log(" Verifier:", signer.address);
+    console.log(" Network: sepolia");
 
     try {
         // Get contracts
         const registry = await ethers.getContractAt("CrossChainRegistry", REGISTRY_ADDRESS);
         const btcAdapter = await ethers.getContractAt("BitcoinDestinationChain", BTC_ADAPTER);
         
-        console.log("\n1. 📊 Registry Status Check");
+        console.log("\n1.  Registry Status Check");
         const supportedChains = await registry.getSupportedChainIds();
         console.log("   Supported chains:", supportedChains.map(id => id.toString()));
         console.log("   Total chains:", supportedChains.length);
 
-        console.log("\n2. 🏗️ Bitcoin Adapter Verification");
+        console.log("\n2.  Bitcoin Adapter Verification");
         const adapters = [
             { name: "Bitcoin Testnet", id: 50002, address: BTC_ADAPTER },
             { name: "Dogecoin", id: 50003, address: DOGE_ADAPTER },
@@ -37,24 +37,24 @@ async function main() {
             const adapterContract = await ethers.getContractAt("BitcoinDestinationChain", adapter.address);
             const contractInfo = await adapterContract.getChainInfo();
             
-            console.log(`   ✅ ${adapter.name}:`);
+            console.log(`    ${adapter.name}:`);
             console.log(`       Chain ID: ${chainInfo.chainId} (${contractInfo.symbol})`);
             console.log(`       Registry: ${isSupported ? 'REGISTERED' : 'NOT REGISTERED'}`);
             console.log(`       Address: ${adapter.address}`);
             console.log(`       Etherscan: https://sepolia.etherscan.io/address/${adapter.address}`);
         }
 
-        console.log("\n3. 🧪 Functionality Testing");
+        console.log("\n3.  Functionality Testing");
         
         // Test address validation
         const testAddress = "mipcBbFg9gMiCh81Kj8tqqdgoZub1ZJRfn";
         const isValidAddress = await btcAdapter.validateDestinationAddress(ethers.toUtf8Bytes(testAddress));
-        console.log(`   📍 Address validation (${testAddress}): ${isValidAddress ? '✅ VALID' : '❌ INVALID'}`);
+        console.log(`    Address validation (${testAddress}): ${isValidAddress ? ' VALID' : ' INVALID'}`);
 
         // Test safety deposit calculation
         const testAmount = ethers.parseEther("0.1");
         const safetyDeposit = await btcAdapter.calculateMinSafetyDeposit(testAmount);
-        console.log(`   💰 Safety deposit (0.1 BTC): ${ethers.formatEther(safetyDeposit)} BTC (${Number(ethers.formatEther(safetyDeposit)) * 100}%)`);
+        console.log(`    Safety deposit (0.1 BTC): ${ethers.formatEther(safetyDeposit)} BTC (${Number(ethers.formatEther(safetyDeposit)) * 100}%)`);
 
         // Test HTLC generation
         const secret = "bitcoin_atomic_swap_test";
@@ -70,18 +70,18 @@ async function main() {
             false
         );
         
-        console.log(`   📄 HTLC Script: ${htlcScript.slice(0, 42)}... (${Math.floor(htlcScript.length / 2 - 1)} bytes)`);
-        console.log(`   🔐 Hashlock: ${hashlock}`);
+        console.log(`    HTLC Script: ${htlcScript.slice(0, 42)}... (${Math.floor(htlcScript.length / 2 - 1)} bytes)`);
+        console.log(`    Hashlock: ${hashlock}`);
 
         // Test feature support
         const features = ["atomic_swaps", "htlc", "utxo_model", "script_based_locks"];
-        console.log("   🔧 Feature Support:");
+        console.log("    Feature Support:");
         for (const feature of features) {
             const supported = await btcAdapter.supportsFeature(feature);
-            console.log(`       ${supported ? '✅' : '❌'} ${feature}`);
+            console.log(`       ${supported ? '' : ''} ${feature}`);
         }
 
-        console.log("\n4. 🌐 Registry Integration Test");
+        console.log("\n4.  Registry Integration Test");
         
         // Test registry functions for each chain
         for (const adapter of adapters) {
@@ -107,27 +107,27 @@ async function main() {
             const cost = await registry.estimateExecutionCost(adapter.id, orderParams, testAmount);
             const registrySafetyDeposit = await registry.calculateMinSafetyDeposit(adapter.id, testAmount);
             
-            console.log(`   💳 ${adapter.name}: Cost ${ethers.formatEther(cost)} ETH, Safety ${ethers.formatEther(registrySafetyDeposit)} ETH`);
+            console.log(`    ${adapter.name}: Cost ${ethers.formatEther(cost)} ETH, Safety ${ethers.formatEther(registrySafetyDeposit)} ETH`);
         }
 
-        console.log("\n🎉 Bitcoin Sepolia Integration Verification Complete!");
+        console.log("\n Bitcoin Sepolia Integration Verification Complete!");
         console.log("====================================================");
         console.log("");
-        console.log("📈 Summary:");
-        console.log("   ✅ 3 Bitcoin family adapters deployed and registered");
-        console.log("   ✅ All contracts verified on Sepolia testnet");
-        console.log("   ✅ Address validation working");
-        console.log("   ✅ HTLC script generation functional");
-        console.log("   ✅ Safety deposit calculations accurate");
-        console.log("   ✅ Registry integration complete");
-        console.log("   ✅ All features supported as expected");
+        console.log(" Summary:");
+        console.log("    3 Bitcoin family adapters deployed and registered");
+        console.log("    All contracts verified on Sepolia testnet");
+        console.log("    Address validation working");
+        console.log("    HTLC script generation functional");
+        console.log("    Safety deposit calculations accurate");
+        console.log("    Registry integration complete");
+        console.log("    All features supported as expected");
         console.log("");
-        console.log("🚀 Ready for ETHGlobal Unite Bitcoin Bounty Demo!");
-        console.log("💰 Prize Pool: $32,000");
-        console.log("🎯 Status: QUALIFIED ✅");
+        console.log(" Ready for ETHGlobal Unite Bitcoin Bounty Demo!");
+        console.log(" Prize Pool: $32,000");
+        console.log(" Status: QUALIFIED ");
 
     } catch (error) {
-        console.error("❌ Verification failed:", error.message);
+        console.error(" Verification failed:", error.message);
         process.exit(1);
     }
 }

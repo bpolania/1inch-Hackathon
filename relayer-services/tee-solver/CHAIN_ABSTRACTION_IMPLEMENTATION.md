@@ -4,7 +4,7 @@
 
 This document describes the complete implementation of chain abstraction for NEAR Chain Signatures in the TEE Solver, providing true decentralized multi-chain transaction signing capabilities.
 
-## ✅ What Was Implemented
+##  What Was Implemented
 
 ### 1. **Complete Transaction Serialization**
 
@@ -83,7 +83,7 @@ DERIVATION_PATH=tee-fusion-solver
 }
 ```
 
-## 🔄 How Chain Abstraction Works
+##  How Chain Abstraction Works
 
 ### **1. Order Submission Flow**
 
@@ -141,22 +141,22 @@ const btcAddress = await manager.deriveAddress(ChainId.BITCOIN, 'solver-1');
 const solAddress = await manager.deriveAddress(ChainId.SOLANA, 'solver-1');
 ```
 
-## 🧪 Testing Coverage
+##  Testing Coverage
 
 ### **Unit Tests**
-- ✅ EVM transaction serialization and RLP encoding
-- ✅ Bitcoin PSBT creation and SIGHASH generation
-- ✅ Solana message serialization and Ed25519 handling
-- ✅ Signature reconstruction for all chains
-- ✅ Error handling and fallback scenarios
-- ✅ Performance and concurrency testing
+-  EVM transaction serialization and RLP encoding
+-  Bitcoin PSBT creation and SIGHASH generation
+-  Solana message serialization and Ed25519 handling
+-  Signature reconstruction for all chains
+-  Error handling and fallback scenarios
+-  Performance and concurrency testing
 
 ### **Integration Tests**
-- ✅ End-to-end chain signatures flow
-- ✅ Multiple concurrent orders
-- ✅ Fallback to private key signing
-- ✅ Address derivation consistency
-- ✅ MPC contract interaction (mocked)
+-  End-to-end chain signatures flow
+-  Multiple concurrent orders
+-  Fallback to private key signing
+-  Address derivation consistency
+-  MPC contract interaction (mocked)
 
 ### **Test File**
 Location: `src/signatures/__tests__/TransactionSerialization.test.ts`
@@ -166,7 +166,7 @@ Run tests:
 npm test TransactionSerialization
 ```
 
-## 🚀 Activation Instructions
+##  Activation Instructions
 
 ### **1. Install Dependencies**
 ```bash
@@ -205,7 +205,7 @@ curl -X POST http://localhost:3001/api/1inch/swap \
   }'
 ```
 
-## 📊 Performance Characteristics
+##  Performance Characteristics
 
 ### **Signing Times**
 - **EVM Transactions**: ~200-500ms (includes RLP encoding + MPC call)
@@ -223,7 +223,7 @@ curl -X POST http://localhost:3001/api/1inch/swap \
 - **Replay Protection**: EIP-155 for EVM, native mechanisms for others
 - **TEE Attestation**: Optional hardware-based verification
 
-## 🔧 Configuration Options
+##  Configuration Options
 
 ### **Chain Signatures Config**
 ```typescript
@@ -253,7 +253,7 @@ enum ChainId {
 }
 ```
 
-## 🚨 Security Considerations
+##  Security Considerations
 
 ### **Production Deployment**
 1. **MPC Contract**: Use production `v1.signer` contract
@@ -269,7 +269,7 @@ enum ChainId {
 - **Secure Boot**: Ensure TEE environment is properly sealed
 - **Network Isolation**: Restrict TEE network access
 
-## 📈 Monitoring and Observability
+##  Monitoring and Observability
 
 ### **Metrics**
 - Chain signature success/failure rates
@@ -285,7 +285,7 @@ enum ChainId {
 - Fallback activation events
 - Performance timing data
 
-## 🔄 Future Enhancements
+##  Future Enhancements
 
 ### **Planned Improvements**
 1. **More Chains**: Add support for Cosmos, Avalanche, Fantom
@@ -302,17 +302,17 @@ enum ChainId {
 
 ---
 
-## ✅ Implementation Complete
+##  Implementation Complete
 
 The chain abstraction implementation is **fully functional** with:
 
-- ✅ Real EVM transaction serialization with RLP encoding
-- ✅ Bitcoin PSBT creation and SIGHASH generation  
-- ✅ Solana message serialization and Ed25519 signatures
-- ✅ NEAR MPC integration for all chains
-- ✅ Comprehensive test coverage
-- ✅ Production-ready configuration
-- ✅ Performance optimizations
-- ✅ Security best practices
+-  Real EVM transaction serialization with RLP encoding
+-  Bitcoin PSBT creation and SIGHASH generation  
+-  Solana message serialization and Ed25519 signatures
+-  NEAR MPC integration for all chains
+-  Comprehensive test coverage
+-  Production-ready configuration
+-  Performance optimizations
+-  Security best practices
 
 **The system now provides true decentralized multi-chain signing via NEAR Chain Signatures, eliminating the need for centralized private keys while maintaining full compatibility with 1inch Fusion+ orders.**

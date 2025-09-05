@@ -323,7 +323,7 @@ export function formatProtocolRoute(protocols: Protocol[][]): string {
   if (firstRoute.length === 0) return 'Direct';
   
   const protocolNames = firstRoute.map(p => p.name);
-  return protocolNames.join(' → ');
+  return protocolNames.join('  ');
 }
 
 /**
@@ -439,7 +439,7 @@ export class OneInchQuoteService {
     let toDecimals: number;
     
     if (isNearFrom && isEthTo) {
-      // NEAR to ETH: 1 NEAR ≈ 0.001 ETH (more realistic rate)
+      // NEAR to ETH: 1 NEAR  0.001 ETH (more realistic rate)
       mockRate = 0.001;
       fromSymbol = 'NEAR';
       toSymbol = 'ETH';
@@ -448,7 +448,7 @@ export class OneInchQuoteService {
       fromDecimals = 24;
       toDecimals = 18;
     } else if (isEthFrom && isNearTo) {
-      // ETH to NEAR: 1 ETH ≈ 1000 NEAR
+      // ETH to NEAR: 1 ETH  1000 NEAR
       mockRate = 1000;
       fromSymbol = 'ETH';
       toSymbol = 'NEAR';
@@ -457,7 +457,7 @@ export class OneInchQuoteService {
       fromDecimals = 18;
       toDecimals = 24;
     } else if (isEthFrom) {
-      // ETH to USDC: 1 ETH ≈ 2000 USDC
+      // ETH to USDC: 1 ETH  2000 USDC
       mockRate = 2000;
       fromSymbol = 'ETH';
       toSymbol = 'USDC';

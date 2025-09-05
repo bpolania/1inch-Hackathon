@@ -1,27 +1,27 @@
 # NEAR Shade Agent TEE Solver Research Summary
 
-## 📚 Research Findings: Phase 1 Complete
+##  Research Findings: Phase 1 Complete
 
-### 1. 🛡️ **TEE Solver Architecture Overview**
+### 1.  **TEE Solver Architecture Overview**
 
 #### Existing NEAR Intents TEE Solver Components
 ```
-┌─────────────────────────┐
-│   Solver Registry       │ ← Manages liquidity pools & TEE verification
-│   (Smart Contract)      │
-└───────────┬─────────────┘
-            │
-┌───────────▼─────────────┐
-│   Intents Vault         │ ← Manages pool assets
-│   (Smart Contract)      │
-└───────────┬─────────────┘
-            │
-┌───────────▼─────────────┐
-│   TEE Solver Server     │ ← TypeScript server managing solver lifecycle
-│   - Monitor pools       │
-│   - Deploy solvers      │
-│   - WebSocket relay     │
-└─────────────────────────┘
+
+   Solver Registry         Manages liquidity pools & TEE verification
+   (Smart Contract)      
+
+            
+
+   Intents Vault           Manages pool assets
+   (Smart Contract)      
+
+            
+
+   TEE Solver Server       TypeScript server managing solver lifecycle
+   - Monitor pools       
+   - Deploy solvers      
+   - WebSocket relay     
+
 ```
 
 #### Key Architecture Insights
@@ -30,13 +30,13 @@
 - **Communication**: Uses WebSocket relay (`wss://solver-relay-v2.chaindefuser.com/ws`)
 - **Language**: TypeScript for server, Rust for smart contracts
 
-### 2. 🔗 **NEAR Chain Signatures Integration**
+### 2.  **NEAR Chain Signatures Integration**
 
 #### How Chain Signatures Work
 ```
-NEAR Account → Derivation Path → Foreign Blockchain Address
-     ↓                                      ↓
-"myaccount.near" + "ethereum-1" → Unique Ethereum Address
+NEAR Account  Derivation Path  Foreign Blockchain Address
+                                           
+"myaccount.near" + "ethereum-1"  Unique Ethereum Address
 ```
 
 #### Key Features
@@ -59,7 +59,7 @@ NEAR Account → Derivation Path → Foreign Blockchain Address
    ```
 4. **Relay Transaction**: Broadcast signed transaction to destination chain
 
-### 3. 💡 **Solver Implementation Patterns**
+### 3.  **Solver Implementation Patterns**
 
 #### From Existing TEE AMM Solver
 ```typescript
@@ -81,18 +81,18 @@ interface SolverConfig {
 5. Execute within TEE environment
 ```
 
-### 4. 🏗️ **Integration Strategy for 1inch Fusion+**
+### 4.  **Integration Strategy for 1inch Fusion+**
 
-#### Current Relayer → TEE Solver Transformation
+#### Current Relayer  TEE Solver Transformation
 ```
-Current Components          →    TEE Solver Components
+Current Components              TEE Solver Components
 ==================               =======================
-OrderMonitor               →    IntentListener (WebSocket)
-ProfitabilityAnalyzer      →    QuoteGenerator (AMM + margins)
-CrossChainExecutor         →    MetaOrderCreator
-WalletManager             →    ChainSignatureManager
-- Private keys            →    - MPC signatures
-- Single instance         →    - TEE deployment
+OrderMonitor                   IntentListener (WebSocket)
+ProfitabilityAnalyzer          QuoteGenerator (AMM + margins)
+CrossChainExecutor             MetaOrderCreator
+WalletManager                 ChainSignatureManager
+- Private keys                - MPC signatures
+- Single instance             - TEE deployment
 ```
 
 #### New Components Needed
@@ -102,7 +102,7 @@ WalletManager             →    ChainSignatureManager
 4. **ChainSignatureManager**: Replace private keys with MPC
 5. **TEEDeployment**: Docker image with attestation
 
-### 5. 🔐 **Security & Trust Model**
+### 5.  **Security & Trust Model**
 
 #### TEE Benefits
 - **No Private Keys**: Uses MPC network for signing
@@ -115,7 +115,7 @@ WalletManager             →    ChainSignatureManager
 - **Mathematical Derivation**: Deterministic address generation
 - **Multi-Party Computation**: Secure collaborative signing
 
-### 6. 📊 **Technical Requirements**
+### 6.  **Technical Requirements**
 
 #### Development Stack
 - **Languages**: TypeScript (server), Rust (contracts)
@@ -130,19 +130,19 @@ WalletManager             →    ChainSignatureManager
 - **WebSocket Server**: For intent/quote communication
 - **Docker Registry**: For TEE-approved images
 
-### 7. 🎯 **Implementation Priorities**
+### 7.  **Implementation Priorities**
 
-#### Phase 1: Core Solver (Days 1-4) ✅
-1. ✅ Research TEE solver architecture
-2. ✅ Understand Chain Signatures
-3. ✅ Analyze existing implementations
-4. 🎯 Design 1inch Fusion+ integration
+#### Phase 1: Core Solver (Days 1-4) 
+1.  Research TEE solver architecture
+2.  Understand Chain Signatures
+3.  Analyze existing implementations
+4.  Design 1inch Fusion+ integration
 
 #### Phase 2: Build Foundation (Days 5-8)
-1. Extend OrderMonitor → IntentListener
-2. Transform ProfitabilityAnalyzer → QuoteGenerator
-3. Adapt CrossChainExecutor → MetaOrderCreator
-4. Replace WalletManager → ChainSignatureManager
+1. Extend OrderMonitor  IntentListener
+2. Transform ProfitabilityAnalyzer  QuoteGenerator
+3. Adapt CrossChainExecutor  MetaOrderCreator
+4. Replace WalletManager  ChainSignatureManager
 
 #### Phase 3: TEE Integration (Days 9-10)
 1. Create Docker image with solver
@@ -155,13 +155,13 @@ WalletManager             →    ChainSignatureManager
 2. Implement Bitcoin if time permits
 3. Test cross-chain meta-orders
 
-### 8. 🚀 **Competitive Advantages**
+### 8.  **Competitive Advantages**
 
 #### What We Bring
-- **✅ Modular Architecture**: Already supports multi-chain
-- **✅ Production Quality**: 113/113 tests passing
-- **✅ Execution Experience**: Working atomic swaps
-- **✅ Professional Codebase**: TypeScript, monitoring, logging
+- ** Modular Architecture**: Already supports multi-chain
+- ** Production Quality**: 113/113 tests passing
+- ** Execution Experience**: Working atomic swaps
+- ** Professional Codebase**: TypeScript, monitoring, logging
 
 #### What Makes Us Win
 - **Multi-Chain Vision**: Cosmos/Bitcoin ready (bonus points!)
@@ -169,7 +169,7 @@ WalletManager             →    ChainSignatureManager
 - **Quality Focus**: Comprehensive testing culture
 - **Clear Documentation**: Professional presentation
 
-### 9. 📝 **Key Learnings**
+### 9.  **Key Learnings**
 
 1. **WebSocket is Critical**: Real-time intent listening via relay
 2. **AMM Logic**: Simple but effective pricing mechanism
@@ -177,7 +177,7 @@ WalletManager             →    ChainSignatureManager
 4. **TEE Deployment**: Docker + attestation is standard
 5. **Competition Model**: Multiple solvers, best quote wins
 
-### 10. 🔗 **Resources for Implementation**
+### 10.  **Resources for Implementation**
 
 #### Essential Repositories
 - [TEE Solver Registry](https://github.com/Near-One/tee-solver/)
@@ -196,7 +196,7 @@ WalletManager             →    ChainSignatureManager
 
 ---
 
-## 🎯 Next Steps
+##  Next Steps
 
 ### Immediate Actions
 1. **Design WebSocket IntentListener** building on OrderMonitor
@@ -217,4 +217,4 @@ Based on research, we should:
 - **Innovation**: Multi-chain support for bonus
 - **Presentation**: Clear documentation and demo
 
-**Ready to proceed with Phase 2: Architecture Design! 🚀**
+**Ready to proceed with Phase 2: Architecture Design! **

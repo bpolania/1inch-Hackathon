@@ -47,22 +47,22 @@ export class EthereumEventMonitor extends EventEmitter {
      */
     async startMonitoring(): Promise<void> {
         if (this.isMonitoring) {
-            logger.warn('⚠️ Event monitoring already running');
+            logger.warn(' Event monitoring already running');
             return;
         }
 
         try {
-            logger.info('👀 Starting Ethereum event monitoring...');
+            logger.info(' Starting Ethereum event monitoring...');
             
             // Listen for order completion events
             this.factoryContract.on('OrderCompleted', this.handleOrderCompleted.bind(this));
             this.factoryContract.on('OrderFilled', this.handleOrderFilled.bind(this));
             
             this.isMonitoring = true;
-            logger.info('✅ Ethereum event monitoring started');
+            logger.info(' Ethereum event monitoring started');
             
         } catch (error) {
-            logger.error('💥 Failed to start event monitoring:', error);
+            logger.error(' Failed to start event monitoring:', error);
             throw error;
         }
     }
@@ -76,15 +76,15 @@ export class EthereumEventMonitor extends EventEmitter {
         }
 
         try {
-            logger.info('🛑 Stopping Ethereum event monitoring...');
+            logger.info(' Stopping Ethereum event monitoring...');
             
             this.factoryContract.removeAllListeners();
             this.isMonitoring = false;
             
-            logger.info('✅ Ethereum event monitoring stopped');
+            logger.info(' Ethereum event monitoring stopped');
             
         } catch (error) {
-            logger.error('💥 Failed to stop event monitoring:', error);
+            logger.error(' Failed to stop event monitoring:', error);
         }
     }
 
@@ -93,7 +93,7 @@ export class EthereumEventMonitor extends EventEmitter {
      */
     monitorOrder(orderHash: string): void {
         this.monitoredOrders.add(orderHash);
-        logger.info(`👀 Added order to monitoring: ${orderHash}`);
+        logger.info(` Added order to monitoring: ${orderHash}`);
     }
 
     /**
@@ -101,7 +101,7 @@ export class EthereumEventMonitor extends EventEmitter {
      */
     stopMonitoringOrder(orderHash: string): void {
         this.monitoredOrders.delete(orderHash);
-        logger.info(`🛑 Removed order from monitoring: ${orderHash}`);
+        logger.info(` Removed order from monitoring: ${orderHash}`);
     }
 
     /**
@@ -114,7 +114,7 @@ export class EthereumEventMonitor extends EventEmitter {
                 return;
             }
 
-            logger.info(`🔐 Secret revealed for order ${orderHash}:`, {
+            logger.info(` Secret revealed for order ${orderHash}:`, {
                 secret: secret,
                 resolver: resolver,
                 txHash: event.transactionHash,
@@ -135,7 +135,7 @@ export class EthereumEventMonitor extends EventEmitter {
             this.stopMonitoringOrder(orderHash);
             
         } catch (error) {
-            logger.error(`💥 Failed to handle OrderCompleted event:`, error);
+            logger.error(` Failed to handle OrderCompleted event:`, error);
         }
     }
 
@@ -149,7 +149,7 @@ export class EthereumEventMonitor extends EventEmitter {
                 return;
             }
 
-            logger.info(`📈 Order filled: ${orderHash}`, {
+            logger.info(` Order filled: ${orderHash}`, {
                 makingAmount: ethers.formatEther(makingAmount),
                 takingAmount: ethers.formatEther(takingAmount),
                 txHash: event.transactionHash
@@ -164,7 +164,7 @@ export class EthereumEventMonitor extends EventEmitter {
             });
             
         } catch (error) {
-            logger.error(`💥 Failed to handle OrderFilled event:`, error);
+            logger.error(` Failed to handle OrderFilled event:`, error);
         }
     }
 
@@ -188,7 +188,7 @@ export class EthereumEventMonitor extends EventEmitter {
                 resolver: order.resolver
             };
         } catch (error) {
-            logger.error(`💥 Failed to get order status for ${orderHash}:`, error);
+            logger.error(` Failed to get order status for ${orderHash}:`, error);
             return null;
         }
     }

@@ -122,7 +122,7 @@ export class ChainSignatureManager extends EventEmitter {
    * Initialize NEAR connection and Chain Signatures
    */
   async initialize(): Promise<void> {
-    logger.info('🔧 Initializing Chain Signature Manager...');
+    logger.info(' Initializing Chain Signature Manager...');
     
     try {
       // Configure NEAR connection
@@ -153,7 +153,7 @@ export class ChainSignatureManager extends EventEmitter {
       
       this.isInitialized = true;
       
-      logger.info('✅ Chain Signature Manager initialized', {
+      logger.info(' Chain Signature Manager initialized', {
         nearNetwork: this.config.nearNetwork,
         accountId: this.config.nearAccountId,
         mpcContract: this.config.mpcContractId,
@@ -163,7 +163,7 @@ export class ChainSignatureManager extends EventEmitter {
       this.emit('initialized');
       
     } catch (error) {
-      logger.error('💥 Failed to initialize Chain Signature Manager:', error);
+      logger.error(' Failed to initialize Chain Signature Manager:', error);
       throw error;
     }
   }
@@ -179,7 +179,7 @@ export class ChainSignatureManager extends EventEmitter {
     const startTime = Date.now();
     this.stats.signaturesRequested++;
 
-    logger.info(`🔏 Requesting Chain Signature for ${request.targetChain}`, {
+    logger.info(` Requesting Chain Signature for ${request.targetChain}`, {
       requestId: request.requestId,
       targetChain: request.targetChain,
       derivationPath: request.derivationPath
@@ -220,7 +220,7 @@ export class ChainSignatureManager extends EventEmitter {
         targetChain: request.targetChain
       };
 
-      logger.info(`✅ Chain Signature completed in ${signingTime}ms`, {
+      logger.info(` Chain Signature completed in ${signingTime}ms`, {
         requestId: request.requestId,
         targetChain: request.targetChain
       });
@@ -232,7 +232,7 @@ export class ChainSignatureManager extends EventEmitter {
       const signingTime = Date.now() - startTime;
       this.updateSigningStats(signingTime, false);
 
-      logger.error(`💥 Chain Signature failed for ${request.requestId}:`, error);
+      logger.error(` Chain Signature failed for ${request.requestId}:`, error);
       this.emit('signature_failed', { requestId: request.requestId, error });
       throw error;
     }
@@ -248,17 +248,17 @@ export class ChainSignatureManager extends EventEmitter {
 
     const path = derivationPath || this.config.derivationPath;
     
-    logger.info(`🔗 Deriving address for ${targetChain}`, { path });
+    logger.info(` Deriving address for ${targetChain}`, { path });
 
     try {
       // Use NEAR account ID and path to generate deterministic address
       const address = await this.generateDerivedAddress(targetChain, path);
       
-      logger.info(`✅ Derived address for ${targetChain}: ${address}`);
+      logger.info(` Derived address for ${targetChain}: ${address}`);
       return address;
 
     } catch (error) {
-      logger.error(`💥 Failed to derive address for ${targetChain}:`, error);
+      logger.error(` Failed to derive address for ${targetChain}:`, error);
       throw error;
     }
   }
@@ -283,13 +283,13 @@ export class ChainSignatureManager extends EventEmitter {
         args: {}
       });
       
-      logger.info('✅ MPC Contract verified', { 
+      logger.info(' MPC Contract verified', { 
         contractId: this.config.mpcContractId,
         publicKey: contractState 
       });
       
     } catch (error) {
-      logger.error('💥 Failed to verify MPC contract:', error);
+      logger.error(' Failed to verify MPC contract:', error);
       throw new Error(`MPC contract verification failed: ${error}`);
     }
   }
@@ -300,7 +300,7 @@ export class ChainSignatureManager extends EventEmitter {
     domainId: number;
   }): Promise<{ signature: string; recoveryId?: number }> {
     
-    logger.info('📞 Calling MPC contract for signature', params);
+    logger.info(' Calling MPC contract for signature', params);
 
     try {
       // Call the sign method on the MPC contract
@@ -319,11 +319,11 @@ export class ChainSignatureManager extends EventEmitter {
       // Parse signature from result
       const signature = this.parseSignatureResult(result);
       
-      logger.info('✅ MPC signature received');
+      logger.info(' MPC signature received');
       return signature;
 
     } catch (error) {
-      logger.error('💥 MPC contract call failed:', error);
+      logger.error(' MPC contract call failed:', error);
       throw error;
     }
   }
@@ -350,7 +350,7 @@ export class ChainSignatureManager extends EventEmitter {
   }
 
   private serializeEVMTransaction(transaction: any): string {
-    logger.info('🔧 Serializing EVM transaction for MPC signing', {
+    logger.info(' Serializing EVM transaction for MPC signing', {
       to: transaction.to,
       value: transaction.value,
       data: transaction.data?.substring(0, 20) + '...'
@@ -380,7 +380,7 @@ export class ChainSignatureManager extends EventEmitter {
       const txHash = keccak('keccak256').update(rlpEncoded).digest();
       const hashHex = '0x' + txHash.toString('hex');
 
-      logger.info('✅ EVM transaction serialized', {
+      logger.info(' EVM transaction serialized', {
         rlpLength: rlpEncoded.length,
         txHash: hashHex.substring(0, 10) + '...'
       });
@@ -388,13 +388,13 @@ export class ChainSignatureManager extends EventEmitter {
       return hashHex;
 
     } catch (error) {
-      logger.error('💥 Failed to serialize EVM transaction:', error);
+      logger.error(' Failed to serialize EVM transaction:', error);
       throw new Error(`EVM transaction serialization failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
 
   private serializeBitcoinTransaction(transaction: any): string {
-    logger.info('🔧 Serializing Bitcoin transaction for MPC signing', {
+    logger.info(' Serializing Bitcoin transaction for MPC signing', {
       inputs: transaction.inputs?.length || 0,
       outputs: transaction.outputs?.length || 0
     });
@@ -445,7 +445,7 @@ export class ChainSignatureManager extends EventEmitter {
 
       const hashHex = '0x' + sighash.toString('hex');
 
-      logger.info('✅ Bitcoin transaction serialized', {
+      logger.info(' Bitcoin transaction serialized', {
         sighash: hashHex.substring(0, 10) + '...',
         inputCount: transaction.inputs?.length || 0
       });
@@ -453,7 +453,7 @@ export class ChainSignatureManager extends EventEmitter {
       return hashHex;
 
     } catch (error) {
-      logger.error('💥 Failed to serialize Bitcoin transaction:', error);
+      logger.error(' Failed to serialize Bitcoin transaction:', error);
       // Fallback to simple hash for development
       const fallbackData = JSON.stringify({
         inputs: transaction.inputs?.map((i: any) => ({ txid: i.txid, vout: i.vout })) || [],
@@ -465,7 +465,7 @@ export class ChainSignatureManager extends EventEmitter {
   }
 
   private serializeSolanaTransaction(transaction: any): string {
-    logger.info('🔧 Serializing Solana transaction for MPC signing', {
+    logger.info(' Serializing Solana transaction for MPC signing', {
       instructions: transaction.instructions?.length || 0,
       accounts: transaction.accounts?.length || 0
     });
@@ -484,7 +484,7 @@ export class ChainSignatureManager extends EventEmitter {
       // For Solana, we need to sign the message bytes directly
       const hashHex = '0x' + Buffer.from(messageBytes).toString('hex');
 
-      logger.info('✅ Solana transaction serialized', {
+      logger.info(' Solana transaction serialized', {
         messageLength: messageBytes.length,
         hash: hashHex.substring(0, 10) + '...'
       });
@@ -492,7 +492,7 @@ export class ChainSignatureManager extends EventEmitter {
       return hashHex;
 
     } catch (error) {
-      logger.error('💥 Failed to serialize Solana transaction:', error);
+      logger.error(' Failed to serialize Solana transaction:', error);
       // Fallback to simple hash for development
       const fallbackData = JSON.stringify({
         recentBlockhash: transaction.recentBlockhash,
@@ -528,7 +528,7 @@ export class ChainSignatureManager extends EventEmitter {
     signature: { signature: string; recoveryId?: number },
     targetChain: ChainId
   ): any {
-    logger.info('🔧 Reconstructing signed transaction', {
+    logger.info(' Reconstructing signed transaction', {
       chain: targetChain,
       signatureLength: signature.signature.length
     });
@@ -549,7 +549,7 @@ export class ChainSignatureManager extends EventEmitter {
           return this.reconstructSolanaSignedTransaction(originalTransaction, signature);
           
         default:
-          logger.warn(`⚠️ Unsupported chain for signature reconstruction: ${targetChain}`);
+          logger.warn(` Unsupported chain for signature reconstruction: ${targetChain}`);
           return {
             ...originalTransaction,
             signature: signature.signature,
@@ -558,7 +558,7 @@ export class ChainSignatureManager extends EventEmitter {
       }
 
     } catch (error) {
-      logger.error('💥 Failed to reconstruct signed transaction:', error);
+      logger.error(' Failed to reconstruct signed transaction:', error);
       throw new Error(`Signature reconstruction failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
@@ -584,7 +584,7 @@ export class ChainSignatureManager extends EventEmitter {
     const chainId = originalTransaction.chainId || 1;
     const adjustedV = v >= 27 ? v : v + 27 + (chainId * 2);
 
-    logger.info('✅ EVM signature reconstructed', {
+    logger.info(' EVM signature reconstructed', {
       r: r.substring(0, 10) + '...',
       s: s.substring(0, 10) + '...',
       v: adjustedV,
@@ -606,7 +606,7 @@ export class ChainSignatureManager extends EventEmitter {
     signature: { signature: string; recoveryId?: number }
   ): any {
     // Bitcoin uses DER-encoded ECDSA signatures
-    logger.info('✅ Bitcoin signature reconstructed', {
+    logger.info(' Bitcoin signature reconstructed', {
       signature: signature.signature.substring(0, 20) + '...',
       inputIndex: 0 // Simplified for single input
     });
@@ -635,7 +635,7 @@ export class ChainSignatureManager extends EventEmitter {
       throw new Error(`Invalid Ed25519 signature length: ${sig.length}, expected 128`);
     }
 
-    logger.info('✅ Solana signature reconstructed', {
+    logger.info(' Solana signature reconstructed', {
       signature: signature.signature.substring(0, 20) + '...',
       signatureType: 'ed25519'
     });
@@ -700,8 +700,8 @@ export class ChainSignatureManager extends EventEmitter {
    * Stop the Chain Signature Manager
    */
   async stop(): Promise<void> {
-    logger.info('🛑 Stopping Chain Signature Manager...');
+    logger.info(' Stopping Chain Signature Manager...');
     this.isInitialized = false;
-    logger.info('✅ Chain Signature Manager stopped');
+    logger.info(' Chain Signature Manager stopped');
   }
 }

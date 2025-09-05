@@ -66,7 +66,7 @@ export class FusionManager extends EventEmitter implements FusionSDKManager {
    * Initialize 1inch SDK instances
    */
   async initialize(): Promise<void> {
-    logger.info('🔧 Initializing Fusion Manager...');
+    logger.info(' Initializing Fusion Manager...');
     
     try {
       // Create mock Web3 provider for development
@@ -96,11 +96,11 @@ export class FusionManager extends EventEmitter implements FusionSDKManager {
       });
       
       this.isInitialized = true;
-      logger.info('✅ Fusion Manager initialized successfully');
+      logger.info(' Fusion Manager initialized successfully');
       this.emit('initialized');
       
     } catch (error) {
-      logger.error('💥 Failed to initialize Fusion Manager:', error);
+      logger.error(' Failed to initialize Fusion Manager:', error);
       this.emitError(FusionErrorType.SDK_INITIALIZATION_FAILED, 
         `Initialization failed: ${error instanceof Error ? error.message : 'Unknown error'}`, 
         error
@@ -147,7 +147,7 @@ export class FusionManager extends EventEmitter implements FusionSDKManager {
       throw new Error('FusionManager not initialized');
     }
     
-    logger.info(`🔍 Getting 1inch quote for ${request.requestId}`, {
+    logger.info(` Getting 1inch quote for ${request.requestId}`, {
       srcChainId: request.srcChainId,
       dstChainId: request.dstChainId,
       amount: request.amount
@@ -171,7 +171,7 @@ export class FusionManager extends EventEmitter implements FusionSDKManager {
       
       const quote = await this.crossChainSDK.getQuote(quoteParams as any);
       
-      logger.info(`✅ 1inch quote received`, {
+      logger.info(` 1inch quote received`, {
         requestId: request.requestId,
         dstAmount: quote.dstTokenAmount,
         quoteId: quote.quoteId
@@ -180,7 +180,7 @@ export class FusionManager extends EventEmitter implements FusionSDKManager {
       return quote;
       
     } catch (error) {
-      logger.error(`💥 1inch quote failed for ${request.requestId}:`, error);
+      logger.error(` 1inch quote failed for ${request.requestId}:`, error);
       this.emitError(FusionErrorType.INVALID_QUOTE_REQUEST,
         `Quote request failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
         { requestId: request.requestId, request }
@@ -193,7 +193,7 @@ export class FusionManager extends EventEmitter implements FusionSDKManager {
    * Create 1inch Fusion+ order from quote using SDK
    */
   async createOrder(quote: any, request: FusionQuoteRequest): Promise<any> {
-    logger.info(`📋 Creating Fusion+ order for ${request.requestId}`);
+    logger.info(` Creating Fusion+ order for ${request.requestId}`);
     
     try {
       // Generate secrets for atomic swap
@@ -217,7 +217,7 @@ export class FusionManager extends EventEmitter implements FusionSDKManager {
       
       this.stats.ordersCreated++;
       
-      logger.info(`✅ Fusion+ order created`, {
+      logger.info(` Fusion+ order created`, {
         requestId: request.requestId,
         preset: orderParams.preset,
         secretsCount: secrets.length
@@ -235,7 +235,7 @@ export class FusionManager extends EventEmitter implements FusionSDKManager {
       };
       
     } catch (error) {
-      logger.error(`💥 Order creation failed for ${request.requestId}:`, error);
+      logger.error(` Order creation failed for ${request.requestId}:`, error);
       this.emitError(FusionErrorType.ORDER_CREATION_FAILED,
         `Order creation failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
         { requestId: request.requestId }
@@ -248,7 +248,7 @@ export class FusionManager extends EventEmitter implements FusionSDKManager {
    * Submit order to 1inch network using SDK
    */  
   async submitOrder(orderData: any): Promise<string> {
-    logger.info(`📤 Submitting Fusion+ order ${orderData.requestId}`);
+    logger.info(` Submitting Fusion+ order ${orderData.requestId}`);
     
     try {
       // Extract data from our order structure
@@ -280,7 +280,7 @@ export class FusionManager extends EventEmitter implements FusionSDKManager {
       this.activeOrders.set(orderHash, metaOrder);
       this.orderHistory.push(metaOrder);
       
-      logger.info(`✅ Order submitted successfully`, {
+      logger.info(` Order submitted successfully`, {
         requestId,
         orderHash: orderHash.substring(0, 10) + '...'
       });
@@ -290,7 +290,7 @@ export class FusionManager extends EventEmitter implements FusionSDKManager {
       return orderHash;
       
     } catch (error) {
-      logger.error(`💥 Order submission failed for ${orderData.requestId}:`, error);
+      logger.error(` Order submission failed for ${orderData.requestId}:`, error);
       this.emitError(FusionErrorType.ORDER_SUBMISSION_FAILED,
         `Order submission failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
         { requestId: orderData.requestId }
@@ -303,7 +303,7 @@ export class FusionManager extends EventEmitter implements FusionSDKManager {
    * Convert our Quote to 1inch Fusion+ meta-order
    */
   async convertToMetaOrder(quote: Quote): Promise<FusionMetaOrder> {
-    logger.info(`🔄 Converting quote ${quote.requestId} to Fusion+ meta-order`);
+    logger.info(` Converting quote ${quote.requestId} to Fusion+ meta-order`);
     
     try {
       // Create quote request from our quote
@@ -324,12 +324,12 @@ export class FusionManager extends EventEmitter implements FusionSDKManager {
         status: 'pending'
       };
       
-      logger.info(`✅ Meta-order created for ${quote.requestId}`);
+      logger.info(` Meta-order created for ${quote.requestId}`);
       
       return metaOrder;
       
     } catch (error) {
-      logger.error(`💥 Meta-order conversion failed for ${quote.requestId}:`, error);
+      logger.error(` Meta-order conversion failed for ${quote.requestId}:`, error);
       throw error;
     }
   }
@@ -435,7 +435,7 @@ export class FusionManager extends EventEmitter implements FusionSDKManager {
   private setupEventHandlers(): void {
     // Handle internal events
     this.on('order_submitted', (data) => {
-      logger.info('📊 Order submitted event:', data);
+      logger.info(' Order submitted event:', data);
     });
   }
 
@@ -471,9 +471,9 @@ export class FusionManager extends EventEmitter implements FusionSDKManager {
    * Stop the fusion manager
    */
   async stop(): Promise<void> {
-    logger.info('🛑 Stopping Fusion Manager...');
+    logger.info(' Stopping Fusion Manager...');
     this.activeOrders.clear();
     this.isInitialized = false;
-    logger.info('✅ Fusion Manager stopped');
+    logger.info(' Fusion Manager stopped');
   }
 }

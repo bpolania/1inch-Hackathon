@@ -10,24 +10,24 @@ const path = require("path");
  */
 
 async function main() {
-    console.log("🚀 Deploying New DT Token with Secure Account");
+    console.log(" Deploying New DT Token with Secure Account");
     console.log("==============================================");
 
     // Get signer
     const [deployer] = await ethers.getSigners();
-    console.log("👤 Deploying with account:", deployer.address);
-    console.log("💰 Account balance:", ethers.formatEther(await ethers.provider.getBalance(deployer.address)), "ETH");
+    console.log(" Deploying with account:", deployer.address);
+    console.log(" Account balance:", ethers.formatEther(await ethers.provider.getBalance(deployer.address)), "ETH");
 
     // Check we're on Sepolia
     const network = await ethers.provider.getNetwork();
-    console.log("🌐 Network:", network.name, "| Chain ID:", network.chainId.toString());
+    console.log(" Network:", network.name, "| Chain ID:", network.chainId.toString());
     
     if (network.chainId !== 11155111n) {
         throw new Error("This script is only for Sepolia testnet (Chain ID: 11155111)");
     }
 
     console.log("");
-    console.log("📋 Step 1: Deploy New DT Token");
+    console.log(" Step 1: Deploy New DT Token");
     console.log("==============================");
 
     // Deploy the DT token (MockERC20)
@@ -41,11 +41,11 @@ async function main() {
     await demoToken.waitForDeployment();
     const tokenAddress = await demoToken.getAddress();
 
-    console.log("✅ DemoToken deployed to:", tokenAddress);
+    console.log(" DemoToken deployed to:", tokenAddress);
     console.log("   View on Etherscan: https://sepolia.etherscan.io/address/" + tokenAddress);
 
     console.log("");
-    console.log("📋 Step 2: Mint Initial Supply");
+    console.log(" Step 2: Mint Initial Supply");
     console.log("===============================");
 
     // Mint initial supply for the deployer
@@ -54,7 +54,7 @@ async function main() {
     const mintTx = await demoToken.mint(deployer.address, initialSupply);
     await mintTx.wait();
 
-    console.log("✅ Minted", ethers.formatEther(initialSupply), "DT tokens to deployer");
+    console.log(" Minted", ethers.formatEther(initialSupply), "DT tokens to deployer");
 
     // Check token info
     const name = await demoToken.name();
@@ -64,7 +64,7 @@ async function main() {
     const deployerBalance = await demoToken.balanceOf(deployer.address);
 
     console.log("");
-    console.log("📊 Token Information:");
+    console.log(" Token Information:");
     console.log("   Name:", name);
     console.log("   Symbol:", symbol);
     console.log("   Decimals:", decimals.toString());
@@ -72,7 +72,7 @@ async function main() {
     console.log("   Deployer Balance:", ethers.formatEther(deployerBalance), "DT");
 
     console.log("");
-    console.log("📋 Step 3: Update Deployment Info");
+    console.log(" Step 3: Update Deployment Info");
     console.log("=================================");
 
     // Load existing deployment info
@@ -81,9 +81,9 @@ async function main() {
     
     try {
         deploymentInfo = JSON.parse(fs.readFileSync(deploymentPath, "utf8"));
-        console.log("✅ Loaded existing deployment info");
+        console.log(" Loaded existing deployment info");
     } catch (error) {
-        console.log("❌ Could not load existing deployment info");
+        console.log(" Could not load existing deployment info");
         throw new Error("Deployment info file is required for token replacement");
     }
 
@@ -97,7 +97,7 @@ async function main() {
     // Store the old token address for reference
     const oldTokenAddress = deploymentInfo.productionDeployment.contracts.DemoToken;
     if (oldTokenAddress) {
-        console.log("🔄 Replacing old DT token:", oldTokenAddress);
+        console.log(" Replacing old DT token:", oldTokenAddress);
     }
 
     // Update with new token address
@@ -120,37 +120,37 @@ async function main() {
 
     // Save updated deployment info
     fs.writeFileSync(deploymentPath, JSON.stringify(deploymentInfo, null, 2));
-    console.log("✅ Updated deployment info saved to:", deploymentPath);
+    console.log(" Updated deployment info saved to:", deploymentPath);
 
     console.log("");
-    console.log("🎊 New DT Token Deployment Complete!");
+    console.log(" New DT Token Deployment Complete!");
     console.log("====================================");
     console.log("");
-    console.log("✅ **New Secure DT Token**:");
-    console.log(`   • Token Address: ${tokenAddress}`);
-    console.log(`   • Token Name: ${name}`);
-    console.log(`   • Token Symbol: ${symbol}`);
-    console.log(`   • Initial Supply: ${ethers.formatEther(initialSupply)} DT`);
+    console.log(" **New Secure DT Token**:");
+    console.log(`    Token Address: ${tokenAddress}`);
+    console.log(`    Token Name: ${name}`);
+    console.log(`    Token Symbol: ${symbol}`);
+    console.log(`    Initial Supply: ${ethers.formatEther(initialSupply)} DT`);
     console.log("");
-    console.log("✅ **Security Improvement**:");
-    console.log("   • Deployed with new secure account");
-    console.log("   • Old compromised token replaced");
-    console.log("   • Same MockERC20 contract code");
+    console.log(" **Security Improvement**:");
+    console.log("    Deployed with new secure account");
+    console.log("    Old compromised token replaced");
+    console.log("    Same MockERC20 contract code");
     console.log("");
-    console.log("✅ **Next Steps**:");
-    console.log("   • Update .env files with new token address");
-    console.log("   • Restart API services with new token");
-    console.log("   • Test intent submission with new token");
+    console.log(" **Next Steps**:");
+    console.log("    Update .env files with new token address");
+    console.log("    Restart API services with new token");
+    console.log("    Test intent submission with new token");
     console.log("");
-    console.log("🔗 **Etherscan Link**:");
+    console.log(" **Etherscan Link**:");
     console.log(`   https://sepolia.etherscan.io/address/${tokenAddress}`);
 
     if (oldTokenAddress) {
         console.log("");
-        console.log("⚠️  **Migration Notes**:");
-        console.log(`   • Old Token: ${oldTokenAddress}`);
-        console.log(`   • New Token: ${tokenAddress}`);
-        console.log("   • Update all services to use new token address");
+        console.log("  **Migration Notes**:");
+        console.log(`    Old Token: ${oldTokenAddress}`);
+        console.log(`    New Token: ${tokenAddress}`);
+        console.log("    Update all services to use new token address");
     }
 
     // Return deployment info for potential use by other scripts
@@ -172,7 +172,7 @@ if (require.main === module) {
     main()
         .then(() => process.exit(0))
         .catch((error) => {
-            console.error("❌ Token deployment failed:", error);
+            console.error(" Token deployment failed:", error);
             process.exit(1);
         });
 }

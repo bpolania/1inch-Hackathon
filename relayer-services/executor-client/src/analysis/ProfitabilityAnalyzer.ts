@@ -33,19 +33,19 @@ export class ProfitabilityAnalyzer {
     }
 
     async initialize(): Promise<void> {
-        logger.info('🔧 Initializing Profitability Analyzer...');
+        logger.info(' Initializing Profitability Analyzer...');
 
         // We'll get the provider from the config
         this.ethereumProvider = new ethers.JsonRpcProvider(this.config.ethereum.rpcUrl);
 
         this.isInitialized = true;
-        logger.info('✅ Profitability Analyzer initialized');
+        logger.info(' Profitability Analyzer initialized');
     }
 
     async analyzeOrder(order: any): Promise<ProfitabilityAnalysis> {
         this.ensureInitialized();
 
-        logger.debug(`📊 Analyzing profitability for order ${order.orderHash}`);
+        logger.debug(` Analyzing profitability for order ${order.orderHash}`);
 
         const analysis: ProfitabilityAnalysis = {
             orderHash: order.orderHash,
@@ -96,9 +96,9 @@ export class ProfitabilityAnalyzer {
             analysis.isProfitable = analysis.estimatedProfit >= minProfitThreshold;
 
             if (analysis.isProfitable) {
-                analysis.reasoning.push(`✅ Profitable: ${ethers.formatEther(analysis.estimatedProfit)} ETH profit (${analysis.profitMargin.toFixed(2)}% margin)`);
+                analysis.reasoning.push(` Profitable: ${ethers.formatEther(analysis.estimatedProfit)} ETH profit (${analysis.profitMargin.toFixed(2)}% margin)`);
             } else {
-                analysis.reasoning.push(`❌ Not profitable: ${ethers.formatEther(analysis.estimatedProfit)} ETH (below ${ethers.formatEther(minProfitThreshold)} ETH threshold)`);
+                analysis.reasoning.push(` Not profitable: ${ethers.formatEther(analysis.estimatedProfit)} ETH (below ${ethers.formatEther(minProfitThreshold)} ETH threshold)`);
             }
 
             // 9. Assess risk level
@@ -107,7 +107,7 @@ export class ProfitabilityAnalyzer {
             // 10. Calculate execution priority
             analysis.executionPriority = this.calculatePriority(order, analysis);
 
-            logger.debug(`📊 Analysis complete for ${order.orderHash}:`, {
+            logger.debug(` Analysis complete for ${order.orderHash}:`, {
                 profitable: analysis.isProfitable,
                 profit: ethers.formatEther(analysis.estimatedProfit),
                 margin: `${analysis.profitMargin.toFixed(2)}%`,
@@ -116,8 +116,8 @@ export class ProfitabilityAnalyzer {
             });
 
         } catch (error) {
-            logger.error(`💥 Error analyzing order ${order.orderHash}:`, error);
-            analysis.reasoning.push(`❌ Analysis error: ${error}`);
+            logger.error(` Error analyzing order ${order.orderHash}:`, error);
+            analysis.reasoning.push(` Analysis error: ${error}`);
         }
 
         return analysis;
@@ -239,7 +239,7 @@ export class ProfitabilityAnalyzer {
     }
 
     public async batchAnalyzeOrders(orders: any[]): Promise<ProfitabilityAnalysis[]> {
-        logger.info(`📊 Batch analyzing ${orders.length} orders...`);
+        logger.info(` Batch analyzing ${orders.length} orders...`);
 
         const analyses = await Promise.all(
             orders.map(async (order) => {
@@ -258,14 +258,14 @@ export class ProfitabilityAnalyzer {
                         isProfitable: false,
                         riskLevel: 'high' as const,
                         executionPriority: 0,
-                        reasoning: [`❌ Analysis error: ${error}`]
+                        reasoning: [` Analysis error: ${error}`]
                     };
                 }
             })
         );
 
         const profitable = analyses.filter(a => a.isProfitable).length;
-        logger.info(`📊 Batch analysis complete: ${profitable}/${orders.length} orders profitable`);
+        logger.info(` Batch analysis complete: ${profitable}/${orders.length} orders profitable`);
 
         return analyses;
     }

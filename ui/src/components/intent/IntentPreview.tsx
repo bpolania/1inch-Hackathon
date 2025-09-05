@@ -161,11 +161,11 @@ export function IntentPreview({ intent, className }: IntentPreviewProps) {
               </div>
               <div className="space-y-1">
                 <div className="text-lg font-semibold">
-                  ≥ {formatTokenAmount(intent.minToAmount)} {intent.toToken?.symbol || ''}
+                   {formatTokenAmount(intent.minToAmount)} {intent.toToken?.symbol || ''}
                 </div>
                 {toUsdValue && (
                   <div className="text-sm text-muted-foreground">
-                    ≥ {formatUSDAmount(toUsdValue)}
+                     {formatUSDAmount(toUsdValue)}
                   </div>
                 )}
               </div>
@@ -255,9 +255,9 @@ export function IntentPreview({ intent, className }: IntentPreviewProps) {
                   chain signatures and our TEE-verified solver network.
                 </div>
                 <div className="flex items-center gap-4 text-xs text-near-600 mt-2">
-                  <span>• MEV Protection</span>
-                  <span>• Atomic Settlement</span>
-                  <span>• Gas Optimization</span>
+                  <span> MEV Protection</span>
+                  <span> Atomic Settlement</span>
+                  <span> Gas Optimization</span>
                 </div>
               </div>
             </div>
@@ -297,10 +297,10 @@ export function IntentPreview({ intent, className }: IntentPreviewProps) {
         <div className="space-y-2">
           <h3 className="text-sm font-medium text-foreground">Solver Network</h3>
           <div className="text-xs text-muted-foreground space-y-1">
-            <div>• Intent will be broadcast to all available solvers</div>
-            <div>• Solvers compete to provide the best execution</div>
-            <div>• TEE verification ensures solver integrity</div>
-            <div>• Settlement occurs on NEAR with chain signatures</div>
+            <div> Intent will be broadcast to all available solvers</div>
+            <div> Solvers compete to provide the best execution</div>
+            <div> TEE verification ensures solver integrity</div>
+            <div> Settlement occurs on NEAR with chain signatures</div>
           </div>
         </div>
       </CardContent>

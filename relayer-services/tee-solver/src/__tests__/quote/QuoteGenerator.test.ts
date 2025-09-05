@@ -91,7 +91,7 @@ describe('QuoteGenerator', () => {
 
       const quote = await quoteGenerator.generateQuote(request);
 
-      // Should have multiple steps: swap → bridge → swap
+      // Should have multiple steps: swap  bridge  swap
       expect(quote.route.length).toBeGreaterThanOrEqual(2);
       
       // Should include bridge step
@@ -177,7 +177,7 @@ describe('QuoteGenerator', () => {
 
       const quote = await quoteGenerator.generateQuote(request);
       
-      // Should have: USDC → ETH → Bridge → NEAR → wNEAR
+      // Should have: USDC  ETH  Bridge  NEAR  wNEAR
       const steps = quote.route.map(s => s.action);
       expect(steps).toContain('bridge');
       

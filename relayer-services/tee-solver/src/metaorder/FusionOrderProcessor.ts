@@ -50,7 +50,7 @@ export class FusionOrderProcessor {
      * Monitor for new Bitcoin-bound Fusion+ orders
      */
     async *monitorBitcoinOrders(): AsyncGenerator<FusionOrder, void, unknown> {
-        logger.info('👀 Monitoring for Bitcoin-bound Fusion+ orders...');
+        logger.info(' Monitoring for Bitcoin-bound Fusion+ orders...');
 
         while (true) {
             try {
@@ -66,7 +66,7 @@ export class FusionOrderProcessor {
                 await new Promise(resolve => setTimeout(resolve, 15000));
                 
             } catch (error) {
-                logger.error('💥 Error monitoring Bitcoin orders:', error);
+                logger.error(' Error monitoring Bitcoin orders:', error);
                 await new Promise(resolve => setTimeout(resolve, 5000));
             }
         }
@@ -121,14 +121,14 @@ export class FusionOrderProcessor {
                         }
                     }
                 } catch (error) {
-                    logger.warn('⚠️ Error processing order event:', error);
+                    logger.warn(' Error processing order event:', error);
                 }
             }
 
             return orders;
 
         } catch (error) {
-            logger.error('💥 Error fetching Bitcoin orders:', error);
+            logger.error(' Error fetching Bitcoin orders:', error);
             return [];
         }
     }
@@ -156,7 +156,7 @@ export class FusionOrderProcessor {
             return decoded[1].toString(); // Amount in satoshis
             
         } catch (error) {
-            logger.warn('⚠️ Error decoding Bitcoin amount:', error);
+            logger.warn(' Error decoding Bitcoin amount:', error);
             return '10000'; // Default 10k satoshis
         }
     }
@@ -179,7 +179,7 @@ export class FusionOrderProcessor {
             };
 
         } catch (error) {
-            logger.warn('⚠️ Error decoding execution params:', error);
+            logger.warn(' Error decoding execution params:', error);
             return {
                 btcAddress: 'tb1qw508d6qejxtdg4y5r3zarvary0c5xw7kxpjzsx',
                 htlcTimelock: 144,
@@ -242,11 +242,11 @@ export class FusionOrderProcessor {
      */
     async markOrderAsProcessing(orderHash: string): Promise<void> {
         try {
-            logger.info(`📝 Marking order ${orderHash} as processing`);
+            logger.info(` Marking order ${orderHash} as processing`);
             // In production, this would update the order status on-chain
             
         } catch (error) {
-            logger.error(`💥 Error marking order as processing:`, error);
+            logger.error(` Error marking order as processing:`, error);
         }
     }
 
@@ -255,13 +255,13 @@ export class FusionOrderProcessor {
      */
     async completeOrder(orderHash: string, secret: string, transactionHashes: string[]): Promise<void> {
         try {
-            logger.info(`✅ Completing order ${orderHash} with secret ${secret.slice(0, 10)}...`);
+            logger.info(` Completing order ${orderHash} with secret ${secret.slice(0, 10)}...`);
             
             // In production, this would call the completion function on the factory contract
             // with the revealed secret and transaction proofs
             
         } catch (error) {
-            logger.error(`💥 Error completing order:`, error);
+            logger.error(` Error completing order:`, error);
         }
     }
 
@@ -284,7 +284,7 @@ export class FusionOrderProcessor {
             };
             
         } catch (error) {
-            logger.error('💥 Error getting order stats:', error);
+            logger.error(' Error getting order stats:', error);
             return {
                 totalOrders: 0,
                 pendingOrders: 0,

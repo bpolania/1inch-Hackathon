@@ -83,7 +83,7 @@ export class RelayerService extends EventEmitter {
   }
 
   async initialize(): Promise<void> {
-    logger.info('🔧 Initializing Relayer Service...');
+    logger.info(' Initializing Relayer Service...');
 
     try {
       // Create configuration matching executor-client's Config interface
@@ -223,40 +223,40 @@ export class RelayerService extends EventEmitter {
       
       try {
         await this.crossChainExecutor.initialize();
-        logger.info('✅ CrossChainExecutor initialized successfully');
+        logger.info(' CrossChainExecutor initialized successfully');
         
         // Test contract connectivity
-        logger.info('🔍 Testing contract connectivity...');
+        logger.info(' Testing contract connectivity...');
         
         // Test Ethereum RPC connectivity
         const { ethers } = require('ethers');
         const provider = new ethers.JsonRpcProvider(this.config.ethereumRpcUrl);
         try {
           const blockNumber = await provider.getBlockNumber();
-          logger.info('✅ Ethereum RPC connected, latest block:', blockNumber);
+          logger.info(' Ethereum RPC connected, latest block:', blockNumber);
           
           // Test contract exists
           const factoryCode = await provider.getCode(this.config.contractAddresses.factory);
           if (factoryCode === '0x') {
-            logger.error('❌ Factory contract not found at address:', this.config.contractAddresses.factory);
+            logger.error(' Factory contract not found at address:', this.config.contractAddresses.factory);
           } else {
-            logger.info('✅ Factory contract found, bytecode length:', factoryCode.length);
+            logger.info(' Factory contract found, bytecode length:', factoryCode.length);
           }
           
         } catch (rpcError) {
-          logger.error('❌ Ethereum RPC connection failed:', rpcError);
+          logger.error(' Ethereum RPC connection failed:', rpcError);
         }
         
         const status = this.crossChainExecutor.getStatus();
-        logger.info('📊 CrossChainExecutor status:', status);
+        logger.info(' CrossChainExecutor status:', status);
         
       } catch (error) {
-        logger.error('❌ CrossChainExecutor initialization failed:', error);
-        logger.error('❌ Error details:', {
+        logger.error(' CrossChainExecutor initialization failed:', error);
+        logger.error(' Error details:', {
           message: error instanceof Error ? error.message : String(error),
           stack: error instanceof Error ? error.stack : undefined
         });
-        logger.info('🎭 Setting executor to null for graceful degradation...');
+        logger.info(' Setting executor to null for graceful degradation...');
         this.crossChainExecutor = null;
       }
 
@@ -264,10 +264,10 @@ export class RelayerService extends EventEmitter {
       this.setupEventHandlers();
 
       this.isInitialized = true;
-      logger.info('✅ Relayer Service initialized successfully');
+      logger.info(' Relayer Service initialized successfully');
 
     } catch (error) {
-      logger.error('💥 Failed to initialize Relayer Service:', error);
+      logger.error(' Failed to initialize Relayer Service:', error);
       throw error;
     }
   }
@@ -280,7 +280,7 @@ export class RelayerService extends EventEmitter {
       throw new Error('Relayer Service not initialized');
     }
 
-    logger.info('📊 Analyzing intent profitability', {
+    logger.info(' Analyzing intent profitability', {
       intentId: intent.id,
       sourceToken: intent.fromToken?.symbol,
       destToken: intent.toToken?.symbol,
@@ -304,7 +304,7 @@ export class RelayerService extends EventEmitter {
         recommendation: analysis.isProfitable ? 'execute' : 'skip'
       };
 
-      logger.info('✅ Profitability analysis completed', {
+      logger.info(' Profitability analysis completed', {
         intentId: intent.id,
         isProfitable: result.isProfitable,
         estimatedProfit: result.estimatedProfit,
@@ -314,7 +314,7 @@ export class RelayerService extends EventEmitter {
       return result;
 
     } catch (error) {
-      logger.error('💥 Profitability analysis failed:', error);
+      logger.error(' Profitability analysis failed:', error);
       throw error;
     }
   }
@@ -330,7 +330,7 @@ export class RelayerService extends EventEmitter {
     const intentId = intent.id;
     const orderHash = `order-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     
-    logger.info('📤 Submitting intent to relayer for execution', {
+    logger.info(' Submitting intent to relayer for execution', {
       intentId,
       orderHash
     });
@@ -349,14 +349,14 @@ export class RelayerService extends EventEmitter {
 
       // Execute in background
       this.executeOrder(intentId, intent).catch((error) => {
-        logger.error('💥 Order execution failed:', error);
+        logger.error(' Order execution failed:', error);
         this.updateOrderStatus(intentId, 'failed', error.message);
       });
 
       return submission;
 
     } catch (error) {
-      logger.error('💥 Intent submission failed:', error);
+      logger.error(' Intent submission failed:', error);
       throw error;
     }
   }
@@ -459,7 +459,7 @@ export class RelayerService extends EventEmitter {
    * Stop the relayer service
    */
   async stop(): Promise<void> {
-    logger.info('🛑 Stopping Relayer Service...');
+    logger.info(' Stopping Relayer Service...');
     
     if (this.orderMonitor) {
       await this.orderMonitor.stop();
@@ -468,7 +468,7 @@ export class RelayerService extends EventEmitter {
     this.orderSubmissions.clear();
     this.isInitialized = false;
     
-    logger.info('✅ Relayer Service stopped');
+    logger.info(' Relayer Service stopped');
   }
 
   // Private methods
@@ -476,19 +476,19 @@ export class RelayerService extends EventEmitter {
   private setupEventHandlers(): void {
     if (this.crossChainExecutor) {
       this.crossChainExecutor.on('executionComplete', (result: any) => {
-        logger.info('✅ Cross-chain execution completed:', result);
+        logger.info(' Cross-chain execution completed:', result);
         this.handleExecutionComplete(result);
       });
 
       this.crossChainExecutor.on('executionFailed', (result: any) => {
-        logger.error('💥 Cross-chain execution failed:', result);
+        logger.error(' Cross-chain execution failed:', result);
         this.handleExecutionFailed(result);
       });
     }
 
     if (this.orderMonitor) {
       this.orderMonitor.on('orderUpdate', (update: any) => {
-        logger.info('📊 Order update received:', update);
+        logger.info(' Order update received:', update);
         // Handle order monitor updates
       });
     }
@@ -496,7 +496,7 @@ export class RelayerService extends EventEmitter {
 
   private convertIntentToFusionOrder(intent: any): any {
     // Debug the incoming intent data
-    logger.info(`🔍 Converting intent to fusion order:`, {
+    logger.info(` Converting intent to fusion order:`, {
       intentId: intent.id,
       fromAmount: intent.fromAmount,
       minToAmount: intent.minToAmount,
@@ -510,13 +510,13 @@ export class RelayerService extends EventEmitter {
       
       // Validation: Warn if amount seems unreasonably large
       if (amountFloat > 1000) {
-        logger.warn(`⚠️ Suspiciously large amount detected: ${amount} (parsed as ${amountFloat})`);
+        logger.warn(` Suspiciously large amount detected: ${amount} (parsed as ${amountFloat})`);
       }
       
       const factor = Math.pow(10, decimals);
       const amountWei = Math.floor(amountFloat * factor);
       
-      logger.info(`💱 Amount conversion:`, {
+      logger.info(` Amount conversion:`, {
         input: amount,
         decimals: decimals,
         amountFloat: amountFloat,
@@ -540,7 +540,7 @@ export class RelayerService extends EventEmitter {
     const srcDecimals = 18; // DT token always has 18 decimals
     const dstDecimals = intent.toToken?.decimals || 24; // NEAR uses 24 decimals
     
-    logger.info(`🔢 Using decimals:`, {
+    logger.info(` Using decimals:`, {
       uiFromTokenDecimals: intent.fromToken?.decimals,
       actualSrcDecimals: srcDecimals,
       dstDecimals: dstDecimals,
@@ -551,7 +551,7 @@ export class RelayerService extends EventEmitter {
     const destinationAmount = toWei(intent.minToAmount || '0', dstDecimals);
     const resolverFee = (BigInt(sourceAmount) / BigInt(10)).toString(); // 10% resolver fee
 
-    logger.info(`📊 Final order amounts:`, {
+    logger.info(` Final order amounts:`, {
       sourceAmount: sourceAmount,
       sourceAmountInEther: (BigInt(sourceAmount) / BigInt(10**18)).toString(),
       destinationAmount: destinationAmount,
@@ -607,7 +607,7 @@ export class RelayerService extends EventEmitter {
     
     const expiryTime = Math.floor(Date.now() / 1000) + 7200; // 2 hours
     
-    logger.info(`🎯 Destination chain mapping:`, {
+    logger.info(` Destination chain mapping:`, {
       toTokenChainId,
       destinationChainId,
       destinationToken: intent.toToken?.symbol,
@@ -615,7 +615,7 @@ export class RelayerService extends EventEmitter {
       isCosmosChain: ['neutron', 'juno', 'cosmos', 'osmosis', 'stargaze', 'akash'].includes(toTokenChainId)
     });
     
-    logger.debug(`🕒 Order timing:`, {
+    logger.debug(` Order timing:`, {
       currentTime: Math.floor(Date.now() / 1000),
       currentTimeReadable: new Date().toISOString(),
       expiryTime: expiryTime,
@@ -652,7 +652,7 @@ export class RelayerService extends EventEmitter {
     const { ethers } = require('ethers');
     
     try {
-      logger.info('🔧 Creating Fusion order directly on contract...', {
+      logger.info(' Creating Fusion order directly on contract...', {
         factoryAddress: this.config.contractAddresses.factory,
         tokenAddress: fusionOrder.orderParams.sourceToken,
         registryAddress: this.config.contractAddresses.registry,
@@ -660,7 +660,7 @@ export class RelayerService extends EventEmitter {
         destinationChainId: fusionOrder.orderParams.destinationChainId
       });
       
-      logger.info('🎯 Full order parameters for debugging:', JSON.stringify(fusionOrder.orderParams, (key, value) =>
+      logger.info(' Full order parameters for debugging:', JSON.stringify(fusionOrder.orderParams, (key, value) =>
         typeof value === 'bigint' ? value.toString() : value, 2));
       
       // Connect to the factory contract
@@ -676,15 +676,15 @@ export class RelayerService extends EventEmitter {
       
       const factory = new ethers.Contract(this.config.contractAddresses.factory, factoryABI, wallet);
       
-      logger.info('📝 Order parameters:', fusionOrder.orderParams);
+      logger.info(' Order parameters:', fusionOrder.orderParams);
       
       // Validate chain support FIRST before any other checks
-      logger.info('🔍 Starting chain validation...');
+      logger.info(' Starting chain validation...');
       try {
         const supportedChains = await factory.getSupportedChains();
         const isChainSupported = supportedChains.some((chainId: any) => chainId.toString() === fusionOrder.orderParams.destinationChainId.toString());
         
-        logger.info('🔍 Chain validation:', {
+        logger.info(' Chain validation:', {
           requestedChain: fusionOrder.orderParams.destinationChainId,
           supportedChains: supportedChains.map((id: any) => id.toString()),
           isSupported: isChainSupported
@@ -697,13 +697,13 @@ export class RelayerService extends EventEmitter {
         // Try to get registry info for additional validation
         try {
           const registryAddress = await factory.registry();
-          logger.info('✅ Registry address:', registryAddress);
+          logger.info(' Registry address:', registryAddress);
         } catch (registryError: any) {
-          logger.warn('⚠️ Could not get registry info:', registryError?.message || String(registryError));
+          logger.warn(' Could not get registry info:', registryError?.message || String(registryError));
         }
         
       } catch (validationError: any) {
-        logger.error('❌ Chain validation failed:', validationError?.message || String(validationError));
+        logger.error(' Chain validation failed:', validationError?.message || String(validationError));
         throw new Error(`Chain validation failed: ${validationError?.message || String(validationError)}`);
       }
       
@@ -724,7 +724,7 @@ export class RelayerService extends EventEmitter {
       const allowance = await tokenContract.allowance(wallet.address, this.config.contractAddresses.factory);
       const requiredAmount = BigInt(fusionOrder.orderParams.sourceAmount) + BigInt(fusionOrder.orderParams.resolverFeeAmount);
       
-      logger.info('💰 Token check:', {
+      logger.info(' Token check:', {
         userAddress: wallet.address,
         tokenAddress: fusionOrder.orderParams.sourceToken,
         balance: balance.toString(),
@@ -737,16 +737,16 @@ export class RelayerService extends EventEmitter {
       }
       
       if (allowance < requiredAmount) {
-        logger.info('🔓 Approving tokens...');
+        logger.info(' Approving tokens...');
         try {
           const approveTx = await tokenContract.approve(this.config.contractAddresses.factory, requiredAmount);
           const approveReceipt = await approveTx.wait();
-          logger.info('✅ Tokens approved successfully', {
+          logger.info(' Tokens approved successfully', {
             txHash: approveReceipt.hash,
             gasUsed: approveReceipt.gasUsed?.toString()
           });
         } catch (approveError) {
-          logger.error('❌ Token approval failed:', {
+          logger.error(' Token approval failed:', {
             error: approveError instanceof Error ? approveError.message : String(approveError),
             factoryAddress: this.config.contractAddresses.factory,
             tokenAddress: fusionOrder.orderParams.sourceToken,
@@ -757,13 +757,13 @@ export class RelayerService extends EventEmitter {
       }
       
       // Create the order
-      logger.info('📝 Creating Fusion order...');
+      logger.info(' Creating Fusion order...');
       const createTx = await factory.createFusionOrder(fusionOrder.orderParams);
       const createReceipt = await createTx.wait();
       
-      logger.info('✅ Fusion order created successfully!');
-      logger.info('📍 Transaction:', createReceipt.hash);
-      logger.info('🔗 Etherscan:', `https://sepolia.etherscan.io/tx/${createReceipt.hash}`);
+      logger.info(' Fusion order created successfully!');
+      logger.info(' Transaction:', createReceipt.hash);
+      logger.info(' Etherscan:', `https://sepolia.etherscan.io/tx/${createReceipt.hash}`);
       
       // Extract order hash from events
       let orderHash;
@@ -793,7 +793,7 @@ export class RelayerService extends EventEmitter {
       };
       
     } catch (error: any) {
-      logger.error('❌ Failed to create Fusion order:');
+      logger.error(' Failed to create Fusion order:');
       logger.error('Error details:', {
         message: error instanceof Error ? error.message : String(error),
         code: error?.code,
@@ -814,7 +814,7 @@ export class RelayerService extends EventEmitter {
       const fusionOrder = this.convertIntentToFusionOrder(intent);
 
       // Execute the order by creating and matching it
-      logger.info('🚀 Creating and executing Fusion order:', {
+      logger.info(' Creating and executing Fusion order:', {
         intentId: fusionOrder.intentId,
         sourceToken: fusionOrder.orderParams.sourceToken,
         sourceAmount: fusionOrder.orderParams.sourceAmount,
@@ -829,7 +829,7 @@ export class RelayerService extends EventEmitter {
         
         if (isCosmosDestination) {
           // For Cosmos destinations, execute directly via CosmosExecutor (bypass Ethereum contracts)
-          logger.info('🌌 Executing NEAR → Cosmos order directly via CosmosExecutor');
+          logger.info(' Executing NEAR  Cosmos order directly via CosmosExecutor');
           
           if (!this.crossChainExecutor || !this.crossChainExecutor.cosmosExecutor) {
             throw new Error('CosmosExecutor not available');
@@ -872,7 +872,7 @@ export class RelayerService extends EventEmitter {
           result = await this.createFusionOrderDirect(fusionOrder);
         }
       } catch (error: any) {
-        logger.error('❌ Execution failed:');
+        logger.error(' Execution failed:');
         logger.error('Execution error details:', {
           message: error instanceof Error ? error.message : String(error),
           code: error?.code,

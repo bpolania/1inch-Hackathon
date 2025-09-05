@@ -81,14 +81,14 @@ describe('ChainSignatureManager', () => {
         methodName: 'public_key',
         args: {}
       });
-      expect(logger.info).toHaveBeenCalledWith('✅ Chain Signature Manager initialized', expect.any(Object));
+      expect(logger.info).toHaveBeenCalledWith(' Chain Signature Manager initialized', expect.any(Object));
     });
 
     it('should throw error if MPC contract verification fails', async () => {
       mockNearAccount.viewFunction.mockRejectedValue(new Error('Contract not found'));
 
       await expect(chainSignatureManager.initialize()).rejects.toThrow('MPC contract verification failed');
-      expect(logger.error).toHaveBeenCalledWith('💥 Failed to verify MPC contract:', expect.any(Error));
+      expect(logger.error).toHaveBeenCalledWith(' Failed to verify MPC contract:', expect.any(Error));
     });
 
     it('should handle NEAR connection failure', async () => {
@@ -96,7 +96,7 @@ describe('ChainSignatureManager', () => {
       connect.mockRejectedValue(new Error('NEAR connection failed'));
 
       await expect(chainSignatureManager.initialize()).rejects.toThrow('NEAR connection failed');
-      expect(logger.error).toHaveBeenCalledWith('💥 Failed to initialize Chain Signature Manager:', expect.any(Error));
+      expect(logger.error).toHaveBeenCalledWith(' Failed to initialize Chain Signature Manager:', expect.any(Error));
     });
   });
 
@@ -229,8 +229,8 @@ describe('ChainSignatureManager', () => {
       const address = await chainSignatureManager.deriveAddress(ChainId.ETHEREUM);
       
       expect(address).toMatch(/^0x[a-fA-F0-9]{40}$/);
-      expect(logger.info).toHaveBeenCalledWith('🔗 Deriving address for ethereum', { path: 'test-solver' });
-      expect(logger.info).toHaveBeenCalledWith(`✅ Derived address for ${ChainId.ETHEREUM}: ${address}`);
+      expect(logger.info).toHaveBeenCalledWith(' Deriving address for ethereum', { path: 'test-solver' });
+      expect(logger.info).toHaveBeenCalledWith(` Derived address for ${ChainId.ETHEREUM}: ${address}`);
     });
 
     it('should derive different addresses for different chains', async () => {
@@ -349,7 +349,7 @@ describe('ChainSignatureManager', () => {
       await chainSignatureManager.stop();
 
       expect(chainSignatureManager.getStats().isInitialized).toBe(false);
-      expect(logger.info).toHaveBeenCalledWith('✅ Chain Signature Manager stopped');
+      expect(logger.info).toHaveBeenCalledWith(' Chain Signature Manager stopped');
     });
   });
 });

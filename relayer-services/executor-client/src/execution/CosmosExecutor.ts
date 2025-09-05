@@ -65,7 +65,7 @@ export class CosmosExecutor extends EventEmitter {
     }
 
     async initialize(): Promise<void> {
-        logger.info('🌌 Initializing Cosmos Executor...');
+        logger.info(' Initializing Cosmos Executor...');
 
         // Initialize wallet from mnemonic or private key
         await this.initializeWallet();
@@ -74,7 +74,7 @@ export class CosmosExecutor extends EventEmitter {
         await this.initializeClients();
 
         this.initialized = true;
-        logger.info('✅ Cosmos Executor initialized');
+        logger.info(' Cosmos Executor initialized');
     }
 
     private async initializeWallet(): Promise<void> {
@@ -88,7 +88,7 @@ export class CosmosExecutor extends EventEmitter {
                 this.cosmosConfig.wallet.mnemonic,
                 { prefix: 'cosmos' } // Default prefix, will be adjusted per chain
             );
-            logger.info('📝 Cosmos wallet initialized from mnemonic');
+            logger.info(' Cosmos wallet initialized from mnemonic');
         } else if (this.cosmosConfig.wallet.privateKey) {
             // Create wallet from private key
             const privateKeyBytes = Buffer.from(this.cosmosConfig.wallet.privateKey, 'hex');
@@ -96,7 +96,7 @@ export class CosmosExecutor extends EventEmitter {
                 privateKeyBytes,
                 'cosmos' // Default prefix
             );
-            logger.info('🔑 Cosmos wallet initialized from private key');
+            logger.info(' Cosmos wallet initialized from private key');
         } else {
             throw new Error('No Cosmos wallet configuration found. Provide either mnemonic or private key.');
         }
@@ -141,7 +141,7 @@ export class CosmosExecutor extends EventEmitter {
                 const accounts = await chainWallet.getAccounts();
                 const walletAddress = accounts[0].address;
 
-                logger.info(`🔗 Connected to ${networkConfig.name}`, {
+                logger.info(` Connected to ${networkConfig.name}`, {
                     chainId: networkConfig.chainId,
                     rpcUrl: networkConfig.rpcUrl,
                     walletAddress,
@@ -149,7 +149,7 @@ export class CosmosExecutor extends EventEmitter {
                 });
 
             } catch (error) {
-                logger.error(`❌ Failed to initialize client for chain ${chainIdStr}:`, {
+                logger.error(` Failed to initialize client for chain ${chainIdStr}:`, {
                     error: error instanceof Error ? error.message : String(error),
                     stack: error instanceof Error ? error.stack : undefined,
                     networkConfig: {
@@ -167,7 +167,7 @@ export class CosmosExecutor extends EventEmitter {
             throw new Error('Failed to initialize any Cosmos chain clients');
         }
 
-        logger.info(`✅ Initialized ${this.clients.size} Cosmos chain clients`);
+        logger.info(` Initialized ${this.clients.size} Cosmos chain clients`);
     }
 
     async executeOrder(executableOrder: ExecutableOrder): Promise<CosmosExecutionResult> {
@@ -175,7 +175,7 @@ export class CosmosExecutor extends EventEmitter {
         const orderHash = executableOrder.orderHash;
         const order = executableOrder.order;
 
-        logger.info(`🌌 Executing Cosmos order ${orderHash} on chain ${order.destinationChainId}`);
+        logger.info(` Executing Cosmos order ${orderHash} on chain ${order.destinationChainId}`);
 
         const result: CosmosExecutionResult = {
             success: false,
@@ -275,7 +275,7 @@ export class CosmosExecutor extends EventEmitter {
             result.gasUsed = (result.gasUsed || 0) + (claimResult.gasUsed || 0);
             result.secret = secret;
 
-            logger.info(`✅ Cosmos execution completed successfully`, {
+            logger.info(` Cosmos execution completed successfully`, {
                 orderHash,
                 chain: networkConfig.name,
                 contractAddress,
@@ -287,7 +287,7 @@ export class CosmosExecutor extends EventEmitter {
             this.totalExecutions++;
 
         } catch (error) {
-            logger.error(`💥 Cosmos execution failed for order ${orderHash}:`, error);
+            logger.error(` Cosmos execution failed for order ${orderHash}:`, error);
             result.error = error instanceof Error ? error.message : String(error);
         }
 
@@ -307,7 +307,7 @@ export class CosmosExecutor extends EventEmitter {
         networkConfig: any
     ): Promise<{ success: boolean; transactionHash?: string; gasUsed?: number; error?: string }> {
         try {
-            logger.info(`📝 Executing Fusion order on contract ${contractAddress}`);
+            logger.info(` Executing Fusion order on contract ${contractAddress}`);
 
             // Calculate required funds (amount + resolver fee + safety deposit)
             const amount = BigInt(orderParams.amount);
@@ -332,7 +332,7 @@ export class CosmosExecutor extends EventEmitter {
                 amount: totalRequired.toString()
             }];
 
-            logger.debug(`💰 Execution parameters:`, {
+            logger.debug(` Execution parameters:`, {
                 contract: contractAddress,
                 message: executeMsg,
                 funds,
@@ -357,7 +357,7 @@ export class CosmosExecutor extends EventEmitter {
             };
 
         } catch (error) {
-            logger.error(`💥 Error executing Fusion order:`, error);
+            logger.error(` Error executing Fusion order:`, error);
             return {
                 success: false,
                 error: error instanceof Error ? error.message : String(error)
@@ -372,7 +372,7 @@ export class CosmosExecutor extends EventEmitter {
         orderHash: string
     ): Promise<{ success: boolean; transactionHash?: string; gasUsed?: number; error?: string }> {
         try {
-            logger.info(`💸 Sending native tokens for order ${orderHash}`);
+            logger.info(` Sending native tokens for order ${orderHash}`);
 
             // For Cosmos Hub, send native tokens directly
             const amount = [{
@@ -406,7 +406,7 @@ export class CosmosExecutor extends EventEmitter {
             };
 
         } catch (error) {
-            logger.error(`💥 Error sending native tokens:`, {
+            logger.error(` Error sending native tokens:`, {
                 error: error instanceof Error ? error.message : String(error),
                 stack: error instanceof Error ? error.stack : undefined,
                 orderHash,
@@ -427,7 +427,7 @@ export class CosmosExecutor extends EventEmitter {
         preimage: string
     ): Promise<{ success: boolean; transactionHash?: string; gasUsed?: number; error?: string }> {
         try {
-            logger.info(`🏁 Claiming Fusion order ${orderHash} with preimage`);
+            logger.info(` Claiming Fusion order ${orderHash} with preimage`);
 
             const claimMsg = {
                 claim_fusion_order: {
@@ -436,7 +436,7 @@ export class CosmosExecutor extends EventEmitter {
                 }
             };
 
-            logger.debug(`🔓 Claim parameters:`, {
+            logger.debug(` Claim parameters:`, {
                 contract: contractAddress,
                 message: claimMsg,
                 gasLimit: this.cosmosConfig.execution.gasLimit
@@ -458,7 +458,7 @@ export class CosmosExecutor extends EventEmitter {
             };
 
         } catch (error) {
-            logger.error(`💥 Error claiming Fusion order:`, error);
+            logger.error(` Error claiming Fusion order:`, error);
             return {
                 success: false,
                 error: error instanceof Error ? error.message : String(error)
@@ -483,7 +483,7 @@ export class CosmosExecutor extends EventEmitter {
                 destinationAddress: params.destinationAddress
             };
         } catch (error) {
-            logger.warn(`⚠️ Failed to parse execution parameters, using defaults:`, {
+            logger.warn(` Failed to parse execution parameters, using defaults:`, {
                 error: error instanceof Error ? error.message : String(error),
                 chainSpecificParams,
                 chainSpecificParamsType: typeof chainSpecificParams
@@ -610,7 +610,7 @@ export class CosmosExecutor extends EventEmitter {
     }
 
     public async stop(): Promise<void> {
-        logger.info('🛑 Stopping Cosmos Executor...');
+        logger.info(' Stopping Cosmos Executor...');
         
         // Disconnect all clients
         for (const [chainId, client] of this.clients.entries()) {
@@ -626,6 +626,6 @@ export class CosmosExecutor extends EventEmitter {
         this.initialized = false;
         this.totalExecutions = 0;
         
-        logger.info('✅ Cosmos Executor stopped');
+        logger.info(' Cosmos Executor stopped');
     }
 }

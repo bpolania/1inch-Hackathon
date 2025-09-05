@@ -220,7 +220,7 @@ export function ChainAbstraction({ intent, className }: ChainAbstractionProps) {
                   <span className="text-lg font-semibold">{intent.toToken.symbol}</span>
                 </div>
                 <div className="text-sm text-muted-foreground">
-                  ≥ {formatTokenAmount(intent.minToAmount)}
+                   {formatTokenAmount(intent.minToAmount)}
                 </div>
               </div>
             </div>

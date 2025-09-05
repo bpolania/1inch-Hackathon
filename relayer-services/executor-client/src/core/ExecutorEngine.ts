@@ -44,28 +44,28 @@ export class ExecutorEngine {
     }
 
     async initialize(): Promise<void> {
-        logger.info('🔧 Initializing Executor Engine components...');
+        logger.info(' Initializing Executor Engine components...');
         
         // Initialize wallet manager (loads private keys, connects to networks)
         await this.walletManager.initialize();
-        logger.info('💼 Wallet manager initialized');
+        logger.info(' Wallet manager initialized');
         
         // Initialize order monitoring
         await this.orderMonitor.initialize();
-        logger.info('🕵️ Order monitor initialized');
+        logger.info(' Order monitor initialized');
         
         // Initialize profitability analyzer
         await this.profitabilityAnalyzer.initialize();
-        logger.info('📊 Profitability analyzer initialized');
+        logger.info(' Profitability analyzer initialized');
         
         // Initialize cross-chain executor
         await this.crossChainExecutor.initialize();
-        logger.info('⚡ Cross-chain executor initialized');
+        logger.info(' Cross-chain executor initialized');
         
         // Setup event listeners
         this.setupEventListeners();
         
-        logger.info('✅ All components initialized successfully');
+        logger.info(' All components initialized successfully');
     }
 
     private setupEventListeners(): void {
@@ -92,12 +92,12 @@ export class ExecutorEngine {
 
     async start(): Promise<void> {
         if (this.isRunning) {
-            logger.warn('⚠️ Executor engine is already running');
+            logger.warn(' Executor engine is already running');
             return;
         }
 
         this.isRunning = true;
-        logger.info('🎯 Starting automated execution loop');
+        logger.info(' Starting automated execution loop');
 
         // Start order monitoring
         await this.orderMonitor.start();
@@ -111,7 +111,7 @@ export class ExecutorEngine {
             return;
         }
 
-        logger.info('🛑 Stopping executor engine...');
+        logger.info(' Stopping executor engine...');
         this.isRunning = false;
 
         // Stop order monitoring
@@ -120,11 +120,11 @@ export class ExecutorEngine {
         // Cancel any pending executions
         this.executionQueue = [];
 
-        logger.info('✅ Executor engine stopped');
+        logger.info(' Executor engine stopped');
     }
 
     private async startExecutionLoop(): Promise<void> {
-        logger.info('🔄 Starting continuous execution loop');
+        logger.info(' Starting continuous execution loop');
 
         while (this.isRunning) {
             try {
@@ -134,7 +134,7 @@ export class ExecutorEngine {
                 await this.sleep(this.config.execution.loopInterval || 10000); // 10 seconds default
                 
             } catch (error) {
-                logger.error('💥 Error in execution loop:', error);
+                logger.error(' Error in execution loop:', error);
                 await this.sleep(5000); // Wait 5 seconds on error before retrying
             }
         }
@@ -151,34 +151,34 @@ export class ExecutorEngine {
         const order = this.executionQueue.shift();
         if (!order) return;
 
-        logger.info(`🎯 Processing order ${order.orderHash}`);
-        logger.info(`💰 Estimated profit: ${ethers.formatEther(order.profitability.estimatedProfit)} ETH`);
+        logger.info(` Processing order ${order.orderHash}`);
+        logger.info(` Estimated profit: ${ethers.formatEther(order.profitability.estimatedProfit)} ETH`);
 
         try {
             // Execute the cross-chain atomic swap
             const result = await this.crossChainExecutor.executeAtomicSwap(order);
             
             if (result.success) {
-                logger.info(`✅ Successfully executed atomic swap for order ${order.orderHash}`);
-                logger.info(`💰 Actual profit: ${ethers.formatEther(result.actualProfit)} ETH`);
+                logger.info(` Successfully executed atomic swap for order ${order.orderHash}`);
+                logger.info(` Actual profit: ${ethers.formatEther(result.actualProfit)} ETH`);
             } else {
-                logger.error(`❌ Failed to execute atomic swap for order ${order.orderHash}:`, result.error);
+                logger.error(` Failed to execute atomic swap for order ${order.orderHash}:`, result.error);
             }
             
         } catch (error) {
-            logger.error(`💥 Execution error for order ${order.orderHash}:`, error);
+            logger.error(` Execution error for order ${order.orderHash}:`, error);
         }
     }
 
     private async handleNewOrder(order: any): Promise<void> {
-        logger.info(`🆕 New order detected: ${order.orderHash}`);
+        logger.info(` New order detected: ${order.orderHash}`);
 
         try {
             // Analyze profitability
             const profitability = await this.profitabilityAnalyzer.analyzeOrder(order);
             
             if (!profitability.isProfitable) {
-                logger.info(`📉 Order ${order.orderHash} not profitable, skipping`);
+                logger.info(` Order ${order.orderHash} not profitable, skipping`);
                 return;
             }
 
@@ -195,33 +195,33 @@ export class ExecutorEngine {
             // Add to execution queue
             this.executionQueue.push(executableOrder);
             
-            logger.info(`✅ Added profitable order ${order.orderHash} to execution queue`);
-            logger.info(`💰 Estimated profit: ${ethers.formatEther(profitability.estimatedProfit)} ETH`);
+            logger.info(` Added profitable order ${order.orderHash} to execution queue`);
+            logger.info(` Estimated profit: ${ethers.formatEther(profitability.estimatedProfit)} ETH`);
             
         } catch (error) {
-            logger.error(`💥 Error analyzing order ${order.orderHash}:`, error);
+            logger.error(` Error analyzing order ${order.orderHash}:`, error);
         }
     }
 
     private async handleOrderUpdate(orderHash: string, update: any): Promise<void> {
-        logger.info(`📝 Order update for ${orderHash}:`, update);
+        logger.info(` Order update for ${orderHash}:`, update);
         
         // Remove from queue if order is no longer valid
         if (update.status === 'completed' || update.status === 'cancelled') {
             this.executionQueue = this.executionQueue.filter(o => o.orderHash !== orderHash);
-            logger.info(`🗑️ Removed ${orderHash} from execution queue (${update.status})`);
+            logger.info(` Removed ${orderHash} from execution queue (${update.status})`);
         }
     }
 
     private async handleExecutionComplete(result: any): Promise<void> {
-        logger.info(`🎉 Execution completed successfully:`, result);
+        logger.info(` Execution completed successfully:`, result);
         
         // Log metrics, update stats, etc.
         // This could feed into a dashboard or monitoring system
     }
 
     private async handleExecutionFailed(error: any): Promise<void> {
-        logger.error(`💥 Execution failed:`, error);
+        logger.error(` Execution failed:`, error);
         
         // Log error metrics, send alerts, etc.
         // This could trigger notifications to operators

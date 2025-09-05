@@ -308,7 +308,7 @@ export class BitcoinUTXOManager {
                     if (failedApis.length > 0) {
                         logger.debug(`Previous API failures: ${failedApis.join(', ')} - but got fee rate from ${api.name}`);
                     }
-                    logger.info(`✅ Fee rate from ${api.name}: ${feeRate} sat/vB`);
+                    logger.info(` Fee rate from ${api.name}: ${feeRate} sat/vB`);
                     return Math.max(feeRate, 1); // Minimum 1 sat/vB
                 }
                 

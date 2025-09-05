@@ -30,17 +30,17 @@ const NEAR_CONFIG = {
 };
 
 async function executeNearSide() {
-    console.log("🚀 Starting NEAR Side Atomic Swap Execution");
+    console.log(" Starting NEAR Side Atomic Swap Execution");
     console.log("=".repeat(60));
     
-    console.log("\n📋 Order Details:");
+    console.log("\n Order Details:");
     console.log(`Order Hash: ${EXISTING_ORDER.orderHash}`);
     console.log(`Hashlock: ${EXISTING_ORDER.hashlock}`);
     console.log(`Secret: ${EXISTING_ORDER.secret}`);
     console.log(`Hash Algorithm: ${EXISTING_ORDER.hashAlgorithm}`);
     console.log(`Ethereum Order Creation: https://sepolia.etherscan.io/tx/${EXISTING_ORDER.ethTxHash}`);
     
-    console.log("\n📊 NEAR Execution Parameters:");
+    console.log("\n NEAR Execution Parameters:");
     console.log(`Contract: ${NEAR_CONFIG.contractId}`);
     console.log(`Resolver: ${NEAR_CONFIG.resolverId}`);
     console.log(`User: ${NEAR_CONFIG.userId}`);
@@ -50,7 +50,7 @@ async function executeNearSide() {
     console.log(`Total Deposit: ${NEAR_CONFIG.totalDeposit} NEAR`);
     
     console.log("\n" + "=".repeat(60));
-    console.log("🔄 STEP 1: Execute Fusion Order on NEAR");
+    console.log(" STEP 1: Execute Fusion Order on NEAR");
     console.log("=".repeat(60));
     
     // Prepare execute_fusion_order command
@@ -65,7 +65,7 @@ async function executeNearSide() {
         source_chain_id: 11155111
     };
     
-    console.log("\n📝 Executing NEAR command:");
+    console.log("\n Executing NEAR command:");
     const executeCommand = `near call ${NEAR_CONFIG.contractId} execute_fusion_order '${JSON.stringify(executeFusionOrderArgs)}' --accountId ${NEAR_CONFIG.resolverId} --amount ${NEAR_CONFIG.totalDeposit}`;
     console.log(executeCommand);
     
@@ -76,7 +76,7 @@ async function executeNearSide() {
             stdio: ['inherit', 'pipe', 'pipe']
         });
         
-        console.log("\n✅ Execute Fusion Order Result:");
+        console.log("\n Execute Fusion Order Result:");
         console.log(executeResult);
         
         // Extract transaction hash if possible
@@ -84,11 +84,11 @@ async function executeNearSide() {
         const executeTxHash = txHashMatch ? txHashMatch[1] : 'Unknown';
         
         console.log("\n" + "=".repeat(60));
-        console.log("🔑 STEP 2: Reveal Secret and Claim");
+        console.log(" STEP 2: Reveal Secret and Claim");
         console.log("=".repeat(60));
         
         // Wait a moment for the transaction to be processed
-        console.log("⏳ Waiting 3 seconds for transaction processing...");
+        console.log(" Waiting 3 seconds for transaction processing...");
         await new Promise(resolve => setTimeout(resolve, 3000));
         
         // Prepare claim_fusion_order command
@@ -97,7 +97,7 @@ async function executeNearSide() {
             preimage: EXISTING_ORDER.secret
         };
         
-        console.log("\n📝 Revealing secret:");
+        console.log("\n Revealing secret:");
         const claimCommand = `near call ${NEAR_CONFIG.contractId} claim_fusion_order '${JSON.stringify(claimArgs)}' --accountId ${NEAR_CONFIG.resolverId}`;
         console.log(claimCommand);
         
@@ -106,18 +106,18 @@ async function executeNearSide() {
             stdio: ['inherit', 'pipe', 'pipe']
         });
         
-        console.log("\n✅ Claim Fusion Order Result:");
+        console.log("\n Claim Fusion Order Result:");
         console.log(claimResult);
         
         const claimTxHashMatch = claimResult.match(/Transaction Id ([A-Za-z0-9]+)/);
         const claimTxHash = claimTxHashMatch ? claimTxHashMatch[1] : 'Unknown';
         
         console.log("\n" + "=".repeat(60));
-        console.log("💸 STEP 3: Transfer NEAR Tokens to User");
+        console.log(" STEP 3: Transfer NEAR Tokens to User");
         console.log("=".repeat(60));
         
         // Wait a moment for the claim to be processed
-        console.log("⏳ Waiting 3 seconds for claim processing...");
+        console.log(" Waiting 3 seconds for claim processing...");
         await new Promise(resolve => setTimeout(resolve, 3000));
         
         // Prepare transfer_to_maker command
@@ -125,7 +125,7 @@ async function executeNearSide() {
             order_hash: EXISTING_ORDER.orderHash
         };
         
-        console.log("\n📝 Transferring NEAR tokens to user:");
+        console.log("\n Transferring NEAR tokens to user:");
         const transferCommand = `near call ${NEAR_CONFIG.contractId} transfer_to_maker '${JSON.stringify(transferArgs)}' --accountId ${NEAR_CONFIG.resolverId}`;
         console.log(transferCommand);
         
@@ -134,35 +134,35 @@ async function executeNearSide() {
             stdio: ['inherit', 'pipe', 'pipe']
         });
         
-        console.log("\n✅ Transfer to Maker Result:");
+        console.log("\n Transfer to Maker Result:");
         console.log(transferResult);
         
         const transferTxHashMatch = transferResult.match(/Transaction Id ([A-Za-z0-9]+)/);
         const transferTxHash = transferTxHashMatch ? transferTxHashMatch[1] : 'Unknown';
         
         console.log("\n" + "=".repeat(60));
-        console.log("🎉 ATOMIC SWAP COMPLETED SUCCESSFULLY!");
+        console.log(" ATOMIC SWAP COMPLETED SUCCESSFULLY!");
         console.log("=".repeat(60));
         
-        console.log("\n📊 Final Transaction Summary:");
+        console.log("\n Final Transaction Summary:");
         console.log("Ethereum Side (COMPLETED):");
-        console.log(`  ✅ Order Creation: https://sepolia.etherscan.io/tx/${EXISTING_ORDER.ethTxHash}`);
-        console.log(`  ✅ Hash Algorithm: ${EXISTING_ORDER.hashAlgorithm}`);
+        console.log(`   Order Creation: https://sepolia.etherscan.io/tx/${EXISTING_ORDER.ethTxHash}`);
+        console.log(`   Hash Algorithm: ${EXISTING_ORDER.hashAlgorithm}`);
         
         console.log("\nNEAR Side (COMPLETED):");
-        console.log(`  ✅ Execute Order: ${executeTxHash}`);
-        console.log(`  ✅ Reveal Secret: ${claimTxHash}`);
-        console.log(`  ✅ Transfer NEAR: ${transferTxHash}`);
+        console.log(`   Execute Order: ${executeTxHash}`);
+        console.log(`   Reveal Secret: ${claimTxHash}`);
+        console.log(`   Transfer NEAR: ${transferTxHash}`);
         
-        console.log("\n🔄 User Token Flow:");
-        console.log(`  📤 Sent: 0.2 DT tokens (Ethereum order created)`);
-        console.log(`  📥 Received: 0.004 NEAR tokens (NEAR Protocol)`);
-        console.log(`  💰 Net: Successfully swapped DT ↔ NEAR across chains`);
+        console.log("\n User Token Flow:");
+        console.log(`   Sent: 0.2 DT tokens (Ethereum order created)`);
+        console.log(`   Received: 0.004 NEAR tokens (NEAR Protocol)`);
+        console.log(`   Net: Successfully swapped DT  NEAR across chains`);
         
-        console.log("\n🔄 Resolver Economics:");
-        console.log(`  📤 Provided: 0.004 NEAR tokens (upfront liquidity)`);
-        console.log(`  📥 Will earn: 0.2 DT + 0.02 DT fee (when claiming on Ethereum)`);
-        console.log(`  💰 Net: Cross-chain market making with SHA-256 coordination`);
+        console.log("\n Resolver Economics:");
+        console.log(`   Provided: 0.004 NEAR tokens (upfront liquidity)`);
+        console.log(`   Will earn: 0.2 DT + 0.02 DT fee (when claiming on Ethereum)`);
+        console.log(`   Net: Cross-chain market making with SHA-256 coordination`);
         
         // Save complete results
         const completeResults = {
@@ -190,24 +190,24 @@ async function executeNearSide() {
                 userReceived: "0.004 NEAR (NEAR Protocol)",
                 resolverProvided: "0.004 NEAR (NEAR Protocol)",
                 resolverEarned: "0.2 DT + 0.02 DT fee (Ethereum)",
-                swapType: "Cross-chain DT ↔ NEAR (SHA-256 coordinated)"
+                swapType: "Cross-chain DT  NEAR (SHA-256 coordinated)"
             }
         };
         
         const resultsPath = path.join(__dirname, 'complete-atomic-swap-results.json');
         fs.writeFileSync(resultsPath, JSON.stringify(completeResults, null, 2));
         
-        console.log(`\n💾 Complete results saved to: ${resultsPath}`);
-        console.log("\n🏆 END-TO-END ATOMIC SWAP DEMONSTRATION COMPLETE!");
-        console.log("✨ Both Ethereum and NEAR sides executed with real token transfers");
+        console.log(`\n Complete results saved to: ${resultsPath}`);
+        console.log("\n END-TO-END ATOMIC SWAP DEMONSTRATION COMPLETE!");
+        console.log(" Both Ethereum and NEAR sides executed with real token transfers");
         
         return completeResults;
         
     } catch (error) {
-        console.error("\n❌ Error executing NEAR commands:");
+        console.error("\n Error executing NEAR commands:");
         console.error(error.message);
         
-        console.log("\n🔧 Manual Execution Commands:");
+        console.log("\n Manual Execution Commands:");
         console.log("\n1. Execute Fusion Order:");
         console.log(executeCommand);
         
@@ -225,11 +225,11 @@ async function executeNearSide() {
 if (require.main === module) {
     executeNearSide()
         .then(() => {
-            console.log("\n🎯 Script completed successfully!");
+            console.log("\n Script completed successfully!");
             process.exit(0);
         })
         .catch((error) => {
-            console.error("\n💥 Script failed:", error.message);
+            console.error("\n Script failed:", error.message);
             process.exit(1);
         });
 }

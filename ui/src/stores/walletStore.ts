@@ -52,13 +52,13 @@ export const useWalletStore = create<WalletStore>((set, get) => ({
   // Connection management
   connect: async () => {
     try {
-      console.log('🔄 Starting wallet connection...')
+      console.log(' Starting wallet connection...')
       set({ isConnecting: true })
       const state = get()
       
       // Initialize wallet selector if not already done
       if (!state.selector) {
-        console.log('🔧 Initializing wallet selector...')
+        console.log(' Initializing wallet selector...')
         await get().initializeSelector()
       }
       
@@ -67,7 +67,7 @@ export const useWalletStore = create<WalletStore>((set, get) => ({
         throw new Error('Wallet selector not initialized')
       }
 
-      console.log('📱 Opening wallet selection modal...')
+      console.log(' Opening wallet selection modal...')
       
       // Ensure we're on the client side
       if (typeof window === 'undefined') {
@@ -76,48 +76,48 @@ export const useWalletStore = create<WalletStore>((set, get) => ({
       
       // Show wallet selection modal
       try {
-        console.log('🔧 Creating modal with selector:', selector)
+        console.log(' Creating modal with selector:', selector)
         const modal = setupModal(selector, {
           contractId: 'wrap.testnet', // Use a known testnet contract for modal setup
           theme: 'auto'
         })
         
-        console.log('🔧 Modal object created:', modal)
-        console.log('🔧 Modal methods available:', Object.keys(modal))
+        console.log(' Modal object created:', modal)
+        console.log(' Modal methods available:', Object.keys(modal))
         
         // Small delay to ensure DOM is ready
         setTimeout(() => {
-          console.log('🔧 Calling modal.show() after delay...')
+          console.log(' Calling modal.show() after delay...')
           modal.show()
-          console.log('✅ Modal.show() called successfully')
+          console.log(' Modal.show() called successfully')
           
           // Check if modal is actually in DOM
           setTimeout(() => {
             const modalElement = document.querySelector('.near-wallet-selector-modal')
             const modalRoot = document.getElementById('near-wallet-selector-modal')
-            console.log('🔍 Modal in DOM:', modalElement ? 'YES' : 'NO')
-            console.log('🔍 Modal root div:', modalRoot ? 'YES' : 'NO')
+            console.log(' Modal in DOM:', modalElement ? 'YES' : 'NO')
+            console.log(' Modal root div:', modalRoot ? 'YES' : 'NO')
             if (modalElement) {
-              console.log('🎨 Modal style:', window.getComputedStyle(modalElement).display)
-              console.log('🎨 Modal parent:', modalElement.parentElement)
+              console.log(' Modal style:', window.getComputedStyle(modalElement).display)
+              console.log(' Modal parent:', modalElement.parentElement)
             }
             
             // Try to find any wallet selector related elements
             const allModals = document.querySelectorAll('[class*="wallet"]')
-            console.log('🔍 All wallet-related elements:', allModals.length)
+            console.log(' All wallet-related elements:', allModals.length)
             
             // Check for the main modal container
             const modalContainer = document.querySelector('.nws-modal')
             const modalOverlay = document.querySelector('.nws-modal-overlay')
             const modalWrapper = document.querySelector('.nws-modal-wrapper')
             
-            console.log('🔍 Modal container:', modalContainer ? 'YES' : 'NO')
-            console.log('🔍 Modal overlay:', modalOverlay ? 'YES' : 'NO') 
-            console.log('🔍 Modal wrapper:', modalWrapper ? 'YES' : 'NO')
+            console.log(' Modal container:', modalContainer ? 'YES' : 'NO')
+            console.log(' Modal overlay:', modalOverlay ? 'YES' : 'NO') 
+            console.log(' Modal wrapper:', modalWrapper ? 'YES' : 'NO')
             
             if (modalContainer) {
               const style = window.getComputedStyle(modalContainer)
-              console.log('🎨 Modal container styles:', {
+              console.log(' Modal container styles:', {
                 display: style.display,
                 visibility: style.visibility,
                 opacity: style.opacity,
@@ -127,14 +127,14 @@ export const useWalletStore = create<WalletStore>((set, get) => ({
               
               // Log modal state without forcing styles
               if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0') {
-                console.log('🔧 Modal appears to be hidden by CSS')
+                console.log(' Modal appears to be hidden by CSS')
               } else {
-                console.log('✅ Modal appears to be visible')
+                console.log(' Modal appears to be visible')
               }
             }
             
             allModals.forEach((el, i) => {
-              console.log(`🔍 Element ${i}:`, el.className, el.tagName)
+              console.log(` Element ${i}:`, el.className, el.tagName)
             })
             
             // Look for the actual modal container with more specific selectors
@@ -146,12 +146,12 @@ export const useWalletStore = create<WalletStore>((set, get) => ({
               document.querySelector('[aria-modal="true"]')
             ].filter(Boolean)
             
-            console.log('🔍 Found modal containers:', possibleModals.length)
+            console.log(' Found modal containers:', possibleModals.length)
             possibleModals.forEach((modal, i) => {
               if (modal) {
-                console.log(`🔍 Modal ${i}:`, modal.className, modal.tagName)
+                console.log(` Modal ${i}:`, modal.className, modal.tagName)
                 const style = window.getComputedStyle(modal)
-                console.log(`🎨 Modal ${i} styles:`, {
+                console.log(` Modal ${i} styles:`, {
                   position: style.position,
                   display: style.display,
                   zIndex: style.zIndex,
@@ -160,9 +160,9 @@ export const useWalletStore = create<WalletStore>((set, get) => ({
                 
                 // Just log the modal state - let CSS handle positioning
                 if (style.position !== 'fixed') {
-                  console.log('🔧 Modal position will be fixed by CSS:', modal.className)
+                  console.log(' Modal position will be fixed by CSS:', modal.className)
                 } else {
-                  console.log('✅ Modal positioned correctly')
+                  console.log(' Modal positioned correctly')
                 }
               }
             })
@@ -170,25 +170,25 @@ export const useWalletStore = create<WalletStore>((set, get) => ({
         }, 50)
         
       } catch (modalError) {
-        console.error('❌ Failed to create or show modal:', modalError)
+        console.error(' Failed to create or show modal:', modalError)
         throw modalError
       }
       
     } catch (error) {
-      console.error('❌ Failed to connect wallet:', error)
+      console.error(' Failed to connect wallet:', error)
       set({ isConnecting: false })
       
       // Provide user-friendly error message
       if (error instanceof Error) {
         if (error.message.includes('account') && error.message.includes('exist')) {
-          alert('❌ Account not found. Please make sure you have a NEAR testnet account created.')
+          alert(' Account not found. Please make sure you have a NEAR testnet account created.')
         } else if (error.message.includes('network')) {
-          alert('❌ Network error. Please check your connection and try again.')
+          alert(' Network error. Please check your connection and try again.')
         } else {
-          alert(`❌ Connection failed: ${error.message}`)
+          alert(` Connection failed: ${error.message}`)
         }
       } else {
-        alert('❌ Unknown connection error occurred.')
+        alert(' Unknown connection error occurred.')
       }
       
       throw error
@@ -373,22 +373,22 @@ export const useWalletStore = create<WalletStore>((set, get) => ({
 
       // Listen for account changes
       selector.store.observable.subscribe(async (state) => {
-        console.log('📡 Wallet state update:', state)
+        console.log(' Wallet state update:', state)
         const { accounts, selectedWalletId } = state
         
         // Check if a wallet is being selected
         if (selectedWalletId && accounts.length === 0) {
-          console.log('🔄 Wallet selected, waiting for accounts...', selectedWalletId)
+          console.log(' Wallet selected, waiting for accounts...', selectedWalletId)
           set({ isConnecting: true })
           return
         }
         
         if (accounts.length > 0) {
           const accountId = accounts[0].accountId
-          console.log('🔗 Attempting to connect account:', accountId)
+          console.log(' Attempting to connect account:', accountId)
           try {
             const wallet = await selector.wallet()
-            console.log('✅ Wallet connected successfully:', accountId)
+            console.log(' Wallet connected successfully:', accountId)
             set({ 
               isConnected: true, 
               isConnecting: false,
@@ -398,14 +398,14 @@ export const useWalletStore = create<WalletStore>((set, get) => ({
             // Don't auto-refresh to avoid RPC issues during connection
             // User can manually refresh if needed
           } catch (error) {
-            console.error('❌ Failed to get wallet for account:', accountId, error)
+            console.error(' Failed to get wallet for account:', accountId, error)
             set({ 
               isConnecting: false,
               isConnected: false 
             })
           }
         } else if (!selectedWalletId) {
-          console.log('🔌 No accounts found, disconnecting')
+          console.log(' No accounts found, disconnecting')
           set({ 
             isConnected: false, 
             isConnecting: false,

@@ -96,7 +96,7 @@ describe('Transaction Serialization', () => {
       }));
 
       expect(logger.info).toHaveBeenCalledWith(
-        '🔧 Serializing EVM transaction for MPC signing',
+        ' Serializing EVM transaction for MPC signing',
         expect.objectContaining({
           to: mockEVMTransaction.to,
           value: mockEVMTransaction.value
@@ -181,7 +181,7 @@ describe('Transaction Serialization', () => {
       }));
 
       expect(logger.info).toHaveBeenCalledWith(
-        '🔧 Serializing Bitcoin transaction for MPC signing',
+        ' Serializing Bitcoin transaction for MPC signing',
         expect.objectContaining({
           inputs: 1,
           outputs: 1
@@ -207,7 +207,7 @@ describe('Transaction Serialization', () => {
       // Should still return a result using fallback hash
       expect(result.signature).toMatch(/^0x[a-fA-F0-9]+$/);
       expect(logger.error).toHaveBeenCalledWith(
-        '💥 Failed to serialize Bitcoin transaction:',
+        ' Failed to serialize Bitcoin transaction:',
         expect.any(Error)
       );
     });
@@ -248,7 +248,7 @@ describe('Transaction Serialization', () => {
       }));
 
       expect(logger.info).toHaveBeenCalledWith(
-        '🔧 Serializing Solana transaction for MPC signing',
+        ' Serializing Solana transaction for MPC signing',
         expect.objectContaining({
           instructions: 1,
           accounts: 0

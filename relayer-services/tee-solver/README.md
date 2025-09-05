@@ -1,59 +1,59 @@
-# 🛡️ TEE Solver - Decentralized 1inch Fusion+ Solver with NEAR Chain Signatures
+#  TEE Solver - Decentralized 1inch Fusion+ Solver with NEAR Chain Signatures
 
 > **NEAR Shade Agent Bounty Implementation** - $10,000 Prize
 > 
 > A fully decentralized TEE (Trusted Execution Environment) solver for 1inch Fusion+ cross-chain atomic swaps, featuring NEAR Chain Signatures MPC for trustless transaction signing.
 
-## 🎯 Project Status: **Production Ready - 100% Test Coverage with Complete Chain Signatures Integration**
+##  Project Status: **Production Ready - 100% Test Coverage with Complete Chain Signatures Integration**
 
-**🏆 Major Milestone Achieved**: Complete NEAR Chain Signatures integration with **185/185 tests passing** - fully production-ready for NEAR Shade Agent deployment!
+** Major Milestone Achieved**: Complete NEAR Chain Signatures integration with **185/185 tests passing** - fully production-ready for NEAR Shade Agent deployment!
 
-### Development Phases - ALL COMPLETE ✅
-- ✅ **Phase 1**: Core TEE Solver Architecture - **COMPLETE**
-- ✅ **Phase 2**: 1inch Fusion+ SDK Integration - **COMPLETE**
-- ✅ **Phase 3**: Meta-Order Creator Implementation - **COMPLETE**
-- ✅ **Phase 4**: NEAR Chain Signatures Integration - **COMPLETE** 🎉
-- 🚀 **Phase 5**: NEAR Shade Agent TEE Deployment - **READY**
+### Development Phases - ALL COMPLETE 
+-  **Phase 1**: Core TEE Solver Architecture - **COMPLETE**
+-  **Phase 2**: 1inch Fusion+ SDK Integration - **COMPLETE**
+-  **Phase 3**: Meta-Order Creator Implementation - **COMPLETE**
+-  **Phase 4**: NEAR Chain Signatures Integration - **COMPLETE** 
+-  **Phase 5**: NEAR Shade Agent TEE Deployment - **READY**
 
-## 🏗️ Decentralized Architecture with NEAR Chain Signatures
+##  Decentralized Architecture with NEAR Chain Signatures
 
 ```
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   Intent        │◄──►│ Fusion Quote     │◄──►│  1inch SDK      │
-│   Listener      │    │ Generator        │    │  Integration    │
-│                 │    │                  │    │                 │
-│ • WebSocket     │    │ • Enhanced Pricing│   │ • Cross-Chain   │
-│ • Real-time     │    │ • Fusion+ Compat │    │ • Meta-Orders   │
-│ • Resilient     │    │ • Meta-Order Flow│    │ • HashLock      │
-└─────────────────┘    └──────────────────┘    └─────────────────┘
-         │                        │                        │
-         └────────────────────────▼────────────────────────┘
-                     ┌─────────────────────────────────┐
-                     │ Enhanced Fusion Manager         │
-                     │ with Chain Signatures           │
-                     │                                 │
-                     │ • Dual-Mode Signing             │
-                     │ • Order Creation & Tracking     │
-                     │ • Statistics & Monitoring       │
-                     └─────────┬───────────────────────┘
-                               │
-        ┌──────────────────────┼──────────────────────┐
-        │                      │                      │
-        ▼                      ▼                      ▼
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│ Chain Signature │    │ Fusion Chain    │    │ NEAR MPC        │
-│ Manager         │    │ Signature       │    │ Network         │
-│                 │    │ Adapter         │    │                 │
-│ • NEAR MPC      │    │                 │    │ • v1.signer     │
-│ • Multi-Chain   │    │ • Order Signing │    │ • Decentralized │
-│ • Address       │    │ • Verification  │    │ • Trustless     │
-│   Derivation    │    │ • Multi-Chain   │    │ • Production    │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
+        
+   Intent         Fusion Quote       1inch SDK      
+   Listener           Generator              Integration    
+                                                            
+  WebSocket           Enhanced Pricing     Cross-Chain   
+  Real-time           Fusion+ Compat       Meta-Orders   
+  Resilient           Meta-Order Flow      HashLock      
+        
+                                                         
+         
+                     
+                      Enhanced Fusion Manager         
+                      with Chain Signatures           
+                                                      
+                       Dual-Mode Signing             
+                       Order Creation & Tracking     
+                       Statistics & Monitoring       
+                     
+                               
+        
+                                                    
+                                                    
+        
+ Chain Signature      Fusion Chain         NEAR MPC        
+ Manager              Signature            Network         
+                      Adapter                              
+  NEAR MPC                                 v1.signer     
+  Multi-Chain         Order Signing       Decentralized 
+  Address             Verification        Trustless     
+   Derivation          Multi-Chain         Production    
+        
 ```
 
-## 🚀 Key Features
+##  Key Features
 
-### 🔐 NEAR Chain Signatures Integration - **NEW!**
+###  NEAR Chain Signatures Integration - **NEW!**
 - **Decentralized Signing**: Complete NEAR MPC integration for trustless transaction signing
 - **Multi-Chain Support**: 7 blockchains with deterministic address derivation
   - Ethereum, Polygon, Arbitrum, Optimism, BSC (secp256k1)
@@ -76,7 +76,7 @@
 ### Atomic Cross-Chain Swaps
 - **Secret Generation**: Cryptographically secure random secret creation
 - **HashLock Creation**: Single-fill and multi-fill HashLock support
-- **Order Lifecycle**: Complete quote → order → submission → tracking workflow
+- **Order Lifecycle**: Complete quote  order  submission  tracking workflow
 - **Error Resilience**: Graceful handling of SDK failures and network issues
 
 ### Production-Ready Architecture
@@ -86,14 +86,14 @@
 - **Comprehensive Monitoring**: Real-time statistics and success rate tracking
 - **TypeScript Strict**: Full type safety and compile-time validation
 
-## 📊 Test Coverage Summary
+##  Test Coverage Summary
 
 ```
-✅ Test Suites: 11/11 passed (100%)
-✅ Tests: 185/185 passed (100%)  
-⏱️ Total Time: ~16 seconds
-🎯 Success Rate: 100%
-🔐 Chain Signatures: Fully Integrated
+ Test Suites: 11/11 passed (100%)
+ Tests: 185/185 passed (100%)  
+ Total Time: ~16 seconds
+ Success Rate: 100%
+ Chain Signatures: Fully Integrated
 ```
 
 ### Test Breakdown
@@ -110,7 +110,7 @@
   - FusionManagerWithChainSignatures Tests (20): Enhanced manager with dual-mode signing
   - ChainSignatureIntegration Tests (15): End-to-end decentralized signing flows
 
-## 🛠️ Technical Implementation
+##  Technical Implementation
 
 ### Core Components
 
@@ -191,7 +191,7 @@ export class FusionManagerWithChainSignatures extends EventEmitter {
       } catch (error) {
         if (this.config.fallbackToPrivateKey) {
           // Fallback to private key signing for reliability
-          logger.warn('⚠️ Falling back to private key signing...');
+          logger.warn(' Falling back to private key signing...');
           return await this.submitOrderWithPrivateKey(orderData);
         }
         throw error;
@@ -214,7 +214,7 @@ export class FusionManagerWithChainSignatures extends EventEmitter {
 7. **AMM Calculation Accuracy**: Constant product formula implementation
 8. **Async Test Coordination**: Deterministic timing and event handling across 185 tests
 
-## 🔧 Development Setup
+##  Development Setup
 
 ### Prerequisites
 - Node.js 18+
@@ -252,7 +252,7 @@ npm run lint
 npm run dev
 ```
 
-## 📈 Performance Metrics
+##  Performance Metrics
 
 ### Current Performance
 - **Quote Generation**: <100ms average response time
@@ -274,31 +274,31 @@ console.log({
 });
 ```
 
-## 🎯 NEAR Shade Agent TEE Integration - ✅ COMPLETE
+##  NEAR Shade Agent TEE Integration -  COMPLETE
 
-### 🚀 **Production-Ready Testnet Deployment**
+###  **Production-Ready Testnet Deployment**
 
 The TEE solver is **fully implemented and ready for deployment** with complete NEAR Shade Agent integration:
 
-#### **✅ All Implementation Steps Complete**
+#### ** All Implementation Steps Complete**
 
-1. **✅ Chain Signature Manager** - COMPLETE
-   - ✅ NEAR MPC signatures with v1.signer integration
-   - ✅ Multi-chain signing across 7 blockchains
-   - ✅ Secure key derivation and transaction signing
+1. ** Chain Signature Manager** - COMPLETE
+   -  NEAR MPC signatures with v1.signer integration
+   -  Multi-chain signing across 7 blockchains
+   -  Secure key derivation and transaction signing
 
-2. **✅ TEE Integration** - COMPLETE
-   - ✅ Intel TDX remote attestation and verification
-   - ✅ Hardware entropy key generation
-   - ✅ Code hash verification and trust levels
-   - ✅ Phala Cloud deployment ready
+2. ** TEE Integration** - COMPLETE
+   -  Intel TDX remote attestation and verification
+   -  Hardware entropy key generation
+   -  Code hash verification and trust levels
+   -  Phala Cloud deployment ready
 
-3. **✅ Production Demo** - READY
-   - ✅ Complete testnet deployment infrastructure
-   - ✅ Automated setup and deployment scripts
-   - ✅ Comprehensive documentation and bounty submission
+3. ** Production Demo** - READY
+   -  Complete testnet deployment infrastructure
+   -  Automated setup and deployment scripts
+   -  Comprehensive documentation and bounty submission
 
-### 🧪 **Quick Testnet Deployment**
+###  **Quick Testnet Deployment**
 
 ```bash
 # 1. Set up environment variables
@@ -313,39 +313,39 @@ source .env.shade
 # Follow instructions generated by the setup script
 ```
 
-### ✅ **Completed Components**
-- **✅ NEAR Chain Signatures MPC**: Complete v1.signer integration with 7-chain support
-- **✅ Intel TDX TEE Integration**: Remote attestation, hardware entropy, code verification
-- **✅ Triple-Mode Signing**: TEE Hardware → Chain Signatures → Private Key fallback
-- **✅ 1inch Fusion+ SDK**: Complete integration with meta-orders and atomic swaps
-- **✅ Production Deployment**: Docker containers and Phala Cloud configuration
-- **✅ 185/185 Tests Passing**: 100% test coverage with comprehensive validation
+###  **Completed Components**
+- ** NEAR Chain Signatures MPC**: Complete v1.signer integration with 7-chain support
+- ** Intel TDX TEE Integration**: Remote attestation, hardware entropy, code verification
+- ** Triple-Mode Signing**: TEE Hardware  Chain Signatures  Private Key fallback
+- ** 1inch Fusion+ SDK**: Complete integration with meta-orders and atomic swaps
+- ** Production Deployment**: Docker containers and Phala Cloud configuration
+- ** 185/185 Tests Passing**: 100% test coverage with comprehensive validation
 - **Testing Framework**: Comprehensive unit, integration, and end-to-end test coverage
 
-## 🏆 Bounty Objectives Status - ✅ **ALL COMPLETE**
+##  Bounty Objectives Status -  **ALL COMPLETE**
 
-### ✅ Core Requirements - **FULLY IMPLEMENTED**
-- ✅ **Multi-chain Support**: 7 blockchains (Ethereum, Polygon, Arbitrum, Optimism, BSC, Bitcoin, Solana)
-- ✅ **Real-time Processing**: WebSocket quote request handling with <100ms response times
-- ✅ **Competitive Pricing**: Enhanced pricing with Fusion+ compatibility and dynamic margins
-- ✅ **Meta-Order Creation**: Complete 1inch Fusion+ order generation and atomic swap submission
-- ✅ **Production Quality**: 185/185 tests passing with TypeScript strict mode and 100% coverage
-- ✅ **Chain Signatures**: Complete NEAR MPC integration with v1.signer contract
-- ✅ **TEE Integration**: Full Intel TDX integration with Phala Cloud deployment ready
+###  Core Requirements - **FULLY IMPLEMENTED**
+-  **Multi-chain Support**: 7 blockchains (Ethereum, Polygon, Arbitrum, Optimism, BSC, Bitcoin, Solana)
+-  **Real-time Processing**: WebSocket quote request handling with <100ms response times
+-  **Competitive Pricing**: Enhanced pricing with Fusion+ compatibility and dynamic margins
+-  **Meta-Order Creation**: Complete 1inch Fusion+ order generation and atomic swap submission
+-  **Production Quality**: 185/185 tests passing with TypeScript strict mode and 100% coverage
+-  **Chain Signatures**: Complete NEAR MPC integration with v1.signer contract
+-  **TEE Integration**: Full Intel TDX integration with Phala Cloud deployment ready
 
-### ✅ Bonus Points - **ALL ACHIEVED**
-- ✅ **Intel TDX TEE Integration**: Remote attestation, hardware entropy, code hash verification
-- ✅ **Triple-Mode Signing**: TEE Hardware → NEAR Chain Signatures → Private Key fallback
-- ✅ **1inch Fusion+ Integration**: Complete SDK integration with cross-chain atomic swaps
-- ✅ **HashLock Management**: Cryptographic secret generation and multi-fill support
-- ✅ **Advanced Testing**: 185 tests across 11 suites with 100% coverage
-- ✅ **Error Resilience**: Comprehensive error handling and graceful degradation
-- ✅ **Production Deployment**: Docker containers and automated Phala Cloud setup
-- ✅ **Performance Optimization**: <100ms quotes, 100+ concurrent orders
-- ✅ **Security Auditing**: Complete audit logging and trust level evaluation
-- ✅ **Documentation**: Complete technical docs, deployment guides, and bounty submission
+###  Bonus Points - **ALL ACHIEVED**
+-  **Intel TDX TEE Integration**: Remote attestation, hardware entropy, code hash verification
+-  **Triple-Mode Signing**: TEE Hardware  NEAR Chain Signatures  Private Key fallback
+-  **1inch Fusion+ Integration**: Complete SDK integration with cross-chain atomic swaps
+-  **HashLock Management**: Cryptographic secret generation and multi-fill support
+-  **Advanced Testing**: 185 tests across 11 suites with 100% coverage
+-  **Error Resilience**: Comprehensive error handling and graceful degradation
+-  **Production Deployment**: Docker containers and automated Phala Cloud setup
+-  **Performance Optimization**: <100ms quotes, 100+ concurrent orders
+-  **Security Auditing**: Complete audit logging and trust level evaluation
+-  **Documentation**: Complete technical docs, deployment guides, and bounty submission
 
-## 📝 Contributing
+##  Contributing
 
 ### Code Style
 - TypeScript strict mode required
@@ -359,28 +359,28 @@ source .env.shade
 - Integration tests for cross-chain flows
 - Performance benchmarks for quote generation
 
-## 📄 License
+##  License
 
 This project is part of the 1inch Hackathon submission for the NEAR Shade Agent bounty.
 
 ---
 
-## 🏆 **Project Complete - Ready for Bounty Submission**
+##  **Project Complete - Ready for Bounty Submission**
 
-**🎯 Achievement**: Complete production-ready decentralized TEE solver for NEAR Shade Agent with 1inch Fusion+ integration
+** Achievement**: Complete production-ready decentralized TEE solver for NEAR Shade Agent with 1inch Fusion+ integration
 
-**📊 Status**: ✅ **ALL PHASES COMPLETE**
-- ✅ **Phase 1**: Core TEE Solver Architecture 
-- ✅ **Phase 2**: 1inch Fusion+ SDK Integration
-- ✅ **Phase 3**: Meta-Order Creator Implementation
-- ✅ **Phase 4**: NEAR Chain Signatures MPC Integration
-- ✅ **Phase 5**: Intel TDX TEE Integration & Deployment
+** Status**:  **ALL PHASES COMPLETE**
+-  **Phase 1**: Core TEE Solver Architecture 
+-  **Phase 2**: 1inch Fusion+ SDK Integration
+-  **Phase 3**: Meta-Order Creator Implementation
+-  **Phase 4**: NEAR Chain Signatures MPC Integration
+-  **Phase 5**: Intel TDX TEE Integration & Deployment
 
-**🚀 Deployment**: Ready for immediate testnet deployment and bounty submission with:
+** Deployment**: Ready for immediate testnet deployment and bounty submission with:
 - 185/185 tests passing (100% coverage)
 - Complete Intel TDX TEE integration
 - NEAR Chain Signatures MPC support
 - Automated Phala Cloud deployment
 - Comprehensive documentation and demos
 
-**📋 Next Step**: Deploy to testnet using `./testnet-setup.sh` and submit for bounty evaluation
+** Next Step**: Deploy to testnet using `./testnet-setup.sh` and submit for bounty evaluation

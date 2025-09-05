@@ -50,7 +50,7 @@ export function WalletTroubleshooting() {
           </Alert>
 
           <div className="space-y-3">
-            <h4 className="font-medium text-blue-800">🔧 Quick Fixes:</h4>
+            <h4 className="font-medium text-blue-800"> Quick Fixes:</h4>
             
             <div className="space-y-2 text-sm">
               <div className="flex items-start gap-2">

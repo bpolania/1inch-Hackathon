@@ -46,11 +46,11 @@ let wsService: WebSocketService;
  * Initialize services
  */
 async function initializeServices() {
-  logger.info('🔧 Initializing API Gateway services...');
+  logger.info(' Initializing API Gateway services...');
 
   // Skip service initialization in development mode for Swagger testing
   if (process.env.NODE_ENV === 'development' && process.env.SKIP_SERVICES === 'true') {
-    logger.info('⚠️ Skipping service initialization (SKIP_SERVICES=true)');
+    logger.info(' Skipping service initialization (SKIP_SERVICES=true)');
     teeService = null as any;
     relayerService = null as any;
     wsService = null as any;
@@ -89,10 +89,10 @@ async function initializeServices() {
     const wss = new WebSocketServer({ server });
     wsService = new WebSocketService(wss, teeService, relayerService);
     
-    logger.info('✅ All services initialized successfully');
+    logger.info(' All services initialized successfully');
 
   } catch (error) {
-    logger.error('💥 Failed to initialize services:', error);
+    logger.error(' Failed to initialize services:', error);
     throw error;
   }
 }
@@ -218,15 +218,15 @@ async function startServer() {
   configureRoutes();
 
   server.listen(PORT, () => {
-    logger.info(`🚀 API Gateway running on port ${PORT}`);
-    logger.info(`📍 Health check: http://localhost:${PORT}/api/health`);
-    logger.info(`🔗 WebSocket: ws://localhost:${PORT}/ws`);
-    logger.info(`📖 API docs: http://localhost:${PORT}/`);
+    logger.info(` API Gateway running on port ${PORT}`);
+    logger.info(` Health check: http://localhost:${PORT}/api/health`);
+    logger.info(` WebSocket: ws://localhost:${PORT}/ws`);
+    logger.info(` API docs: http://localhost:${PORT}/`);
   });
 
   // Graceful shutdown
   process.on('SIGTERM', async () => {
-    logger.info('🛑 Shutting down API Gateway...');
+    logger.info(' Shutting down API Gateway...');
     
     try {
       await teeService?.stop();
@@ -234,11 +234,11 @@ async function startServer() {
       wsService?.stop();
       
       server.close(() => {
-        logger.info('✅ API Gateway stopped gracefully');
+        logger.info(' API Gateway stopped gracefully');
         process.exit(0);
       });
     } catch (error) {
-      logger.error('💥 Error during shutdown:', error);
+      logger.error(' Error during shutdown:', error);
       process.exit(1);
     }
   });
@@ -246,7 +246,7 @@ async function startServer() {
 
 // Start the application
 startServer().catch((error) => {
-  logger.error('💥 Failed to start API Gateway:', error);
+  logger.error(' Failed to start API Gateway:', error);
   process.exit(1);
 });
 

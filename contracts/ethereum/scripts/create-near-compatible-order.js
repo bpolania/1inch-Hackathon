@@ -7,7 +7,7 @@ const crypto = require("crypto");
  * Create a new order with SHA-256 hashlock for NEAR compatibility
  */
 async function main() {
-    console.log("🔄 Creating NEAR-Compatible Order with SHA-256 Hashlock");
+    console.log(" Creating NEAR-Compatible Order with SHA-256 Hashlock");
     console.log("======================================================");
     console.log("");
 
@@ -26,20 +26,20 @@ async function main() {
     const hashlockBuffer = crypto.createHash('sha256').update(secretBytes).digest();
     const hashlock = "0x" + hashlockBuffer.toString('hex');
     
-    console.log("🔑 Generated atomic swap credentials (SHA-256):");
+    console.log(" Generated atomic swap credentials (SHA-256):");
     console.log("   Secret:", "0x" + secret);
     console.log("   Hashlock:", hashlock);
     console.log("");
 
     // Check balance
     const currentBalance = await demoToken.balanceOf(signer.address);
-    console.log("💰 Current DT balance:", ethers.formatEther(currentBalance), "DT");
+    console.log(" Current DT balance:", ethers.formatEther(currentBalance), "DT");
     
     const requiredAmount = ethers.parseEther("1");
     if (currentBalance < requiredAmount) {
-        console.log("🪙 Minting tokens...");
+        console.log(" Minting tokens...");
         await demoToken.mint(signer.address, requiredAmount - currentBalance);
-        console.log("✅ Minted tokens");
+        console.log(" Minted tokens");
     }
 
     // Create order
@@ -84,7 +84,7 @@ async function main() {
         } catch (e) {}
     }
 
-    console.log("✅ Order created!");
+    console.log(" Order created!");
     console.log("   Order Hash:", orderHash);
     console.log("   Transaction:", createReceipt.hash);
     console.log("");
@@ -110,8 +110,8 @@ async function main() {
     const resultsPath = path.join(__dirname, "..", "near-compatible-order.json");
     fs.writeFileSync(resultsPath, JSON.stringify(nearCompatibleResults, null, 2));
     
-    console.log("💾 Order details saved to:", resultsPath);
-    console.log("\n📋 Next Steps:");
+    console.log(" Order details saved to:", resultsPath);
+    console.log("\n Next Steps:");
     console.log("1. Use the order hash and secret in NEAR execution");
     console.log("2. The secret for NEAR should be:", secret, "(without 0x prefix)");
 }

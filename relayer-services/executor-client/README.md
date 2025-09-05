@@ -1,10 +1,10 @@
 # 1inch Fusion+ NEAR Extension - Automated Relayer
 
-🤖 **Automated cross-chain atomic swap execution service** for the 1inch Fusion+ NEAR extension.
+ **Automated cross-chain atomic swap execution service** for the 1inch Fusion+ NEAR extension.
 
 This service automates the cross-chain atomic swap execution that was previously done manually via scripts. It continuously monitors for new orders and executes profitable swaps automatically across Ethereum and NEAR Protocol.
 
-## 🎯 What This Does
+##  What This Does
 
 Converts our manual relayer scripts into a fully automated service:
 
@@ -18,34 +18,34 @@ npm run verify-swap        # 4. Verify completion manually
 
 **Automated Process (Now):**
 ```bash
-npm run dev  # 🤖 Automatically does all of the above!
+npm run dev  #  Automatically does all of the above!
 ```
 
-**✅ Production Ready**: 113/113 tests passing (100% test coverage)
+** Production Ready**: 113/113 tests passing (100% test coverage)
 
-## 🏗️ Architecture
+##  Architecture
 
 ```
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│  Order Monitor  │───▶│ Profitability    │───▶│ Cross-Chain     │
-│                 │    │ Analyzer         │    │ Executor        │
-│ - Event listening│    │ - Gas estimation │    │ - Ethereum ops  │
-│ - New orders    │    │ - Profit calc    │    │ - NEAR execution│
-│ - Status tracking│    │ - Risk analysis  │    │ - Token settlement│
-└─────────────────┘    └──────────────────┘    └─────────────────┘
-         │                        │                       │
-         └────────────────────────┼───────────────────────┘
-                                  ▼
-                      ┌─────────────────┐
-                      │ Wallet Manager  │
-                      │                 │
-                      │ - ETH wallet    │
-                      │ - NEAR wallet   │
-                      │ - Balance mgmt  │
-                      └─────────────────┘
+        
+  Order Monitor   Profitability     Cross-Chain     
+                      Analyzer              Executor        
+ - Event listening     - Gas estimation      - Ethereum ops  
+ - New orders         - Profit calc         - NEAR execution
+ - Status tracking     - Risk analysis       - Token settlement
+        
+                                                        
+         
+                                  
+                      
+                       Wallet Manager  
+                                       
+                       - ETH wallet    
+                       - NEAR wallet   
+                       - Balance mgmt  
+                      
 ```
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### 1. Setup Environment
 ```bash
@@ -74,43 +74,43 @@ This will verify your wallets have sufficient balances and configuration is corr
 npm run dev
 ```
 
-## 📊 Key Features
+##  Key Features
 
-### 🕵️ **Order Monitoring**
+###  **Order Monitoring**
 - **Real-time Detection**: Listens for `FusionOrderCreated` events
 - **Missed Event Recovery**: Periodic scanning for missed orders
-- **Status Tracking**: Monitors order lifecycle (created → matched → completed)
+- **Status Tracking**: Monitors order lifecycle (created  matched  completed)
 
-### 🧠 **Smart Profitability Analysis**
+###  **Smart Profitability Analysis**
 - **Gas Estimation**: Calculates total execution costs
 - **Profit Calculation**: Resolver fee minus gas costs
 - **Risk Assessment**: Evaluates time pressure, order size, margins
 - **Priority Scoring**: Ranks orders by profitability and urgency
 
-### ⚡ **Automated Execution**
+###  **Automated Execution**
 - **Cross-Chain Coordination**: Ethereum + NEAR execution
 - **Atomic Guarantees**: Either both sides complete or both can refund
 - **Error Handling**: Retry logic with exponential backoff
 - **Transaction Tracking**: Full execution audit trail
 
-### 💼 **Multi-Chain Wallet Management**
+###  **Multi-Chain Wallet Management**
 - **Ethereum Integration**: Ethers.js wallet with gas optimization
 - **NEAR Integration**: NEAR API wallet with transaction batching
 - **Balance Monitoring**: Automatic balance checks and alerts
 - **Security**: Private key encryption and secure signing
 
-## 📈 Profitability Analysis
+##  Profitability Analysis
 
 The service automatically analyzes each order for profitability:
 
 ```
 Revenue:    Resolver Fee (0.02 DT = ~$20)
 Costs:      Gas Fees (~$5) + NEAR Costs (~$0.50)
-Profit:     ~$14.50 (72% margin) ✅ EXECUTE
+Profit:     ~$14.50 (72% margin)  EXECUTE
 
 Revenue:    Resolver Fee (0.001 DT = ~$1)  
 Costs:      Gas Fees (~$5) + NEAR Costs (~$0.50)
-Profit:     -$4.50 (negative) ❌ SKIP
+Profit:     -$4.50 (negative)  SKIP
 ```
 
 ### Configuration
@@ -120,7 +120,7 @@ MAX_GAS_PRICE=50             # Maximum 50 gwei gas price
 MAX_CONCURRENT_EXECUTIONS=3   # Process up to 3 orders simultaneously
 ```
 
-## 🔧 Configuration
+##  Configuration
 
 ### Core Settings
 ```env
@@ -145,18 +145,18 @@ ETHEREUM_TOKEN_ADDRESS=0xaa86ed59bcf10c838F2abDa08D1Ca8C6D1609d43
 NEAR_CONTRACT_ID=fusion-plus.demo.cuteharbor3573.testnet
 ```
 
-## 📝 Logging
+##  Logging
 
 Structured logging with different levels:
 
 ```bash
-2025-07-28T18:30:15.123Z [INFO ] 🆕 New order detected: 0x2a4f18b...
-2025-07-28T18:30:15.200Z [INFO ] 📊 Profitability analysis: 0.015 ETH profit (75% margin)
-2025-07-28T18:30:15.500Z [INFO ] ⚡ Starting atomic swap execution
-2025-07-28T18:30:20.100Z [INFO ] 💰 Execution completed: 0.014 ETH actual profit
+2025-07-28T18:30:15.123Z [INFO ]  New order detected: 0x2a4f18b...
+2025-07-28T18:30:15.200Z [INFO ]  Profitability analysis: 0.015 ETH profit (75% margin)
+2025-07-28T18:30:15.500Z [INFO ]  Starting atomic swap execution
+2025-07-28T18:30:20.100Z [INFO ]  Execution completed: 0.014 ETH actual profit
 ```
 
-## 🎛️ Commands
+##  Commands
 
 ```bash
 npm run dev      # Start development mode with auto-reload
@@ -167,14 +167,14 @@ npm run test     # Run test suite
 npm run lint     # Check code style
 ```
 
-## 🔐 Security
+##  Security
 
 - **Private Key Management**: Environment variables only, never hardcoded
 - **Transaction Signing**: Secure local signing, private keys never transmitted
 - **Error Handling**: Graceful failure with detailed logging
 - **Rate Limiting**: Respects RPC rate limits and network congestion
 
-## 📊 Monitoring
+##  Monitoring
 
 The service provides real-time status via logs:
 
@@ -183,7 +183,7 @@ The service provides real-time status via logs:
 - **Profit Tracking**: Total profits earned over time
 - **Gas Efficiency**: Average gas usage per execution
 
-## 🚀 Extending to Other Chains
+##  Extending to Other Chains
 
 This automated relayer architecture is designed to easily support additional chains:
 
@@ -199,14 +199,14 @@ This automated relayer architecture is designed to easily support additional cha
 
 The modular architecture means **each new chain requires only chain-specific components** - the core monitoring, analysis, and coordination logic remains the same.
 
-## 💡 Usage Tips
+##  Usage Tips
 
 1. **Start with Status Check**: Always run `npm run status` first
 2. **Monitor Logs**: Watch for profitability and execution logs
 3. **Balance Management**: Keep sufficient ETH and NEAR for operations
 4. **Gas Price Monitoring**: Adjust `MAX_GAS_PRICE` based on network conditions
 
-## 🎯 Next Steps
+##  Next Steps
 
 This automated relayer provides the foundation for:
 - **Multi-chain expansion** (Cosmos, Bitcoin, Aptos)

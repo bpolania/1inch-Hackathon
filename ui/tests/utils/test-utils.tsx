@@ -62,7 +62,7 @@ export const createMockBid = (overrides: Partial<SolverBid> = {}): SolverBid => 
   executionTime: 12,
   gasCost: '25.50',
   confidence: 0.92,
-  route: 'ETH → DEX → NEAR',
+  route: 'ETH  DEX  NEAR',
   timestamp: Date.now(),
   status: 'pending',
   ...overrides,

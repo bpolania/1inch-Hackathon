@@ -1,7 +1,7 @@
 const { ethers } = require("hardhat");
 
 async function main() {
-    console.log("🎬 1inch Fusion+ Cross-Chain Demo");
+    console.log(" 1inch Fusion+ Cross-Chain Demo");
     console.log("=================================");
     console.log("Demonstrating modular support for NEAR, Cosmos, and Bitcoin destinations");
 
@@ -13,9 +13,9 @@ async function main() {
     let deploymentInfo;
     try {
         deploymentInfo = JSON.parse(fs.readFileSync(deploymentPath, 'utf8'));
-        console.log("📋 Loaded deployment info from:", deploymentPath);
+        console.log(" Loaded deployment info from:", deploymentPath);
     } catch (error) {
-        console.log("⚠️  No deployment info found. Running deployment first...");
+        console.log("  No deployment info found. Running deployment first...");
         const { main: deploy } = require('./deploy-fusion-plus.js');
         deploymentInfo = await deploy();
     }
@@ -24,7 +24,7 @@ async function main() {
     const provider = new ethers.JsonRpcProvider("http://127.0.0.1:8545");
     const [signer] = await provider.listAccounts();
     const wallet = new ethers.Wallet("0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80", provider);
-    console.log("👤 Demo account:", wallet.address);
+    console.log(" Demo account:", wallet.address);
 
     // Get contract instances
     const registry = new ethers.Contract(deploymentInfo.contracts.CrossChainRegistry, 
@@ -34,11 +34,11 @@ async function main() {
     const nearAdapter = new ethers.Contract(deploymentInfo.contracts.NearTestnetAdapter,
         (await ethers.getContractFactory("NearDestinationChain")).interface, wallet);
 
-    console.log("\n📊 Step 1: Querying Supported Chains");
+    console.log("\n Step 1: Querying Supported Chains");
     console.log("=====================================");
     
     const supportedChains = await registry.getSupportedChainIds();
-    console.log("🌐 Supported destination chains:", supportedChains.map(id => id.toString()));
+    console.log(" Supported destination chains:", supportedChains.map(id => id.toString()));
     
     // Get detailed info for each chain
     for (const chainId of supportedChains) {
@@ -49,7 +49,7 @@ async function main() {
         console.log(`   - Default Timelock: ${chainInfo.defaultTimelock}s`);
     }
 
-    console.log("\n🧪 Step 2: Testing NEAR Integration");
+    console.log("\n Step 2: Testing NEAR Integration");
     console.log("====================================");
 
     // Test NEAR address validation
@@ -61,14 +61,14 @@ async function main() {
         "a".repeat(65) // Should fail - too long
     ];
 
-    console.log("🔍 Testing NEAR address validation:");
+    console.log(" Testing NEAR address validation:");
     for (const address of nearAddresses) {
         const isValid = await nearAdapter.validateDestinationAddress(ethers.toUtf8Bytes(address));
-        console.log(`   ${address}: ${isValid ? '✅ Valid' : '❌ Invalid'}`);
+        console.log(`   ${address}: ${isValid ? ' Valid' : ' Invalid'}`);
     }
 
     // Test NEAR execution parameters
-    console.log("\n🔧 Testing NEAR execution parameters:");
+    console.log("\n Testing NEAR execution parameters:");
     const nearParams = {
         contractId: "fusion-plus-near.demo.cuteharbor3573.testnet",
         methodName: "execute_fusion_order",
@@ -78,7 +78,7 @@ async function main() {
     };
 
     const encodedParams = await nearAdapter.encodeNearExecutionParams(nearParams);
-    console.log("📦 Encoded NEAR execution parameters:", encodedParams.length, "bytes");
+    console.log(" Encoded NEAR execution parameters:", encodedParams.length, "bytes");
 
     // Create chain-specific parameters
     const chainSpecificParams = {
@@ -90,20 +90,20 @@ async function main() {
 
     // Validate parameters
     const validation = await nearAdapter.validateOrderParams(chainSpecificParams, ethers.parseEther("2"));
-    console.log("✅ Parameter validation:", validation.isValid ? "PASSED" : `FAILED: ${validation.errorMessage}`);
+    console.log(" Parameter validation:", validation.isValid ? "PASSED" : `FAILED: ${validation.errorMessage}`);
     if (validation.isValid) {
-        console.log("💰 Estimated cost:", ethers.formatEther(validation.estimatedCost), "NEAR");
+        console.log(" Estimated cost:", ethers.formatEther(validation.estimatedCost), "NEAR");
     }
 
-    console.log("\n💼 Step 3: Creating Fusion+ Orders");
+    console.log("\n Step 3: Creating Fusion+ Orders");
     console.log("===================================");
 
     // Deploy mock ERC20 for testing
-    console.log("🪙 Deploying mock USDC...");
+    console.log(" Deploying mock USDC...");
     const MockERC20 = await ethers.getContractFactory("MockERC20", wallet);
     const mockUSDC = await MockERC20.deploy("Mock USDC", "USDC", 6);
     await mockUSDC.waitForDeployment();
-    console.log("✅ Mock USDC deployed to:", await mockUSDC.getAddress());
+    console.log(" Mock USDC deployed to:", await mockUSDC.getAddress());
 
     // Mint some tokens for demo
     const mintAmount = ethers.parseUnits("1000", 6); // 1000 USDC
@@ -112,12 +112,12 @@ async function main() {
     const currentNonce = await provider.getTransactionCount(wallet.address);
     const mintTx = await mockUSDC.mint(wallet.address, mintAmount, { nonce: currentNonce });
     await mintTx.wait();
-    console.log("💰 Minted", ethers.formatUnits(mintAmount, 6), "USDC for demo");
+    console.log(" Minted", ethers.formatUnits(mintAmount, 6), "USDC for demo");
 
     // Create order parameters for different chains
     const orderExamples = [
         {
-            name: "USDC → NEAR",
+            name: "USDC  NEAR",
             chainId: deploymentInfo.chainIds.NEAR_TESTNET,
             sourceToken: await mockUSDC.getAddress(),
             sourceAmount: ethers.parseUnits("100", 6), // 100 USDC
@@ -129,7 +129,7 @@ async function main() {
     ];
 
     for (const example of orderExamples) {
-        console.log(`\n📝 Creating order: ${example.name}`);
+        console.log(`\n Creating order: ${example.name}`);
         
         // Prepare order parameters
         const orderParams = {
@@ -152,24 +152,24 @@ async function main() {
                 example.sourceAmount
             );
             
-            console.log("💰 Cost estimates:");
+            console.log(" Cost estimates:");
             console.log(`   - Execution cost: ${ethers.formatEther(estimatedCost)} destination tokens`);
             console.log(`   - Safety deposit: ${ethers.formatUnits(safetyDeposit, 6)} source tokens`);
             
             // Generate order hash
             const orderHash = await factory.generateOrderHash(orderParams);
-            console.log("🔑 Generated order hash:", orderHash);
+            console.log(" Generated order hash:", orderHash);
             
             // Debug: check if order already exists
             const existingOrder = await factory.getOrder(orderHash);
             if (existingOrder.isActive) {
-                console.log("⚠️  Order already exists, skipping creation");
+                console.log("  Order already exists, skipping creation");
                 continue;
             }
             
             // Create the order
-            console.log("📋 Creating Fusion+ order...");
-            console.log("📋 Order params:");
+            console.log(" Creating Fusion+ order...");
+            console.log(" Order params:");
             console.log(`   - Source Token: ${orderParams.sourceToken}`);
             console.log(`   - Source Amount: ${ethers.formatUnits(orderParams.sourceAmount, 6)} USDC`);
             console.log(`   - Destination Chain: ${orderParams.destinationChainId}`);
@@ -177,10 +177,10 @@ async function main() {
             
             const tx = await factory.createFusionOrder(orderParams);
             const receipt = await tx.wait();
-            console.log("✅ Order created successfully! Gas used:", receipt.gasUsed.toString());
+            console.log(" Order created successfully! Gas used:", receipt.gasUsed.toString());
             
             // Parse events from the transaction receipt
-            console.log("📋 Transaction events:");
+            console.log(" Transaction events:");
             let actualOrderHash = orderHash;
             for (const log of receipt.logs) {
                 try {
@@ -201,7 +201,7 @@ async function main() {
             
             // Verify order was created using the actual hash from the event
             const orderInfo = await factory.getOrder(actualOrderHash);
-            console.log("📊 Order verification:");
+            console.log(" Order verification:");
             console.log(`   - Order Hash: ${orderInfo.orderHash}`);
             console.log(`   - Maker: ${orderInfo.maker}`);
             console.log(`   - Source: ${ethers.formatUnits(orderInfo.sourceAmount, 6)} USDC`);
@@ -214,33 +214,33 @@ async function main() {
             console.log(`   - Matchable: ${isMatchable}`);
             
         } catch (error) {
-            console.log("❌ Order creation failed:", error.message);
+            console.log(" Order creation failed:", error.message);
         }
     }
 
-    console.log("\n🚀 Step 4: Future Chain Support");
+    console.log("\n Step 4: Future Chain Support");
     console.log("================================");
-    console.log("🔮 This modular architecture supports easy addition of:");
+    console.log(" This modular architecture supports easy addition of:");
     console.log("   - Cosmos Hub (Chain ID: 40003)");
     console.log("   - Bitcoin Network (Chain ID: 40004)");
     console.log("   - Any other blockchain with IDestinationChain implementation");
     console.log("");
-    console.log("📋 To add new chain support:");
+    console.log(" To add new chain support:");
     console.log("   1. Implement IDestinationChain interface");
     console.log("   2. Deploy adapter contract");
     console.log("   3. Register with CrossChainRegistry");
     console.log("   4. Start creating cross-chain orders!");
 
-    console.log("\n✅ Demo Complete!");
+    console.log("\n Demo Complete!");
     console.log("==================");
-    console.log("🎯 Key Achievements:");
-    console.log("   ✅ Modular destination chain support");
-    console.log("   ✅ 1inch Fusion+ compatible order format");
-    console.log("   ✅ NEAR Protocol integration complete");
-    console.log("   ✅ Extensible architecture for Cosmos & Bitcoin");
-    console.log("   ✅ Comprehensive validation and cost estimation");
+    console.log(" Key Achievements:");
+    console.log("    Modular destination chain support");
+    console.log("    1inch Fusion+ compatible order format");
+    console.log("    NEAR Protocol integration complete");
+    console.log("    Extensible architecture for Cosmos & Bitcoin");
+    console.log("    Comprehensive validation and cost estimation");
     console.log("");
-    console.log("🚀 Ready for production deployment and additional chain integrations!");
+    console.log(" Ready for production deployment and additional chain integrations!");
 }
 
 // Handle script execution
@@ -248,7 +248,7 @@ if (require.main === module) {
     main()
         .then(() => process.exit(0))
         .catch((error) => {
-            console.error("❌ Demo failed:", error);
+            console.error(" Demo failed:", error);
             process.exit(1);
         });
 }

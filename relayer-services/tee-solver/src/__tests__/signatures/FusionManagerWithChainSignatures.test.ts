@@ -147,7 +147,7 @@ describe('FusionManagerWithChainSignatures', () => {
       expect(FusionChainSignatureAdapter).toHaveBeenCalled();
       expect(mockChainSignatureAdapter.initialize).toHaveBeenCalled();
 
-      expect(logger.info).toHaveBeenCalledWith('✅ Enhanced Fusion Manager initialized successfully');
+      expect(logger.info).toHaveBeenCalledWith(' Enhanced Fusion Manager initialized successfully');
     });
 
     it('should initialize without Chain Signatures when disabled', async () => {
@@ -158,7 +158,7 @@ describe('FusionManagerWithChainSignatures', () => {
 
       expect(ChainSignatureManager).not.toHaveBeenCalled();
       expect(FusionChainSignatureAdapter).not.toHaveBeenCalled();
-      expect(logger.info).toHaveBeenCalledWith('✅ Enhanced Fusion Manager initialized successfully');
+      expect(logger.info).toHaveBeenCalledWith(' Enhanced Fusion Manager initialized successfully');
     });
 
     it('should fallback to private key on Chain Signatures failure', async () => {
@@ -166,8 +166,8 @@ describe('FusionManagerWithChainSignatures', () => {
 
       await fusionManager.initialize();
 
-      expect(logger.warn).toHaveBeenCalledWith('⚠️ Falling back to private key signing...');
-      expect(logger.info).toHaveBeenCalledWith('✅ Enhanced Fusion Manager initialized successfully');
+      expect(logger.warn).toHaveBeenCalledWith(' Falling back to private key signing...');
+      expect(logger.info).toHaveBeenCalledWith(' Enhanced Fusion Manager initialized successfully');
     });
 
     it('should throw error when fallback disabled and Chain Signatures fails', async () => {
@@ -377,7 +377,7 @@ describe('FusionManagerWithChainSignatures', () => {
       const orderHash = await fusionManager.submitOrder(mockOrderData);
 
       expect(orderHash).toBe('0xfallbackHash123');
-      expect(logger.warn).toHaveBeenCalledWith('⚠️ Falling back to private key signing for this order...');
+      expect(logger.warn).toHaveBeenCalledWith(' Falling back to private key signing for this order...');
       expect(mockCrossChainSDK.submitOrder).toHaveBeenCalledWith(
         NetworkEnum.ETHEREUM,
         mockOrderData.preparedOrder,
@@ -399,7 +399,7 @@ describe('FusionManagerWithChainSignatures', () => {
 
       expect(orderHash).toBe('0xprivateKeyHash123');
       expect(mockChainSignatureAdapter.signFusionOrder).not.toHaveBeenCalled();
-      expect(logger.info).toHaveBeenCalledWith('🔑 Submitting order with private key signing');
+      expect(logger.info).toHaveBeenCalledWith(' Submitting order with private key signing');
     });
 
     it('should throw error when fallback disabled and Chain Signatures fails', async () => {
@@ -510,7 +510,7 @@ describe('FusionManagerWithChainSignatures', () => {
 
       expect(mockChainSignatureAdapter.stop).toHaveBeenCalled();
       expect(mockChainSignatureManager.stop).toHaveBeenCalled();
-      expect(logger.info).toHaveBeenCalledWith('✅ Enhanced Fusion Manager stopped');
+      expect(logger.info).toHaveBeenCalledWith(' Enhanced Fusion Manager stopped');
     });
 
     it('should handle cleanup errors gracefully', async () => {

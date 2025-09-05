@@ -63,22 +63,22 @@ export class Logger {
 
     success(message: string, data?: any): void {
         // Success is just info with a specific prefix
-        console.log(this.formatMessage('info', `✅ ${message}`, data));
+        console.log(this.formatMessage('info', ` ${message}`, data));
     }
 
     transaction(message: string, txHash: string, explorerUrl?: string): void {
         const data = { txHash, explorerUrl };
-        console.log(this.formatMessage('info', `🔗 ${message}`, data));
+        console.log(this.formatMessage('info', ` ${message}`, data));
     }
 
     profit(message: string, amount: string, currency: string = 'ETH'): void {
         const data = { amount, currency };
-        console.log(this.formatMessage('info', `💰 ${message}`, data));
+        console.log(this.formatMessage('info', ` ${message}`, data));
     }
 
     execution(message: string, orderHash: string, step?: string): void {
         const data = { orderHash, step };
-        console.log(this.formatMessage('info', `⚡ ${message}`, data));
+        console.log(this.formatMessage('info', ` ${message}`, data));
     }
 }
 

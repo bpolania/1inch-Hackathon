@@ -388,7 +388,7 @@ describe('Utility Functions', () => {
         { name: 'Uniswap', part: 50, fromTokenAddress: '0x123', toTokenAddress: '0x456' },
         { name: 'SushiSwap', part: 50, fromTokenAddress: '0x123', toTokenAddress: '0x456' }
       ]];
-      expect(formatProtocolRoute(protocols)).toBe('Uniswap → SushiSwap');
+      expect(formatProtocolRoute(protocols)).toBe('Uniswap  SushiSwap');
     });
 
     it('should handle empty protocols', () => {

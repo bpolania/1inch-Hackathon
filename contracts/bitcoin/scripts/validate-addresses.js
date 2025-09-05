@@ -37,25 +37,25 @@ function getAddressInfo(address, network = TESTNET) {
 }
 
 async function validateAndFixAddresses() {
-    console.log('₿ Bitcoin Address Validation and Fix');
+    console.log(' Bitcoin Address Validation and Fix');
     console.log('====================================\\n');
     
     // Load existing wallet
     const walletFile = './bitcoin-testnet-wallet.json';
     if (!fs.existsSync(walletFile)) {
-        console.log('❌ Wallet file not found. Run setup-live-testnet.js first.');
+        console.log(' Wallet file not found. Run setup-live-testnet.js first.');
         return;
     }
     
     const walletData = JSON.parse(fs.readFileSync(walletFile, 'utf8'));
     const keyPair = ECPair.fromWIF(walletData.privateKey, TESTNET);
     
-    console.log('🔑 Loaded wallet:');
+    console.log(' Loaded wallet:');
     console.log(`   Private Key: ${walletData.privateKey}`);
     console.log(`   Public Key: ${keyPair.publicKey.toString('hex')}\\n`);
     
     // Generate all possible address types
-    console.log('📍 Generating Address Types:');
+    console.log(' Generating Address Types:');
     console.log('----------------------------');
     
     // 1. P2PKH (Pay to Public Key Hash) - Legacy
@@ -64,7 +64,7 @@ async function validateAndFixAddresses() {
         network: TESTNET 
     });
     
-    console.log('🏠 P2PKH (Legacy):');
+    console.log(' P2PKH (Legacy):');
     console.log(`   Address: ${p2pkh.address}`);
     console.log(`   Valid: ${validateBitcoinAddress(p2pkh.address)}`);
     console.log(`   Info: ${JSON.stringify(getAddressInfo(p2pkh.address))}`);
@@ -78,7 +78,7 @@ async function validateAndFixAddresses() {
         network: TESTNET
     });
     
-    console.log('\\n🏠 P2SH-P2WPKH (Nested Segwit):');
+    console.log('\\n P2SH-P2WPKH (Nested Segwit):');
     console.log(`   Address: ${p2sh.address}`);
     console.log(`   Valid: ${validateBitcoinAddress(p2sh.address)}`);
     console.log(`   Info: ${JSON.stringify(getAddressInfo(p2sh.address))}`);
@@ -89,7 +89,7 @@ async function validateAndFixAddresses() {
         network: TESTNET 
     });
     
-    console.log('\\n🏠 P2WPKH (Native Segwit):');
+    console.log('\\n P2WPKH (Native Segwit):');
     console.log(`   Address: ${p2wpkh.address}`);
     console.log(`   Valid: ${validateBitcoinAddress(p2wpkh.address)}`);
     console.log(`   Info: ${JSON.stringify(getAddressInfo(p2wpkh.address))}`);
@@ -101,16 +101,16 @@ async function validateAndFixAddresses() {
             network: TESTNET 
         });
         
-        console.log('\\n🏠 P2TR (Taproot):');
+        console.log('\\n P2TR (Taproot):');
         console.log(`   Address: ${p2tr.address}`);
         console.log(`   Valid: ${validateBitcoinAddress(p2tr.address)}`);
         console.log(`   Info: ${JSON.stringify(getAddressInfo(p2tr.address))}`);
     } catch (error) {
-        console.log('\\n🏠 P2TR (Taproot): Not supported or error:', error.message);
+        console.log('\\n P2TR (Taproot): Not supported or error:', error.message);
     }
     
     // Test with known good testnet addresses
-    console.log('\\n🧪 Testing Known Good Testnet Addresses:');
+    console.log('\\n Testing Known Good Testnet Addresses:');
     console.log('------------------------------------------');
     
     const knownGoodAddresses = [
@@ -120,16 +120,16 @@ async function validateAndFixAddresses() {
     ];
     
     for (const addr of knownGoodAddresses) {
-        console.log(`   ${addr}: ${validateBitcoinAddress(addr) ? '✅ Valid' : '❌ Invalid'}`);
+        console.log(`   ${addr}: ${validateBitcoinAddress(addr) ? ' Valid' : ' Invalid'}`);
     }
     
     // Recommendation
-    console.log('\\n💡 Recommendations:');
+    console.log('\\n Recommendations:');
     console.log('-------------------');
     console.log('For maximum faucet compatibility, try these addresses:');
-    console.log(`1. 🥇 Native Segwit (Most Modern): ${p2wpkh.address}`);
-    console.log(`2. 🥈 Nested Segwit (Good Compat): ${p2sh.address}`);
-    console.log(`3. 🥉 Legacy (Max Compat): ${p2pkh.address}`);
+    console.log(`1.  Native Segwit (Most Modern): ${p2wpkh.address}`);
+    console.log(`2.  Nested Segwit (Good Compat): ${p2sh.address}`);
+    console.log(`3.  Legacy (Max Compat): ${p2pkh.address}`);
     
     // Save updated addresses
     const addressInfo = {
@@ -155,7 +155,7 @@ async function validateAndFixAddresses() {
     };
     
     fs.writeFileSync('./bitcoin-addresses.json', JSON.stringify(addressInfo, null, 2));
-    console.log('\\n💾 Address information saved to bitcoin-addresses.json');
+    console.log('\\n Address information saved to bitcoin-addresses.json');
     
     return addressInfo;
 }

@@ -7,21 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### 🚀 **AUTOMATED RELAYER SUCCESS**: Complete Automated Cross-Chain Execution with 0.05 ETH Profit (v2.0.0)
+###  **AUTOMATED RELAYER SUCCESS**: Complete Automated Cross-Chain Execution with 0.05 ETH Profit (v2.0.0)
 
-#### ✅ **FULLY AUTOMATED 1INCH FUSION+ RELAYER** - Production Cross-Chain Atomic Swaps
+####  **FULLY AUTOMATED 1INCH FUSION+ RELAYER** - Production Cross-Chain Atomic Swaps
 - **Complete Automation Achievement**: Successfully implemented fully automated 1inch Fusion+ relayer system
   - **Automated Order Detection**: Event-driven monitoring detecting new orders from blockchain events
   - **Automated Profitability Analysis**: Real-time profit calculation and execution decision making
   - **Automated Execution**: Complete atomic swap execution without manual intervention
   - **Automated Profit Generation**: Successfully generated 0.05 ETH profit per order execution
 - **End-to-End Automation Flow**: Seamless order lifecycle management
-  - Order creation through UI → Automatic detection by executor → Automated matching and execution
+  - Order creation through UI  Automatic detection by executor  Automated matching and execution
   - Cross-chain coordination between Ethereum and NEAR Protocol
   - Safety deposit management with automatic caps and validation
   - Token settlement and profit distribution without manual steps
 
-#### 🔧 **CRITICAL FIXES FOR AUTOMATED EXECUTION**
+####  **CRITICAL FIXES FOR AUTOMATED EXECUTION**
 - **Event Detection Resolution**: Fixed executor-client to properly detect new orders
   - **ABI Correction**: Updated FusionOrderCreated event ABI from 4 to 11 parameters
   - **Event Parameter Mapping**: Correctly mapped all order parameters from blockchain events
@@ -39,7 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - **Amount Scaling**: Corrected conversion from UI amounts to contract wei values
   - **Cross-Chain Compatibility**: Ensured proper decimal handling between Ethereum (18) and NEAR (24)
 
-#### 💰 **PROFIT GENERATION AND PERFORMANCE**
+####  **PROFIT GENERATION AND PERFORMANCE**
 - **Successful Atomic Swap Execution**: Complete cross-chain transaction with profit
   - **Source Amount**: 0.5 DT tokens successfully swapped
   - **Resolver Fee**: 0.05 DT tokens (10% fee) collected as profit
@@ -51,7 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - **Secret Revelation**: Hashlock unlocked with proper secret propagation
   - **Token Settlement**: Source tokens transferred to escrow completing the swap
 
-#### 🏗️ **ARCHITECTURE IMPROVEMENTS**
+####  **ARCHITECTURE IMPROVEMENTS**
 - **Robust Error Handling**: Enhanced fault tolerance throughout execution pipeline
   - **BigInt Serialization**: Fixed JSON logging crashes with proper BigInt to string conversion
   - **Event Listener Stability**: Improved event detection reliability with retry mechanisms
@@ -63,7 +63,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - **Access Control**: Verified resolver authorization before allowing order execution
   - **Safe Execution Limits**: Implemented caps and validation to prevent accidental large transactions
 
-#### 🔍 **MONITORING AND OBSERVABILITY**
+####  **MONITORING AND OBSERVABILITY**
 - **Comprehensive Logging**: Detailed execution tracking and debugging capabilities
   - **Order Lifecycle Tracking**: Complete visibility into each execution phase
   - **Performance Metrics**: Execution time, gas usage, and profit calculation logging
@@ -75,7 +75,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - **Execution Queue Management**: Tracking of pending and completed orders
   - **Performance Analytics**: Success rates, execution times, and profitability metrics
 
-#### 🎯 **PRODUCTION READINESS ACHIEVED**
+####  **PRODUCTION READINESS ACHIEVED**
 - **Fully Automated Relayer System**: No manual intervention required for order execution
   - Complete event-driven architecture responding to blockchain state changes
   - Autonomous decision making based on profitability analysis

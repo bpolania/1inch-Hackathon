@@ -50,7 +50,7 @@ class FusionTestRunner {
   private results: Map<string, { passed: boolean; duration: number; output: string }> = new Map();
 
   async runAllTests(): Promise<void> {
-    console.log(chalk.blue.bold('\n🧪 Starting Fusion+ Test Suite\n'));
+    console.log(chalk.blue.bold('\n Starting Fusion+ Test Suite\n'));
     console.log(chalk.gray('=' .repeat(60)));
 
     // Group tests by priority
@@ -59,19 +59,19 @@ class FusionTestRunner {
     const lowPriorityTests = testSuites.filter(test => test.priority === 'low');
 
     // Run high priority tests first
-    console.log(chalk.yellow.bold('\n🔥 High Priority Tests (Core Fusion+ Integration)'));
+    console.log(chalk.yellow.bold('\n High Priority Tests (Core Fusion+ Integration)'));
     for (const test of highPriorityTests) {
       await this.runTest(test);
     }
 
     // Run medium priority tests
-    console.log(chalk.yellow.bold('\n⚡ Medium Priority Tests (Contract Validation)'));
+    console.log(chalk.yellow.bold('\n Medium Priority Tests (Contract Validation)'));
     for (const test of mediumPriorityTests) {
       await this.runTest(test);
     }
 
     // Run low priority tests
-    console.log(chalk.yellow.bold('\n📝 Low Priority Tests (Legacy & Documentation)'));
+    console.log(chalk.yellow.bold('\n Low Priority Tests (Legacy & Documentation)'));
     for (const test of lowPriorityTests) {
       await this.runTest(test);
     }
@@ -82,7 +82,7 @@ class FusionTestRunner {
   private async runTest(test: TestSuite): Promise<void> {
     const startTime = Date.now();
     
-    console.log(chalk.cyan(`\n  📋 ${test.name}`));
+    console.log(chalk.cyan(`\n   ${test.name}`));
     console.log(chalk.gray(`     ${test.description}`));
     
     try {
@@ -94,44 +94,44 @@ class FusionTestRunner {
       const duration = Date.now() - startTime;
       this.results.set(test.name, { passed: true, duration, output });
       
-      console.log(chalk.green(`     ✅ PASSED (${duration}ms)`));
+      console.log(chalk.green(`      PASSED (${duration}ms)`));
       
     } catch (error: any) {
       const duration = Date.now() - startTime;
       this.results.set(test.name, { passed: false, duration, output: error.stdout || error.message });
       
-      console.log(chalk.red(`     ❌ FAILED (${duration}ms)`));
+      console.log(chalk.red(`      FAILED (${duration}ms)`));
       console.log(chalk.red(`     Error: ${error.message.split('\n')[0]}`));
     }
   }
 
   private printSummary(): void {
-    console.log(chalk.blue.bold('\n📊 Test Results Summary'));
+    console.log(chalk.blue.bold('\n Test Results Summary'));
     console.log(chalk.gray('=' .repeat(60)));
 
     const passed = Array.from(this.results.values()).filter(r => r.passed).length;
     const total = this.results.size;
     const totalTime = Array.from(this.results.values()).reduce((sum, r) => sum + r.duration, 0);
 
-    console.log(chalk.green(`✅ Passed: ${passed}/${total} test suites`));
-    console.log(chalk.gray(`⏱️  Total time: ${totalTime}ms`));
+    console.log(chalk.green(` Passed: ${passed}/${total} test suites`));
+    console.log(chalk.gray(`  Total time: ${totalTime}ms`));
     
     if (passed === total) {
-      console.log(chalk.green.bold('\n🎉 All Fusion+ tests passed! Ready for production.'));
+      console.log(chalk.green.bold('\n All Fusion+ tests passed! Ready for production.'));
       console.log(chalk.green('Your API is now fully integrated with the deployed Fusion+ contracts.'));
     } else {
-      console.log(chalk.red.bold('\n⚠️  Some tests failed. Review the errors above.'));
+      console.log(chalk.red.bold('\n  Some tests failed. Review the errors above.'));
       
       // Show failed tests
       this.results.forEach((result, name) => {
         if (!result.passed) {
-          console.log(chalk.red(`\n❌ ${name}:`));
+          console.log(chalk.red(`\n ${name}:`));
           console.log(chalk.gray(result.output.split('\n').slice(0, 5).join('\n')));
         }
       });
     }
 
-    console.log(chalk.blue.bold('\n🚀 Next Steps:'));
+    console.log(chalk.blue.bold('\n Next Steps:'));
     console.log(chalk.white('1. Fix any failing tests'));
     console.log(chalk.white('2. Run integration tests with live Sepolia contracts'));
     console.log(chalk.white('3. Test with real wallet connections'));
@@ -139,7 +139,7 @@ class FusionTestRunner {
   }
 
   async runSpecificCategory(category: 'unit' | 'integration' | 'contract'): Promise<void> {
-    console.log(chalk.blue.bold(`\n🧪 Running ${category.toUpperCase()} Tests Only\n`));
+    console.log(chalk.blue.bold(`\n Running ${category.toUpperCase()} Tests Only\n`));
     
     const testsToRun = testSuites.filter(test => test.category === category);
     

@@ -47,7 +47,7 @@ export class NearSolverRegistry {
    * Initialize connection to NEAR and solver registry
    */
   async initialize(): Promise<void> {
-    logger.info('🔧 Initializing NEAR Solver Registry...', {
+    logger.info(' Initializing NEAR Solver Registry...', {
       network: this.config.nearNetwork,
       registry: this.config.registryContractId
     });
@@ -62,10 +62,10 @@ export class NearSolverRegistry {
       // Verify our codehash is approved
       await this.verifyCodehashApproval();
       
-      logger.info('✅ NEAR Solver Registry initialized successfully');
+      logger.info(' NEAR Solver Registry initialized successfully');
       
     } catch (error) {
-      logger.error('💥 Failed to initialize NEAR Solver Registry:', error);
+      logger.error(' Failed to initialize NEAR Solver Registry:', error);
       throw error;
     }
   }
@@ -78,7 +78,7 @@ export class NearSolverRegistry {
       throw new Error('Registry not initialized');
     }
 
-    logger.info('📝 Registering solver with NEAR registry...', {
+    logger.info(' Registering solver with NEAR registry...', {
       poolId: params.pool_id,
       codehash: this.config.approvedCodehash.substring(0, 16) + '...'
     });
@@ -100,7 +100,7 @@ export class NearSolverRegistry {
       );
 
       this.isRegistered = true;
-      logger.info('✅ Solver registered successfully with NEAR registry', {
+      logger.info(' Solver registered successfully with NEAR registry', {
         transactionHash: result.transaction?.hash,
         poolId: params.pool_id
       });
@@ -108,7 +108,7 @@ export class NearSolverRegistry {
       return true;
 
     } catch (error) {
-      logger.error('💥 Solver registration failed:', error);
+      logger.error(' Solver registration failed:', error);
       throw error;
     }
   }
@@ -145,11 +145,11 @@ export class NearSolverRegistry {
     try {
       const pools = await this.registryContract.get_pools();
       
-      logger.info(`📊 Found ${pools.length} available pools in registry`);
+      logger.info(` Found ${pools.length} available pools in registry`);
       return pools;
       
     } catch (error) {
-      logger.error('💥 Failed to fetch pools:', error);
+      logger.error(' Failed to fetch pools:', error);
       throw error;
     }
   }
@@ -180,7 +180,7 @@ export class NearSolverRegistry {
     
     // Verify account exists and has balance
     const accountState = await this.nearAccount.state();
-    logger.info('💰 NEAR account state:', {
+    logger.info(' NEAR account state:', {
       balance: require('near-api-js').utils.format.formatNearAmount(accountState.amount),
       storage: accountState.storage_usage
     });
@@ -213,7 +213,7 @@ export class NearSolverRegistry {
       }
     );
 
-    logger.info('🔗 Connected to solver registry contract:', this.config.registryContractId);
+    logger.info(' Connected to solver registry contract:', this.config.registryContractId);
   }
 
   /**
@@ -233,10 +233,10 @@ export class NearSolverRegistry {
         throw new Error(`Codehash ${this.config.approvedCodehash} is not approved by registry`);
       }
 
-      logger.info('✅ Docker image codehash is approved by registry');
+      logger.info(' Docker image codehash is approved by registry');
       
     } catch (error) {
-      logger.error('💥 Codehash verification failed:', error);
+      logger.error(' Codehash verification failed:', error);
       throw error;
     }
   }
@@ -245,7 +245,7 @@ export class NearSolverRegistry {
    * Generate TEE attestation parameters for registration
    */
   async generateAttestationParams(poolId: number): Promise<RegistrationParams> {
-    logger.info('🔐 Generating TEE attestation parameters...');
+    logger.info(' Generating TEE attestation parameters...');
 
     // This would integrate with actual TEE attestation
     // For now, providing the structure needed
@@ -316,7 +316,7 @@ export class NearSolverRegistry {
    * Cleanup resources
    */
   async cleanup(): Promise<void> {
-    logger.info('🧹 Cleaning up NEAR Solver Registry...');
+    logger.info(' Cleaning up NEAR Solver Registry...');
     this.nearAccount = null;
     this.registryContract = null;
     this.isRegistered = false;

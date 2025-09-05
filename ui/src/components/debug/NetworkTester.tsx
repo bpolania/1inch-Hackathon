@@ -20,12 +20,12 @@ export function NetworkTester() {
     try {
       const workingEndpoint = await testNearRpcConnectivity('testnet')
       if (workingEndpoint) {
-        setResults(prev => prev + `✅ Found working endpoint: ${workingEndpoint}\n`)
+        setResults(prev => prev + ` Found working endpoint: ${workingEndpoint}\n`)
       } else {
-        setResults(prev => prev + '❌ No working endpoints found\n')
+        setResults(prev => prev + ' No working endpoints found\n')
       }
     } catch (error) {
-      setResults(prev => prev + `❌ Test failed: ${error}\n`)
+      setResults(prev => prev + ` Test failed: ${error}\n`)
     } finally {
       setTesting(false)
     }
@@ -39,7 +39,7 @@ export function NetworkTester() {
     <Card className="mb-4 border-orange-200 bg-orange-50">
       <CardHeader className="pb-3">
         <CardTitle className="text-sm font-medium text-orange-800">
-          🧪 Network Debug Tool
+           Network Debug Tool
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
